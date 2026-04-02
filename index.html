@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio | Creative Developer</title>
+    <meta
+      name="description"
+      content="A modern portfolio template with responsive layout and debug-friendly UI."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-orb orb-a" aria-hidden="true"></div>
+    <div class="bg-orb orb-b" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="logo" href="#top">NOVA/PORT</a>
+      <nav>
+        <ul class="nav-list">
+          <li><a href="#about">About</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#timeline">Timeline</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <button id="debugToggle" class="ghost-btn" type="button">Debug</button>
+    </header>
+
+    <main id="top">
+      <section class="hero reveal" aria-labelledby="hero-title">
+        <p class="eyebrow">Creative Frontend Developer</p>
+        <h1 id="hero-title">
+          Crafting expressive web experiences with speed, clarity, and intent.
+        </h1>
+        <p class="hero-copy">
+          I design and build product websites that feel alive and remain easy to
+          maintain. This template is intentionally visual, lightweight, and ready
+          for your content.
+        </p>
+        <div class="hero-actions">
+          <a class="primary-btn" href="#projects">See Work</a>
+          <a class="secondary-btn" href="#contact">Book a Call</a>
+        </div>
+      </section>
+
+      <section id="about" class="section reveal" aria-labelledby="about-title">
+        <div class="section-head">
+          <p class="section-kicker">Profile</p>
+          <h2 id="about-title">About Me</h2>
+        </div>
+        <div class="about-grid">
+          <article class="card">
+            <h3>What I do</h3>
+            <p>
+              Product UI implementation, design systems, and interaction-focused
+              frontend development.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Core stack</h3>
+            <p>TypeScript, React, Next.js, Node.js, and modern CSS architecture.</p>
+          </article>
+          <article class="card">
+            <h3>Strength</h3>
+            <p>
+              Turning rough ideas into launch-ready interfaces with measurable
+              performance.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section
+        id="projects"
+        class="section reveal"
+        aria-labelledby="projects-title"
+      >
+        <div class="section-head">
+          <p class="section-kicker">Selected Work</p>
+          <h2 id="projects-title">Projects</h2>
+        </div>
+        <div class="project-grid">
+          <article class="project-card">
+            <p class="project-index">01</p>
+            <h3>Flowline Commerce</h3>
+            <p>
+              Rebuilt a D2C storefront with a component-based architecture and
+              improved conversion flow.
+            </p>
+            <a href="#" aria-label="Open Flowline project">View Case</a>
+          </article>
+          <article class="project-card">
+            <p class="project-index">02</p>
+            <h3>Helio SaaS Dashboard</h3>
+            <p>
+              Built a data-heavy dashboard UI with reusable visualization panels
+              and keyboard-friendly controls.
+            </p>
+            <a href="#" aria-label="Open Helio project">View Case</a>
+          </article>
+          <article class="project-card">
+            <p class="project-index">03</p>
+            <h3>Studio Grid Landing</h3>
+            <p>
+              Designed and developed a campaign landing page focused on storytelling
+              and motion hierarchy.
+            </p>
+            <a href="#" aria-label="Open Studio Grid project">View Case</a>
+          </article>
+        </div>
+      </section>
+
+      <section id="timeline" class="section reveal" aria-labelledby="timeline-title">
+        <div class="section-head">
+          <p class="section-kicker">Journey</p>
+          <h2 id="timeline-title">Timeline</h2>
+        </div>
+        <ol class="timeline">
+          <li>
+            <span>2022</span>
+            <p>Joined a startup as frontend engineer and shipped MVP features.</p>
+          </li>
+          <li>
+            <span>2024</span>
+            <p>Led UI refactor project to improve consistency and release velocity.</p>
+          </li>
+          <li>
+            <span>2026</span>
+            <p>
+              Focused on premium product experiences and high-quality portfolio work.
+            </p>
+          </li>
+        </ol>
+      </section>
+
+      <section id="contact" class="section reveal" aria-labelledby="contact-title">
+        <div class="section-head">
+          <p class="section-kicker">Get In Touch</p>
+          <h2 id="contact-title">Let's Build Something Great</h2>
+        </div>
+        <div class="contact-wrap">
+          <p>
+            Looking for a frontend partner for your next launch? I am open to
+            freelance and collaboration opportunities.
+          </p>
+          <a class="primary-btn" href="mailto:hello@example.com">hello@example.com</a>
+        </div>
+      </section>
+    </main>
+
+    <aside id="debugPanel" class="debug-panel" aria-live="polite">
+      <h2>Debug View</h2>
+      <p><strong>Viewport:</strong> <span id="vpSize">-</span></p>
+      <p><strong>Scroll Y:</strong> <span id="scrollY">-</span></p>
+      <p><strong>Active Section:</strong> <span id="activeSection">-</span></p>
+      <p class="hint">Tip: press D to toggle this panel.</p>
+    </aside>
+
+    <script src="script.js"></script>
+  </body>
+</html>
