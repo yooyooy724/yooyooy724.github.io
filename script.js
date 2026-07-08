@@ -9,12 +9,12 @@ const revealNodes = Array.from(document.querySelectorAll(".reveal"));
 const sections = Array.from(document.querySelectorAll("main section[id]"));
 
 function toggleDebugPanel() {
-  debugPanel.classList.toggle("open");
+  debugPanel?.classList.toggle("open");
 }
 
 function updateViewportStats() {
-  vpSize.textContent = `${window.innerWidth} x ${window.innerHeight}`;
-  scrollYNode.textContent = String(Math.round(window.scrollY));
+  if (vpSize) vpSize.textContent = `${window.innerWidth} x ${window.innerHeight}`;
+  if (scrollYNode) scrollYNode.textContent = String(Math.round(window.scrollY));
 }
 
 function updateActiveNav() {
@@ -27,11 +27,12 @@ function updateActiveNav() {
     }
   });
 
-  activeSectionNode.textContent = activeId;
+  if (activeSectionNode) activeSectionNode.textContent = activeId;
 
   navLinks.forEach((link) => {
-    const target = link.getAttribute("href")?.replace("#", "") || "";
-    link.classList.toggle("active", target === activeId);
+    const href = link.getAttribute("href") || "";
+    const target = href.startsWith("#") ? href.replace("#", "") : "";
+    link.classList.toggle("active", target !== "" && target === activeId);
   });
 }
 
@@ -52,7 +53,7 @@ const revealObserver = new IntersectionObserver(
 
 revealNodes.forEach((node) => revealObserver.observe(node));
 
-debugToggle.addEventListener("click", toggleDebugPanel);
+debugToggle?.addEventListener("click", toggleDebugPanel);
 
 document.addEventListener("keydown", (event) => {
   if (event.key.toLowerCase() === "d") {

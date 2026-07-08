@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Idle Minertia — 梁嶋悠介 (Yayu) Portfolio</title>
+    <meta
+      name="description"
+      content="Idle Minertia（旧 Idle Gem）への関わりと、ビジネス戦略・実績・アートワーク・技術面の詳細。梁嶋悠介（Yayu）ポートフォリオの作品詳細ページ。"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Inter:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body class="detail-page">
+    <header class="site-header">
+      <a class="logo" href="../index.html#top">Yayu<span>／</span>Yanashima Yusuke</a>
+      <nav aria-label="主要ナビゲーション">
+        <ul class="nav-list">
+          <li><a href="../index.html#about">About</a></li>
+          <li><a href="../index.html#works">Works</a></li>
+          <li><a href="../index.html#timeline">Career</a></li>
+          <li><a href="../index.html#values">Values</a></li>
+          <li><a href="../index.html#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <button id="debugToggle" class="debug-toggle" type="button" aria-label="デバッグパネルを開く">Debug</button>
+    </header>
+
+    <main id="top">
+      <p class="back-link"><a href="../index.html#works">← Works に戻る</a></p>
+
+      <section class="detail-hero reveal">
+        <p class="eyebrow">_03_<span class="sep">／</span>Selected Work</p>
+        <h1>Idle Minertia <span class="work-alias">（旧: Idle Gem）</span></h1>
+        <p class="detail-lead">
+          Idleゲームに <em>Risk of Rain</em> 的なローグライク要素を取り入れた、自動採掘＋装備合成＋ウェーブバトルの放置ゲーム。
+          企画・開発の大部分を単独で担当し、「遊び手ベースを全てにおいて」という方針のもと、現時点でいちばん自信をもって紹介できる作品です。
+        </p>
+        <dl class="meta-list detail-meta">
+          <div>
+            <dt>リリース</dt>
+            <dd>2025年（iOS・Android）／継続アップデート中</dd>
+          </div>
+          <div>
+            <dt>プラットフォーム</dt>
+            <dd>iOS ／ Android（※旧名「Idle Gem」で公開中の版もあり）</dd>
+          </div>
+          <div>
+            <dt>関わり</dt>
+            <dd>企画・開発主導（2025.01〜）／Idle System, Inc. と協業</dd>
+          </div>
+          <div>
+            <dt>担当</dt>
+            <dd>企画・ゲームデザイン・実装・運営・広告運用・コミュニティ運営・リリース作業・アルバイトマネジメント</dd>
+          </div>
+        </dl>
+        <figure class="detail-visual detail-visual--placeholder">
+          <span>Idle Minertia<br /><small>KV・キービジュアル準備中</small></span>
+        </figure>
+      </section>
+
+      <section id="technical" class="section reveal" aria-labelledby="tech-title">
+        <div class="section-head">
+          <p class="section-kicker">01<span class="sep">／</span>Technical</p>
+          <h2 id="tech-title">技術面</h2>
+        </div>
+        <div class="prose">
+          <p>
+            Idle Sphere での反省を踏まえ、「ドメインとUIを人で分ける」スタイルから、
+            「同じ担当者がドメインとゲームデザインとUIを貫通する」体制へと大きく舵を切りました。
+            アーキテクチャには MVVM を採用し、Model / ViewModel / View の3層構造で Unity への依存性を最小化しています。
+            レイアウトやスタイルを除くインタラクションは C# 側で定義し、それまでの「ドメイン」を ViewModel 層までに拡張する設計にしました。
+          </p>
+          <dl class="tech-list">
+            <div>
+              <dt>エンジン</dt>
+              <dd>Unity</dd>
+            </div>
+            <div>
+              <dt>言語</dt>
+              <dd>C#</dd>
+            </div>
+            <div>
+              <dt>アーキテクチャ</dt>
+              <dd>
+                MVVM（Model ／ ViewModel ／ View）を採用。
+                Unity への依存を ViewModel 境界で最小化し、インタラクションロジックを C# 側で一元管理。
+              </dd>
+            </div>
+            <div>
+              <dt>開発方針</dt>
+              <dd>「遊び手ベースを全てにおいて」— UIの実装者がゲームデザインとドメインまで一貫して担当</dd>
+            </div>
+            <div>
+              <dt>体制</dt>
+              <dd>メイン開発を2名体制から1名体制に集約し、企画・設計・実装の統合を図った</dd>
+            </div>
+            <div>
+              <dt>描画・パフォーマンス</dt>
+              <dd>
+                ECSパターン（考え方）を参考にした独自設計を採用。Unity の API に依存せず、
+                <strong>StructLinq</strong> を組んで構造体ベースのアロケーションを抑えた処理を構成することで最適化を図っています。
+                Unity 純正の ECS ほどのスループットは得られないものの、本作の要件には十分な性能を発揮。
+                Idle Spiral の LineRenderer／Idle Sphere の DOTS 低レベル API／本作の独自ECS と、段階的に最適化の引き出しを増やしてきました。
+              </dd>
+            </div>
+            <div>
+              <dt>UI 実装</dt>
+              <dd>
+                <strong>UIToolkit（UXML）</strong> を採用。Idle Spiral・Idle Sphere の UGUI ではプレハブ管理の属人性が課題でしたが、
+                UXML への移行によって設計の見通し・開発コスト・処理パフォーマンスのすべてで改善が得られました。
+              </dd>
+            </div>
+            <div>
+              <dt>継続開発</dt>
+              <dd>半年で30回以上のアップデート／25以上の新コンテンツを追加</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <section id="artwork" class="section reveal" aria-labelledby="art-title">
+        <div class="section-head">
+          <p class="section-kicker">02<span class="sep">／</span>Artwork</p>
+          <h2 id="art-title">アートワーク</h2>
+        </div>
+        <div class="prose">
+          <p>
+            採掘演出、装備合成のフィードバック、ウェーブバトルのUI群を設計しています。
+            アイコン・KV・スクリーンショットは順次追加予定です。本人素材の追加に合わせてこのセクションを拡張します。
+          </p>
+          <div class="artwork-gallery">
+            <figure class="artwork-item artwork-item--placeholder">
+              <span>キービジュアル<br /><small>Preparing</small></span>
+            </figure>
+            <figure class="artwork-item artwork-item--placeholder">
+              <span>採掘画面<br /><small>Preparing</small></span>
+            </figure>
+            <figure class="artwork-item artwork-item--placeholder">
+              <span>装備合成UI<br /><small>Preparing</small></span>
+            </figure>
+            <figure class="artwork-item artwork-item--placeholder">
+              <span>ウェーブバトル<br /><small>Preparing</small></span>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section id="business" class="section reveal" aria-labelledby="biz-title">
+        <div class="section-head">
+          <p class="section-kicker">03<span class="sep">／</span>Business Strategy</p>
+          <h2 id="biz-title">ビジネス戦略</h2>
+        </div>
+        <div class="prose">
+          <p>
+            これまでと大きく異なる点は、<strong>広告運用を起点に、見せ方・打ち出し方から逆算してコンテンツを設計する</strong>順序を採ったことです。
+            前作 Idle Sphere では「ゲームを作ってから、どうストア最適化を図るか」という順序だったため、
+            スクリーンショット素材や訴求の作り込みに時間がかかり、魅せ方の設計も難しくなりました。
+            本作ではこの順序を逆転し、<em>どう打ち出すか／どう魅せるか</em>をマーケティング戦略の中心に据え、
+            UI・ゲームデザイン・プレステージ周回のテンポまでを一貫したコンテンツデザインとして設計しています。
+          </p>
+          <dl class="tech-list">
+            <div>
+              <dt>収益モデル</dt>
+              <dd>基本プレイ無料（F2P）＋広告表示＋アプリ内購入</dd>
+            </div>
+            <div>
+              <dt>価格帯</dt>
+              <dd>Remove All Ads ¥800 ／ Diamond Pack ¥150〜¥13,000 ／ Booster +Plus ¥800</dd>
+            </div>
+            <div>
+              <dt>設計思想</dt>
+              <dd>
+                マーケティング逆算設計：
+                「どう打ち出すか／どう魅せるか」を先に決め、ゲーム体験のテンポ・ループ・報酬バランスをその訴求に合わせて一貫設計
+              </dd>
+            </div>
+            <div>
+              <dt>長期エンゲージメント</dt>
+              <dd>プレステージ周回ごとにローグライク的な差分を生み、プレイ体験を毎回異なるものにする</dd>
+            </div>
+            <div>
+              <dt>リリース戦略</dt>
+              <dd>iOS を先行配信し、Android を後続展開。新機能は継続アップデートで段階投入</dd>
+            </div>
+            <div>
+              <dt>ターゲット</dt>
+              <dd>放置ゲーム好き × ローグライク／ビルド構築型ゲーム好きの交点</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <section id="achievements" class="section reveal" aria-labelledby="ach-title">
+        <div class="section-head">
+          <p class="section-kicker">04<span class="sep">／</span>Achievements</p>
+          <h2 id="ach-title">実績</h2>
+        </div>
+        <ul class="achievement-list">
+          <li>
+            <span class="achievement-year">2025</span>
+            <p>iOS / Android にてリリース（旧名 Idle Gem から Idle Minertia へ名称変更）</p>
+          </li>
+          <li>
+            <span class="achievement-year">App Store</span>
+            <p>評価 4.6／5.0（142件）／12言語対応（日本語・英語・中国語簡繁・韓国語・アラビア語・仏独伊葡露西越）</p>
+          </li>
+          <li>
+            <span class="achievement-year">Google Play</span>
+            <p>評価 4.0／5.0（53件、Idle Gem 版として表示）</p>
+          </li>
+          <li>
+            <span class="achievement-year">継続開発</span>
+            <p>半年で30回以上のアップデート／25以上の新コンテンツ追加</p>
+          </li>
+        </ul>
+        <p class="work-links-label">Links</p>
+        <ul class="work-links">
+          <li><a href="https://apps.apple.com/jp/app/idle-minertia-%E6%94%BE%E7%BD%AE%E3%81%A7%E7%A9%B4%E6%8E%98%E3%82%8A/id6748000916" target="_blank" rel="noopener">App Store →</a></li>
+          <li><a href="https://play.google.com/store/apps/details?id=com.idlesystem.IdleCube&hl=ja" target="_blank" rel="noopener">Google Play →</a></li>
+        </ul>
+      </section>
+
+      <nav class="detail-nav" aria-label="他の制作事例">
+        <a href="idle-sphere.html" class="detail-nav-prev">← 前の作品: Idle Sphere</a>
+      </nav>
+    </main>
+
+    <footer class="site-footer">
+      <p>© 2026 Yanashima Yusuke (Yayu)<span class="sep">／</span>All rights reserved.</p>
+    </footer>
+
+    <aside id="debugPanel" class="debug-panel" aria-live="polite">
+      <h2>Debug</h2>
+      <p><strong>Viewport</strong><span id="vpSize">-</span></p>
+      <p><strong>Scroll Y</strong><span id="scrollY">-</span></p>
+      <p><strong>Active</strong><span id="activeSection">-</span></p>
+      <p class="hint">Press D to toggle.</p>
+    </aside>
+
+    <script src="../script.js"></script>
+  </body>
+</html>

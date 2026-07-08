@@ -1,166 +1,263 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portfolio | Creative Developer</title>
+    <title>梁嶋悠介 (Yayu) — Game Developer Portfolio</title>
     <meta
       name="description"
-      content="A modern portfolio template with responsive layout and debug-friendly UI."
+      content="梁嶋悠介（Yayu）のポートフォリオ。Idle Spiral / Idle Sphere / Idle Minertia などIdleシリーズの開発に携わるゲームエンジニア・開発者。"
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Inter:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="bg-orb orb-a" aria-hidden="true"></div>
-    <div class="bg-orb orb-b" aria-hidden="true"></div>
-
     <header class="site-header">
-      <a class="logo" href="#top">NOVA/PORT</a>
-      <nav>
+      <a class="logo" href="#top">Yayu<span>／</span>Yanashima Yusuke</a>
+
+      <nav aria-label="主要ナビゲーション">
         <ul class="nav-list">
           <li><a href="#about">About</a></li>
-          <li><a href="#projects">Projects</a></li>
-          <li><a href="#timeline">Timeline</a></li>
+          <li><a href="#works">Works</a></li>
+          <li><a href="#timeline">Career</a></li>
+          <li><a href="#values">Values</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
       </nav>
-      <button id="debugToggle" class="ghost-btn" type="button">Debug</button>
+      <button id="debugToggle" class="debug-toggle" type="button" aria-label="デバッグパネルを開く">Debug</button>
     </header>
 
     <main id="top">
-      <section class="hero reveal" aria-labelledby="hero-title">
-        <p class="eyebrow">Creative Frontend Developer</p>
-        <h1 id="hero-title">
-          Crafting expressive web experiences with speed, clarity, and intent.
-        </h1>
-        <p class="hero-copy">
-          I design and build product websites that feel alive and remain easy to
-          maintain. This template is intentionally visual, lightweight, and ready
-          for your content.
-        </p>
-        <div class="hero-actions">
-          <a class="primary-btn" href="#projects">See Work</a>
-          <a class="secondary-btn" href="#contact">Book a Call</a>
-        </div>
-      </section>
-
       <section id="about" class="section reveal" aria-labelledby="about-title">
         <div class="section-head">
-          <p class="section-kicker">Profile</p>
-          <h2 id="about-title">About Me</h2>
+          <p class="section-kicker">01<span class="sep">／</span>Profile</p>
+          <h2 id="about-title">プロフィール</h2>
         </div>
-        <div class="about-grid">
-          <article class="card">
-            <h3>What I do</h3>
-            <p>
-              Product UI implementation, design systems, and interaction-focused
-              frontend development.
-            </p>
-          </article>
-          <article class="card">
-            <h3>Core stack</h3>
-            <p>TypeScript, React, Next.js, Node.js, and modern CSS architecture.</p>
-          </article>
-          <article class="card">
-            <h3>Strength</h3>
-            <p>
-              Turning rough ideas into launch-ready interfaces with measurable
-              performance.
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <section
-        id="projects"
-        class="section reveal"
-        aria-labelledby="projects-title"
-      >
-        <div class="section-head">
-          <p class="section-kicker">Selected Work</p>
-          <h2 id="projects-title">Projects</h2>
-        </div>
-        <div class="project-grid">
-          <article class="project-card">
-            <p class="project-index">01</p>
-            <h3>Flowline Commerce</h3>
-            <p>
-              Rebuilt a D2C storefront with a component-based architecture and
-              improved conversion flow.
-            </p>
-            <a href="#" aria-label="Open Flowline project">View Case</a>
-          </article>
-          <article class="project-card">
-            <p class="project-index">02</p>
-            <h3>Helio SaaS Dashboard</h3>
-            <p>
-              Built a data-heavy dashboard UI with reusable visualization panels
-              and keyboard-friendly controls.
-            </p>
-            <a href="#" aria-label="Open Helio project">View Case</a>
-          </article>
-          <article class="project-card">
-            <p class="project-index">03</p>
-            <h3>Studio Grid Landing</h3>
-            <p>
-              Designed and developed a campaign landing page focused on storytelling
-              and motion hierarchy.
-            </p>
-            <a href="#" aria-label="Open Studio Grid project">View Case</a>
-          </article>
+        <div class="prose">
+          <p>
+            梁嶋 悠介（やなしま ゆうすけ／Yayu）、1997年生まれ。
+            早稲田大学人間科学部 人間環境科学科を卒業後、同大学院 教育コミュニケーション専攻に進学。
+            大学院1年の2月、JavaScriptのp5.jsで絵を描くことからプログラミングを始め、これをきっかけに大学院を中退し、ゲーム開発の道へ。
+          </p>
+          <p>
+            所属組織を持たず、独立した立場で Idle System, Inc. と継続的に協業しています。
+            Idleシリーズ（<em>Idle Spiral</em>／<em>Idle Sphere</em>／<em>Idle Minertia</em>）の開発に参加し、
+            初期はUI / Graphicsを中心に担当。現在は企画・開発・運営・広告運用まで広く横断しています。
+          </p>
+          <dl class="meta-list">
+            <div>
+              <dt>役割</dt>
+              <dd>Game Engineer／Game Designer／Director／UI・Graphics／広告運用／ストアページ管理／コミュニティ運営</dd>
+            </div>
+            <div>
+              <dt>主要技術</dt>
+              <dd>Unity／C#／Blazor／各種デザインツール</dd>
+            </div>
+            <div>
+              <dt>設計・アーキテクチャ</dt>
+              <dd>関数型プログラミング／MVVM／DDD／GoFデザインパターン／ECS／DOTS</dd>
+            </div>
+            <div>
+              <dt>得意領域</dt>
+              <dd>放置系ゲームの設計／ローグライク要素の統合／UnityでのUI実装／グラフィック関連の技術／アートディレクション／広告逆算設計／戦略的なアップデート／早期アクセスモデルの運用／効率的な開発体制の構築</dd>
+            </div>
+          </dl>
         </div>
       </section>
 
-      <section id="timeline" class="section reveal" aria-labelledby="timeline-title">
+      <section id="works" class="section reveal" aria-labelledby="works-title">
         <div class="section-head">
-          <p class="section-kicker">Journey</p>
-          <h2 id="timeline-title">Timeline</h2>
+          <p class="section-kicker">02<span class="sep">／</span>Selected Works</p>
+          <h2 id="works-title">制作事例</h2>
         </div>
-        <ol class="timeline">
-          <li>
-            <span>2022</span>
-            <p>Joined a startup as frontend engineer and shipped MVP features.</p>
+        <ol class="works">
+          <li class="work">
+            <p class="work-index">_01_</p>
+            <div class="work-body">
+              <figure class="work-visual">
+                <img
+                  src="https://cdn.akamai.steamstatic.com/steam/apps/1827980/header.jpg"
+                  alt="Idle Spiral — Steamヘッダー画像"
+                  loading="lazy"
+                />
+              </figure>
+              <h3>Idle Spiral</h3>
+              <p class="work-meta">
+                2022<span class="sep">／</span>Steam・iOS・Android<span class="sep">／</span>業務委託・アルバイト
+              </p>
+              <p>
+                螺旋と数学をテーマにした放置・クリッカーゲーム。実務経験ゼロの状態から飛び込んだ最初の案件。
+                UI / Graphics を主担当とし、ゲームデザインや内部実装にも部分的に関与しました。
+                2023年からはアルバイトとして iOS / Android 版への移植を担当し、
+                モバイル特有の狭い表示領域を通じて「何を伝え、何を優先するか」というUIデザインの根幹を鍛えられました。
+              </p>
+              <a class="work-detail-link" href="works/idle-spiral.html">詳細を見る →</a>
+              <ul class="work-links">
+                <li><a href="https://store.steampowered.com/app/1827980/Idle_Spiral/" target="_blank" rel="noopener">Steam →</a></li>
+                <li><a href="https://apps.apple.com/jp/app/idlespiral/id6476647541" target="_blank" rel="noopener">App Store →</a></li>
+                <li><a href="https://play.google.com/store/apps/details?id=com.idlesystem.IdleSpiral" target="_blank" rel="noopener">Google Play →</a></li>
+              </ul>
+            </div>
           </li>
-          <li>
-            <span>2024</span>
-            <p>Led UI refactor project to improve consistency and release velocity.</p>
+          <li class="work">
+            <p class="work-index">_02_</p>
+            <div class="work-body">
+              <figure class="work-visual">
+                <img
+                  src="https://cdn.akamai.steamstatic.com/steam/apps/3217600/header.jpg"
+                  alt="Idle Sphere — Steamヘッダー画像"
+                  loading="lazy"
+                />
+              </figure>
+              <h3>Idle Sphere</h3>
+              <p class="work-meta">
+                2024<span class="sep">／</span>Steam 早期アクセス・iOS・Android<span class="sep">／</span>共同開発・レベニューシェア
+              </p>
+              <p>
+                球体の世界を舞台にした放置系ゲーム。本作からレベニューシェアに切り替わり、アルバイトを雇いながら進めるリーダー兼プレイヤー的な立ち回りを経験しました。
+                担当は引き続き UI / Graphics が中心。しかしUIの質感やゲーム自体の面白さに納得できなかった経験から、
+                ドメインとUIを分けて進める開発スタイルの限界に気づき、次作の方針転換につながる反省を得たプロジェクトです。
+              </p>
+              <p class="work-press">
+                <span class="press-label">Press</span>
+                <a href="https://automaton-media.com/articles/newsjp/idle-sphere-20241123-319214/" target="_blank" rel="noopener">
+                  AUTOMATON「幻想空間球体クリッカー『Idle Sphere』Steamにて無料で配信開始」（2024.11.23）
+                </a>
+              </p>
+              <a class="work-detail-link" href="works/idle-sphere.html">詳細を見る →</a>
+              <ul class="work-links">
+                <li><a href="https://store.steampowered.com/app/3217600/Idle_Sphere/" target="_blank" rel="noopener">Steam →</a></li>
+                <li><a href="https://apps.apple.com/jp/app/idlesphere/id6480509205" target="_blank" rel="noopener">App Store →</a></li>
+                <li><a href="https://play.google.com/store/apps/details?id=com.idlesystem.IdleSphere" target="_blank" rel="noopener">Google Play →</a></li>
+              </ul>
+            </div>
           </li>
-          <li>
-            <span>2026</span>
-            <p>
-              Focused on premium product experiences and high-quality portfolio work.
-            </p>
+          <li class="work">
+            <p class="work-index">_03_</p>
+            <div class="work-body">
+              <figure class="work-visual work-visual--placeholder" aria-label="画像準備中">
+                <span>Idle Minertia<br /><small>KV・スクリーンショット準備中</small></span>
+              </figure>
+              <h3>Idle Minertia <span class="work-alias">（旧: Idle Gem）</span></h3>
+              <p class="work-meta">
+                2025<span class="sep">／</span>iOS・Android<span class="sep">／</span>企画・開発主導
+              </p>
+              <p>
+                Idleゲームに <em>Risk of Rain</em> 的なローグライク要素を取り入れた、自動採掘＋装備合成＋ウェーブバトルの放置ゲーム。
+                企画・開発の大部分を単独で担当し、メイン開発を2名から1名体制に変更。これまでやってこなかったゲームデザインも含めて一通りを引き受けました。
+                掲げた方針は「遊び手ベースを全てにおいて」。UIの実装者がドメインとゲームデザインも担うことで、距離の近い設計を目指しています。
+                アーキテクチャには MVVM を採用し、Unityへの依存を最小化。半年で30回以上のアップデートと25以上の新コンテンツを積み上げています。
+              </p>
+              <a class="work-detail-link" href="works/idle-minertia.html">詳細を見る →</a>
+              <ul class="work-links">
+                <li><a href="https://apps.apple.com/jp/app/idle-minertia-%E6%94%BE%E7%BD%AE%E3%81%A7%E7%A9%B4%E6%8E%98%E3%82%8A/id6748000916" target="_blank" rel="noopener">App Store →</a></li>
+                <li><a href="https://play.google.com/store/apps/details?id=com.idlesystem.IdleCube&hl=ja" target="_blank" rel="noopener">Google Play →</a></li>
+              </ul>
+            </div>
           </li>
         </ol>
       </section>
 
+      <section id="timeline" class="section reveal" aria-labelledby="timeline-title">
+        <div class="section-head">
+          <p class="section-kicker">03<span class="sep">／</span>Career</p>
+          <h2 id="timeline-title">経歴</h2>
+        </div>
+        <ol class="timeline">
+          <li>
+            <span>2016 — 2020</span>
+            <p>早稲田大学 人間科学部 人間環境科学科。卒業研究で空間認知能力を試すボードゲームを独自開発。</p>
+          </li>
+          <li>
+            <span>2020 — 2022</span>
+            <p>早稲田大学 大学院 教育コミュニケーション専攻。VRを用いた空間描画の研究に取り組むも、大学院2年の8月に中退を決意。</p>
+          </li>
+          <li>
+            <span>2022.02</span>
+            <p>プログラミング学習開始。JavaScript / p5.js で絵を描くことから着手。</p>
+          </li>
+          <li>
+            <span>2022.09</span>
+            <p>Idle System, Inc. にて業務委託として <em>Idle Spiral</em> の開発に参加（UI / Graphics 担当）。</p>
+          </li>
+          <li>
+            <span>2023.05</span>
+            <p>同社でアルバイトへ移行し、<em>Idle Spiral</em> の iOS / Android 版への移植を担当。</p>
+          </li>
+          <li>
+            <span>2024.01</span>
+            <p><em>Idle Sphere</em> の共同開発に参加。報酬形態がレベニューシェアへ移行し、アルバイト採用・マネジメントも担う。</p>
+          </li>
+          <li>
+            <span>2025.01</span>
+            <p><em>Idle Minertia</em>（旧 Idle Gem）の企画・開発を主導。MVVMアーキテクチャ採用と広告逆算設計を導入。</p>
+          </li>
+          <li>
+            <span>2026 —</span>
+            <p><em>Idle Minertia</em> の継続アップデートと、次に向けた構想を進行中。</p>
+          </li>
+        </ol>
+      </section>
+
+      <section id="values" class="section reveal" aria-labelledby="values-title">
+        <div class="section-head">
+          <p class="section-kicker">04<span class="sep">／</span>Values</p>
+          <h2 id="values-title">ものづくりの姿勢</h2>
+        </div>
+        <div class="prose">
+          <ul class="values-list">
+            <li>
+              <h3>プレイヤーのセーブデータを絶対に壊さない</h3>
+              <p>長く遊ばれるゲームの前提として、データ互換性を何よりも優先します。</p>
+            </li>
+            <li>
+              <h3>毎回のアップデートで遊び手を驚かせる</h3>
+              <p>慎重に、しかし斬新に。半年で30回以上のアップデートを積み重ねてきました。</p>
+            </li>
+            <li>
+              <h3>遊び手ベースを全てにおいて</h3>
+              <p>UIの実装者がドメインとゲームデザインも引き受けることで、プレイヤーとの距離を縮める設計を目指します。</p>
+            </li>
+            <li>
+              <h3>収入よりも学び</h3>
+              <p>自分を芸人のように捉え、下積みの時期に幅広い技術と経験を貪欲に積み上げる姿勢を続けています。</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
       <section id="contact" class="section reveal" aria-labelledby="contact-title">
         <div class="section-head">
-          <p class="section-kicker">Get In Touch</p>
-          <h2 id="contact-title">Let's Build Something Great</h2>
+          <p class="section-kicker">05<span class="sep">／</span>Contact</p>
+          <h2 id="contact-title">お問い合わせ</h2>
         </div>
         <div class="contact-wrap">
           <p>
-            Looking for a frontend partner for your next launch? I am open to
-            freelance and collaboration opportunities.
+            共同開発・受託・採用のご相談など、お気軽にご連絡ください。
+            主要な連絡先は Discord を予定しています（準備中）。
           </p>
-          <a class="primary-btn" href="mailto:hello@example.com">hello@example.com</a>
+          <p class="contact-link-wrap">
+            <span class="contact-link contact-link--pending">Discord: 準備中</span>
+          </p>
         </div>
       </section>
     </main>
 
+    <footer class="site-footer">
+      <p>© 2026 Yanashima Yusuke (Yayu)<span class="sep">／</span>All rights reserved.</p>
+    </footer>
+
     <aside id="debugPanel" class="debug-panel" aria-live="polite">
-      <h2>Debug View</h2>
-      <p><strong>Viewport:</strong> <span id="vpSize">-</span></p>
-      <p><strong>Scroll Y:</strong> <span id="scrollY">-</span></p>
-      <p><strong>Active Section:</strong> <span id="activeSection">-</span></p>
-      <p class="hint">Tip: press D to toggle this panel.</p>
+      <h2>Debug</h2>
+      <p><strong>Viewport</strong><span id="vpSize">-</span></p>
+      <p><strong>Scroll Y</strong><span id="scrollY">-</span></p>
+      <p><strong>Active</strong><span id="activeSection">-</span></p>
+      <p class="hint">Press D to toggle.</p>
     </aside>
 
     <script src="script.js"></script>
