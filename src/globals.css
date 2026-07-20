@@ -220,13 +220,6 @@ a {
   margin: 0;
 }
 
-.hero h1 em {
-  color: transparent;
-  font-family: var(--font-display), var(--font-jp);
-  font-style: normal;
-  -webkit-text-stroke: 1.5px var(--ink);
-}
-
 .works-overview {
   position: relative;
   z-index: 3;
@@ -337,6 +330,20 @@ a {
   padding: 6px 8px;
 }
 
+/* ストアURLが分かっているプラットフォームだけリンクになる */
+.work-summary-copy li:has(a) {
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.work-summary-copy li:has(a):hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.work-summary-copy li a {
+  display: inline-block;
+}
+
 .current-areas {
   padding-top: 54px;
   position: relative;
@@ -352,11 +359,6 @@ a {
 
 .current-areas-heading > p {
   margin: 0;
-}
-
-.current-areas-heading > span {
-  color: var(--muted);
-  font-size: 0.7rem;
 }
 
 .current-areas ol {
@@ -565,22 +567,6 @@ a {
   width: 100%;
 }
 
-.carousel-track figcaption {
-  color: rgba(242, 239, 231, 0.72);
-  display: grid;
-  font-size: 0.66rem;
-  gap: 10px;
-  grid-template-columns: auto 1fr;
-  line-height: 1.6;
-  padding-top: 12px;
-}
-
-.carousel-track figcaption span {
-  color: var(--green);
-  font-family: var(--font-display);
-  letter-spacing: 0.08em;
-}
-
 .carousel-button {
   align-items: center;
   background: rgba(21, 26, 23, 0.86);
@@ -665,38 +651,29 @@ a {
   padding-top: 48px;
 }
 
-.responsibility-list {
-  border-top: 1px solid rgba(242, 239, 231, 0.25);
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  margin: 22px 0 0;
-  padding: 0;
+/* 技術スタックの補足。暗い章の中で使う */
+.tech-notes {
+  border-top: 1px solid rgba(242, 239, 231, 0.22);
+  margin: 16px 0 0;
+  padding-top: 14px;
 }
 
-.responsibility-list li {
-  border-right: 1px solid rgba(242, 239, 231, 0.25);
-  border-bottom: 1px solid rgba(242, 239, 231, 0.25);
-  display: grid;
-  font-size: 0.82rem;
-  gap: 15px;
-  grid-template-columns: 30px 1fr;
-  padding: 13px 0;
+.tech-notes > div + div {
+  margin-top: 12px;
 }
 
-.responsibility-list li:nth-child(3n) {
-  border-right: 0;
-  padding-left: 15px;
-}
-
-.responsibility-list li:nth-child(3n + 2) {
-  padding-left: 15px;
-}
-
-.responsibility-list span {
+.tech-notes dt {
   color: var(--green);
   font-family: var(--font-display);
-  font-size: 0.62rem;
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+}
+
+.tech-notes dd {
+  color: rgba(242, 239, 231, 0.6);
+  font-size: 0.66rem;
+  line-height: 1.75;
+  margin: 5px 0 0;
 }
 
 .journey {
@@ -799,7 +776,6 @@ a {
 }
 
 .journey-intro h2,
-.whole-heading h2,
 .profile h2 {
   font-size: clamp(2.3rem, 5vw, 5.7rem);
   font-weight: 550;
@@ -954,16 +930,6 @@ a {
 .tint .chapter-meta,
 .tint .fact-list,
 .tint .fact-list div,
-.tint .scope-detail,
-.tint .scope-detail li {
-  border-color: rgba(21, 26, 23, 0.3);
-}
-
-.tint .scope-detail li > span,
-.tint .scope-detail li > div > p {
-  color: rgba(21, 26, 23, 0.62);
-}
-
 .turning-copy {
   margin: clamp(90px, 13vw, 190px) 0 90px;
   max-width: 1000px;
@@ -1063,35 +1029,22 @@ a {
   padding-top: 28px;
 }
 
-.whole-heading {
-  margin: clamp(90px, 13vw, 190px) 0 90px;
-  max-width: 1020px;
-  position: relative;
-  z-index: 2;
-}
-
-.whole-heading > p:last-child {
-  font-size: 0.92rem;
-  line-height: 2;
-  margin: 45px 0 0 auto;
-  max-width: 620px;
-}
-
+/* 担当範囲。Idle Minertia（暗い章）の中で使う */
 .scope-detail {
-  border-top: 1px solid var(--line);
+  border-top: 1px solid rgba(242, 239, 231, 0.25);
   list-style: none;
-  margin: 0;
+  margin: 22px 0 0;
   padding: 0;
 }
 
 .scope-detail li {
   align-items: center;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid rgba(242, 239, 231, 0.25);
   display: grid;
   gap: 24px;
   grid-template-columns: 50px 1fr 1.2fr;
   padding: 28px 6px;
-  transition: background 180ms ease, padding 180ms ease;
+  transition: background 180ms ease, color 180ms ease, padding 180ms ease;
 }
 
 .scope-detail li:hover {
@@ -1100,9 +1053,17 @@ a {
   padding-right: 22px;
 }
 
+/* 緑地では文字色を反転させないと読めない */
+.scope-detail li:hover,
+.scope-detail li:hover span,
+.scope-detail li:hover p,
+.scope-detail li:hover h3 {
+  color: var(--ink);
+}
+
 .scope-detail li > span,
 .scope-detail li > div > p {
-  color: var(--muted);
+  color: var(--green);
   font-family: var(--font-display);
   font-size: 0.59rem;
   letter-spacing: 0.1em;
@@ -1117,6 +1078,7 @@ a {
 }
 
 .scope-detail li > p {
+  color: rgba(242, 239, 231, 0.72);
   font-size: 0.77rem;
   line-height: 1.8;
   margin: 0;
@@ -1442,24 +1404,6 @@ footer {
     border-bottom: 0;
   }
 
-  .responsibility-list {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .responsibility-list li:nth-child(3n),
-  .responsibility-list li:nth-child(3n + 2) {
-    padding-left: 0;
-  }
-
-  .responsibility-list li:nth-child(odd) {
-    border-right: 1px solid rgba(242, 239, 231, 0.25);
-  }
-
-  .responsibility-list li:nth-child(even) {
-    border-right: 0;
-    padding-left: 15px;
-  }
-
   .journey-layout {
     margin-top: 90px;
   }
@@ -1529,15 +1473,6 @@ footer {
 
   .current-areas li > p {
     grid-column: 2;
-  }
-
-  .responsibility-list {
-    grid-template-columns: 1fr;
-  }
-
-  .responsibility-list li:nth-child(n) {
-    border-right: 0;
-    padding-left: 0;
   }
 
   .project-facts,
