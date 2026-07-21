@@ -671,6 +671,37 @@ a {
   padding-right: 0;
 }
 
+/* 4枚のときは2×2。3列に収めると1枚あたりが狭くなりすぎる */
+.case-study-grid.pairs {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.case-study-grid.pairs article:nth-child(2n) {
+  border-right: 0;
+  padding-right: 0;
+}
+
+.case-study-grid.pairs article:nth-child(2n + 1) {
+  border-right: 1px solid var(--line);
+  padding-left: 0;
+}
+
+.dark .case-study-grid.pairs article:nth-child(2n + 1) {
+  border-right-color: rgba(242, 239, 231, 0.25);
+}
+
+.case-study-grid.pairs article:nth-last-child(-n + 2) {
+  padding-bottom: 0;
+}
+
+.case-study-grid.pairs article:nth-child(-n + 2) {
+  border-bottom: 1px solid var(--line);
+}
+
+.dark .case-study-grid.pairs article:nth-child(-n + 2) {
+  border-bottom-color: rgba(242, 239, 231, 0.25);
+}
+
 .case-study-grid h3 {
   font-size: clamp(1.2rem, 1.8vw, 1.7rem);
   font-weight: 500;
