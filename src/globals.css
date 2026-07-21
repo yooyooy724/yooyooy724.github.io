@@ -42,13 +42,21 @@ a {
   display: flex;
   flex-direction: column;
   height: 100svh;
-  justify-content: space-between;
   left: 0;
   padding: 32px 28px 28px;
   position: fixed;
   top: 0;
   width: var(--sidebar);
   z-index: 30;
+}
+
+/* 目次は名前のすぐ下（左上）に置く。分野表記だけを最下部へ送る */
+.sidebar .chapter-nav {
+  margin-top: 30px;
+}
+
+.sidebar-foot {
+  margin-top: auto;
 }
 
 .identity {
@@ -84,28 +92,28 @@ a {
   text-transform: uppercase;
 }
 
-.contents ol {
+.chapter-nav ol {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.contents li {
+.chapter-nav li {
   border-top: 1px solid var(--line);
   color: var(--muted);
   transition: color 180ms ease, padding-left 180ms ease;
 }
 
-.contents li:last-child {
+.chapter-nav li:last-child {
   border-bottom: 1px solid var(--line);
 }
 
-.contents li.active {
+.chapter-nav li.active {
   color: var(--ink);
   padding-left: 7px;
 }
 
-.contents a {
+.chapter-nav a {
   align-items: center;
   display: flex;
   font-size: 0.72rem;
@@ -113,13 +121,13 @@ a {
   padding: 6px 0;
 }
 
-.contents a span {
+.chapter-nav a span {
   font-family: var(--font-display);
   font-size: 0.54rem;
   min-width: 18px;
 }
 
-.contents a i {
+.chapter-nav a i {
   color: var(--muted);
   font-family: var(--font-display);
   font-size: 0.5rem;
@@ -129,11 +137,11 @@ a {
   white-space: nowrap;
 }
 
-.contents li.active a i {
+.chapter-nav li.active a i {
   color: var(--orange);
 }
 
-.contents li.active a::before {
+.chapter-nav li.active a::before {
   background: var(--orange);
   border-radius: 50%;
   content: "";
@@ -213,11 +221,21 @@ a {
 }
 
 .hero h1 {
-  font-size: clamp(3.2rem, 7.2vw, 8.2rem);
+  font-family: var(--font-display);
+  font-size: clamp(3.8rem, 9vw, 10rem);
   font-weight: 600;
-  letter-spacing: -0.075em;
-  line-height: 1.08;
+  letter-spacing: -0.055em;
+  line-height: 1;
   margin: 0;
+}
+
+/* 主題は Yayu games。こちらは添え書きなので一段落とす */
+.hero-subtitle {
+  color: var(--muted);
+  font-size: clamp(1rem, 1.8vw, 1.6rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin: 20px 0 0;
 }
 
 .works-overview {
@@ -362,6 +380,8 @@ a {
 }
 
 .current-areas ol {
+  /* 開いた項目だけが伸びるよう、行の高さを揃えない */
+  align-items: start;
   display: grid;
   gap: 1px;
   grid-template-columns: repeat(3, 1fr);
@@ -370,16 +390,12 @@ a {
   padding: 1px;
 }
 
+/* 詳細はクリックで開く。閉じているあいだは見出しだけを見せる */
 .current-areas li {
   background: #e5e2d9;
-  display: grid;
-  gap: 12px 18px;
-  grid-template-columns: 42px 1fr;
-  min-height: 132px;
   overflow: hidden;
-  padding: 20px;
   position: relative;
-  transition: background-color 220ms ease, color 220ms ease, transform 220ms ease;
+  transition: background-color 220ms ease, color 220ms ease;
 }
 
 .current-areas li::after {
@@ -395,42 +411,78 @@ a {
   width: 100%;
 }
 
-.current-areas li:hover {
-  background: var(--ink);
-  color: var(--paper);
-  transform: translateY(-4px);
-  z-index: 1;
-}
-
-.current-areas li:hover::after {
+.current-areas li:hover::after,
+.current-areas li.open::after {
   transform: scaleX(1);
 }
 
-.current-areas li > span {
+.current-areas li.open {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.current-areas li button {
+  align-items: center;
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  gap: 18px;
+  grid-template-columns: 42px 1fr 16px;
+  padding: 20px;
+  text-align: left;
+  width: 100%;
+}
+
+.current-areas li button span {
   color: var(--orange);
   font-family: var(--font-display);
   font-size: 0.72rem;
   letter-spacing: 0.08em;
-  padding-top: 3px;
 }
 
-.current-areas li > strong {
+.current-areas li button strong {
   font-size: clamp(0.9rem, 1.35vw, 1.25rem);
   font-weight: 600;
   line-height: 1.4;
 }
 
-.current-areas li > p {
-  color: var(--muted);
-  font-size: 0.66rem;
-  grid-column: 2;
-  line-height: 1.6;
-  margin: 0;
-  transition: color 220ms ease;
+/* 開閉を示す ＋ / － の記号 */
+.current-areas li button i {
+  height: 10px;
+  position: relative;
+  width: 10px;
 }
 
-.current-areas li:hover > p {
-  color: rgba(242, 239, 231, 0.7);
+.current-areas li button i::before,
+.current-areas li button i::after {
+  background: currentColor;
+  content: "";
+  left: 0;
+  position: absolute;
+  top: 50%;
+  transition: opacity 200ms ease, transform 200ms ease;
+  width: 100%;
+  height: 1.5px;
+}
+
+.current-areas li button i::after {
+  transform: rotate(90deg);
+}
+
+.current-areas li.open button i::after {
+  opacity: 0;
+  transform: rotate(0deg);
+}
+
+.current-areas li > p {
+  color: rgba(242, 239, 231, 0.72);
+  font-size: 0.72rem;
+  line-height: 1.85;
+  margin: 0;
+  padding: 0 20px 22px 80px;
 }
 
 .continue-link {
@@ -1465,14 +1517,14 @@ footer {
     grid-template-columns: 1fr;
   }
 
-  .current-areas li {
-    grid-template-columns: 38px 1fr;
-    min-height: 112px;
-    padding: 14px 10px;
+  .current-areas li button {
+    grid-template-columns: 34px 1fr 14px;
+    gap: 12px;
+    padding: 14px 12px;
   }
 
   .current-areas li > p {
-    grid-column: 2;
+    padding: 0 14px 18px 60px;
   }
 
   .project-facts,

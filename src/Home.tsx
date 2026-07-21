@@ -147,6 +147,8 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState(overview.id);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [tickPositions, setTickPositions] = useState<Record<string, number>>({});
+  // 詳細は同時にひとつだけ開く。null は全て閉じた状態。
+  const [openArea, setOpenArea] = useState<string | null>(null);
   const minertiaTrackRef = useRef<HTMLDivElement>(null);
   const [minertiaScroll, setMinertiaScroll] = useState({ previous: false, next: true });
 
@@ -274,7 +276,7 @@ export default function Home() {
           <span>YANASHIMA YUSUKE</span>
         </a>
 
-        <nav className="contents" aria-label="目次">
+        <nav className="chapter-nav" aria-label="目次">
           <ol>
             {navigation.map((item) => (
               <li key={item.id} className={activeSection === item.id ? "active" : ""}>
@@ -303,8 +305,8 @@ export default function Home() {
       <div className="page">
         <section className="hero chapter" id="overview" data-index="00">
           <div className="hero-copy">
-            <p className="eyebrow">Yayu games</p>
-            <h1>活動経歴をまとめる</h1>
+            <h1>Yayu games</h1>
+            <p className="hero-subtitle">活動経歴をまとめる</p>
           </div>
 
           <div className="works-overview">
@@ -350,13 +352,26 @@ export default function Home() {
               <p>制作を通じて広げてきた領域</p>
             </div>
             <ol>
-              {currentAreas.map((item) => (
-                <li key={item.number}>
-                  <span>{item.number}</span>
-                  <strong>{item.title}</strong>
-                  <p>{item.detail}</p>
-                </li>
-              ))}
+              {currentAreas.map((item) => {
+                const open = openArea === item.number;
+                return (
+                  <li key={item.number} className={open ? "open" : ""}>
+                    <button
+                      type="button"
+                      aria-expanded={open}
+                      aria-controls={`area-detail-${item.number}`}
+                      onClick={() => setOpenArea(open ? null : item.number)}
+                    >
+                      <span>{item.number}</span>
+                      <strong>{item.title}</strong>
+                      <i aria-hidden="true" />
+                    </button>
+                    <p id={`area-detail-${item.number}`} hidden={!open}>
+                      {item.detail}
+                    </p>
+                  </li>
+                );
+              })}
             </ol>
           </div>
 
