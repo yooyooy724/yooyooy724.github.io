@@ -36,6 +36,8 @@ type Work = {
   title: string;
   description: string;
   facts: { term: string; value: string }[];
+  // スマートフォンの画面は縦長、Steamのスクリーンショットは横長。
+  aspect: "portrait" | "landscape";
   images: { src: string; alt: string }[];
   caseStudies: {
     label: string;
@@ -65,6 +67,7 @@ const works: Record<string, Work> = {
       { term: "公開先", value: "iOS・Android" },
       { term: "開発形態", value: "企画・開発主導" },
     ],
+    aspect: "portrait",
     images: [
       { src: "/idle-minertia-01.webp", alt: "複数のつるはしを合成して進化させる画面" },
       { src: "/idle-minertia-02.webp", alt: "ゲームに登場する道具とエンチャント" },
@@ -131,7 +134,12 @@ const works: Record<string, Work> = {
       { term: "開発順序", value: "iOS・Android → Steam（PC・Mac）" },
       { term: "開発形態", value: "共同開発・レベニューシェア" },
     ],
-    images: [{ src: "/idle-sphere.jpg", alt: "Idle Sphereの公式ストア画像" }],
+    aspect: "landscape",
+    images: [
+      { src: "/sphere-shot-01.webp", alt: "生成量の内訳と球体を並べたIdle Sphereのメイン画面" },
+      { src: "/sphere-shot-02.webp", alt: "軌道上に並ぶ粒子と球体の描画" },
+      { src: "/sphere-shot-03.webp", alt: "配色を変えたテーマでの球体と粒子の描画" },
+    ],
     caseStudies: [
       {
         label: "思想",
@@ -191,7 +199,12 @@ const works: Record<string, Work> = {
       { term: "開発順序", value: "Steam（PC） → iOS・Android" },
       { term: "関わり", value: "業務委託 → アルバイト" },
     ],
-    images: [{ src: "/idle-spiral.jpg", alt: "Idle Spiralの公式ストア画像" }],
+    aspect: "landscape",
+    images: [
+      { src: "/spiral-shot-01.webp", alt: "数式パネルと、複数ラインで描かれた螺旋" },
+      { src: "/spiral-shot-02.webp", alt: "破線状のラインで描かれた別デザインの螺旋" },
+      { src: "/spiral-shot-03.webp", alt: "リアクター画面と、別の数式から生成された曲線" },
+    ],
     caseStudies: [
       {
         label: "思想",
@@ -294,6 +307,76 @@ const participatedWorks: {
 // 進捗（0 = 最初の章 = 現在）を、左＝過去・右＝現在の軸上の位置に反転して割り当てる。
 const toEraAxis = (progress: number) => (1 - progress) * 100;
 
+// 作品ごとに独立したカルーセル。3作それぞれが自分のスクロール状態を持つ。
+function WorkGallery({ work }: { work: Work }) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [reach, setReach] = useState({ previous: false, next: true });
+
+  const scrollImages = (direction: -1 | 1) => {
+    const track = trackRef.current;
+    if (!track) return;
+    track.scrollBy({ left: direction * track.clientWidth * 0.78, behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const updateReach = () => {
+      const maximum = track.scrollWidth - track.clientWidth;
+      // scroll-snap は最初の図をスクロールポート左端へ寄せるため、
+      // 先頭の位置は 0 ではなく左パディングのぶんだけずれる。
+      const start = parseFloat(getComputedStyle(track).paddingLeft) || 0;
+      setReach({
+        previous: track.scrollLeft > start + 4,
+        next: maximum > 4 && track.scrollLeft < maximum - 4,
+      });
+    };
+
+    updateReach();
+    track.addEventListener("scroll", updateReach, { passive: true });
+    const resizeObserver = new ResizeObserver(updateReach);
+    resizeObserver.observe(track);
+
+    return () => {
+      track.removeEventListener("scroll", updateReach);
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  return (
+    <div className={`work-gallery ${work.aspect}`} aria-label={`${work.title}のゲーム画面`}>
+      <div className="carousel-stage">
+        <div className="carousel-track" ref={trackRef}>
+          {work.images.map((image) => (
+            <figure key={image.src}>
+              <img src={image.src} alt={image.alt} loading="lazy" />
+            </figure>
+          ))}
+        </div>
+        <button
+          className="carousel-button carousel-previous"
+          type="button"
+          onClick={() => scrollImages(-1)}
+          aria-label="前の画像を見る"
+          disabled={!reach.previous}
+        >
+          ←
+        </button>
+        <button
+          className="carousel-button carousel-next"
+          type="button"
+          onClick={() => scrollImages(1)}
+          aria-label="次の画像を見る"
+          disabled={!reach.next}
+        >
+          →
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const [activeSection, setActiveSection] = useState(overview.id);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -301,14 +384,6 @@ export default function Home() {
   // 領域は常にひとつ選ばれている。開閉ではなく選択で詳細を切り替える。
   const [activeArea, setActiveArea] = useState(currentAreas[0].number);
   const areaTabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const minertiaTrackRef = useRef<HTMLDivElement>(null);
-  const [minertiaScroll, setMinertiaScroll] = useState({ previous: false, next: true });
-
-  const scrollMinertiaImages = (direction: -1 | 1) => {
-    const track = minertiaTrackRef.current;
-    if (!track) return;
-    track.scrollBy({ left: direction * track.clientWidth * 0.78, behavior: "smooth" });
-  };
 
   // 軸の両端は最初の章と最後の章。概要は時間軸に載せないので範囲から外す。
   const eraRange = useCallback(() => {
@@ -389,29 +464,6 @@ export default function Home() {
     };
   }, [eraRange]);
 
-  useEffect(() => {
-    const track = minertiaTrackRef.current;
-    if (!track) return;
-
-    const updateScrollButtons = () => {
-      const maximum = track.scrollWidth - track.clientWidth;
-      setMinertiaScroll({
-        previous: track.scrollLeft > 4,
-        next: maximum > 4 && track.scrollLeft < maximum - 4,
-      });
-    };
-
-    updateScrollButtons();
-    track.addEventListener("scroll", updateScrollButtons, { passive: true });
-    const resizeObserver = new ResizeObserver(updateScrollButtons);
-    resizeObserver.observe(track);
-
-    return () => {
-      track.removeEventListener("scroll", updateScrollButtons);
-      resizeObserver.disconnect();
-    };
-  }, []);
-
   const markerPosition = toEraAxis(scrollProgress);
   // 端でラベルがはみ出さないよう、読み取り表示だけは内側に寄せる。
   const readoutPosition = Math.min(90, Math.max(10, markerPosition));
@@ -444,10 +496,7 @@ export default function Home() {
   };
 
   // 3作品を同じ構成で描く。画像が複数あるものだけカルーセルになる。
-  const renderWork = (work: Work) => {
-    const isCarousel = work.images.length > 1;
-
-    return (
+  const renderWork = (work: Work) => (
       <section
         className={`featured chapter${work.tone ? ` ${work.tone}` : ""}`}
         id={work.id}
@@ -476,39 +525,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="work-gallery" aria-label={`${work.title}のゲーム画面`}>
-          <div className="carousel-stage">
-            <div className="carousel-track" ref={isCarousel ? minertiaTrackRef : undefined}>
-              {work.images.map((image) => (
-                <figure key={image.src} className={isCarousel ? "" : "single"}>
-                  <img src={image.src} alt={image.alt} />
-                </figure>
-              ))}
-            </div>
-            {isCarousel && (
-              <>
-                <button
-                  className="carousel-button carousel-previous"
-                  type="button"
-                  onClick={() => scrollMinertiaImages(-1)}
-                  aria-label="前の画像を見る"
-                  disabled={!minertiaScroll.previous}
-                >
-                  ←
-                </button>
-                <button
-                  className="carousel-button carousel-next"
-                  type="button"
-                  onClick={() => scrollMinertiaImages(1)}
-                  aria-label="次の画像を見る"
-                  disabled={!minertiaScroll.next}
-                >
-                  →
-                </button>
-              </>
-            )}
-          </div>
-        </div>
+        <WorkGallery work={work} />
 
         <div className={`case-study-grid${work.caseStudies.length === 4 ? " pairs" : ""}`}>
           {work.caseStudies.map((study) => (
@@ -552,8 +569,7 @@ export default function Home() {
           )}
         </div>
       </section>
-    );
-  };
+  );
 
   return (
     <main>

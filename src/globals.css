@@ -601,16 +601,13 @@ a {
   width: 100%;
 }
 
-/* 画像が1枚だけの作品は、横長のストア画像を1枚見せる */
-.carousel-track figure.single {
-  flex: 1 1 auto;
-  min-width: 0;
+/* Steamのスクリーンショットは横長なので、1枚を大きく見せる */
+.work-gallery.landscape .carousel-track figure {
+  flex: 0 0 min(78%, 620px);
 }
 
-.carousel-track figure.single > img {
-  aspect-ratio: 616 / 353;
-  margin: 0 auto;
-  max-width: 760px;
+.work-gallery.landscape .carousel-track figure > img {
+  aspect-ratio: 16 / 9;
 }
 
 .carousel-button {
@@ -1474,6 +1471,11 @@ footer {
 
   .carousel-track figure {
     flex-basis: min(72vw, 260px);
+  }
+
+  /* 横長のスクリーンショットは幅を取らないと中身が読めない */
+  .work-gallery.landscape .carousel-track figure {
+    flex: 0 0 88vw;
   }
 
   .carousel-button {
