@@ -4,6 +4,8 @@
   --ink: #151a17;
   --paper: #f2efe7;
   --muted: #757a74;
+  /* --muted は淡色地だと 3.8:1 で本文には足りない。長文にはこちらを使う */
+  --muted-strong: #5f645e;
   --line: #cbc8bf;
   --green: #b8de50;
   --orange: #f06b45;
@@ -527,7 +529,7 @@ a {
 }
 
 .featured-description {
-  color: rgba(242, 239, 231, 0.7);
+  color: var(--muted);
   font-size: 0.8rem;
   line-height: 1.9;
   margin: 30px 0 0;
@@ -535,7 +537,7 @@ a {
 }
 
 .featured-meta {
-  border-top: 1px solid rgba(242, 239, 231, 0.25);
+  border-top: 1px solid var(--line);
   padding-top: 18px;
 }
 
@@ -546,35 +548,64 @@ a {
 }
 
 .created-by strong {
-  color: var(--paper);
   font-size: clamp(1.2rem, 2vw, 2rem);
   font-weight: 500;
   letter-spacing: -0.035em;
 }
 
 .featured-meta dl {
-  border-top: 1px solid rgba(242, 239, 231, 0.25);
+  border-top: 1px solid var(--line);
   margin: 0;
 }
 
 .featured-meta dl > div {
-  border-bottom: 1px solid rgba(242, 239, 231, 0.25);
+  border-bottom: 1px solid var(--line);
   display: grid;
   font-size: 0.66rem;
   gap: 14px;
-  grid-template-columns: 75px 1fr;
+  grid-template-columns: 84px 1fr;
   padding: 9px 0;
 }
 
 .featured-meta dt {
-  color: rgba(242, 239, 231, 0.5);
+  color: var(--muted);
 }
 
 .featured-meta dd {
   margin: 0;
 }
 
-.minertia-carousel {
+/* 暗い章では線と補助文字を反転させる */
+.dark .featured-description {
+  color: rgba(242, 239, 231, 0.7);
+}
+
+.dark .featured-meta,
+.dark .featured-meta dl,
+.dark .featured-meta dl > div {
+  border-color: rgba(242, 239, 231, 0.25);
+}
+
+.dark .featured-meta dt {
+  color: rgba(242, 239, 231, 0.5);
+}
+
+.dark .created-by strong {
+  color: var(--paper);
+}
+
+.tint .featured-description,
+.tint .featured-meta dt {
+  color: rgba(21, 26, 23, 0.66);
+}
+
+.tint .featured-meta,
+.tint .featured-meta dl,
+.tint .featured-meta dl > div {
+  border-color: rgba(21, 26, 23, 0.28);
+}
+
+.work-gallery {
   background: #55575d;
   border: 1px solid rgba(242, 239, 231, 0.2);
   border-radius: 24px;
@@ -619,6 +650,18 @@ a {
   width: 100%;
 }
 
+/* 画像が1枚だけの作品は、横長のストア画像を1枚見せる */
+.carousel-track figure.single {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.carousel-track figure.single > img {
+  aspect-ratio: 616 / 353;
+  margin: 0 auto;
+  max-width: 760px;
+}
+
 .carousel-button {
   align-items: center;
   background: rgba(21, 26, 23, 0.86);
@@ -655,15 +698,15 @@ a {
 
 
 .case-study-grid {
-  border-bottom: 1px solid rgba(242, 239, 231, 0.25);
+  border-bottom: 1px solid var(--line);
   display: grid;
-  border-top: 1px solid rgba(242, 239, 231, 0.25);
+  border-top: 1px solid var(--line);
   grid-template-columns: repeat(3, 1fr);
   margin-top: clamp(54px, 7vw, 90px);
 }
 
 .case-study-grid article {
-  border-right: 1px solid rgba(242, 239, 231, 0.25);
+  border-right: 1px solid var(--line);
   min-height: 300px;
   padding: 28px 26px;
 }
@@ -686,26 +729,58 @@ a {
 }
 
 .case-study-grid article > p:not(.label) {
-  color: rgba(242, 239, 231, 0.68);
+  color: var(--muted);
   font-size: 0.74rem;
   line-height: 1.9;
 }
 
 .case-study-grid small {
-  color: var(--green);
+  color: var(--orange);
   display: block;
   font-size: 0.62rem;
   line-height: 1.7;
   margin-top: 22px;
 }
 
+.dark .case-study-grid,
+.dark .case-study-grid article {
+  border-color: rgba(242, 239, 231, 0.25);
+}
+
+.dark .case-study-grid article > p:not(.label) {
+  color: rgba(242, 239, 231, 0.68);
+}
+
+.dark .case-study-grid small {
+  color: var(--green);
+}
+
+.tint .case-study-grid,
+.tint .case-study-grid article {
+  border-color: rgba(21, 26, 23, 0.28);
+}
+
+.tint .case-study-grid article > p:not(.label) {
+  color: rgba(21, 26, 23, 0.66);
+}
+
+/* 淡色地の作品章だけ、長文の文字を一段濃くしてコントラストを確保する */
+.featured:not(.dark):not(.tint) .featured-description,
+.featured:not(.dark):not(.tint) .featured-meta dt,
+.featured:not(.dark):not(.tint) .case-study-grid article > p:not(.label),
+.featured:not(.dark):not(.tint) .scope-detail li > span,
+.featured:not(.dark):not(.tint) .scope-detail li > div > p,
+.featured:not(.dark):not(.tint) .scope-detail li > p {
+  color: var(--muted-strong);
+}
+
 .responsibilities {
   padding-top: 48px;
 }
 
-/* 技術スタックの補足。暗い章の中で使う */
+/* 技術スタックの補足 */
 .tech-notes {
-  border-top: 1px solid rgba(242, 239, 231, 0.22);
+  border-top: 1px solid var(--line);
   margin: 16px 0 0;
   padding-top: 14px;
 }
@@ -715,22 +790,29 @@ a {
 }
 
 .tech-notes dt {
-  color: var(--green);
+  color: var(--orange);
   font-family: var(--font-display);
   font-size: 0.64rem;
   letter-spacing: 0.06em;
 }
 
 .tech-notes dd {
-  color: rgba(242, 239, 231, 0.6);
+  color: var(--muted);
   font-size: 0.66rem;
   line-height: 1.75;
   margin: 5px 0 0;
 }
 
-.journey {
-  display: flex;
-  flex-direction: column;
+.dark .tech-notes {
+  border-color: rgba(242, 239, 231, 0.22);
+}
+
+.dark .tech-notes dt {
+  color: var(--green);
+}
+
+.dark .tech-notes dd {
+  color: rgba(242, 239, 231, 0.6);
 }
 
 .career-graph {
@@ -817,17 +899,6 @@ a {
   max-width: 150px;
 }
 
-.journey-layout {
-  align-items: start;
-  display: grid;
-  gap: clamp(60px, 10vw, 170px);
-  grid-template-columns: 1fr 1fr;
-  margin-top: clamp(100px, 15vw, 220px);
-  position: relative;
-  z-index: 2;
-}
-
-.journey-intro h2,
 .profile h2 {
   font-size: clamp(2.3rem, 5vw, 5.7rem);
   font-weight: 550;
@@ -836,120 +907,13 @@ a {
   margin: 0;
 }
 
-.journey-image {
-  aspect-ratio: 616 / 353;
-  background: var(--ink);
-  border-radius: 18px;
-  margin: 18px 0 0;
-  overflow: hidden;
-}
-
-.journey-image img {
-  height: 100%;
-  object-fit: contain;
-  transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  width: 100%;
-}
-
-.journey-image:hover img {
-  transform: scale(1.035);
-}
-
-.journey-body {
-  border-top: 5px solid var(--ink);
-  padding-top: 24px;
-}
-
-.journey-body .lead {
-  font-size: clamp(1.2rem, 2vw, 1.8rem);
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  line-height: 1.65;
-  margin: 0 0 32px;
-}
-
-.journey-body > p:not(.lead) {
-  color: #555b56;
-  font-size: 0.88rem;
-  line-height: 2;
-}
-
-.project-facts {
-  border-bottom: 1px solid var(--line);
-  border-top: 1px solid var(--line);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin-top: 38px;
-}
-
-.project-facts > div {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  padding: 15px 14px;
-}
-
-.project-facts > div:first-child {
-  border-right: 1px solid var(--line);
-  padding-left: 0;
-}
-
-.project-facts span,
-.project-aspects h3 {
-  color: var(--muted);
-  font-size: 0.62rem;
-  font-weight: 600;
-}
-
-.project-facts strong {
-  font-size: 0.72rem;
-  line-height: 1.6;
-}
-
-.project-aspects {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin-top: 28px;
-}
-
-.project-aspects article {
-  border-bottom: 1px solid var(--line);
-  min-height: 170px;
-  padding: 20px 18px 20px 0;
-}
-
-.project-aspects article:nth-child(odd) {
-  border-right: 1px solid var(--line);
-}
-
-.project-aspects article:nth-child(even) {
-  padding-left: 18px;
-}
-
-.project-aspects h3 {
-  color: var(--orange);
-  margin: 0 0 14px;
-}
-
-.project-aspects p {
-  font-size: 0.72rem;
-  line-height: 1.8;
-  margin: 0;
-}
-
 .store-link {
-  border-bottom: 1px solid var(--ink);
+  border-bottom: 1px solid currentColor;
   display: inline-block;
   font-size: 0.7rem;
   font-weight: 600;
   margin-top: 30px;
   padding-bottom: 5px;
-}
-
-.tint .project-facts,
-.tint .project-facts > div,
-.tint .project-aspects article {
-  border-color: rgba(21, 26, 23, 0.3);
 }
 
 .fact-list {
@@ -1081,59 +1045,93 @@ a {
   padding-top: 28px;
 }
 
-/* 担当範囲。Idle Minertia（暗い章）の中で使う */
+/* 担当範囲。1項目を1行に収め、余白を詰める */
 .scope-detail {
-  border-top: 1px solid rgba(242, 239, 231, 0.25);
+  border-top: 1px solid var(--line);
   list-style: none;
-  margin: 22px 0 0;
+  margin: 18px 0 0;
   padding: 0;
 }
 
 .scope-detail li {
-  align-items: center;
-  border-bottom: 1px solid rgba(242, 239, 231, 0.25);
+  align-items: baseline;
+  border-bottom: 1px solid var(--line);
   display: grid;
-  gap: 24px;
-  grid-template-columns: 50px 1fr 1.2fr;
-  padding: 28px 6px;
+  gap: 6px 20px;
+  grid-template-columns: 26px minmax(210px, 0.5fr) 1fr;
+  padding: 12px 6px;
   transition: background 180ms ease, color 180ms ease, padding 180ms ease;
 }
 
 .scope-detail li:hover {
   background: var(--green);
-  padding-left: 22px;
-  padding-right: 22px;
+  color: var(--ink);
+  padding-left: 14px;
+  padding-right: 14px;
 }
 
-/* 緑地では文字色を反転させないと読めない */
-.scope-detail li:hover,
+/* 分野と見出しは横並びにして高さを稼がない */
+.scope-detail li > div {
+  align-items: baseline;
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+
+.scope-detail li > span,
+.scope-detail li > div > p {
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.scope-detail h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.scope-detail li > p {
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
 .scope-detail li:hover span,
 .scope-detail li:hover p,
 .scope-detail li:hover h3 {
   color: var(--ink);
 }
 
-.scope-detail li > span,
-.scope-detail li > div > p {
+/* 暗い章では線と文字色を反転させる */
+.dark .scope-detail,
+.dark .scope-detail li {
+  border-color: rgba(242, 239, 231, 0.25);
+}
+
+.dark .scope-detail li > span,
+.dark .scope-detail li > div > p {
   color: var(--green);
-  font-family: var(--font-display);
-  font-size: 0.59rem;
-  letter-spacing: 0.1em;
-  margin: 0;
 }
 
-.scope-detail h3 {
-  font-size: clamp(1.25rem, 2.2vw, 2.2rem);
-  font-weight: 550;
-  letter-spacing: -0.045em;
-  margin: 5px 0 0;
+.dark .scope-detail li > p {
+  color: rgba(242, 239, 231, 0.7);
 }
 
-.scope-detail li > p {
-  color: rgba(242, 239, 231, 0.72);
-  font-size: 0.77rem;
-  line-height: 1.8;
-  margin: 0;
+.tint .scope-detail,
+.tint .scope-detail li {
+  border-color: rgba(21, 26, 23, 0.28);
+}
+
+.tint .scope-detail li > span,
+.tint .scope-detail li > div > p,
+.tint .scope-detail li > p {
+  color: rgba(21, 26, 23, 0.66);
 }
 
 .profile {
@@ -1331,7 +1329,6 @@ footer {
   }
 
   .featured-title,
-  .journey-layout,
   .profile-grid {
     gap: 48px;
   }
@@ -1430,7 +1427,6 @@ footer {
   }
 
   .featured-title,
-  .journey-layout,
   .profile-grid {
     grid-template-columns: 1fr;
   }
@@ -1454,10 +1450,6 @@ footer {
 
   .case-study-grid article:last-child {
     border-bottom: 0;
-  }
-
-  .journey-layout {
-    margin-top: 90px;
   }
 
   .ui-relationship {
@@ -1488,7 +1480,7 @@ footer {
     grid-template-columns: 1fr;
   }
 
-  .minertia-carousel {
+  .work-gallery {
     border-radius: 16px;
     padding: 10px;
   }
@@ -1525,23 +1517,6 @@ footer {
 
   .current-areas li > p {
     padding: 0 14px 18px 60px;
-  }
-
-  .project-facts,
-  .project-aspects {
-    grid-template-columns: 1fr;
-  }
-
-  .project-facts > div:first-child,
-  .project-aspects article:nth-child(odd) {
-    border-right: 0;
-  }
-
-  .project-facts > div,
-  .project-facts > div:first-child,
-  .project-aspects article:nth-child(n) {
-    padding-left: 0;
-    padding-right: 0;
   }
 
   .fact-list div {
