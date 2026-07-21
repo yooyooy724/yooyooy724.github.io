@@ -381,132 +381,99 @@ a {
   margin: 0;
 }
 
-.current-areas ol {
-  /* 開いた項目だけが伸びるよう、行の高さを揃えない */
-  align-items: start;
+/* 領域は一覧と詳細の二枚組。開閉させず、選んだものを右に出す */
+.areas-explorer {
   display: grid;
   gap: 1px;
-  grid-template-columns: repeat(3, 1fr);
-  list-style: none;
-  margin: 0;
-  padding: 1px;
+  grid-template-columns: minmax(230px, 0.85fr) 1.5fr;
 }
 
-/* 詳細はクリックで開く。閉じているあいだは見出しだけを見せる */
-.current-areas li {
+.areas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.areas-list button {
+  align-items: baseline;
   background: #e5e2d9;
-  overflow: hidden;
-  position: relative;
-  transition: background-color 220ms ease, color 220ms ease;
-}
-
-.current-areas li::after {
-  background: var(--orange);
-  bottom: 0;
-  content: "";
-  height: 4px;
-  left: 0;
-  position: absolute;
-  transform: scaleX(0.12);
-  transform-origin: left;
-  transition: transform 300ms ease;
-  width: 100%;
-}
-
-.current-areas li:hover::after,
-.current-areas li.open::after {
-  transform: scaleX(1);
-}
-
-.current-areas li.open {
-  background: var(--ink);
-  color: var(--paper);
-}
-
-.current-areas li button {
-  align-items: center;
-  background: none;
   border: 0;
   color: inherit;
   cursor: pointer;
   display: grid;
+  flex: 1;
   font: inherit;
-  gap: 18px;
-  grid-template-columns: 42px 1fr 16px;
-  padding: 20px;
+  gap: 14px;
+  grid-template-columns: 26px 1fr;
+  padding: 14px 18px;
+  position: relative;
   text-align: left;
-  width: 100%;
+  transition: background-color 180ms ease, color 180ms ease;
 }
 
-.current-areas li button span {
+.areas-list button::after {
+  background: var(--orange);
+  content: "";
+  inset: 0 auto 0 0;
+  position: absolute;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms ease;
+  width: 3px;
+}
+
+.areas-list button:hover {
+  background: #dedbd1;
+}
+
+.areas-list button.selected {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.areas-list button.selected::after {
+  transform: scaleX(1);
+}
+
+.areas-list button span {
   color: var(--orange);
   font-family: var(--font-display);
-  font-size: 0.72rem;
+  font-size: 0.6rem;
   letter-spacing: 0.08em;
 }
 
-.current-areas li button strong {
-  font-size: clamp(0.9rem, 1.35vw, 1.25rem);
+.areas-list button strong {
+  font-size: 0.85rem;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
-/* 開閉を示す ＋ / － の記号 */
-.current-areas li button i {
-  height: 10px;
-  position: relative;
-  width: 10px;
-}
-
-.current-areas li button i::before,
-.current-areas li button i::after {
-  background: currentColor;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 50%;
-  transition: opacity 200ms ease, transform 200ms ease;
-  width: 100%;
-  height: 1.5px;
-}
-
-.current-areas li button i::after {
-  transform: rotate(90deg);
-}
-
-.current-areas li.open button i::after {
-  opacity: 0;
-  transform: rotate(0deg);
-}
-
-.current-areas li > p {
-  color: rgba(242, 239, 231, 0.72);
-  font-size: 0.72rem;
-  line-height: 1.85;
-  margin: 0;
-  padding: 0 20px 22px 80px;
-}
-
-.continue-link {
-  align-items: center;
-  bottom: calc(var(--era-axis-height) + 20px);
+.areas-detail {
+  background: #e5e2d9;
   display: flex;
-  font-size: 0.72rem;
-  gap: 12px;
-  position: absolute;
-  right: clamp(28px, 6vw, 104px);
-  z-index: 4;
+  flex-direction: column;
+  padding: clamp(24px, 3vw, 40px);
 }
 
-.continue-link b {
-  border: 1px solid var(--ink);
-  border-radius: 50%;
-  display: grid;
-  font-family: var(--font-display);
-  font-weight: 400;
-  height: 34px;
-  place-items: center;
-  width: 34px;
+.areas-detail .label {
+  color: var(--orange);
+  margin: 0;
+}
+
+.areas-detail h3 {
+  font-size: clamp(1.4rem, 2.4vw, 2.3rem);
+  font-weight: 550;
+  letter-spacing: -0.05em;
+  line-height: 1.35;
+  margin: 18px 0 0;
+}
+
+.areas-detail > p:last-child {
+  color: var(--muted-strong);
+  font-size: 0.82rem;
+  line-height: 2;
+  margin: 20px 0 0;
+  max-width: 46ch;
 }
 
 .featured-title {
@@ -539,18 +506,6 @@ a {
 .featured-meta {
   border-top: 1px solid var(--line);
   padding-top: 18px;
-}
-
-.created-by {
-  font-family: var(--font-display);
-  letter-spacing: 0.03em;
-  margin: 0 0 24px;
-}
-
-.created-by strong {
-  font-size: clamp(1.2rem, 2vw, 2rem);
-  font-weight: 500;
-  letter-spacing: -0.035em;
 }
 
 .featured-meta dl {
@@ -588,10 +543,6 @@ a {
 
 .dark .featured-meta dt {
   color: rgba(242, 239, 231, 0.5);
-}
-
-.dark .created-by strong {
-  color: var(--paper);
 }
 
 .tint .featured-description,
@@ -1418,12 +1369,9 @@ footer {
     gap: 10px;
   }
 
-  .current-areas ol {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .continue-link {
-    display: none;
+  /* 横幅が足りないので一覧と詳細を縦に積む */
+  .areas-explorer {
+    grid-template-columns: 1fr;
   }
 
   .featured-title,
@@ -1504,20 +1452,6 @@ footer {
 
   .carousel-previous { left: 10px; }
   .carousel-next { right: 10px; }
-
-  .current-areas ol {
-    grid-template-columns: 1fr;
-  }
-
-  .current-areas li button {
-    grid-template-columns: 34px 1fr 14px;
-    gap: 12px;
-    padding: 14px 12px;
-  }
-
-  .current-areas li > p {
-    padding: 0 14px 18px 60px;
-  }
 
   .fact-list div {
     grid-template-columns: 72px 1fr;

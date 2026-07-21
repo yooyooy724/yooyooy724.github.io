@@ -35,8 +35,6 @@ type Work = {
   eyebrow: string;
   title: string;
   description: string;
-  roleLabel: string;
-  roleName: string;
   facts: { term: string; value: string }[];
   images: { src: string; alt: string }[];
   caseStudies: {
@@ -62,8 +60,6 @@ const works: Record<string, Work> = {
     title: "Idle Minertia",
     description:
       "カジュアルなユーザーにも届く入口をつくり、ローグライク要素による選択とビルド構築の奥行きを加えることで、従来作よりターゲット層を広げた放置ゲームです。",
-    roleLabel: "Created by",
-    roleName: "Yusuke Yanashima",
     facts: [
       { term: "リリース", value: "2025年" },
       { term: "公開先", value: "iOS・Android" },
@@ -125,8 +121,6 @@ const works: Record<string, Work> = {
     title: "Idle Sphere",
     description:
       "球体の世界でインフレーションを楽しむ、放置系ゲーム。モバイル版から開発を始め、その後Steam向けのPC・Mac版へ移植しました。レベニューシェアでの共同開発となり、制作に加えてチームを動かす役割も担いました。",
-    roleLabel: "担当",
-    roleName: "UI・グラフィック",
     facts: [
       { term: "リリース", value: "2024年" },
       { term: "開発順序", value: "iOS・Android → Steam（PC・Mac）" },
@@ -169,8 +163,6 @@ const works: Record<string, Work> = {
     title: "Idle Spiral",
     description:
       "螺旋と数学をテーマにした、放置・クリッカーゲーム。2022年9月、実務経験のない状態からUI・グラフィック担当として開発に参加しました。Steam版での開発経験を経て、iOS・Android版への移植ではUIを全面的に作り直しています。",
-    roleLabel: "担当",
-    roleName: "UI・グラフィック",
     facts: [
       { term: "公開先", value: "Steam（PC）・iOS・Android" },
       { term: "開発順序", value: "Steam（PC） → iOS・Android" },
@@ -269,8 +261,9 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState(overview.id);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [tickPositions, setTickPositions] = useState<Record<string, number>>({});
-  // 詳細は同時にひとつだけ開く。null は全て閉じた状態。
-  const [openArea, setOpenArea] = useState<string | null>(null);
+  // 領域は常にひとつ選ばれている。開閉ではなく選択で詳細を切り替える。
+  const [activeArea, setActiveArea] = useState(currentAreas[0].number);
+  const areaTabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const minertiaTrackRef = useRef<HTMLDivElement>(null);
   const [minertiaScroll, setMinertiaScroll] = useState({ previous: false, next: true });
 
@@ -390,6 +383,29 @@ export default function Home() {
   // 概要は時間軸上の一点ではないため、表示中はインジケータを引っ込める。
   const axisHidden = !activeChapter;
 
+  const activeAreaItem =
+    currentAreas.find((item) => item.number === activeArea) ?? currentAreas[0];
+
+  // tablist は上下キーで移動できる必要がある。
+  const moveAreaFocus = (event: React.KeyboardEvent, index: number) => {
+    const keys: Record<string, number> = {
+      ArrowDown: index + 1,
+      ArrowRight: index + 1,
+      ArrowUp: index - 1,
+      ArrowLeft: index - 1,
+      Home: 0,
+      End: currentAreas.length - 1,
+    };
+
+    const next = keys[event.key];
+    if (next === undefined) return;
+
+    event.preventDefault();
+    const wrapped = (next + currentAreas.length) % currentAreas.length;
+    setActiveArea(currentAreas[wrapped].number);
+    areaTabRefs.current[wrapped]?.focus();
+  };
+
   // 3作品を同じ構成で描く。画像が複数あるものだけカルーセルになる。
   const renderWork = (work: Work) => {
     const isCarousel = work.images.length > 1;
@@ -412,11 +428,6 @@ export default function Home() {
             <p className="featured-description">{work.description}</p>
           </div>
           <div className="featured-meta">
-            <p className="created-by">
-              {work.roleLabel}
-              <br />
-              <strong>{work.roleName}</strong>
-            </p>
             <dl>
               {work.facts.map((fact) => (
                 <div key={fact.term}>
@@ -590,28 +601,49 @@ export default function Home() {
             <div className="current-areas-heading">
               <p>制作を通じて広げてきた領域</p>
             </div>
-            <ol>
-              {currentAreas.map((item) => {
-                const open = openArea === item.number;
-                return (
-                  <li key={item.number} className={open ? "open" : ""}>
+            <div className="areas-explorer">
+              <div
+                className="areas-list"
+                role="tablist"
+                aria-orientation="vertical"
+                aria-label="領域の一覧"
+              >
+                {currentAreas.map((item, index) => {
+                  const selected = item.number === activeArea;
+                  return (
                     <button
+                      key={item.number}
                       type="button"
-                      aria-expanded={open}
-                      aria-controls={`area-detail-${item.number}`}
-                      onClick={() => setOpenArea(open ? null : item.number)}
+                      role="tab"
+                      id={`area-tab-${item.number}`}
+                      className={selected ? "selected" : ""}
+                      aria-selected={selected}
+                      aria-controls={`area-panel-${item.number}`}
+                      tabIndex={selected ? 0 : -1}
+                      ref={(node) => {
+                        areaTabRefs.current[index] = node;
+                      }}
+                      onClick={() => setActiveArea(item.number)}
+                      onKeyDown={(event) => moveAreaFocus(event, index)}
                     >
                       <span>{item.number}</span>
                       <strong>{item.title}</strong>
-                      <i aria-hidden="true" />
                     </button>
-                    <p id={`area-detail-${item.number}`} hidden={!open}>
-                      {item.detail}
-                    </p>
-                  </li>
-                );
-              })}
-            </ol>
+                  );
+                })}
+              </div>
+
+              <div
+                className="areas-detail"
+                role="tabpanel"
+                id={`area-panel-${activeAreaItem.number}`}
+                aria-labelledby={`area-tab-${activeAreaItem.number}`}
+              >
+                <p className="label">{activeAreaItem.number}</p>
+                <h3>{activeAreaItem.title}</h3>
+                <p>{activeAreaItem.detail}</p>
+              </div>
+            </div>
           </div>
 
           <div className="career-graph">
@@ -628,10 +660,6 @@ export default function Home() {
             </ol>
           </div>
 
-          <a className="continue-link" href="#minertia">
-            <span>過去へさかのぼる</span>
-            <b aria-hidden="true">↓</b>
-          </a>
         </section>
 
         {renderWork(works.minertia)}
