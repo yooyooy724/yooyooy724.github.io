@@ -92,7 +92,8 @@ const minertiaImages = [
 ];
 
 // href を持つプラットフォームはストアページへのリンクになる。
-// TODO: iOS / Android のストアURLが未確定。判明したら href を追加する。
+// Idle Sphere の Google Play だけは、旧サイトにあったURL
+// （com.idlesystem.IdleSphere）が現在404を返すためリンクしていない。
 const participatedWorks: {
   title: string;
   icon: string;
@@ -103,7 +104,16 @@ const participatedWorks: {
     title: "Idle Minertia",
     icon: "/icon-idle-minertia.webp",
     summary: "企画・ゲームデザイン・開発・運営を横断して担当。",
-    platforms: [{ label: "iOS" }, { label: "Android" }],
+    platforms: [
+      {
+        label: "iOS",
+        href: "https://apps.apple.com/jp/app/idle-minertia-%E6%94%BE%E7%BD%AE%E3%81%A7%E7%A9%B4%E6%8E%98%E3%82%8A/id6748000916",
+      },
+      {
+        label: "Android",
+        href: "https://play.google.com/store/apps/details?id=com.idlesystem.IdleCube&hl=ja",
+      },
+    ],
   },
   {
     title: "Idle Sphere",
@@ -111,7 +121,7 @@ const participatedWorks: {
     summary: "UI・グラフィックを担当。コンテンツにも関わる。モバイル版を開発後、Steamへ移植。",
     platforms: [
       { label: "Steam（PC・Mac）", href: "https://store.steampowered.com/app/3217600/Idle_Sphere/" },
-      { label: "iOS" },
+      { label: "iOS", href: "https://apps.apple.com/jp/app/idlesphere/id6480509205" },
       { label: "Android" },
     ],
   },
@@ -121,8 +131,11 @@ const participatedWorks: {
     summary: "UI・グラフィックを担当。Steam版での開発を経て、モバイル版への移植に参加。",
     platforms: [
       { label: "Steam（PC）", href: "https://store.steampowered.com/app/1827980/Idle_Spiral/" },
-      { label: "iOS" },
-      { label: "Android" },
+      { label: "iOS", href: "https://apps.apple.com/jp/app/idlespiral/id6476647541" },
+      {
+        label: "Android",
+        href: "https://play.google.com/store/apps/details?id=com.idlesystem.IdleSpiral&hl=ja",
+      },
     ],
   },
 ];
