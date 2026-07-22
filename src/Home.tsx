@@ -19,7 +19,7 @@ const navigation: { id: string; number: string; label: string; era?: string }[] 
 
 type Work = {
   id: string;
-  index: string;
+  logo: string;
   tone: "dark" | "tint" | "";
   chapterLabel: string;
   chapterEra: string;
@@ -45,7 +45,7 @@ type Work = {
 const works: Record<string, Work> = {
   minertia: {
     id: "minertia",
-    index: "01",
+    logo: "/icon-idle-minertia.webp",
     tone: "dark",
     chapterLabel: "代表作",
     chapterEra: "2025年 リリース",
@@ -56,7 +56,7 @@ const works: Record<string, Work> = {
     facts: [
       { term: "リリース", value: "2025年" },
       { term: "公開先", value: "iOS・Android" },
-      { term: "開発形態", value: "企画・開発主導" },
+      { term: "使用技術", value: "Unity・C#・Blazor" },
     ],
     aspect: "portrait",
     images: [
@@ -74,7 +74,7 @@ const works: Record<string, Work> = {
         label: "技術",
         title: "変更に耐える構造へ。",
         body: "ゲームのルールをUnityから切り離し、純粋なC#ライブラリ（.NET Standard 2.1）として実装しました。DDDで概念とルールを整理し、MVVMで責務を分離。放置ゲームで最も壊してはいけないのはセーブデータなので、保存には実装オブジェクトではなく安定したIDを残し、オフライン進行と抽選はSeedとDrawIndexによって決定論的に再現できるようにしています。現在437件のテストがこのドメインを支えています。",
-        stack: "Unity・C#・.NET Standard 2.1・DDD・MVVM",
+        stack: "Unity・C#・Blazor・.NET Standard 2.1・DDD・MVVM",
         notes: [
           {
             name: "UIToolkit",
@@ -112,7 +112,7 @@ const works: Record<string, Work> = {
 
   sphere: {
     id: "sphere",
-    index: "03",
+    logo: "/icon-idle-sphere.webp",
     tone: "",
     chapterLabel: "役割の拡張",
     chapterEra: "2024年",
@@ -123,7 +123,7 @@ const works: Record<string, Work> = {
     facts: [
       { term: "リリース", value: "2024年" },
       { term: "開発順序", value: "iOS・Android → Steam（PC・Mac）" },
-      { term: "開発形態", value: "共同開発・レベニューシェア" },
+      { term: "使用技術", value: "Unity・C#・UGUI" },
     ],
     aspect: "landscape",
     images: [
@@ -177,7 +177,7 @@ const works: Record<string, Work> = {
 
   spiral: {
     id: "spiral",
-    index: "04",
+    logo: "/icon-idle-spiral.webp",
     tone: "tint",
     chapterLabel: "はじまり",
     chapterEra: "2022年 — 2023年",
@@ -188,7 +188,7 @@ const works: Record<string, Work> = {
     facts: [
       { term: "公開先", value: "Steam（PC）・iOS・Android" },
       { term: "開発順序", value: "Steam（PC） → iOS・Android" },
-      { term: "関わり", value: "業務委託 → アルバイト" },
+      { term: "使用技術", value: "Unity・C#・UGUI" },
     ],
     aspect: "landscape",
     images: [
@@ -495,8 +495,8 @@ export default function Home() {
       <section
         className={`featured chapter${work.tone ? ` ${work.tone}` : ""}`}
         id={work.id}
-        data-index={work.index}
       >
+        <img className="chapter-logo" src={work.logo} alt="" aria-hidden="true" />
         <div className="chapter-meta">
           <span>{work.chapterLabel}</span>
           <span>{work.chapterEra}</span>
@@ -601,7 +601,7 @@ export default function Home() {
       </div>
 
       <div className="page">
-        <section className="hero chapter" id="overview" data-index="00">
+        <section className="hero chapter" id="overview">
           <div className="hero-copy">
             <h1>Yayu games</h1>
             <p className="hero-subtitle">活動経歴をまとめる</p>
@@ -666,7 +666,7 @@ export default function Home() {
 
         {renderWork(works.minertia)}
 
-        <section className="turning chapter dark" id="turning-point" data-index="02">
+        <section className="turning chapter dark" id="turning-point">
           <div className="chapter-meta">
             <span>転換点</span>
             <span>2024年 冬</span>
@@ -712,7 +712,7 @@ export default function Home() {
 
         {renderWork(works.spiral)}
 
-        <section className="profile chapter" id="profile" data-index="05">
+        <section className="profile chapter" id="profile">
           <div className="chapter-meta">
             <span>プロフィール</span>
             <span>— 2022年</span>
