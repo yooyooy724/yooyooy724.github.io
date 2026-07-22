@@ -17,15 +17,6 @@ const navigation: { id: string; number: string; label: string; era?: string }[] 
   ...chapters,
 ];
 
-const currentAreas = [
-  { number: "01", title: "UI・グラフィック", detail: "情報の優先順位を定め、触れた瞬間に意図が伝わる画面をつくる。" },
-  { number: "02", title: "開発・実装", detail: "見た目と動きを切り離さず、体験として成立するところまで実装する。" },
-  { number: "03", title: "ゲームシステム", detail: "継続的な変更に耐え、長く運営できる構造を選ぶ。" },
-  { number: "04", title: "ゲームデザイン", detail: "遊び手の選択と感情から、成長・報酬・周回を組み立てる。" },
-  { number: "05", title: "運営・事業判断", detail: "届け方と収益を後付けにせず、企画段階からゲーム体験に組み込む。" },
-  { number: "06", title: "チームリーダー", detail: "工程ごとの横割りではなく、遊び手に届く成果までを担う縦割りで仕事を設計する。" },
-];
-
 type Work = {
   id: string;
   index: string;
@@ -248,11 +239,41 @@ const works: Record<string, Work> = {
 
 // 画面下の時間軸と同じく、左から右へ過去から現在へ。本文の並び順とは逆向き。
 const careerTimeline = [
-  { phase: "学生時代", date: "2016 — 2022", title: "人と空間への関心", detail: "空間認知ボードゲーム・VR研究" },
-  { phase: "ゲーム開発 1年目", date: "2022.09 —", title: "Idle Spiral", detail: "UI・グラフィックから実務を開始" },
-  { phase: "ゲーム開発 2年目", date: "2024.01 —", title: "Idle Sphere", detail: "技術とチームリーダーへ拡張" },
-  { phase: "ゲーム開発 3年目", date: "2025.01 —", title: "Idle Minertia", detail: "企画・ゲームデザイン・開発を統合" },
-  { phase: "ゲーム開発 4年目", date: "2026 —", title: "リリース後の運営", detail: "事業判断・改善・チーム運営" },
+  {
+    phase: "学生時代",
+    date: "2016 — 2022",
+    title: "人と空間への関心",
+    detail: "空間認知ボードゲーム・VR研究",
+    areas: ["ボードゲーム制作", "VR空間描画研究"],
+  },
+  {
+    phase: "ゲーム開発 1年目",
+    date: "2022.09 —",
+    title: "Idle Spiral",
+    detail: "UI・グラフィックから実務を開始",
+    areas: ["UI・グラフィック", "UI実装", "一部ゲームデザイン"],
+  },
+  {
+    phase: "ゲーム開発 2年目",
+    date: "2024.01 —",
+    title: "Idle Sphere",
+    detail: "技術とチームリーダーへ拡張",
+    areas: ["UI・グラフィック", "開発・実装", "チームリーダー"],
+  },
+  {
+    phase: "ゲーム開発 3年目",
+    date: "2025.01 —",
+    title: "Idle Minertia",
+    detail: "企画・ゲームデザイン・開発を統合",
+    areas: ["企画・ゲームデザイン", "ゲームシステム", "開発・実装", "チームリーダー"],
+  },
+  {
+    phase: "ゲーム開発 4年目",
+    date: "2026 —",
+    title: "リリース後の運営",
+    detail: "事業判断・改善・チーム運営",
+    areas: ["運営・事業判断", "ゲーム改善", "チームリーダー"],
+  },
 ];
 
 // href を持つプラットフォームはストアページへのリンクになる。
@@ -624,21 +645,6 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="current-areas" aria-label="制作を通じて広げてきた領域">
-            <div className="current-areas-heading">
-              <p>制作を通じて広げてきた領域</p>
-            </div>
-            <ol className="areas-list">
-              {currentAreas.map((item) => (
-                <li key={item.number}>
-                  <span>{item.number}</span>
-                  <strong>{item.title}</strong>
-                  <p>{item.detail}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-
           <div className="career-graph">
             <ol className="career-timeline" aria-label="学生時代から現在までの時系列">
               {careerTimeline.map((item) => (
@@ -648,6 +654,9 @@ export default function Home() {
                   <time>{item.date}</time>
                   <strong>{item.title}</strong>
                   <small>{item.detail}</small>
+                  <ul className="timeline-areas" aria-label={`${item.phase}の担当領域`}>
+                    {item.areas.map((area) => <li key={area}>{area}</li>)}
+                  </ul>
                 </li>
               ))}
             </ol>
