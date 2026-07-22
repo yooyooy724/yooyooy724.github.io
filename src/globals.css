@@ -381,99 +381,40 @@ a {
   margin: 0;
 }
 
-/* 領域は一覧と詳細の二枚組。開閉させず、選んだものを右に出す */
-.areas-explorer {
-  display: grid;
-  gap: 1px;
-  grid-template-columns: minmax(230px, 0.85fr) 1.5fr;
-}
-
 .areas-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
+  border-top: 1px solid var(--line);
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-.areas-list button {
+.areas-list li {
   align-items: baseline;
-  background: #e5e2d9;
-  border: 0;
-  color: inherit;
-  cursor: pointer;
+  border-bottom: 1px solid var(--line);
   display: grid;
-  flex: 1;
-  font: inherit;
   gap: 14px;
-  grid-template-columns: 26px 1fr;
-  padding: 14px 18px;
-  position: relative;
-  text-align: left;
-  transition: background-color 180ms ease, color 180ms ease;
+  grid-template-columns: 34px minmax(170px, 0.42fr) 1fr;
+  padding: 18px 0;
 }
 
-.areas-list button::after {
-  background: var(--orange);
-  content: "";
-  inset: 0 auto 0 0;
-  position: absolute;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 220ms ease;
-  width: 3px;
-}
-
-.areas-list button:hover {
-  background: #dedbd1;
-}
-
-.areas-list button.selected {
-  background: var(--ink);
-  color: var(--paper);
-}
-
-.areas-list button.selected::after {
-  transform: scaleX(1);
-}
-
-.areas-list button span {
+.areas-list li span {
   color: var(--orange);
   font-family: var(--font-display);
   font-size: 0.6rem;
   letter-spacing: 0.08em;
 }
 
-.areas-list button strong {
-  font-size: 0.85rem;
+.areas-list li strong {
+  font-size: 0.95rem;
   font-weight: 600;
   line-height: 1.5;
 }
 
-.areas-detail {
-  background: #e5e2d9;
-  display: flex;
-  flex-direction: column;
-  padding: clamp(24px, 3vw, 40px);
-}
-
-.areas-detail .label {
-  color: var(--orange);
-  margin: 0;
-}
-
-.areas-detail h3 {
-  font-size: clamp(1.4rem, 2.4vw, 2.3rem);
-  font-weight: 550;
-  letter-spacing: -0.05em;
-  line-height: 1.35;
-  margin: 18px 0 0;
-}
-
-.areas-detail > p:last-child {
+.areas-list li p {
   color: var(--muted-strong);
-  font-size: 0.82rem;
-  line-height: 2;
-  margin: 20px 0 0;
-  max-width: 46ch;
+  font-size: 0.72rem;
+  line-height: 1.8;
+  margin: 0;
 }
 
 .featured-title {
@@ -646,57 +587,14 @@ a {
 
 
 .case-study-grid {
-  border-bottom: 1px solid var(--line);
-  display: grid;
   border-top: 1px solid var(--line);
-  grid-template-columns: repeat(3, 1fr);
   margin-top: clamp(54px, 7vw, 90px);
+  max-width: 900px;
 }
 
 .case-study-grid article {
-  border-right: 1px solid var(--line);
-  min-height: 300px;
-  padding: 28px 26px;
-}
-
-.case-study-grid article:first-child {
-  padding-left: 0;
-}
-
-.case-study-grid article:last-child {
-  border-right: 0;
-  padding-right: 0;
-}
-
-/* 4枚のときは2×2。3列に収めると1枚あたりが狭くなりすぎる */
-.case-study-grid.pairs {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.case-study-grid.pairs article:nth-child(2n) {
-  border-right: 0;
-  padding-right: 0;
-}
-
-.case-study-grid.pairs article:nth-child(2n + 1) {
-  border-right: 1px solid var(--line);
-  padding-left: 0;
-}
-
-.dark .case-study-grid.pairs article:nth-child(2n + 1) {
-  border-right-color: rgba(242, 239, 231, 0.25);
-}
-
-.case-study-grid.pairs article:nth-last-child(-n + 2) {
-  padding-bottom: 0;
-}
-
-.case-study-grid.pairs article:nth-child(-n + 2) {
   border-bottom: 1px solid var(--line);
-}
-
-.dark .case-study-grid.pairs article:nth-child(-n + 2) {
-  border-bottom-color: rgba(242, 239, 231, 0.25);
+  padding: clamp(28px, 4vw, 46px) 0;
 }
 
 .case-study-grid h3 {
@@ -704,13 +602,16 @@ a {
   font-weight: 500;
   letter-spacing: -0.045em;
   line-height: 1.55;
-  margin: 24px 0 18px;
+  margin: 12px 0 14px;
+  max-width: 760px;
 }
 
 .case-study-grid article > p:not(.label) {
   color: var(--muted);
   font-size: 0.74rem;
   line-height: 1.9;
+  margin-bottom: 0;
+  max-width: 760px;
 }
 
 .case-study-grid small {
@@ -1397,9 +1298,12 @@ footer {
     gap: 10px;
   }
 
-  /* 横幅が足りないので一覧と詳細を縦に積む */
-  .areas-explorer {
-    grid-template-columns: 1fr;
+  .areas-list li {
+    grid-template-columns: 34px 1fr;
+  }
+
+  .areas-list li p {
+    grid-column: 2;
   }
 
   .featured-title,
@@ -1409,23 +1313,6 @@ footer {
 
   .featured-title {
     gap: 32px;
-  }
-
-  .case-study-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .case-study-grid article,
-  .case-study-grid article:first-child,
-  .case-study-grid article:last-child {
-    border-bottom: 1px solid rgba(242, 239, 231, 0.25);
-    border-right: 0;
-    min-height: auto;
-    padding: 28px 0;
-  }
-
-  .case-study-grid article:last-child {
-    border-bottom: 0;
   }
 
   .ui-relationship {

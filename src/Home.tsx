@@ -381,9 +381,6 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState(overview.id);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [tickPositions, setTickPositions] = useState<Record<string, number>>({});
-  // 領域は常にひとつ選ばれている。開閉ではなく選択で詳細を切り替える。
-  const [activeArea, setActiveArea] = useState(currentAreas[0].number);
-  const areaTabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   // 軸の両端は最初の章と最後の章。概要は時間軸に載せないので範囲から外す。
   const eraRange = useCallback(() => {
@@ -472,29 +469,6 @@ export default function Home() {
   // 概要は時間軸上の一点ではないため、表示中はインジケータを引っ込める。
   const axisHidden = !activeChapter;
 
-  const activeAreaItem =
-    currentAreas.find((item) => item.number === activeArea) ?? currentAreas[0];
-
-  // tablist は上下キーで移動できる必要がある。
-  const moveAreaFocus = (event: React.KeyboardEvent, index: number) => {
-    const keys: Record<string, number> = {
-      ArrowDown: index + 1,
-      ArrowRight: index + 1,
-      ArrowUp: index - 1,
-      ArrowLeft: index - 1,
-      Home: 0,
-      End: currentAreas.length - 1,
-    };
-
-    const next = keys[event.key];
-    if (next === undefined) return;
-
-    event.preventDefault();
-    const wrapped = (next + currentAreas.length) % currentAreas.length;
-    setActiveArea(currentAreas[wrapped].number);
-    areaTabRefs.current[wrapped]?.focus();
-  };
-
   // 3作品を同じ構成で描く。画像が複数あるものだけカルーセルになる。
   const renderWork = (work: Work) => (
       <section
@@ -527,7 +501,7 @@ export default function Home() {
 
         <WorkGallery work={work} />
 
-        <div className={`case-study-grid${work.caseStudies.length === 4 ? " pairs" : ""}`}>
+        <div className="case-study-grid">
           {work.caseStudies.map((study) => (
             <article key={study.label}>
               <p className="label">{study.label}</p>
@@ -654,49 +628,15 @@ export default function Home() {
             <div className="current-areas-heading">
               <p>制作を通じて広げてきた領域</p>
             </div>
-            <div className="areas-explorer">
-              <div
-                className="areas-list"
-                role="tablist"
-                aria-orientation="vertical"
-                aria-label="領域の一覧"
-              >
-                {currentAreas.map((item, index) => {
-                  const selected = item.number === activeArea;
-                  return (
-                    <button
-                      key={item.number}
-                      type="button"
-                      role="tab"
-                      id={`area-tab-${item.number}`}
-                      className={selected ? "selected" : ""}
-                      aria-selected={selected}
-                      aria-controls={`area-panel-${item.number}`}
-                      tabIndex={selected ? 0 : -1}
-                      ref={(node) => {
-                        areaTabRefs.current[index] = node;
-                      }}
-                      onClick={() => setActiveArea(item.number)}
-                      onKeyDown={(event) => moveAreaFocus(event, index)}
-                    >
-                      <span>{item.number}</span>
-                      <strong>{item.title}</strong>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div
-                className="areas-detail"
-                role="tabpanel"
-                id={`area-panel-${activeAreaItem.number}`}
-                aria-labelledby={`area-tab-${activeAreaItem.number}`}
-              >
-                <p className="label">{activeAreaItem.number}</p>
-                <h3>{activeAreaItem.title}</h3>
-                <p>{activeAreaItem.detail}</p>
-              </div>
-            </div>
+            <ol className="areas-list">
+              {currentAreas.map((item) => (
+                <li key={item.number}>
+                  <span>{item.number}</span>
+                  <strong>{item.title}</strong>
+                  <p>{item.detail}</p>
+                </li>
+              ))}
+            </ol>
           </div>
 
           <div className="career-graph">
