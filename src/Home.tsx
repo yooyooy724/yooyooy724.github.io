@@ -27,6 +27,7 @@ type Work = {
   title: string;
   description: string;
   facts: { term: string; value: string }[];
+  metricsNote?: string;
   // スマートフォンの画面は縦長、Steamのスクリーンショットは横長。
   aspect: "portrait" | "landscape";
   images: { src: string; alt: string }[];
@@ -57,7 +58,9 @@ const works: Record<string, Work> = {
       { term: "リリース", value: "2025年" },
       { term: "公開先", value: "iOS・Android" },
       { term: "開発環境", value: "Unity・C#・Blazor" },
+      { term: "成績", value: "Google Play 5,000+ DL／App Store 4.6" },
     ],
+    metricsNote: "公開ストア、2026年7月確認",
     aspect: "portrait",
     images: [
       { src: "/idle-minertia-01.webp", alt: "複数のつるはしを合成して進化させる画面" },
@@ -125,9 +128,11 @@ const works: Record<string, Work> = {
       "球体の世界でインフレーションを楽しむ、放置系ゲーム。モバイル版から開発を始め、その後Steam向けのPC・Mac版へ移植しました。レベニューシェアでの共同開発となり、制作に加えてチームを動かす役割も担いました。",
     facts: [
       { term: "リリース", value: "2024年" },
-      { term: "開発順序", value: "iOS → Steam（PC・Mac）" },
+      { term: "公開先", value: "Steam（PC・Mac）・iOS" },
       { term: "開発環境", value: "Unity・C#・UGUI" },
+      { term: "成績", value: "Steam 322レビュー／App Store 3.9" },
     ],
+    metricsNote: "公開ストア、2026年7月確認",
     aspect: "landscape",
     images: [
       { src: "/sphere-shot-01.webp", alt: "生成量の内訳と球体を並べたIdle Sphereのメイン画面" },
@@ -189,10 +194,12 @@ const works: Record<string, Work> = {
     description:
       "螺旋と数学をテーマにした、放置・クリッカーゲーム。2022年9月、実務経験のない状態からUI・グラフィック担当として開発に参加しました。Steam版での開発経験を経て、iOS・Android版への移植ではUIを全面的に作り直しています。",
     facts: [
+      { term: "リリース", value: "2022年" },
       { term: "公開先", value: "Steam（PC）・iOS・Android" },
-      { term: "開発順序", value: "Steam（PC） → iOS・Android" },
       { term: "開発環境", value: "Unity・C#・UGUI" },
+      { term: "成績", value: "Google Play 10,000+ DL／Steam 非常に好評（1,871件）" },
     ],
+    metricsNote: "公開ストア、2026年7月確認",
     aspect: "landscape",
     images: [
       { src: "/spiral-shot-01.webp", alt: "数式パネルと、複数ラインで描かれた螺旋" },
@@ -517,6 +524,7 @@ export default function Home() {
                 </div>
               ))}
             </dl>
+            {work.metricsNote ? <small className="metrics-note">{work.metricsNote}</small> : null}
           </div>
         </div>
 
