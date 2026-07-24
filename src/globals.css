@@ -343,25 +343,30 @@ a {
 }
 
 .work-summary-copy li {
-  background: var(--paper);
-  border-radius: 999px;
   font-size: 0.55rem;
   line-height: 1;
-  padding: 6px 8px;
-}
-
-/* ストアURLが分かっているプラットフォームだけリンクになる */
-.work-summary-copy li:has(a) {
-  transition: background 160ms ease, color 160ms ease;
-}
-
-.work-summary-copy li:has(a):hover {
-  background: var(--ink);
-  color: var(--paper);
 }
 
 .work-summary-copy li a {
-  display: inline-block;
+  align-items: center;
+  background: var(--paper);
+  border: 1px solid rgba(21, 26, 23, 0.28);
+  border-radius: 999px;
+  box-shadow: 0 2px 0 rgba(21, 26, 23, 0.16);
+  display: inline-flex;
+  font-weight: 700;
+  min-height: 30px;
+  padding: 8px 11px;
+  transition: background 160ms ease, box-shadow 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.work-summary-copy li a:hover,
+.work-summary-copy li a:focus-visible {
+  background: var(--ink);
+  box-shadow: 0 4px 0 rgba(240, 107, 69, 0.8);
+  color: var(--paper);
+  outline: none;
+  transform: translateY(-2px);
 }
 
 .featured-title {
@@ -652,7 +657,7 @@ a {
 .career-timeline {
   display: grid;
   grid-column: 1 / -1;
-  grid-template-columns: repeat(5, minmax(190px, 1fr));
+  grid-template-columns: repeat(5, minmax(270px, 1fr));
   list-style: none;
   margin: 38px 0 0;
   overflow-x: auto;
@@ -662,8 +667,8 @@ a {
 .career-timeline > li {
   display: grid;
   grid-template-rows: 36px 28px auto auto auto 1fr;
-  min-width: 190px;
-  padding-right: 22px;
+  min-width: 270px;
+  padding-right: 30px;
   position: relative;
 }
 
@@ -718,12 +723,12 @@ a {
   margin-top: 7px;
 }
 
-.career-timeline small {
+.career-timeline .timeline-description {
   color: var(--muted);
-  font-size: 0.62rem;
-  line-height: 1.65;
-  margin-top: 7px;
-  max-width: 170px;
+  font-size: 0.66rem;
+  line-height: 1.75;
+  margin: 9px 0 0;
+  max-width: 245px;
 }
 
 .timeline-areas {
