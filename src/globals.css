@@ -914,14 +914,6 @@ a {
   gap: 6px 20px;
   grid-template-columns: 26px minmax(210px, 0.5fr) 1fr;
   padding: 12px 6px;
-  transition: background 180ms ease, color 180ms ease, padding 180ms ease;
-}
-
-.scope-detail li:hover {
-  background: var(--green);
-  color: var(--ink);
-  padding-left: 14px;
-  padding-right: 14px;
 }
 
 /* 分野と見出しは横並びにして高さを稼がない */
@@ -954,12 +946,6 @@ a {
   font-size: 0.72rem;
   line-height: 1.7;
   margin: 0;
-}
-
-.scope-detail li:hover span,
-.scope-detail li:hover p,
-.scope-detail li:hover h3 {
-  color: var(--ink);
 }
 
 /* 暗い章では線と文字色を反転させる */
