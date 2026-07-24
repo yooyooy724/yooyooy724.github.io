@@ -179,7 +179,7 @@ a {
   box-shadow: 0 18px 50px rgba(21, 26, 23, 0.12);
   height: clamp(88px, 11vw, 152px);
   object-fit: cover;
-  opacity: 0.22;
+  opacity: 1;
   pointer-events: none;
   position: absolute;
   right: clamp(28px, 6vw, 104px);
@@ -190,7 +190,6 @@ a {
 
 .dark .chapter-logo {
   box-shadow: 0 18px 60px rgba(0, 0, 0, 0.3);
-  opacity: 0.28;
 }
 
 .chapter-meta {
@@ -222,22 +221,12 @@ a {
   margin: 0 0 22px;
 }
 
-.hero h1 {
-  font-family: var(--font-display);
-  font-size: clamp(3.8rem, 9vw, 10rem);
-  font-weight: 600;
-  letter-spacing: -0.055em;
-  line-height: 1;
-  margin: 0;
-}
-
-/* 主題は Yayu games。こちらは添え書きなので一段落とす */
 .hero-subtitle {
   color: var(--muted);
   font-size: clamp(1rem, 1.8vw, 1.6rem);
   font-weight: 500;
   letter-spacing: -0.02em;
-  margin: 20px 0 0;
+  margin: 0;
 }
 
 .works-overview {
@@ -802,9 +791,6 @@ a {
   background: var(--blue);
 }
 
-.tint .chapter-meta,
-.tint .fact-list,
-.tint .fact-list div,
 .turning-copy {
   margin: clamp(90px, 13vw, 190px) 0 90px;
   max-width: 1000px;
@@ -1238,10 +1224,6 @@ footer {
 
   .hero-copy {
     padding: 90px 0 70px;
-  }
-
-  .hero h1 {
-    font-size: clamp(2.85rem, 14vw, 5.2rem);
   }
 
   .career-summary {
