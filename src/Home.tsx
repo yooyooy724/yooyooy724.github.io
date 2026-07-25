@@ -22,7 +22,6 @@ type Work = {
   logo: string;
   tone: "dark" | "tint" | "";
   chapterLabel: string;
-  chapterEra: string;
   eyebrow: string;
   title: string;
   description: string;
@@ -49,7 +48,6 @@ const works: Record<string, Work> = {
     logo: "/icon-idle-minertia.webp",
     tone: "dark",
     chapterLabel: "代表作",
-    chapterEra: "2025年 リリース",
     eyebrow: "放置ゲーム × ローグライク × 非同期マルチプレイ",
     title: "Idle Minertia",
     description:
@@ -121,7 +119,6 @@ const works: Record<string, Work> = {
     logo: "/icon-idle-sphere.webp",
     tone: "",
     chapterLabel: "役割の拡張",
-    chapterEra: "2024年",
     eyebrow: "放置ゲーム × インフレーション",
     title: "Idle Sphere",
     description:
@@ -188,7 +185,6 @@ const works: Record<string, Work> = {
     logo: "/icon-idle-spiral.webp",
     tone: "tint",
     chapterLabel: "はじまり",
-    chapterEra: "2022年 — 2023年",
     eyebrow: "放置・クリッカーゲーム × 数学",
     title: "Idle Spiral",
     description:
@@ -503,10 +499,9 @@ export default function Home() {
         className={`featured chapter${work.tone ? ` ${work.tone}` : ""}`}
         id={work.id}
       >
-        <img className="chapter-logo" src={work.logo} alt="" aria-hidden="true" />
         <div className="chapter-meta">
           <span>{work.chapterLabel}</span>
-          <span>{work.chapterEra}</span>
+          <img className="chapter-logo" src={work.logo} alt="" aria-hidden="true" />
         </div>
 
         <div className="featured-title">
