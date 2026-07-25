@@ -211,9 +211,25 @@ a {
 }
 
 .hero-copy {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2vw, 28px);
   padding: clamp(80px, 10vw, 150px) 0 clamp(60px, 8vw, 110px);
   position: relative;
+  text-align: center;
   z-index: 2;
+}
+
+.hero-logo-title {
+  line-height: 0;
+  margin: 0;
+}
+
+.hero-logo {
+  display: block;
+  height: auto;
+  width: clamp(220px, 34vw, 470px);
 }
 
 .eyebrow {

@@ -611,6 +611,9 @@ export default function Home() {
       <div className="page">
         <section className="hero chapter" id="overview">
           <div className="hero-copy">
+            <h1 className="hero-logo-title">
+              <img className="hero-logo" src="/yayu.png" alt="Yayu" />
+            </h1>
             <p className="hero-subtitle">活動経歴をまとめる</p>
           </div>
 
