@@ -1,18 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 // 概要は時間軸上の一点ではないので、時系列の章とは分けて扱う。
-const overview = { id: "overview", number: "00", label: "概要" };
+const overview = { id: "overview", label: "概要" };
 
 // 章は新しい順に並べる。読み進めるほど過去へさかのぼる。
 const chapters = [
-  { id: "minertia", number: "01", label: "代表作", era: "2025" },
-  { id: "turning-point", number: "02", label: "転換点", era: "2024 冬" },
-  { id: "sphere", number: "03", label: "広げる", era: "2024" },
-  { id: "spiral", number: "04", label: "表現する", era: "2022" },
-  { id: "profile", number: "05", label: "プロフィール", era: "— 2022" },
+  { id: "minertia", label: "代表作", era: "2025" },
+  { id: "sphere", label: "広げる", era: "2024" },
+  { id: "spiral", label: "表現する", era: "2022" },
+  { id: "profile", label: "プロフィール", era: "— 2022" },
 ];
 
-const navigation: { id: string; number: string; label: string; era?: string }[] = [
+const navigation: { id: string; label: string; era?: string }[] = [
   overview,
   ...chapters,
 ];
@@ -571,33 +570,6 @@ export default function Home() {
 
   return (
     <main>
-      <aside className="sidebar">
-        <a className="identity" href="#overview" aria-label="ページ上部へ">
-          <strong>YAYU</strong>
-          <span>YANASHIMA YUSUKE</span>
-        </a>
-
-        <nav className="chapter-nav" aria-label="目次">
-          <ol>
-            {navigation.map((item) => (
-              <li key={item.id} className={activeSection === item.id ? "active" : ""}>
-                <a href={`#${item.id}`} aria-current={activeSection === item.id ? "location" : undefined}>
-                  <span>{item.number}</span>
-                  {item.label}
-                  {item.era ? <i>{item.era}</i> : null}
-                </a>
-              </li>
-            ))}
-          </ol>
-        </nav>
-
-        <div className="sidebar-foot">
-          <span>ゲームデザイン</span>
-          <span>開発・実装</span>
-          <span>運営・事業判断</span>
-        </div>
-      </aside>
-
       <div className="mobile-header">
         <a href="#overview">YAYU</a>
         <span>{activeLabel}</span>
@@ -615,7 +587,7 @@ export default function Home() {
           <div className="works-overview">
             <div className="works-overview-heading">
               <div>
-                <p>これまで携わった作品</p>
+                <p lang="en">INDEX</p>
                 <h2>3つのゲームを通じて、担当領域を広げる。</h2>
               </div>
               <div className="career-start">
@@ -672,48 +644,6 @@ export default function Home() {
         </section>
 
         {renderWork(works.minertia)}
-
-        <section className="turning chapter dark" id="turning-point">
-          <div className="chapter-meta">
-            <span>転換点</span>
-            <span>2024年 冬</span>
-          </div>
-
-          <div className="turning-copy">
-            <p className="eyebrow">UIの役割を捉え直す</p>
-            <h2>
-              UIは、遊び手と
-              <br />
-              ゲームの仕組みのあいだにある。
-            </h2>
-            <p>
-              UIは、ドメイン側の状態やルールの影響を受けながら、画面サイズやアクセシビリティなど、
-              遊び手側の制約にも応える必要があります。つまりUIは、ゲームの仕組みと遊び手の板挟みになる場所です。
-            </p>
-          </div>
-
-          <div className="ui-relationship" aria-label="遊び手、UI、ゲームの仕組みの関係">
-            <article>
-              <span>遊び手側</span>
-              <strong>見える・わかる・操作できる</strong>
-              <p>画面サイズ／入力方法／アクセシビリティ／情報の優先順位</p>
-            </article>
-            <div className="ui-bridge">
-              <b>UI</b>
-              <p>状態とルールを、理解と操作に翻訳する</p>
-            </div>
-            <article>
-              <span>ドメイン側</span>
-              <strong>ゲームの状態とルール</strong>
-              <p>数値／進行／条件／相互作用／ゲームデザイン</p>
-            </article>
-          </div>
-          <p className="relationship-conclusion">
-            遊び手を最優先するなら、ドメインとUIを別々に最適化するのではなく、
-            同じ目的を共有しながら一体として設計する必要がある。
-            この考えは、ここから先でさかのぼる2作の反省から生まれ、Idle Minertiaの開発体制と設計方針につながりました。
-          </p>
-        </section>
 
         {renderWork(works.sphere)}
 
