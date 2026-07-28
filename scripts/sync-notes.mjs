@@ -45,7 +45,7 @@ const SITES = [
     dir: "idea",
     from: "IdeaBoard",
     title: "IdeaBoard（Challenge / Spell）",
-    desc: "アイディアとコメントのイベントログ。",
+    desc: "Challenge カードと、アイディア・コメントのイベントログ。",
     files: ["index.html"],
     dirs: [],
   },
