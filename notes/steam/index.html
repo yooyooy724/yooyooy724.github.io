@@ -263,10 +263,20 @@ const DB = [
 
 /* ============================ 02 抽象化 ============================ */
 {id:'platform', nav:'02 プラットフォーム抽象化', group:'仕様', title:'プラットフォーム抽象化', desc:'最初に着手すべき設計。ここが固まらないまま個別対応を始めると、全作業が #if の泥沼になる。', src:'docs/steam-release/02_Platform_Abstraction.md', secs:[
- {id:'pf-rule', h:'抽象化の深さ ── どこまでやるか', s:'d', b:`
-  <p class="note">2026-07-28 コメント:「Ad, IAP などは分けて管理したので、現状通り <code>#if</code> が分散するのは仕方ないと考えています。また、既存の API 系スクリプトをいじるのはリスクがないか心配です。」<br>
-  <b>この指摘を受けて、当初の「全面抽象化」を前提から外し、選択肢として並べ直しました。</b></p>
-  <h4>まず、懸念の1つは前提の行き違いでした</h4>
+ {id:'pf-rule', h:'抽象化の深さ ── 全面抽象化(6インターフェース)で確定', s:'k', b:`
+  <p class="note">2026-07-28 <b>C(資料どおりの全面抽象化)で確定。</b>懸念だった「既存 API 系スクリプトの改変リスク」は、下記のとおり<b>この案では発生しない</b>ことが確認されたため、最も整理される案が選ばれました。<br>
+  経緯コメント:「Ad, IAP などは分けて管理したので、現状通り <code>#if</code> が分散するのは仕方ないと考えています。また、既存の API 系スクリプトをいじるのはリスクがないか心配です。」</p>
+  <h4>確定した内容 ── 6インターフェースを一度に整える</h4>
+  <table><tr><th>インターフェース</th><th>モバイル実装</th><th>Steam 実装</th></tr>
+  <tr><td><code>IRewardService</code></td><td><code>AdRoot.ShowRewardedAd()</code> へ委譲</td><td>導線ごとの Config を引いて付与(→ <a href="#money" onclick="go('money')">03</a>)</td></tr>
+  <tr><td><code>IStoreService</code></td><td>Unity IAP</td><td>Steam DLC / Inventory の所有権</td></tr>
+  <tr><td><code>ICloudSaveBackend</code></td><td>Firestore REST</td><td>Steam Cloud(→ <a href="#save" onclick="go('save')">04</a>)</td></tr>
+  <tr><td><code>IAuthService</code></td><td>Google / Apple</td><td>Steam ID</td></tr>
+  <tr><td><code>IAchievementService</code></td><td>No-Op</td><td>Steamworks 実績</td></tr>
+  <tr><td><code>IReviewPrompt</code></td><td><code>ReviewCall</code></td><td>No-Op(Steam にレビュー誘導 API は無い)</td></tr></table>
+  <blockquote><b>あわせて制約を明文化します:</b> 既存の <code>AdRoot.cs</code> / <code>Shop/IAP/</code> / <code>Firebase/</code> は<b>1行も変更しない</b>。インターフェースは<b>新規ファイルとして被せ</b>、モバイル実装は既存へ委譲するだけにする。<br>
+  <span class="ng">この制約を破りそうになったら、そこは設計を見直す合図です。</span>「全面抽象化」は<b>被せる範囲が広い</b>という意味であって、<b>既存を書き換える</b>という意味ではありません。</blockquote>
+  <h4>懸念は前提の行き違いでした</h4>
   <p>資料の案は <span class="kw">既存スクリプトを書き換える案ではありません</span>。<code>AdRoot.cs</code> や <code>Shop/IAP/</code> は<b>触らず</b>、その上に薄いラッパーを新規に1枚置き、モバイル実装は既存へ丸投げするだけ、という形です(<code>MobileRewardService</code> が <code>AdRoot.ShowRewardedAd()</code> を呼ぶだけ)。<br>
   つまり<b>「既存 API 系スクリプトを改変するリスク」は、この案では発生しません。</b>変更されるのは呼び出し側だけです。</p>
   <h4>そのうえで、分散の実測</h4>
@@ -278,12 +288,13 @@ const DB = [
   <tr><td><b><code>AppleLogin.cs</code></b></td><td><b>Windows でクラスごと消える。</b>参照している側すべてに <code>#if</code> が伝染する ← ここだけは分散が止まらない</td></tr></table>
   <p><span class="okw">広告に関しては、あなたの見立て(3箇所で済む)が正しいです。</span>問題は <code>AppleLogin</code> 側で、こちらは<b>型が消える</b>ため呼び出し側が <code>#if</code> なしでは書けません。ただし 04 で <b>Steam Cloud 一本化</b>を選ぶとログイン UI 自体が不要になり、<span class="kw">この問題は丸ごと消滅します</span>。</p>
   <h4>広告の再設計が、判断を変えます</h4>
-  <p>あなたの広告方針(→ <a href="#money" onclick="go('money')">導線ごとに個別判断</a>)を採ると、Steam 版の違いは「広告を出す / 出さない」の二値ではなく、<b>導線ごとに報酬量・頻度・解禁条件が違う</b>という形になります。<span class="ng">これは <code>#if</code> で書ける形ではありません</span>(3メソッドに閉じなくなる)。分岐ではなく<b>設定値・パラメータの差し替え</b>として持つのが自然で、そうなると受け皿となる 1 枚のインターフェースはむしろ必要になります。</p>`,
-  opt:{items:[
-   {k:'A',t:'折衷 ── 既存ファイル無変更 + 新規ラッパー1枚',d:'既存の AdRoot / IAP / Firebase 系スクリプトは一切触らない、を明文の制約にする。新規に IRewardService 1本だけ足し、呼び出し側の 3 メソッドを差し替える。残り(課金・実績・クラウド)は必要になった時点で個別に判断する。リスク最小で、広告の再設計にも耐えます。',rec:true},
-   {k:'B',t:'抽象化しない ── 必要な箇所に #if を書く',d:'あなたの当初案。着手が最も速い。ただし AppleLogin の型消滅による伝染は別途手当てが要り、広告を導線ごとに変えると 3 箇所では収まらなくなります。'},
-   {k:'C',t:'資料どおりの全面抽象化(6インターフェース)',d:'IRewardService / IStoreService / ICloudSaveBackend / IAuthService / IAchievementService / IReviewPrompt を一度に整える。長期的には最も整理されるが、着手時の変更範囲が最大。'},
-  ]}},
+  <p>あなたの広告方針(→ <a href="#money" onclick="go('money')">導線ごとに個別判断</a>)を採ると、Steam 版の違いは「広告を出す / 出さない」の二値ではなく、<b>導線ごとに報酬量・頻度・解禁条件が違う</b>という形になります。<span class="ng">これは <code>#if</code> で書ける形ではありません</span>(3メソッドに閉じなくなる)。分岐ではなく<b>設定値・パラメータの差し替え</b>として持つのが自然で、受け皿となるインターフェースはどのみち必要でした。<span class="okw">C を選んだことで、この受け皿が最初から用意されます。</span></p>
+  <h4>C を選んだことで確定する副次的な事実</h4>
+  <ul>
+   <li><code>IAuthService</code> を通すため、<b><code>AppleLogin.cs</code> の型消滅問題は呼び出し側に伝染しません</b>。参照するのはインターフェースだけになり、<code>#if</code> は Apple 実装クラスの内部に閉じます。04 で Steam Cloud を選ぶかどうかに関係なく解決します。</li>
+   <li><code>#if</code> を書いてよい場所は当初の原則どおり <b>Installer / プラットフォーム固有実装クラスの内部 / Editor スクリプト</b> の3箇所に戻ります。View / ViewModel / Domain には書きません。</li>
+   <li>着手時の変更範囲が最大になる点は変わりません。<b>フェーズ1で最初に着手すべき作業</b>として扱います。</li>
+  </ul>`},
  {id:'pf-what', h:'抽象化するもの / しないもの', s:'k', b:`
   <table><tr><th>対象</th><th>抽象化</th><th>理由</th></tr>
   <tr><td>広告</td><td><code>IRewardService</code></td><td><s>Steam 版は「即時付与」に差し替え</s> → <b>導線ごとに報酬量・頻度・解禁条件を変える</b>(2026-07-28 変更。<a href="#money" onclick="go('money')">マネタイズ</a>参照)</td></tr>

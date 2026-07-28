@@ -15,11 +15,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "p5": "^1.11.13",
     "react": "19.2.6",
     "react-dom": "19.2.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.2.1",
+    "@types/p5": "^1.7.7",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.2",

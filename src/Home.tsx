@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-// public/ の画像はサイト直下ではなく base（/yayu_portfolio/）配下に置かれる。
-// JSX 内の文字列は Vite が書き換えないので、参照するときにここで base を付ける。
+import HeroSketch from "./HeroSketch";
+
+// public/ の画像はViteのbase（/yayu_portfolio/）配下へ配置される。
 const asset = (path: string) => import.meta.env.BASE_URL + path.replace(/^\//, "");
 
 // 概要は時間軸上の一点ではないので、時系列の章とは分けて扱う。
@@ -9,9 +10,9 @@ const overview = { id: "overview", label: "概要" };
 
 // 章は新しい順に並べる。読み進めるほど過去へさかのぼる。
 const chapters = [
-  { id: "minertia", label: "代表作", era: "2025" },
-  { id: "sphere", label: "広げる", era: "2024" },
-  { id: "spiral", label: "表現する", era: "2022" },
+  { id: "minertia", label: "Idle Minertia", era: "2025" },
+  { id: "sphere", label: "Idle Sphere", era: "2024" },
+  { id: "spiral", label: "Idle Spiral", era: "2022" },
   { id: "profile", label: "プロフィール", era: "— 2022" },
 ];
 
@@ -530,7 +531,7 @@ export default function Home() {
 
         <div className="case-study-grid">
           {work.caseStudies.map((study) => (
-            <article key={study.label}>
+            <article key={study.title}>
               <p className="label">{study.label}</p>
               <h3>{study.title}</h3>
               <p>{study.body}</p>
@@ -574,35 +575,67 @@ export default function Home() {
 
   return (
     <main>
-      <div className="mobile-header">
-        <a href="#overview">YAYU</a>
-        <span>{activeLabel}</span>
-      </div>
+      <header className="site-header">
+        <a className="site-logo" href="#overview">
+          <img src={asset("/yayu-mark.png")} alt="" aria-hidden="true" width={34} height={34} />
+          Ya.Yu.
+        </a>
+        <nav className="site-nav" aria-label="章へ移動">
+          {navigation.map((item) => (
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              className={activeSection === item.id ? "active" : ""}
+              aria-current={activeSection === item.id ? "location" : undefined}
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+        <span className="site-header-current">{activeLabel}</span>
+      </header>
 
       <div className="page">
         <section className="hero chapter" id="overview">
           <div className="hero-copy">
             <h1 className="hero-logo-title">
-              <img className="hero-logo" src={asset("/yayu.png")} alt="Yayu" />
+              <span className="visually-hidden">Ya.Yu.</span>
+              <HeroSketch src={asset("/yayu.png")} />
             </h1>
-            <p className="hero-subtitle">活動経歴をまとめる</p>
+            <p className="hero-name" lang="en">Yanashima Yusuke</p>
           </div>
 
           <div className="works-overview">
             <div className="works-overview-heading">
               <div>
-                <p lang="en">INDEX</p>
+                <p lang="en">OVERVIEW</p>
                 <h2>3つのゲームを通じて、担当領域を広げる。</h2>
               </div>
-              <div className="career-start">
-                <strong>2022年9月</strong>
-                <span>ゲーム開発の実務を開始</span>
-              </div>
             </div>
+
+            <div className="career-graph">
+              <ol className="career-timeline" aria-label="学生時代から現在までの時系列">
+                {careerTimeline.map((item) => (
+                  <li key={item.phase}>
+                    <span className="timeline-phase">{item.phase}</span>
+                    <i aria-hidden="true" />
+                    <time>{item.date}</time>
+                    <strong>{item.title}</strong>
+                    <p className="timeline-description">{item.detail}</p>
+                    {item.areas.length > 0 ? (
+                      <ul className="timeline-areas" aria-label={`${item.phase}の担当領域`}>
+                        {item.areas.map((area) => <li key={area}>{area}</li>)}
+                      </ul>
+                    ) : null}
+                  </li>
+                ))}
+              </ol>
+            </div>
+
             <div className="career-summary" aria-label="これまで携わった作品">
               {participatedWorks.map((work) => (
                 <article key={work.title}>
-                  <img src={asset(work.icon)} alt={`${work.title}のアプリアイコン`} />
+                  <img src={asset(work.icon)} alt={`${work.title}のアプリアイコン`} width={72} height={72} />
                   <div className="work-summary-copy">
                     <h3>{work.title}</h3>
                     <p>{work.summary}</p>
@@ -624,25 +657,6 @@ export default function Home() {
                 </article>
               ))}
             </div>
-          </div>
-
-          <div className="career-graph">
-            <ol className="career-timeline" aria-label="学生時代から現在までの時系列">
-              {careerTimeline.map((item) => (
-                <li key={item.phase}>
-                  <span className="timeline-phase">{item.phase}</span>
-                  <i aria-hidden="true" />
-                  <time>{item.date}</time>
-                  <strong>{item.title}</strong>
-                  <p className="timeline-description">{item.detail}</p>
-                  {item.areas.length > 0 ? (
-                    <ul className="timeline-areas" aria-label={`${item.phase}の担当領域`}>
-                      {item.areas.map((area) => <li key={area}>{area}</li>)}
-                    </ul>
-                  ) : null}
-                </li>
-              ))}
-            </ol>
           </div>
 
         </section>
@@ -678,7 +692,7 @@ export default function Home() {
           </div>
 
           <footer>
-            <span>© 2026 YAYU</span>
+            <span>© 2026 Ya.Yu.</span>
             <a href="#overview">現在へ戻る ↑</a>
           </footer>
         </section>

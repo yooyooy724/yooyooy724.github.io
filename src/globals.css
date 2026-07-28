@@ -11,6 +11,7 @@
   --orange: #f06b45;
   --blue: #a7c6f1;
   --era-axis-height: 66px;
+  --site-header-height: 64px;
   --font-jp: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
   --font-display: Arial, Helvetica, sans-serif;
 }
@@ -22,7 +23,8 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-bottom: calc(var(--era-axis-height) + 12px);
-  scroll-padding-top: 20px;
+  /* 固定ヘッダーの高さぶん、アンカー移動の着地点を下げる */
+  scroll-padding-top: calc(var(--site-header-height) + 16px);
 }
 
 body {
@@ -37,10 +39,31 @@ a {
   text-decoration: none;
 }
 
-.mobile-header a {
+.site-logo {
+  align-items: center;
+  display: flex;
+  flex: none;
   font-family: var(--font-display);
-  font-size: 1.55rem;
-  letter-spacing: -0.08em;
+  font-size: 1.28rem;
+  font-weight: 700;
+  gap: 9px;
+  letter-spacing: -0.03em;
+}
+
+/* タブ（favicon）と同じマークをヘッダーにも置く */
+.site-logo img {
+  height: 34px;
+  width: 34px;
+}
+
+/* 見た目はp5のキャンバスに任せ、h1の読み上げ用テキストだけ隠す */
+.visually-hidden {
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }
 
 .label,
@@ -53,7 +76,68 @@ a {
   text-transform: uppercase;
 }
 
-.mobile-header {
+.site-header {
+  align-items: center;
+  backdrop-filter: blur(14px);
+  background: rgba(242, 239, 231, 0.88);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 24px;
+  height: var(--site-header-height);
+  justify-content: space-between;
+  left: 0;
+  padding: 0 clamp(28px, 6vw, 104px);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 40;
+}
+
+.site-nav {
+  align-items: center;
+  display: flex;
+  gap: clamp(14px, 2vw, 28px);
+}
+
+/* 現在地は色だけでなく下線でも示す。色覚に依存しない手がかりを残す。 */
+.site-nav a {
+  color: var(--muted-strong);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: var(--site-header-height);
+  position: relative;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.site-nav a::after {
+  background: var(--orange);
+  bottom: 17px;
+  content: "";
+  height: 2px;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  transition: opacity 0.2s ease;
+}
+
+.site-nav a:hover {
+  color: var(--ink);
+}
+
+/* 太さは変えない。文字幅が変わるとスクロール中にナビが揺れる。 */
+.site-nav a.active {
+  color: var(--ink);
+}
+
+.site-nav a.active::after {
+  opacity: 1;
+}
+
+/* 現在の章名はモバイルでのみ表示する */
+.site-header-current {
   display: none;
 }
 
@@ -103,12 +187,17 @@ a {
   border-color: rgba(242, 239, 231, 0.25);
 }
 
+.hero {
+  /* 固定ヘッダーに最初の1画面が隠れないよう、ヘッダーの高さを足す */
+  padding-top: calc(clamp(32px, 4.5vw, 72px) + var(--site-header-height));
+}
+
 .hero-copy {
   align-items: center;
   display: flex;
   flex-direction: column;
-  gap: clamp(18px, 2vw, 28px);
-  padding: clamp(80px, 10vw, 150px) 0 clamp(60px, 8vw, 110px);
+  gap: clamp(14px, 1.6vw, 22px);
+  padding: clamp(32px, 4vw, 60px) 0 clamp(56px, 7vw, 100px);
   position: relative;
   text-align: center;
   z-index: 2;
@@ -119,10 +208,14 @@ a {
   margin: 0;
 }
 
-.hero-logo {
-  display: block;
-  height: auto;
+.hero-sketch {
   width: clamp(220px, 34vw, 470px);
+}
+
+.hero-sketch canvas {
+  display: block;
+  height: auto !important;
+  width: 100% !important;
 }
 
 .eyebrow {
@@ -130,12 +223,14 @@ a {
   margin: 0 0 22px;
 }
 
-.hero-subtitle {
-  color: var(--muted);
-  font-size: clamp(1rem, 1.8vw, 1.6rem);
-  font-weight: 500;
-  letter-spacing: -0.02em;
+.hero-name {
+  color: var(--muted-strong);
+  font-family: var(--font-display);
+  font-size: clamp(0.82rem, 1.3vw, 1rem);
+  font-weight: 700;
+  letter-spacing: 0.3em;
   margin: 0;
+  text-transform: uppercase;
 }
 
 .works-overview {
@@ -165,26 +260,6 @@ a {
   font-weight: 550;
   letter-spacing: -0.045em;
   margin: 0;
-}
-
-.career-start {
-  display: flex;
-  flex-direction: column;
-  min-width: 170px;
-  text-align: right;
-}
-
-.career-start strong {
-  font-family: var(--font-display);
-  font-size: clamp(1.5rem, 2.8vw, 2.8rem);
-  font-weight: 500;
-  letter-spacing: -0.055em;
-}
-
-.career-start span {
-  color: var(--muted);
-  font-size: 0.67rem;
-  margin-top: 5px;
 }
 
 .career-summary {
@@ -558,19 +633,21 @@ a {
   color: rgba(242, 239, 231, 0.6);
 }
 
+/* 見出しの下・作品カードの上に挟まる。時間軸で全体を掴んでから各作品へ。 */
 .career-graph {
   border-bottom: 1px solid var(--line);
-  padding: clamp(50px, 7vw, 90px) 0 clamp(70px, 9vw, 120px);
+  padding: clamp(28px, 4vw, 52px) 0 clamp(36px, 5vw, 64px);
   position: relative;
   z-index: 2;
 }
 
+/* 5列が入りきる幅まで最小幅を下げる。足りない画面では横スクロールに逃がす。 */
 .career-timeline {
   display: grid;
   grid-column: 1 / -1;
-  grid-template-columns: repeat(5, minmax(270px, 1fr));
+  grid-template-columns: repeat(5, minmax(200px, 1fr));
   list-style: none;
-  margin: 38px 0 0;
+  margin: 0;
   overflow-x: auto;
   padding: 0 0 16px;
 }
@@ -578,8 +655,8 @@ a {
 .career-timeline > li {
   display: grid;
   grid-template-rows: 36px 28px auto auto auto 1fr;
-  min-width: 270px;
-  padding-right: 30px;
+  min-width: 200px;
+  padding-right: 26px;
   position: relative;
 }
 
@@ -639,7 +716,6 @@ a {
   font-size: 0.66rem;
   line-height: 1.75;
   margin: 9px 0 0;
-  max-width: 245px;
 }
 
 .timeline-areas {
@@ -978,38 +1054,40 @@ footer {
     gap: 48px;
   }
 
+  /* 作品名は長いので、この幅では左右の余白を削ってナビを収める */
+  .site-header {
+    padding: 0 24px;
+  }
+
+  .site-nav {
+    gap: 16px;
+  }
+
+  .site-nav a {
+    font-size: 0.76rem;
+  }
 }
 
 @media (max-width: 720px) {
   :root {
     --era-axis-height: 56px;
+    --site-header-height: 58px;
   }
 
-  html {
-    scroll-padding-top: 58px;
-  }
-
-  .mobile-header {
-    align-items: center;
-    backdrop-filter: blur(14px);
-    background: rgba(242, 239, 231, 0.88);
-    border-bottom: 1px solid var(--line);
-    display: flex;
-    height: 58px;
-    justify-content: space-between;
-    left: 0;
+  .site-header {
     padding: 0 20px;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 40;
   }
 
-  .mobile-header a {
+  .site-nav {
+    display: none;
+  }
+
+  .site-logo {
     font-size: 1.2rem;
   }
 
-  .mobile-header span {
+  .site-header-current {
+    display: block;
     font-size: 0.68rem;
   }
 
@@ -1021,11 +1099,11 @@ footer {
 
   .hero {
     min-height: 100svh;
-    padding-top: 84px;
+    padding-top: calc(26px + var(--site-header-height));
   }
 
   .hero-copy {
-    padding: 90px 0 70px;
+    padding: 36px 0 60px;
   }
 
   .career-summary {
@@ -1035,10 +1113,6 @@ footer {
   .works-overview-heading {
     align-items: start;
     grid-template-columns: 1fr;
-  }
-
-  .career-start {
-    text-align: left;
   }
 
   .featured-title,
