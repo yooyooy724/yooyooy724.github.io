@@ -8,8 +8,9 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/sync-notes.mjs && vite build && node scripts/publish.mjs",
+    "build": "node scripts/pull-notes.mjs && node scripts/sync-notes.mjs && vite build && node scripts/publish.mjs",
     "sync:notes": "node scripts/sync-notes.mjs",
+    "pull:notes": "node scripts/pull-notes.mjs",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },

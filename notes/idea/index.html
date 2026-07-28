@@ -202,6 +202,7 @@
       <button class="primary" id="newIdea" type="button">新規</button>
       <button class="ghost" id="saveIdea" type="button">保存</button>
       <button class="ghost" id="connectDir" type="button">再接続</button>
+      <button class="primary hidden" id="submitGh" type="button">📤 GitHubへ送信</button>
       <button class="ghost" id="reloadEvents" type="button">再読込</button>
       <button class="danger" id="archiveIdea" type="button">保留</button>
       <span class="spacer"></span>
@@ -237,6 +238,8 @@
 
 <script>
 const AUTHOR_KEY = 'idea_board_author_v1';
+const PEND_KEY = 'idea_board_pending_v1';
+const GH_ISSUE = 'https://github.com/yooyooy724/yooyooy724.github.io/issues/new';
 const API = (location.protocol === 'http:' || location.protocol === 'https:') ? '' : 'http://localhost:8139';
 const STATUS = {
   active: '有効',
@@ -267,7 +270,8 @@ const GROUPS = [
 ];
 
 let connected = false;
-let readonly = false;   // 静的配信(GitHub Pages 等)。閲覧専用
+let propose = false;    // 静的配信(GitHub Pages)。変更は手元に溜め、Issue で送る
+let pending = [];       // まだ送っていないイベント
 let events = [];
 let ideas = [];
 let selectedId = '';
@@ -288,6 +292,7 @@ const els = {
   newIdea: document.getElementById('newIdea'),
   saveIdea: document.getElementById('saveIdea'),
   connectDir: document.getElementById('connectDir'),
+  submitGh: document.getElementById('submitGh'),
   reloadEvents: document.getElementById('reloadEvents'),
   archiveIdea: document.getElementById('archiveIdea'),
   authorName: document.getElementById('authorName'),
@@ -311,7 +316,7 @@ async function connectServer(){
     const list = await res.json();
     events = Array.isArray(list) ? list : [];
     connected = true;
-    readonly = false;
+    propose = false;
     rebuild();
     setState('接続しました');
     if (els.setupStatus) els.setupStatus.textContent = '接続済み';
@@ -321,19 +326,26 @@ async function connectServer(){
     connected = false;
   }
   // サーバーが無い場合、書き出し済みのスナップショットを読む。
-  // GitHub Pages などの閲覧専用配信はこの経路になる。
+  // GitHub Pages 配信はこの経路。変更は手元に溜めて Issue でまとめて送る。
   try {
     const res = await fetch('data/events.json', { cache: 'no-store' });
     if (!res.ok) throw new Error('bad status');
     const list = await res.json();
     if (!Array.isArray(list)) throw new Error('bad snapshot');
-    events = list;
-    readonly = true;
+    propose = true;
+    try { const p = localStorage.getItem(PEND_KEY); pending = p ? JSON.parse(p) : []; } catch (e) { pending = []; }
+    if (!Array.isArray(pending)) pending = [];
+    // 公開側に載ったイベントは未送信リストから外す(申告ではなく実データで判定)
+    const known = new Set(list.map(e => e && e.eventId).filter(Boolean));
+    pending = pending.filter(e => !known.has(e && e.eventId));
+    savePending();
+    events = list.concat(pending);
+    events.sort((a, b) => String(a.at).localeCompare(String(b.at)));
     rebuild();
-    setState('閲覧専用');
-    if (els.setupStatus) els.setupStatus.textContent = '閲覧専用';
+    setState(pending.length ? `未送信 ${pending.length}件` : '提案モード');
+    if (els.setupStatus) els.setupStatus.textContent = '提案モード';
   } catch (err) {
-    readonly = false;
+    propose = false;
     events = [];
     rebuild();
     setState('サーバーに接続できません');
@@ -342,10 +354,39 @@ async function connectServer(){
   render();
 }
 
+function savePending(){
+  try { localStorage.setItem(PEND_KEY, JSON.stringify(pending)); } catch (e) {}
+}
+
+// 未送信分を Issue の本文に載せて GitHub を開く。ページ側に認証情報は持たない。
+function submitToGitHub(){
+  if (!pending.length) { alert('未送信の変更はありません。'); return; }
+  const body = '### notes-inbox\n\nこの Issue は自動処理されます。内容を編集しないでください。\n\n```json\n'
+    + JSON.stringify({ site: 'idea', at: new Date().toISOString(), events: pending }) + '\n```\n';
+  const title = `[notes-inbox] idea ${pending.length}件`;
+  const url = GH_ISSUE + '?title=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(body);
+  if (url.length > 7500) {
+    navigator.clipboard.writeText(body).then(
+      () => { alert('変更が多いため本文をクリップボードにコピーしました。\n開いた画面のタイトルを「' + title + '」にして、本文に貼り付けてください。');
+              window.open(GH_ISSUE, '_blank'); },
+      () => prompt('この本文をコピーして、新規 Issue に貼り付けてください（タイトル: ' + title + '）', body));
+    return;
+  }
+  window.open(url, '_blank');
+  alert('GitHub の画面が開きます。内容を確認して「Submit new issue」を押してください。\n\n反映されるとこのページに載ります（1分ほど）。未送信の表示は、反映を検知したときに自動で消えます。');
+}
+
 async function appendEvent(event){
-  if (readonly) {
-    setState('閲覧専用です。書き込みはローカル版で行ってください');
-    return false;
+  if (propose) {
+    // 送信までは手元に溜める
+    pending.push(event);
+    savePending();
+    events.push(event);
+    rebuild();
+    dirty = false;
+    setState(`未送信 ${pending.length}件`);
+    render();
+    return true;
   }
   if (!connected) {
     setState('サーバー未接続のため保存できません');
@@ -468,22 +509,25 @@ function currentIdea(){
 
 function render(){
   renderSetup();
-  els.repoStatus.textContent = connected ? '💾 自動保存ON' : (readonly ? '👁 閲覧専用' : '⚠ サーバー未接続');
-  // 閲覧専用では書き込み導線を出さない
-  for (const btn of [els.newIdea, els.saveIdea, els.archiveIdea, els.connectDir, els.addComment]) {
-    if (btn) btn.classList.toggle('hidden', readonly);
+  els.repoStatus.textContent = connected
+    ? '💾 自動保存ON'
+    : (propose ? ('📤 提案モード' + (pending.length ? `（未送信 ${pending.length}）` : '')) : '⚠ サーバー未接続');
+  // 提案モードでは「再接続」の代わりに送信ボタンを出す
+  if (els.connectDir) els.connectDir.classList.toggle('hidden', propose);
+  if (els.submitGh) {
+    els.submitGh.classList.toggle('hidden', !propose);
+    els.submitGh.textContent = pending.length ? `📤 GitHubへ送信（${pending.length}）` : '📤 GitHubへ送信';
   }
-  if (els.commentText) els.commentText.classList.toggle('hidden', readonly);
   renderIdeaList();
   renderWorkArea();
   renderSide();
 }
 
 function renderSetup(){
-  const ready = connected || readonly;
+  const ready = connected || propose;
   els.setup.classList.toggle('hidden', ready);
   els.app.classList.toggle('hidden', !ready);
-  els.setupStatus.textContent = connected ? '接続済み' : (readonly ? '閲覧専用' : '未接続');
+  els.setupStatus.textContent = connected ? '接続済み' : (propose ? '提案モード' : '未接続');
 }
 
 function renderIdeaList(){
@@ -519,12 +563,11 @@ function renderWorkArea(){
     els.workArea.innerHTML = '<div class="empty">新規ボタンから作成</div>';
     return;
   }
-  const ro = readonly ? ' readonly' : '';
   els.workArea.innerHTML = `
     <section class="editor">
       <div class="editor-head">
-        <input id="ideaTitle" value="${escapeAttr(idea.title)}"${ro}>
-        <select id="ideaStatus"${readonly ? ' disabled' : ''}>
+        <input id="ideaTitle" value="${escapeAttr(idea.title)}">
+        <select id="ideaStatus">
           ${Object.entries(STATUS).map(([key,label]) => `<option value="${key}" ${idea.status === key ? 'selected' : ''}>${label}</option>`).join('')}
         </select>
       </div>
@@ -532,11 +575,11 @@ function renderWorkArea(){
         <article class="doc">${renderMarkdown(idea.body || '')}</article>
       </div>
       <details class="edit-toggle">
-        <summary>${readonly ? '本文とタグ' : '本文とタグを編集'}</summary>
+        <summary>本文とタグを編集</summary>
         <div class="edit-panel">
-          <textarea id="ideaBody"${ro}>${escapeHtml(idea.body)}</textarea>
+          <textarea id="ideaBody">${escapeHtml(idea.body)}</textarea>
           <div class="field-row">
-            <input id="ideaTags" value="${escapeAttr(idea.tags.join(', '))}" placeholder="タグ"${ro}>
+            <input id="ideaTags" value="${escapeAttr(idea.tags.join(', '))}" placeholder="タグ">
             <button class="ghost" id="copySummary" type="button">要約コピー</button>
           </div>
           <div class="tags">${idea.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}</div>
@@ -692,13 +735,13 @@ function renderComment(c, isOld){
     <div class="comment ${isOld ? 'is-old' : ''}" data-comment-id="${escapeAttr(c.commentId || '')}">
       <div class="cm"><b>${escapeHtml(c.author || '')}</b><span>${formatDateTime(c.at)}</span><span class="pill">${COMMENT_STATUS[status] || status}</span></div>
       <div class="body">${escapeHtml(c.body || '')}</div>
-      ${readonly ? '' : `<div class="comment-actions">
+      <div class="comment-actions">
         <button type="button" data-comment-status="reflected">反映済み</button>
         <button type="button" data-comment-status="discussed">議論済み</button>
         <button type="button" data-comment-status="rejected">見送り</button>
         <button type="button" data-comment-status="duplicate">重複</button>
         ${isOld ? '<button type="button" data-comment-status="open">未処理へ戻す</button>' : ''}
-      </div>`}
+      </div>
     </div>
   `;
 }
@@ -874,6 +917,7 @@ els.saveIdea.addEventListener('click', saveIdea);
 els.archiveIdea.addEventListener('click', archiveIdea);
 els.connectDir.addEventListener('click', connectServer);
 els.setupConnectDir.addEventListener('click', connectServer);
+els.submitGh.addEventListener('click', submitToGitHub);
 els.reloadEvents.addEventListener('click', async () => {
   await loadEvents();
   setState('再読込しました');

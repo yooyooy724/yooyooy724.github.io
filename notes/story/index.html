@@ -33,8 +33,10 @@
   #top{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:22px}
   #top .flt{border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:3px 13px;font-size:12.5px;cursor:pointer;color:var(--sub);font-family:inherit}
   #top .flt.on{background:var(--ink);color:#1c1b18;border-color:var(--ink)}
-  #top .exp{margin-left:auto;border:none;background:var(--accent);color:#1c1b18;border-radius:16px;padding:5px 15px;font-size:12.5px;cursor:pointer;font-family:inherit;font-weight:600}
-  .mode{font-size:11.5px;padding:3px 12px;border-radius:14px;white-space:nowrap}
+  #top .exp{margin-left:8px;border:none;background:var(--accent);color:#1c1b18;border-radius:16px;padding:5px 15px;font-size:12.5px;cursor:pointer;font-family:inherit;font-weight:600}
+  #top .exp.dim{background:#4a463d;color:#a29b8b}
+  .mode{font-size:11.5px;padding:3px 12px;border-radius:14px;white-space:nowrap;margin-left:auto}
+  .unsent{font-size:10px;background:#3a2226;color:#f2a0a0;border:1px solid #6b3a40;border-radius:8px;padding:0 6px;margin-left:6px;white-space:nowrap}
   .mode.on{background:var(--k-bg);color:var(--k-ink);border:1px solid var(--k-line)}
   .mode.off{background:var(--t-bg);color:var(--t-ink);border:1px solid var(--t-line)}
   .mode.ro{background:var(--c-bg);color:var(--c-ink);border:1px solid var(--c-line)}
@@ -806,14 +808,27 @@ const DB = [
 
 /* ---------- store ---------- */
 const LS_KEY='minertia_story_feedback_v1';
+const PEND_KEY='minertia_story_pending_v1';
+const SITE='story';
+const GH_ISSUE='https://github.com/yooyooy724/yooyooy724.github.io/issues/new';
 const API=(location.protocol==='http:'||location.protocol==='https:')?'':'http://localhost:8137';
 let SERVER=false;           // サーバー接続中なら feedback.json へ自動永続化
-let READONLY=false;         // 静的配信(GitHub Pages 等)。閲覧専用
-let STORE={comments:{},reactions:{}};
+let PROPOSE=false;          // 静的配信(GitHub Pages)。変更は手元に溜め、Issue で送る
+let STORE={comments:{},reactions:{}};    // 表示用(公開分 + 未送信分)
+let BASE={comments:{},reactions:{}};     // 公開されている分
+let PENDING={comments:{},reactions:{}};  // まだ送っていない分
 try{const s=localStorage.getItem(LS_KEY); if(s) STORE=JSON.parse(s);}catch(e){}
+function emptyFb(){return {comments:{},reactions:{}};}
+function pendCount(){
+  return Object.keys(PENDING.reactions).length
+    +Object.values(PENDING.comments).reduce((n,a)=>n+a.length,0);
+}
+function savePending(){
+  try{localStorage.setItem(PEND_KEY,JSON.stringify(PENDING));}catch(e){}
+}
 let postTimer=null;
 function save(){
-  if(READONLY)return;
+  if(PROPOSE){savePending();return;}
   try{localStorage.setItem(LS_KEY,JSON.stringify(STORE));}catch(e){}
   if(SERVER){
     clearTimeout(postTimer);
@@ -847,15 +862,66 @@ async function connectServer(){
     return;
   }catch(e){SERVER=false;}
   // サーバーが無い場合、同じ場所に置かれた feedback.json を静的に読む。
-  // GitHub Pages などの閲覧専用配信はこの経路になる。
+  // GitHub Pages 配信はこの経路。変更は手元に溜めて Issue でまとめて送る。
   try{
     const r=await fetch('feedback.json',{cache:'no-store'});
     if(!r.ok)throw 0;
     const remote=await r.json();
     if(!remote||typeof remote!=='object')throw 0;
-    STORE={comments:remote.comments||{},reactions:remote.reactions||{}};
-    READONLY=true;                      // 書き込み導線をすべて閉じる
+    BASE={comments:remote.comments||{},reactions:remote.reactions||{}};
+    PROPOSE=true;
+    try{const p=localStorage.getItem(PEND_KEY); if(p)PENDING=Object.assign(emptyFb(),JSON.parse(p));}catch(e){}
+    reconcile();                        // 公開側に載った分を未送信リストから外す
+    STORE=mergeFb(BASE,PENDING);
   }catch(e){}
+}
+// 公開データに既に反映されている変更を PENDING から取り除く。
+// 「送信しましたか?」と聞く代わりに実データで判定するので、申告のズレが起きない。
+function reconcile(){
+  for(const id of Object.keys(PENDING.reactions))
+    if((BASE.reactions[id]||'')===(PENDING.reactions[id]||''))delete PENDING.reactions[id];
+  for(const id of Object.keys(PENDING.comments)){
+    const seen=new Set((BASE.comments[id]||[]).map(c=>c.ts+'|'+c.text));
+    const rest=PENDING.comments[id].filter(c=>!seen.has(c.ts+'|'+c.text));
+    if(rest.length)PENDING.comments[id]=rest; else delete PENDING.comments[id];
+  }
+  savePending();
+}
+// 表示用の合成。scripts/notes-merge.mjs と同じ規則(和集合・後勝ち)。
+function mergeFb(base,patch){
+  const out=emptyFb();
+  const ids=new Set(Object.keys(base.comments||{}).concat(Object.keys(patch.comments||{})));
+  for(const id of ids){
+    const seen=new Set();const arr=[];
+    for(const c of (base.comments[id]||[]).concat(patch.comments[id]||[])){
+      const k=c.ts+'|'+c.text;
+      if(seen.has(k))continue;seen.add(k);arr.push(c);
+    }
+    arr.sort((a,b)=>String(a.ts).localeCompare(String(b.ts)));
+    if(arr.length)out.comments[id]=arr;
+  }
+  out.reactions=Object.assign({},base.reactions,patch.reactions);
+  for(const k of Object.keys(out.reactions))if(!out.reactions[k])delete out.reactions[k];
+  return out;
+}
+// 未送信分を Issue の本文に載せて GitHub を開く。ページ側に認証情報は持たない。
+function submitToGitHub(){
+  const n=pendCount();
+  if(!n){alert('未送信の変更はありません。');return;}
+  const payload=Object.assign({site:SITE,at:new Date().toISOString()},PENDING);
+  const body='### notes-inbox\n\nこの Issue は自動処理されます。内容を編集しないでください。\n\n```json\n'
+    +JSON.stringify(payload)+'\n```\n';
+  const title='[notes-inbox] '+SITE+' '+n+'件';
+  const url=GH_ISSUE+'?title='+encodeURIComponent(title)+'&body='+encodeURIComponent(body);
+  if(url.length>7500){
+    navigator.clipboard.writeText(body).then(
+      ()=>{alert('変更が多いため本文をクリップボードにコピーしました。\n開いた画面のタイトルを「'+title+'」にして、本文に貼り付けてください。');
+           window.open(GH_ISSUE,'_blank');},
+      ()=>prompt('この本文をコピーして、新規 Issue に貼り付けてください（タイトル: '+title+'）',body));
+    return;
+  }
+  window.open(url,'_blank');
+  alert('GitHub の画面が開きます。内容を確認して「Submit new issue」を押してください。\n\n反映されるとこのページに載ります（1分ほど）。未送信の表示は、反映を検知したときに自動で消えます。');
 }
 
 /* ---------- state ---------- */
@@ -885,14 +951,19 @@ function go(id){curPage=id;location.hash=id;render();window.scrollTo(0,0);}
 function renderTop(){
   const t=document.getElementById('top');
   const f=[['all','すべて'],['t','提案のみ'],['k','確定のみ'],['c','コメント付き']];
-  const mode=READONLY
-    ?'<span class="mode ro" title="公開版です。書き込みはローカル版(start_site.bat)で行ってください">👁 閲覧専用</span>'
+  const n=PROPOSE?pendCount():0;
+  const mode=PROPOSE
+    ?'<span class="mode ro" title="変更はこの端末に溜まります。「GitHubへ送信」で反映されます">📤 提案モード'+(n?'（未送信 '+n+'）':'')+'</span>'
     :SERVER
     ?'<span class="mode on" title="コメントは feedback.json へ自動保存されています">💾 自動保存ON</span>'
     :'<span class="mode off" title="start_site.bat を起動すると、コメントがファイルへ自動保存されます(現在はこのブラウザ内のみ)">⚠ 自動保存OFF</span>';
+  const send=PROPOSE
+    ?'<button class="exp'+(n?'':' dim')+'" onclick="submitToGitHub()">📤 GitHubへ送信'+(n?'（'+n+'）':'')+'</button>'
+    :'';
   t.innerHTML=f.map(x=>'<button class="flt'+(filter===x[0]?' on':'')+'" onclick="setFilter(\''+x[0]+'\')">'+x[1]+'</button>').join('')
    +mode
-   +'<button class="exp" onclick="exportMD()">📋 フィードバック書き出し</button>';
+   +'<button class="exp" onclick="exportMD()">📋 書き出し</button>'
+   +send;
 }
 function setFilter(f){filter=f;render();}
 
@@ -911,26 +982,25 @@ function renderPage(){
     if(filter==='k')vis=(s.s==='k');
     if(filter==='c')vis=cms.length>0;
     const badge=s.s==='k'?'<span class="badge b-k">確定(仮)</span>':s.s==='t'?'<span class="badge b-t">提案</span>':'';
-    let fz='';
-    if(READONLY){
-      // 閲覧専用: 記録済みの反応とコメントだけを表示し、入力導線は出さない
-      if(rea||cms.length){
-        fz='<div class="fzone">'
-          +(rea?'<div class="rrow"><span class="note">反応: '+(rea==='ok'?'👍 OK':'✋ 要変更')+'</span></div>':'')
-          +'<div class="clist">'+cms.map(c=>'<div class="citem"><div class="meta"><span>'+c.ts+'</span></div>'+esc(c.text).replace(/\n/g,'<br>')+'</div>').join('')+'</div>'
-          +'</div>';
-      }
-    }else{
-      fz='<div class="fzone">'
-        +'<div class="rrow">'
-        +'<button class="rbtn'+(rea==='ok'?' on-ok':'')+'" onclick="react(\''+s.id+'\',\'ok\')">👍 OK</button>'
-        +'<button class="rbtn'+(rea==='ng'?' on-ng':'')+'" onclick="react(\''+s.id+'\',\'ng\')">✋ 要変更</button>'
-        +'<button class="cbtn" onclick="toggleC(\''+s.id+'\')">💬 コメント ('+cms.length+')</button>'
-        +'</div>'
-        +'<div class="clist">'+cms.map((c,i)=>'<div class="citem"><div class="meta"><span>'+c.ts+'</span><button class="del" onclick="delC(\''+s.id+'\','+i+')">削除</button></div>'+esc(c.text).replace(/\n/g,'<br>')+'</div>').join('')+'</div>'
-        +'<div class="cform" id="cf-'+s.id+'"><textarea id="ta-'+s.id+'" placeholder="このブロックへのコメント・変更指示を入力…"></textarea><br><button class="save" onclick="addC(\''+s.id+'\')">保存</button></div>'
-        +'</div>';
-    }
+    const pend=PROPOSE?(PENDING.comments[s.id]||[]):[];
+    const isPend=(c)=>pend.some(p=>p.ts===c.ts&&p.text===c.text);
+    const reaUnsent=PROPOSE&&Object.prototype.hasOwnProperty.call(PENDING.reactions,s.id);
+    const fz='<div class="fzone">'
+      +'<div class="rrow">'
+      +'<button class="rbtn'+(rea==='ok'?' on-ok':'')+'" onclick="react(\''+s.id+'\',\'ok\')">👍 OK</button>'
+      +'<button class="rbtn'+(rea==='ng'?' on-ng':'')+'" onclick="react(\''+s.id+'\',\'ng\')">✋ 要変更</button>'
+      +(reaUnsent?'<span class="unsent">未送信</span>':'')
+      +'<button class="cbtn" onclick="toggleC(\''+s.id+'\')">💬 コメント ('+cms.length+')</button>'
+      +'</div>'
+      +'<div class="clist">'+cms.map((c,i)=>{
+          const p=isPend(c);
+          // 公開済みのコメントには削除ボタンを出さない(提案モードでは消せないため)
+          const del=(!PROPOSE||p)?'<button class="del" onclick="delC(\''+s.id+'\','+i+')">削除</button>':'';
+          return '<div class="citem"><div class="meta"><span>'+c.ts+(p?'<span class="unsent">未送信</span>':'')+'</span>'+del+'</div>'
+            +esc(c.text).replace(/\n/g,'<br>')+'</div>';
+        }).join('')+'</div>'
+      +'<div class="cform" id="cf-'+s.id+'"><textarea id="ta-'+s.id+'" placeholder="このブロックへのコメント・変更指示を入力…"></textarea><br><button class="save" onclick="addC(\''+s.id+'\')">保存</button></div>'
+      +'</div>';
     html+='<div class="sec'+(vis?'':' hide')+'" id="sec-'+s.id+'">'
       +'<div class="shead"><h3>'+s.h+'</h3>'+badge+'</div>'
       +'<div class="sbody">'+s.b+'</div>'
@@ -948,8 +1018,11 @@ function renderFeedback(el){
     if(cms.length||rea)items.push({p,s,cms,rea});
   }}
   let html='<div class="phead"><h2>コメント一覧・書き出し</h2><p>あなたのリアクションとコメントの一覧。「書き出し」でMarkdownをコピーし、Claudeに貼り付けてください。</p></div>';
-  html+='<div style="margin-bottom:16px"><button class="exp" onclick="exportMD()">📋 Markdownをクリップボードへ</button> <button class="flt" onclick="exportJSON()">JSONダウンロード</button>'
-    +(READONLY?'':' <button class="flt" style="color:var(--warn)" onclick="clearAll()">全消去</button>')+'</div>';
+  const n=PROPOSE?pendCount():0;
+  html+='<div style="margin-bottom:16px">'
+    +(PROPOSE?'<button class="exp'+(n?'':' dim')+'" style="margin-left:0" onclick="submitToGitHub()">📤 GitHubへ送信'+(n?'（'+n+'）':'')+'</button> ':'')
+    +'<button class="exp" style="margin-left:0" onclick="exportMD()">📋 Markdownをクリップボードへ</button> <button class="flt" onclick="exportJSON()">JSONダウンロード</button>'
+    +' <button class="flt" style="color:var(--warn)" onclick="clearAll()">'+(PROPOSE?'未送信分を破棄':'全消去')+'</button></div>';
   if(!items.length){html+='<div class="empty">まだフィードバックはありません。各ページのブロックで OK/要変更 やコメントを付けてください。</div>';}
   for(const it of items){
     html+='<div class="fb-sec"><div class="to">'+it.p.title+' › '+it.s.h+' <a href="#'+it.p.id+'" onclick="go(\''+it.p.id+'\')">→開く</a></div>';
@@ -961,19 +1034,47 @@ function renderFeedback(el){
 }
 
 /* ---------- actions ---------- */
-function react(id,v){if(READONLY)return;STORE.reactions[id]=(STORE.reactions[id]===v?'':v);save();render();}
-function toggleC(id){if(READONLY)return;document.getElementById('cf-'+id).classList.toggle('open');}
+function react(id,v){
+  const next=(STORE.reactions[id]===v?'':v);
+  STORE.reactions[id]=next;
+  if(PROPOSE)PENDING.reactions[id]=next;
+  save();render();
+}
+function toggleC(id){document.getElementById('cf-'+id).classList.toggle('open');}
 function addC(id){
-  if(READONLY)return;
   const ta=document.getElementById('ta-'+id);const txt=ta.value.trim();if(!txt)return;
   if(!STORE.comments[id])STORE.comments[id]=[];
   const d=new Date();
   const ts=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-  STORE.comments[id].push({text:txt,ts});save();render();
+  STORE.comments[id].push({text:txt,ts});
+  if(PROPOSE){
+    if(!PENDING.comments[id])PENDING.comments[id]=[];
+    PENDING.comments[id].push({text:txt,ts});
+  }
+  ta.value='';
+  save();render();
   if(SERVER){fetch(API+'/api/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sec:id,text:txt,ts})}).catch(()=>{});}
 }
-function delC(id,i){if(READONLY)return;STORE.comments[id].splice(i,1);save();render();}
-function clearAll(){if(READONLY)return;if(confirm('すべてのコメントとリアクションを消去します。よろしいですか?')){STORE={comments:{},reactions:{}};save();render();}}
+function delC(id,i){
+  const c=STORE.comments[id][i];
+  if(PROPOSE){
+    // 公開済みのコメントはここからは消せない(消すならローカル版で)
+    const p=PENDING.comments[id]||[];
+    const at=p.findIndex(x=>x.ts===c.ts&&x.text===c.text);
+    if(at<0){alert('公開済みのコメントは、ここからは削除できません。');return;}
+    p.splice(at,1);
+    if(!p.length)delete PENDING.comments[id];
+  }
+  STORE.comments[id].splice(i,1);
+  save();render();
+}
+function clearAll(){
+  if(PROPOSE){
+    if(!confirm('未送信の変更をすべて破棄します。公開済みの内容は消えません。よろしいですか?'))return;
+    PENDING=emptyFb();savePending();STORE=mergeFb(BASE,PENDING);render();return;
+  }
+  if(confirm('すべてのコメントとリアクションを消去します。よろしいですか?')){STORE={comments:{},reactions:{}};save();render();}
+}
 function buildMD(){
   const d=new Date();
   let md='# MINERTIA ストーリーサイト フィードバック ('+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+')\n\n';
