@@ -176,14 +176,24 @@ const DB = [
     <li>直接 index.html を開いた場合はブラウザ内保存(localStorage)。サーバー起動中なら検出して自動同期します。</li>
   </ul>`},
  {id:'ho-fixed', h:'すでに固まっている前提', s:'k', b:`
+  <h4>2026-07-28 に確定したもの</h4>
+  <table><tr><th>論点</th><th>決定</th><th>効いてくる先</th></tr>
+  <tr><td>AppID <code>3217600</code></td><td><b>旧作用。新規取得が必要</b></td><td>Steam Direct $100 と審査待ちが発生。<b>スケジュールの起点</b></td></tr>
+  <tr><td>対応 OS</td><td><b>Windows + macOS 同時</b></td><td>Apple 公証・Universal Binary・別 Depot・別テスト機が必須作業に</td></tr>
+  <tr><td>1.0 のスコープ</td><td><b>全部入り</b></td><td>横長は段階3まで。ショートカット・リーダーボード・リッチプレゼンスも対象</td></tr>
+  <tr><td>時期</td><td><b>期限なし。品質優先</b></td><td>スケジュールを理由にスコープを削らない</td></tr>
+  <tr><td>モバイル版</td><td><b>継続。並行運用</b></td><td>モバイルを壊さない制約を維持。暗号化を変える場合は移行処理が必須</td></tr>
+  <tr><td>コスト</td><td><b>自作のみ</b></td><td>実績アイコン等は自作前提。金額そのものは制約にしない</td></tr>
+  <tr><td>広告</td><td><b>導線ごとに個別判断</b></td><td>デフォルトを下げ、課金で解禁・増加。→ <a href="#money" onclick="go('money')">マネタイズ</a></td></tr>
+  <tr><td>検証ビルド</td><td><b>フェーズ3の頭で実施</b></td><td>DLL が Standalone で動くかは<b>それまで未確認のまま</b> → <a href="#risk" onclick="go('risk')">リスク</a></td></tr></table>
+  <h4>当初からの前提</h4>
   <ul>
    <li><b>モバイルと同一コードベースで並行運用</b>。Steam 版のためにモバイル版を壊さない。</li>
    <li><b>F2P + Steam 内課金</b>を第一候補として設計する(ただし §マネタイズ の承認次第でプランBへ)。</li>
-   <li><b>ゲームロジックに <code>#if</code> を書き足さない。</b>プラットフォーム差はインターフェースの裏に隠し、DI 登録の1箇所だけで分岐する。</li>
    <li>横長対応で <b>UXML を複製しない</b>。「横長 = 縦長の画面を並べたもの」と定義を固定する。</li>
    <li>モバイル版からのセーブ引き継ぎは<b>スコープ外</b>。</li>
   </ul>
-  <p class="note">ここが崩れると全ページの前提が変わります。違和感があれば早い段階で 要変更 を付けてください。</p>`},
+  <p class="note">「ゲームロジックに <code>#if</code> を書き足さない」は<b>前提から外し、選択肢に降格しました</b>(2026-07-28 のコメントによる)。→ <a href="#platform" onclick="go('platform')">抽象化の深さ</a>で決めます。</p>`},
  {id:'ho-files', h:'原典ファイル対応', s:null, b:`
   <table><tr><th>ページ</th><th>原典(GamesDomain/docs/steam-release/)</th></tr>
   <tr><td>プラットフォーム抽象化</td><td>02_Platform_Abstraction.md</td></tr>
@@ -220,13 +230,9 @@ const DB = [
    {k:'B',t:'標準',d:'A + 横長3カラム(段階2) + 数字キー + Shift+クリック。レビューで「移植が雑」と言われない水準。',rec:true},
    {k:'C',t:'全部入り',d:'B + QWERT ショートカット + リーダーボード + リッチプレゼンス + 解像度設定UI。'},
   ]}},
- {id:'ask-when', h:'Q4. 時期の目標', s:'d', b:`
-  <p>締切があるなら、そこから逆算してスコープを削ります。ストアページ公開からリリースまでの必須待機期間(Valve 規定)とビルド審査日数も別途乗ります。</p>`,
-  opt:{items:[
-   {k:'A',t:'期限なし。品質優先',d:'決定を急がず、未調査を1つずつ潰していける。'},
-   {k:'B',t:'ざっくり半年以内',d:'横長対応(最大工数)を段階1で止める判断が現実的になる。'},
-   {k:'C',t:'3ヶ月以内',d:'スコープ Q3=A ほぼ確定。マネタイズも B2(DLCのみ)で申請リスクを避ける。'},
-  ]}},
+ {id:'ask-when', h:'Q4. 時期の目標 ── 設けない', s:'k', b:`
+  <p>2026-07-28 <b>「これは考える必要がない」</b>との回答により<span class="kw">期限なし・品質優先で確定</span>。以降、スケジュールを理由にスコープを削る判断は行いません。</p>
+  <p class="note">ただし外部要因による待ち時間は残ります(自分では縮められないもの): Steam Direct の審査、ストアページ公開からリリースまでの必須待機期間、ビルド審査の所要日数。これらは<b>並行して先に着手しておく</b>ことでしか短縮できないため、AppID の取得だけは早めに動かす価値があります。</p>`},
  {id:'ask-mobile', h:'Q5. モバイル版の運用は続けるか', s:'d', b:`
   <p>「同一コードベースで並行運用」は<b>モバイル版を出し続ける</b>前提の制約です。もしモバイルを実質終了させるなら、暗号化フラグの移行処理も <code>#if</code> 回避の縛りも大幅に緩みます。<b>この答えは 04(暗号化)と 02(抽象化の厳しさ)に直結します。</b></p>`,
   opt:{items:[
@@ -255,18 +261,30 @@ const DB = [
 
 /* ============================ 02 抽象化 ============================ */
 {id:'platform', nav:'02 プラットフォーム抽象化', group:'仕様', title:'プラットフォーム抽象化', desc:'最初に着手すべき設計。ここが固まらないまま個別対応を始めると、全作業が #if の泥沼になる。', src:'docs/steam-release/02_Platform_Abstraction.md', secs:[
- {id:'pf-rule', h:'原則 ── #if を書いてよいのは3箇所だけ', s:'k', b:`
-  <blockquote><b><code>#if</code> をゲームロジックに書き足さない。</b>プラットフォーム差はインターフェースの裏に隠し、<b>DI の登録時に1箇所だけ分岐させる。</b></blockquote>
-  <ol><li>Installer(どの実装を bind するかの分岐)</li>
-  <li>プラットフォーム固有 SDK を直接触る実装クラスの内部</li>
-  <li>Editor スクリプト</li></ol>
-  <p><b>View / ViewModel / Domain には一切書かない。</b></p>
-  <h4>幸運な前提</h4>
-  <p>既存の依存はよく隔離されています。広告は <code>AdRoot.cs</code> の1ファイルのみ、課金は <code>Shop/IAP/</code> に集約、セーブは <code>RepositoryRegister.BindRepository&lt;T&gt;()</code> の1箇所を通る。<br>
-  <span class="okw">つまり「散らばった #if を集約する」作業ではなく、「既にある境界にインターフェースを被せる」作業で済みます。</span></p>`},
+ {id:'pf-rule', h:'抽象化の深さ ── どこまでやるか', s:'d', b:`
+  <p class="note">2026-07-28 コメント:「Ad, IAP などは分けて管理したので、現状通り <code>#if</code> が分散するのは仕方ないと考えています。また、既存の API 系スクリプトをいじるのはリスクがないか心配です。」<br>
+  <b>この指摘を受けて、当初の「全面抽象化」を前提から外し、選択肢として並べ直しました。</b></p>
+  <h4>まず、懸念の1つは前提の行き違いでした</h4>
+  <p>資料の案は <span class="kw">既存スクリプトを書き換える案ではありません</span>。<code>AdRoot.cs</code> や <code>Shop/IAP/</code> は<b>触らず</b>、その上に薄いラッパーを新規に1枚置き、モバイル実装は既存へ丸投げするだけ、という形です(<code>MobileRewardService</code> が <code>AdRoot.ShowRewardedAd()</code> を呼ぶだけ)。<br>
+  つまり<b>「既存 API 系スクリプトを改変するリスク」は、この案では発生しません。</b>変更されるのは呼び出し側だけです。</p>
+  <h4>そのうえで、分散の実測</h4>
+  <p><code>#if</code> を書かずに済ませたい理由は「散らかるから」という美観の話ではなく、<b>モバイルビルドが壊れる箇所が増えるから</b>です。実際に効いてくるのは以下:</p>
+  <table><tr><th>箇所</th><th>抽象化しない場合</th></tr>
+  <tr><td>広告 11 導線</td><td><code>SyncOnClickAsRewardButton()</code> 系 <b>3メソッド</b>に閉じるので、<code>#if</code> は3箇所で済む</td></tr>
+  <tr><td><code>ShopView</code> の復元ボタン</td><td>既に <code>#if UNITY_IOS</code> がある。Steam 分岐が足されて3分岐になる</td></tr>
+  <tr><td><code>SettingsLoginHandler</code></td><td>Google/Apple ボタンの出し分けに <code>#if</code> が要る</td></tr>
+  <tr><td><b><code>AppleLogin.cs</code></b></td><td><b>Windows でクラスごと消える。</b>参照している側すべてに <code>#if</code> が伝染する ← ここだけは分散が止まらない</td></tr></table>
+  <p><span class="okw">広告に関しては、あなたの見立て(3箇所で済む)が正しいです。</span>問題は <code>AppleLogin</code> 側で、こちらは<b>型が消える</b>ため呼び出し側が <code>#if</code> なしでは書けません。ただし 04 で <b>Steam Cloud 一本化</b>を選ぶとログイン UI 自体が不要になり、<span class="kw">この問題は丸ごと消滅します</span>。</p>
+  <h4>広告の再設計が、判断を変えます</h4>
+  <p>あなたの広告方針(→ <a href="#money" onclick="go('money')">導線ごとに個別判断</a>)を採ると、Steam 版の違いは「広告を出す / 出さない」の二値ではなく、<b>導線ごとに報酬量・頻度・解禁条件が違う</b>という形になります。<span class="ng">これは <code>#if</code> で書ける形ではありません</span>(3メソッドに閉じなくなる)。分岐ではなく<b>設定値・パラメータの差し替え</b>として持つのが自然で、そうなると受け皿となる 1 枚のインターフェースはむしろ必要になります。</p>`,
+  opt:{items:[
+   {k:'A',t:'折衷 ── 既存ファイル無変更 + 新規ラッパー1枚',d:'既存の AdRoot / IAP / Firebase 系スクリプトは一切触らない、を明文の制約にする。新規に IRewardService 1本だけ足し、呼び出し側の 3 メソッドを差し替える。残り(課金・実績・クラウド)は必要になった時点で個別に判断する。リスク最小で、広告の再設計にも耐えます。',rec:true},
+   {k:'B',t:'抽象化しない ── 必要な箇所に #if を書く',d:'あなたの当初案。着手が最も速い。ただし AppleLogin の型消滅による伝染は別途手当てが要り、広告を導線ごとに変えると 3 箇所では収まらなくなります。'},
+   {k:'C',t:'資料どおりの全面抽象化(6インターフェース)',d:'IRewardService / IStoreService / ICloudSaveBackend / IAuthService / IAchievementService / IReviewPrompt を一度に整える。長期的には最も整理されるが、着手時の変更範囲が最大。'},
+  ]}},
  {id:'pf-what', h:'抽象化するもの / しないもの', s:'k', b:`
   <table><tr><th>対象</th><th>抽象化</th><th>理由</th></tr>
-  <tr><td>広告</td><td><code>IRewardService</code></td><td>Steam 版は「即時付与」に差し替え</td></tr>
+  <tr><td>広告</td><td><code>IRewardService</code></td><td><s>Steam 版は「即時付与」に差し替え</s> → <b>導線ごとに報酬量・頻度・解禁条件を変える</b>(2026-07-28 変更。<a href="#money" onclick="go('money')">マネタイズ</a>参照)</td></tr>
   <tr><td>課金</td><td><code>IStoreService</code></td><td>Unity IAP ↔ Steam で API が全く違う</td></tr>
   <tr><td>クラウドセーブ</td><td><code>ICloudSaveBackend</code></td><td>Firebase ↔ Steam Cloud</td></tr>
   <tr><td>ログイン</td><td><code>IAuthService</code></td><td>Google/Apple ↔ Steam ID</td></tr>
@@ -328,7 +346,7 @@ const DB = [
  {id:'mn-plan', h:'プランB ── 通貨販売が通らなかった場合', s:'d', b:`
   <p>結果を待たずに切り替え先を先に決めておきます。この決定は <b>04 の暗号化の要否</b>と直結します。</p>`,
   opt:{items:[
-   {k:'B2',t:'F2P + 権利販売のみ(DLC)',d:'通貨は売らず、非消費型(Booster Plus / Nether 拡張)だけを Steam DLC として売る。既存の非消費型4種がそのまま写像でき、DLC は標準機能なので追加の審査リスクが無い。→ 暗号化も不要になる。',rec:true},
+   {k:'B2',t:'F2P + 権利販売のみ(DLC)',d:'通貨は売らず、非消費型だけを Steam DLC として売る。既存の非消費型4種に加え、2026-07-28 に確定した広告方針(倍率の課金解禁・FlyingPresent 強化)がそのまま DLC の形をしているため、売る商品が自然に揃う。DLC は標準機能なので追加の審査リスクが無く、通貨販売の承認待ちにも縛られない。→ 暗号化も不要になる。',rec:true},
    {k:'B1',t:'買い切り化',d:'本体を有料にし、課金要素を全廃。バランスは「全アンロック済み」相当に。ストアページの見せ方も変わる。'},
    {k:'A',t:'通貨販売に賭ける(プランBを用意しない)',d:'申請が通る前提で進める。通らなかったときの手戻りが大きい。'},
   ]}},
@@ -339,21 +357,31 @@ const DB = [
   <tr><td><code>idle_gem_nether_plus</code></td><td>Nether 挑戦 3 → 5</td><td>DLC</td></tr></table>
   <p>DLC は <code>IStoreService.IsOwned()</code> で所有判定でき、<b>Steam 側が所有権を持つため復元処理が不要</b>。現在 PlayerPrefs にキャッシュしている課金フラグ(<code>AdsClient</code>)を Steam の所有権判定に置き換えます。<br>
   <span class="okw">→ これで 04 の「課金アンロックが別 PC で復元されない」問題も同時に解決します。</span></p>`},
- {id:'mn-ad', h:'🔴 広告廃止の穴埋め ── 本質はゲームデザイン', s:'d', b:`
-  <p>実装は軽いです。<code>AdRoot.cs</code> には既に「購入済みなら広告を出さず即時付与」の分岐があり、Steam 実装はこの経路だけを使うので<b>呼び出し側 8ファイル11箇所は無改修</b>。</p>
-  <p>問題はバランスです。広告が無条件で即時付与になると、<span class="ng">Steam 版はモバイル版より大幅に緩くなります</span> — オフライン報酬が常に ×2 / プレステージ報酬が常に倍 / バトル戦利品が常に ×2 / ブースター取り放題。「広告の視聴時間」が制約として機能していた部分が丸ごと消えます。</p>
-  <p class="note">土台は既にあります: <code>AdCountRoot</code> が <code>IncrementAttemptCount(AdId)</code> で導線ごとの回数を持っています(<code>Games/_OTHERS/AdCount/</code>)。</p>`,
+ {id:'mn-ad', h:'広告の扱い ── 方針確定', s:'k', b:`
+  <p class="note">2026-07-28 コメント反映。<b>当初案(クールダウン / 回数上限への置換)は破棄</b>し、以下を方針として確定しました。</p>
+  <blockquote>Steam で広告は適切でない。<b>実況文化との相性が悪い</b>から。<br>
+  かといって<b>単に広告を解除した状態にするのも不適切</b>。<br>
+  → <span class="kw">広告が使われていたポイントごとに、個別に判断していく。</span></blockquote>
+  <h4>読み替えの構図</h4>
+  <p>広告枠を「時間で買う枠」から<b>「お金で買う枠」へ読み替える</b>ということです。モバイルでは<b>視聴時間</b>が対価だったものを、Steam では<b>デフォルト値を下げたうえで、課金が対価になる</b>形に置き換えます。</p>
+  <table><tr><th>導線の例</th><th>Steam での扱い</th></tr>
+  <tr><td><b>FlyingPresent</b></td><td>報酬量・出現頻度を<b>デフォルトで少なく</b>し、課金で増やす</td></tr>
+  <tr><td><b>OfflineBonus の倍率</b></td><td>課金で<b>解禁</b>する</td></tr>
+  <tr><td><b>Prestige 報酬の倍率</b></td><td>同上。課金で解禁</td></tr>
+  <tr><td>その他(バトル戦利品 ×2 / ブースター 等)</td><td>導線ごとに判断。全 11 箇所の一覧は <code>Memo/Current_State_Audit.md</code></td></tr></table>
+  <h4>この方針が連鎖して効くところ</h4>
+  <ul>
+   <li><span class="okw">恒久的な解禁・強化が増えるため、プランB2(非消費型を DLC として販売)との相性が非常に良い。</span>「倍率の解禁」はまさに DLC の形をしています。ゲーム内通貨の販売承認(§2)を待たずに成立します。</li>
+   <li>DLC の所有権は Steam 側が持つので、<a href="#save" onclick="go('save')">セーブ改ざんで解禁される余地がありません</a>。暗号化の必要性がさらに下がります。</li>
+   <li><span class="ng">注意すべき副作用</span>: デフォルト値を下げる以上、<b>無課金の Steam プレイヤーはモバイルの広告視聴プレイヤーより体験が薄くなります</b>。「PC 版は劣化している」と読まれない水準をどこに置くかは、導線ごとの数値設計で決まります。</li>
+   <li><code>#if</code> で書ける形ではなくなります(導線ごとに値が違うため)。→ <a href="#platform" onclick="go('platform')">抽象化の深さ</a>の判断材料。</li>
+  </ul>`},
+ {id:'mn-where', h:'導線ごとの差分をどこに持たせるか', s:'d', b:`
+  <p>「導線ごとに報酬量・頻度・解禁条件が違う」を実装でどう表現するかの選択です。<b>キーは既に揃っています</b> — <code>AdCountRoot</code> が <code>IncrementAttemptCount(AdId)</code> で導線ごとの識別子(<code>AdId</code>)を持っています(<code>Games/_OTHERS/AdCount/</code>)。</p>`,
   opt:{items:[
-   {k:'B',t:'クールダウンに置換',d:'「広告1回」を「n 時間に1回」に置き換える。制約の性質が保たれる。',rec:true},
-   {k:'C',t:'回数上限に置換',d:'1日 n 回まで。AdCountRoot が既に視聴回数を記録しているので流用できる。'},
-   {k:'BD',t:'B または C + D(通貨で購入)を併用',d:'クールダウン中でもダイヤを払えば即発動。通貨の使い道が増える。通貨販売が通るなら相性が良い。'},
-   {k:'A',t:'そのまま緩くする',d:'全て即時付与。実装ゼロ。買い切り(B1)前提なら許容できる。'},
-  ]}},
- {id:'mn-where', h:'クールダウンをどこに持たせるか', s:'d', b:`
-  <p>制約の実体をドメイン(このリポジトリ)に置くか、Unity 側の <code>IRewardService</code> 実装に置くか。</p>`,
-  opt:{items:[
-   {k:'A',t:'ドメイン(AdCountRoot)に持たせる',d:'セーブに乗り、モバイル版でも同じ仕組みが使える。テストも書ける。DLL のビルドと Unity への反映が必要。',rec:true},
-   {k:'B',t:'Unity 側の IRewardService 実装に持たせる',d:'Steam 版だけの都合をドメインに持ち込まない。ただし PlayerPrefs 相当の別保存が要る。'},
+   {k:'A',t:'AdId ごとの Config をドメインに持つ',d:'「報酬倍率 / 出現頻度 / 解禁に必要な DLC」を AdId をキーにした Config/Master として定義し、プラットフォームで値セットを差し替える。テストが書け、数値調整がコードから分離される。DLL のビルドと Unity への反映が必要。',rec:true},
+   {k:'B',t:'Unity 側の IRewardService 実装に持たせる',d:'ドメインを触らない。Steam 版の都合をドメインに持ち込まないで済むが、数値がコードに埋まりテスト外に出る。'},
+   {k:'C',t:'導線ごとに個別対応する(共通の器を作らない)',d:'FlyingPresent, OfflineBonus... をそれぞれの場所で個別に実装。着手は速いが、後から一覧・調整できなくなる。'},
   ]}},
  {id:'mn-drop', h:'廃止するもの(削除ではなく「Steam ビルドに含めない」)', s:'k', b:`
   <table><tr><th>対象</th><th>理由</th></tr>
@@ -397,7 +425,8 @@ const DB = [
   <tr><td>改ざんの難易度</td><td>root / 脱獄が必要</td><td><b>メモ帳で開いて数字を書き換えるだけ</b></td></tr></table>
   <p><b>OS が守ってくれていた前提が消えます。</b></p>
   <blockquote>この判断は独立していません。<b>03 で通貨を売るなら必須、DLC のみ(B2)なら不要</b>。DLC の所有権は Steam 側が持つので偽造できず、セーブを改ざんされても売上は減りません。</blockquote>
-  <p class="note">⚠️ 移行の罠: <code>isEncrypted</code> を false → true に変えると<b>保存先ファイル名が変わります</b>(<code>_saveData.json</code> → <code>_saveData.encrypted</code>)。モバイル版の既存プレイヤーのセーブが読めなくなるため、切り替えるなら「旧 .json があれば読んで .encrypted に書き直す」移行処理が必須。</p>`,
+  <p><span class="okw">2026-07-28 の広告方針の確定で、この天秤はさらに A(平文のまま)へ傾きました。</span>倍率や FlyingPresent 強化を<b>課金解禁</b>にするということは、価値のあるものが軒並み <b>Steam 側が所有権を持つ DLC</b> になるということです。セーブを書き換えても解禁できません。</p>
+  <p class="note">⚠️ 移行の罠(<b>Q5「モバイル版を継続」が確定したため、この罠は生きています</b>): <code>isEncrypted</code> を false → true に変えると<b>保存先ファイル名が変わります</b>(<code>_saveData.json</code> → <code>_saveData.encrypted</code>)。モバイル版の既存プレイヤーのセーブが読めなくなるため、切り替えるなら「旧 .json があれば読んで .encrypted に書き直す」移行処理が必須です。<b>B / C を選ぶ場合は、暗号化そのものより移行処理の方が重い作業になります。</b></p>`,
   opt:{items:[
    {k:'A',t:'平文のまま(03 が B2 の場合)',d:'何もしない。シングルプレイのアイドルゲームで、他人に迷惑がかからない改造は放置でよいという判断も成立する。',rec:true},
    {k:'B',t:'既存の AES を有効化',d:'isEncrypted: true に変えるだけ。実装コストほぼゼロ、カジュアルな改ざんは防げる。業界標準の水準。ただし移行処理が必要。'},
@@ -470,11 +499,12 @@ const DB = [
   <tr><td>1</td><td>3カラムのフレックス枠を用意し、左右を <code>display: none</code> に(= 中央900固定のレターボックス)</td><td><b>崩れない状態</b>。ここまでで遊べる</td></tr>
   <tr><td>2</td><td><code>WideExtraScenes</code> を実装し、コンテンツを左右に挿す</td><td>横長らしい画面</td></tr>
   <tr><td>3</td><td>幅が足りないときに自動で段階1に戻す</td><td>ウィンドウリサイズ対応</td></tr></table>
-  <p class="note">段階1は段階2の前提であり、捨て仕事になりません。</p>`,
+  <p class="note">段階1は段階2の前提であり、捨て仕事になりません。</p>
+  <p class="note">→ <b>Q3「1.0 のスコープ = 全部入り」が確定済み</b>なので、実質 C(段階3)が既定線です。念のため明示的に選んでください。</p>`,
   opt:{items:[
-   {k:'A',t:'段階1まで(レターボックス)',d:'1.0 は「崩れない」で出す。横長らしさは 1.1 以降。工数最小。'},
-   {k:'B',t:'段階2まで',d:'左右に常設コンテンツを出す。PC ゲームとして見られる水準。',rec:true},
-   {k:'C',t:'段階3まで',d:'ウィンドウリサイズに追従。PC では実質必須という見方もある。'},
+   {k:'C',t:'段階3まで',d:'ウィンドウリサイズに追従。Q3=全部入り と整合。PC では実質必須という見方もある。',rec:true},
+   {k:'B',t:'段階2まで',d:'左右に常設コンテンツを出す。リサイズ追従は 1.1 以降。'},
+   {k:'A',t:'段階1まで(レターボックス)',d:'1.0 は「崩れない」で出す。工数最小だが Q3 の決定とは矛盾します。'},
   ]}},
  {id:'ds-place', h:'何を左右に置くか', s:'d', b:`
   <p>現在のタブは Cave / Equipment / Battle_New / Shop / Prestige / Relic の6つ(+ 廃止予定の Ads)。<b>コンテンツを「常設サイド」と「中央切替」に二分する</b>案:</p>
@@ -524,11 +554,12 @@ const DB = [
   <h4>設計 ── 各 View に Input.GetKeyDown を書かせない</h4>
   <p>コンテンツは「自分がアクティブなときの意味」を<b>宣言するだけ</b>にします(<code>IShortcutProvider</code>: Owner + Shortcuts)。ディスパッチャは1つだけで、アクティブな <code>SceneKind</code> の Provider にだけキーを流し、<b>起動時に全 Provider を集めて重複を検出</b>。割り当て済みのキーは<b>ボタンのラベルに自動表示</b>(<code>[Q] 採掘</code>)し、ヘルプ画面も同じデータから生成します。</p>`},
  {id:'ds-qwert', h:'QWERT に何を割り当てるか', s:'d', b:`
-  <p>同じ物理キーが、開いているコンテンツによって別の意味を持ちます。Cave / Equipment / Battle それぞれで Q W E R T が何をするか、<b>コンテンツごとの個別設計</b>が要ります。現状は全て未定です。</p>`,
+  <p>同じ物理キーが、開いているコンテンツによって別の意味を持ちます。Cave / Equipment / Battle それぞれで Q W E R T が何をするか、<b>コンテンツごとの個別設計</b>が要ります。現状は全て未定です。</p>
+  <p class="note">→ <b>Q3「全部入り」</b>との整合なら C。ただしこれは<b>このサイトでの追加のブレストが必要</b>になる唯一の項目で、他の決定と違って「選んだら終わり」になりません。</p>`,
   opt:{items:[
+   {k:'C',t:'全コンテンツ分いま決める',d:'Q3=全部入り と整合。コンテンツごとに専用ページを作ってブレストします(この決定の後に作業が続きます)。',rec:true},
+   {k:'B',t:'Cave のみ先に決める',d:'最も長く滞在する画面から。他は 1.1 以降。'},
    {k:'A',t:'1.0 では実装しない',d:'ディスパッチャの器だけ作り、割り当ては空。数字キーと Esc/Space のみ。'},
-   {k:'B',t:'Cave のみ先に決める',d:'最も長く滞在する画面から。他は 1.1 以降。',rec:true},
-   {k:'C',t:'全コンテンツ分いま決める',d:'このサイトでコンテンツごとにブレストする。'},
   ]}},
  {id:'ds-misc', h:'その他の PC 対応', s:'k', b:`
   <table><tr><th>#</th><th>項目</th><th>対応</th></tr>
@@ -571,7 +602,8 @@ const DB = [
   <tr><td>隠し</td><td>スクリーンセーバーを n 分見る 等</td></tr></table>
   <blockquote><b>実績は後から削除できません。</b>追加はできますが、削除・意味の変更は取得済みプレイヤーに影響します。<b>最初に全体像を決めてから登録すること。</b></blockquote>`},
  {id:'ft-achnum', h:'実績の数', s:'d', b:`
-  <p>多すぎると1つの価値が下がり、少なすぎるとコンプリート欲が働きません。アイドルゲームは 30〜60 が相場。<b>アイコン制作コスト(解除前/解除後の2種 × 実績数)が直結します</b>(→ Q6)。</p>`,
+  <p>多すぎると1つの価値が下がり、少なすぎるとコンプリート欲が働きません。アイドルゲームは 30〜60 が相場。<b>アイコン制作コスト(解除前/解除後の2種 × 実績数)が直結します</b>。</p>
+  <p class="note">→ <b>Q6「自作のみ」が確定済み</b>なので、選んだ数だけ自分でアイコンを描くことになります(B なら 60〜120 枚)。<b>統一テンプレートを先に決めて量産できる形にする</b>のが前提条件です。Q3「全部入り」との整合なら B 以上。</p>`,
   opt:{items:[
    {k:'A',t:'20〜30(絞る)',d:'アイコン制作が現実的。既存コンテンツの節目だけを拾う。'},
    {k:'B',t:'30〜60(相場)',d:'コンプリート欲が働く。アイコンは統一テンプレで量産する前提。',rec:true},
@@ -584,7 +616,8 @@ const DB = [
    {k:'B',t:'Unity 側に判定を置く',d:'ドメインを触らない。ただし判定ロジックがテスト外に出る。'},
   ]}},
  {id:'ft-lb', h:'リーダーボードの採否', s:'d', b:`
-  <p>実装コストは低い(スコア送信と取得の API のみ)。ただしアイドルゲームのランキングは<b>チートと放置時間の勝負になりやすい</b>: セーブがローカルにある以上改ざんは容易で(→ 04 の暗号化と関連)、上位が現実的に届かない数字だとかえってモチベーションを下げます。</p>`,
+  <p>実装コストは低い(スコア送信と取得の API のみ)。ただしアイドルゲームのランキングは<b>チートと放置時間の勝負になりやすい</b>: セーブがローカルにある以上改ざんは容易で(→ 04 の暗号化と関連)、上位が現実的に届かない数字だとかえってモチベーションを下げます。</p>
+  <p class="note">→ <b>Q3「全部入り」</b>なら採用前提(B か C)。A(導入しない)を選ぶ場合は、Q3 の例外として意図的に外す判断になります。</p>`,
   opt:{items:[
    {k:'B',t:'フレンド内ランキングのみ',d:'全世界順位は出さない。改ざんの影響が身内に閉じ、比較対象としては機能する。',rec:true},
    {k:'A',t:'導入しない',d:'工数ゼロ。アイドルゲームに順位は要らないという判断。'},
@@ -607,8 +640,14 @@ const DB = [
 
 /* ============================ 覚書 ============================ */
 {id:'steamworks', nav:'Steamworks 管理画面', group:'覚書', title:'Steamworks 管理画面の作業', desc:'仕様ではなく、リリース前にやることの覚書。', src:'docs/steam-release/Memo/Steamworks_Setup.md', secs:[
- {id:'sw-appid', h:'🔴 最初に確認: AppID 3217600', s:'q', b:`
-  <p>→ <a href="#ask" onclick="go('ask')">Q1(あなたに聞きたいこと)</a> で決めます。<b>全スケジュールの起点</b>です。</p>`},
+ {id:'sw-appid', h:'AppID ── 新規取得が必要（確定）', s:'k', b:`
+  <p>2026-07-28 <b>既存の <code>3217600</code> は旧作(Idle Sphere)用</b>と確定。本作用に<span class="kw">新規取得が必要</span>です。</p>
+  <ul>
+   <li><b>Steam Direct $100</b>(アプリごと)の支払いが発生します。Q6「自作のみ・追加費用は最小」の唯一の例外として確定した支出です。</li>
+   <li>取得後、<b>審査待ち期間</b>が入ります。Q4 で期限は設けない方針ですが、<span class="kw">これは自分では縮められない待ち時間</span>なので、<b>他の作業と並行して最初に着手する価値があります</b>。</li>
+   <li>旧 AppID に紐づく残骸は整理対象: <code>steam_appid.txt</code> の値、<code>Assets/Editor/DeploySteam.cs</code>(実質作り直し)、Standalone bundle ID <code>com.idlesystem.IdleSphere</code>。</li>
+   <li>macOS も同時対応(Q2=B)なので、<b>Depot は Windows / macOS の2系統</b>を最初から設計します。</li>
+  </ul>`},
  {id:'sw-todo', h:'やることリスト', s:'k', b:`
   <h4>アプリ設定</h4>
   <ul><li>AppID の確認 / 新規取得</li><li>アプリ名、対応 OS、対応言語の登録(本作は13言語)</li><li>Depot 構成(Windows / macOS を分けるか共通にするか)</li><li>Branch 構成(<code>default</code> / <code>beta</code>)</li></ul>
@@ -641,8 +680,7 @@ const DB = [
   <p class="note">⚠️ Unity Editor が開いていると <code>ProjectSettings.asset</code> の変更が巻き戻ります(CLAUDE.md 既知の落とし穴)。</p>`},
  {id:'bd-post', h:'ビルド後処理と自動化', s:'k', b:`
   <ul><li><b><code>steam_appid.txt</code> をリリースビルドに同梱しない。</b>同梱すると誰でも AppID を書き換えて他のゲームとして起動できます</li>
-  <li>macOS: Apple の公証(Notarization)が必要かどうかを確認。必要なら署名パイプラインを別途構築</li>
-  <li>macOS: Apple Silicon / Universal Binary の要否</li>
+  <li><b>macOS: Apple の公証(Notarization)</b> — Q2「Windows + macOS 同時」が確定したため、<span class="kw">回避不可の必須作業</span>になりました。署名パイプラインの構築、Apple Developer Program の年間費用、Apple Silicon / Universal Binary の要否をまとめて調査する必要があります。<b>本計画で最も未知数の大きい作業</b>です</li>
   <li><code>steamcmd</code> で非対話アップロード</li>
   <li><b>Steam Guard(2FA)を非対話環境でどう通すか</b>(CI の最大の障壁)</li></ul>
   <h4>モバイル版から引き継ぐ既知の落とし穴</h4>
@@ -689,9 +727,11 @@ const DB = [
 
 /* ============================ 管理 ============================ */
 {id:'risk', nav:'リスクと未知数', group:'管理', title:'リスクと未知数', desc:'計画そのものを揺らしうるもの。優先度順。', src:'各章から集約', secs:[
- {id:'rk-1', h:'R1. ドメイン DLL が Standalone で動くか(最大の未知数)', s:'q', b:`
+ {id:'rk-1', h:'R1. ドメイン DLL が Standalone で動くか(最大の未知数・保留中)', s:'q', b:`
   <p><code>IdleSystem.*.dll</code> 群が Windows Standalone で動く保証は<b>まだありません</b>。ここが動かないと移植計画そのものを見直す必要があります。</p>
-  <p><span class="okw">潰し方は簡単です。</span>空の Windows ビルドを1本作れば、DLL 動作・<code>SteamAPI.Init()</code>・横長時の崩れ方の<b>3つが同時に分かります</b>。→ <a href="#platform" onclick="go('platform')">02 作業順序</a>で「フェーズ1のうちに走らせる」を選ぶと、仕様確定より先に判明します。</p>`},
+  <p><span class="ng">2026-07-28、検証ビルドは「フェーズ3の頭で実施」と決定されました。</span>つまり<b>このリスクはフェーズ1・2の間ずっと開いたままになります</b>。仕様を全部固め、プロンプト化まで終えた後で「DLL が動かない」と判明する可能性が残る、ということです。</p>
+  <p class="note">これは意図的な判断として受け入れます。ただし影響を小さくする方法はあります: フェーズ3の作業順序で<b>0番(検証ビルド)を必ず最初に置き、それが通るまで他の実装に着手しない</b>こと。→ <a href="#roadmap" onclick="go('roadmap')">進め方・工程</a>に反映済み。</p>
+  <p class="note">なお、この1本のビルドで分かるのは DLL 動作だけではありません。<code>SteamAPI.Init()</code> の成否と、<b>横長画面での実際の崩れ方</b>(05 の記述は推論であり実測ではない)も同時に判明します。R4 とセットのリスクです。</p>`},
  {id:'rk-2', h:'R2. ゲーム内通貨販売の Steam 承認', s:'q', b:`
   <p>承認されないと課金の主軸が消えます。→ <a href="#money" onclick="go('money')">03 マネタイズ</a>。プランB(B2: DLC のみ)を決めておけば、この未知数は<b>スケジュールを止めなくなります</b>。</p>`},
  {id:'rk-3', h:'R3. AppID が旧作用だった場合', s:'q', b:`
@@ -703,7 +743,17 @@ const DB = [
   <ol><li><b>Scripting Define の変更</b> — <code>STEAMWORKS_NET</code> の付け外しでモバイルビルドが壊れうる</li>
   <li><b>暗号化フラグの切り替え</b> — 保存先ファイル名が変わり<b>既存プレイヤーのセーブが読めなくなる</b></li>
   <li><b>ドメイン(DLL)の変更</b> — 一括マージ API 等。ビルドと反映の手順ミスで両方が壊れる</li></ol>
-  <p class="note">対策: この3つに触る作業は<b>単独のコミットに分け、モバイルビルドの確認とセットで行う</b>。</p>`},
+  <p class="note">対策: この3つに触る作業は<b>単独のコミットに分け、モバイルビルドの確認とセットで行う</b>。</p>
+  <p class="note">Q5「モバイル版を継続」が確定したため、このリスクは<b>計画の最後まで残り続けます</b>。</p>`},
+ {id:'rk-6', h:'R6. macOS のビルド・公証パイプライン（新規）', s:'q', b:`
+  <p>Q2「Windows + macOS 同時」の確定により発生した、<b>新しい未知数</b>です。当初は「必要かどうかを確認する」項目でしたが、対応が確定した以上<b>必ず通さなければならない関門</b>になりました。</p>
+  <ul>
+   <li>Apple の<b>公証(Notarization)</b>が必要か、必要ならその署名パイプライン</li>
+   <li><b>Apple Developer Program の年間費用</b>(Q6「自作のみ・追加費用は最小」に対する2つ目の例外になりうる)</li>
+   <li>Apple Silicon / Universal Binary の要否</li>
+   <li><b>macOS の実機テスト環境</b>があるか</li>
+  </ul>
+  <p class="note">Windows 側は既存の知見が使えますが、macOS は<b>ビルドが通ってからストアに載るまでの間に固有の壁がある</b>領域です。R1(検証ビルド)を Windows だけで済ませると、macOS 側の未知数は最後まで残ります。<b>検証ビルドを macOS でも1本作るか</b>は、フェーズ3の頭で改めて判断してください。</p>`},
 ]},
 {id:'roadmap', nav:'進め方・工程', group:'管理', title:'進め方・工程', desc:'フェーズ1をどう終わらせ、フェーズ2に何を渡すか。', src:'このサイトが初出', secs:[
  {id:'rd-p1', h:'フェーズ1の完了条件', s:'k', b:`
@@ -721,8 +771,10 @@ const DB = [
   <li>ドメイン側(GamesDomain)と Unity 側(IdleMinertia)の<b>作業を分離</b>し、DLL 反映のタイミングを明示する</li></ul>
   <p class="note">この形式自体をどうするかも、フェーズ1の終わりに決めます。</p>`},
  {id:'rd-order', h:'実装の推奨順序(フェーズ3)', s:'t', b:`
+  <p class="note">2026-07-28 更新。検証ビルドを<b>フェーズ3の頭</b>で行うと決まったため、<span class="ng">0番が通るまで他の実装に着手しない</span>ことを明示のルールにします。ここで DLL が動かないと以降の全作業が無駄になるためです。</p>
   <table><tr><th>順</th><th>作業</th><th>理由</th></tr>
-  <tr><td>0</td><td>空の Windows ビルドで DLL / SteamAPI.Init / 崩れ方を確認</td><td>最大の未知数を最速で潰す</td></tr>
+  <tr><td><b>0</b></td><td><b>空の Windows ビルドで DLL / SteamAPI.Init / 崩れ方を確認。ここが通るまで先に進まない</b></td><td>最大の未知数(R1)。フェーズ1・2を通して保留されてきたので、<b>フェーズ3の最初の関門</b>になる</td></tr>
+  <tr><td>0.5</td><td>AppID の新規取得（$100・審査待ち）</td><td>自分では縮められない待ち時間。<b>他の作業と並行して最初に出す</b></td></tr>
   <tr><td>1</td><td>Steamworks.NET の二重導入解消 + Define 整理</td><td>土台。ここが濁っていると全部が曖昧になる</td></tr>
   <tr><td>2</td><td><code>forceSingleInstance: 1</code> ほか PC 基本設定(P1〜P4)</td><td>1行で効く。セーブ破損は早く潰す</td></tr>
   <tr><td>3</td><td>インターフェース群 + Editor 実装</td><td>Editor で開発を続けられる状態を保つ</td></tr>
@@ -730,8 +782,9 @@ const DB = [
   <tr><td>5</td><td>Steam Cloud + 実績</td><td>Steam 版として成立する最低ライン</td></tr>
   <tr><td>6</td><td>横長 段階1(レターボックス)</td><td>崩れない状態</td></tr>
   <tr><td>7</td><td>DLC / 課金</td><td>マネタイズの結論が出てから</td></tr>
-  <tr><td>8</td><td>横長 段階2 + マウス操作 + ショートカット</td><td>PC ゲームとしての完成度</td></tr></table>
-  <p class="note">1.0 をどこで切るかは <a href="#ask" onclick="go('ask')">Q3(スコープ上限)</a> の答えで決まります。</p>`},
+  <tr><td>8</td><td>横長 段階2〜3 + マウス操作 + ショートカット</td><td>PC ゲームとしての完成度</td></tr>
+  <tr><td>9</td><td>macOS ビルド・公証パイプライン</td><td>Q2=同時対応。Windows が固まってから着手(R6)</td></tr></table>
+  <p class="note"><b>Q3「全部入り」が確定したので、1.0 は 9 まで全部やる</b>ことになります。切り落とす段階はありません。その代わり Q4 で期限を設けないと決めているため、順序さえ守れば途中で妥協する必要はありません。</p>`},
  {id:'rd-site', h:'このサイト自体の運用', s:'d', b:`
   <p>フェーズ2以降もこのサイトを使うか、MD に戻すか。</p>`,
   opt:{items:[
