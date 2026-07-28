@@ -140,8 +140,12 @@
   .kind-tabs button.on{background:var(--primary-bg);color:var(--primary-ink)}
   .board-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
   .board-tools input,.board-tools select{border:1px solid var(--line);background:var(--field-bg);color:var(--ink);border-radius:6px;padding:7px 9px}
-  .board-tools input{min-width:220px}
+  .board-tools input[type=search]{min-width:220px}
+  .board-tools .toggle{display:flex;align-items:center;gap:5px;color:var(--sub);font-size:12.5px;border:1px solid var(--line);border-radius:6px;padding:6px 10px;background:var(--panel);cursor:pointer}
+  .board-tools .toggle input{margin:0}
   .board-tools .count{color:var(--sub);font-size:12px}
+  .pill.decision-adopted{color:var(--primary-ink);border-color:var(--primary-bg);background:var(--primary-bg)}
+  .pill.decision-rejected{opacity:.65;text-decoration:line-through}
   .tier-legend{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:11px 14px;margin-bottom:16px}
   .tier-legend summary{cursor:pointer;font-weight:700;font-size:13px}
   .tier-legend ol{margin:9px 0 0 22px;padding:0;color:var(--sub);font-size:13px}
@@ -313,7 +317,8 @@
   </div>
   <div class="board-tools">
     <input id="boardSearch" type="search" placeholder="検索">
-    <select id="boardStatusFilter"></select>
+    <label class="toggle"><input id="boardShowAdopted" type="checkbox" checked>採用を表示</label>
+    <label class="toggle"><input id="boardShowRejected" type="checkbox" checked>不採用を表示</label>
     <span class="count" id="boardCount"></span>
   </div>
   <details class="tier-legend" id="tierLegend">
@@ -363,7 +368,6 @@
     </div>
     <div class="modal-foot">
       <button class="primary" id="cardSave" type="button">保存</button>
-      <button class="danger" id="cardArchive" type="button">保留</button>
       <span class="spacer"></span>
       <span class="state-line" id="cardState"></span>
     </div>
@@ -443,8 +447,11 @@ const KINDS = {
   }
 };
 const CREATE_TYPE_TO_KIND = Object.fromEntries(Object.keys(KINDS).map(k => [`${k}_created`, k]));
-// 一覧の並び。決まっているものから先に見せ、片付いたものを後ろへ送る。
-const CARD_RANK = { done: 0, active: 1, review: 2, discuss: 3, open: 4, reflected: 5, archive: 6, rejected: 7, old: 8 };
+// カードはアイディアと違い、採用 / 不採用を振り分けていくための状態しか持たない。
+// 未定のものを先に見せる(そこが作業対象なので)。
+const DECISIONS = { undecided: '未定', adopted: '採用', rejected: '不採用' };
+const DECISION_RANK = { undecided: 0, adopted: 1, rejected: 2 };
+const decisionOf = value => (DECISIONS[value] ? value : 'undecided');
 
 let connected = false;
 let propose = false;    // 静的配信(GitHub Pages)。変更は手元に溜め、Issue で送る
@@ -459,9 +466,9 @@ let cardDirty = false;
 let view = 'challenge';
 let kind = 'challenge';
 // 検索と絞り込みは種類ごとに独立させる。片方の絞り込みがもう片方に残ると、
-// カードが消えたように見えて混乱するため。
+// カードが消えたように見えて混乱するため。未定は常に出す(作業対象なので)。
 const boardFilters = Object.fromEntries(
-  Object.keys(KINDS).map(k => [k, { q: '', status: 'active-list' }])
+  Object.keys(KINDS).map(k => [k, { q: '', adopted: true, rejected: true }])
 );
 
 const els = {
@@ -499,7 +506,8 @@ const els = {
   boardReload: document.getElementById('boardReload'),
   toIdea: document.getElementById('toIdea'),
   boardSearch: document.getElementById('boardSearch'),
-  boardStatusFilter: document.getElementById('boardStatusFilter'),
+  boardShowAdopted: document.getElementById('boardShowAdopted'),
+  boardShowRejected: document.getElementById('boardShowRejected'),
   boardCount: document.getElementById('boardCount'),
   tierLegend: document.getElementById('tierLegend'),
   tierLegendList: document.getElementById('tierLegendList'),
@@ -520,7 +528,6 @@ const els = {
   cardAddComment: document.getElementById('cardAddComment'),
   cardHistory: document.getElementById('cardHistory'),
   cardSave: document.getElementById('cardSave'),
-  cardArchive: document.getElementById('cardArchive'),
   cardState: document.getElementById('cardState')
 };
 
@@ -660,7 +667,7 @@ function rebuild(){
         kind: createdKind,
         title: event.title || def.newTitle,
         memo: event.memo || '',
-        status: event.status || 'open',
+        status: decisionOf(event.status),
         tags: Array.isArray(event.tags) ? event.tags : [],
         author: event.author || '',
         createdAt: event.at,
@@ -685,7 +692,7 @@ function rebuild(){
         for (const field of KINDS[card.kind].fields) card[field.key] = event[field.key] || '';
       }
       if (event.type === `${card.kind}_status_changed`) {
-        card.status = event.status || card.status;
+        card.status = decisionOf(event.status);
       }
       if (event.type === 'comment_added') {
         card.comments.push({ ...event, status: event.status || 'open' });
@@ -955,11 +962,13 @@ function kindCards(){
 
 function filteredCards(){
   const q = els.boardSearch.value.trim().toLowerCase();
-  const status = els.boardStatusFilter.value;
+  const showAdopted = els.boardShowAdopted.checked;
+  const showRejected = els.boardShowRejected.checked;
   const fields = KINDS[kind].fields;
   return kindCards().filter(card => {
-    if (status === 'active-list' && HIDDEN_IDEA_STATUSES.has(card.status)) return false;
-    if (status !== 'active-list' && status !== 'all' && card.status !== status) return false;
+    // 未定は作業対象なので常に出す。採用 / 不採用だけを隠せる。
+    if (card.status === 'adopted' && !showAdopted) return false;
+    if (card.status === 'rejected' && !showRejected) return false;
     if (!q) return true;
     const hay = [card.title, ...fields.map(f => card[f.key]), card.memo, card.tags.join(' ')]
       .join('\n').toLowerCase();
@@ -969,8 +978,8 @@ function filteredCards(){
 
 function orderedCards(){
   return filteredCards().slice().sort((a, b) => {
-    const ra = CARD_RANK[a.status] ?? 9;
-    const rb = CARD_RANK[b.status] ?? 9;
+    const ra = DECISION_RANK[a.status] ?? 0;
+    const rb = DECISION_RANK[b.status] ?? 0;
     if (ra !== rb) return ra - rb;
     return String(a.createdAt).localeCompare(String(b.createdAt));
   });
@@ -984,7 +993,9 @@ function renderCardGrid(){
   for (const button of els.kindTabs) {
     button.classList.toggle('on', button.dataset.kind === kind);
   }
-  els.boardCount.textContent = `${filteredCards().length} / ${kindCards().length} 件`;
+  const all = kindCards();
+  const undecided = all.filter(c => c.status === 'undecided').length;
+  els.boardCount.textContent = `${filteredCards().length} / ${all.length} 件（未定 ${undecided}）`;
   const list = orderedCards();
   if (!list.length) {
     els.cardGrid.innerHTML = `<div class="empty">カードなし。「＋ 新規${def.label}」から作成します。</div>`;
@@ -994,7 +1005,7 @@ function renderCardGrid(){
     <button class="card" type="button" data-card-id="${escapeAttr(card.id)}">
       <div class="card-head">
         <span class="card-title">${escapeHtml(card.title)}</span>
-        <span class="pill">${escapeHtml(STATUS[card.status] || card.status)}</span>
+        <span class="pill decision-${card.status}">${escapeHtml(DECISIONS[card.status])}</span>
       </div>
       <div class="card-rows">
         ${def.fields.map(f => cardRow(f.label, card[f.key])).join('')}
@@ -1016,7 +1027,7 @@ function cardRow(label, value){
 function setKind(next){
   if (kind === next) return;
   if (cardDirty && !confirm('未保存の変更があります。移動しますか?')) return;
-  boardFilters[kind] = { q: els.boardSearch.value, status: els.boardStatusFilter.value };
+  boardFilters[kind] = saveBoardFilter();
   kind = next;
   openCardId = '';
   cardDirty = false;
@@ -1027,10 +1038,19 @@ function setKind(next){
   renderCardModal();
 }
 
+function saveBoardFilter(){
+  return {
+    q: els.boardSearch.value,
+    adopted: els.boardShowAdopted.checked,
+    rejected: els.boardShowRejected.checked
+  };
+}
+
 function applyBoardFilter(){
   const saved = boardFilters[kind];
   els.boardSearch.value = saved.q;
-  els.boardStatusFilter.value = saved.status;
+  els.boardShowAdopted.checked = saved.adopted;
+  els.boardShowRejected.checked = saved.rejected;
 }
 
 function openCard(id){
@@ -1515,7 +1535,8 @@ els.authorName.addEventListener('change', getAuthor);
 els.toBoard.addEventListener('click', () => setView('challenge'));
 els.toIdea.addEventListener('click', () => setView('idea'));
 els.boardSearch.addEventListener('input', renderCardGrid);
-els.boardStatusFilter.addEventListener('change', renderCardGrid);
+els.boardShowAdopted.addEventListener('change', renderCardGrid);
+els.boardShowRejected.addEventListener('change', renderCardGrid);
 els.boardNew.addEventListener('click', createCard);
 els.boardSubmitGh.addEventListener('click', submitToGitHub);
 els.boardReload.addEventListener('click', async () => {
@@ -1539,10 +1560,6 @@ for (const button of els.kindTabs) {
 }
 els.cardStatus.addEventListener('change', saveCardStatus);
 els.cardSave.addEventListener('click', saveCard);
-els.cardArchive.addEventListener('click', () => {
-  const card = currentCard();
-  if (card) changeCardStatus(card, 'archive');
-});
 els.cardShowOld.addEventListener('change', renderCardModal);
 els.cardAddComment.addEventListener('click', addCardComment);
 els.cardCommentList.addEventListener('click', event => {
@@ -1579,9 +1596,9 @@ function buildStaticUi(){
   els.tierLegendList.innerHTML = TIER_EXTRA
     .map(extra => `<li>${extra ? `固有の制約　＋　${escapeHtml(extra)}` : '固有の制約のみ'}</li>`)
     .join('');
-  els.boardStatusFilter.innerHTML = els.statusFilter.innerHTML;
-  els.cardStatus.innerHTML = Object.entries(STATUS)
+  els.cardStatus.innerHTML = Object.entries(DECISIONS)
     .map(([key, label]) => `<option value="${key}">${label}</option>`).join('');
+  applyBoardFilter();
 }
 
 async function boot(){
