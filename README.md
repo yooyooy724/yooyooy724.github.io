@@ -21,7 +21,11 @@ dist/           ビルド中間物（gitignore 済み）
 
 yayu_portfolio/ ← ビルド成果物（コミット対象）
 notes/          ← ビルド成果物（コミット対象。Actions からも書き込まれる）
+.nojekyll       Jekyll を止める（消さないこと）
 ```
+
+`.nojekyll` は消さないこと。これが無いと GitHub Pages が Jekyll を走らせ、
+直下に `index.html` が無いぶん **この README がトップページとして描画される**。
 
 GitHub Pages はリポジトリ直下をそのまま配信し、ディレクトリ構成がそのまま URL になるため、
 **ビルド成果物もコミットする**。`yayu_portfolio/` と `notes/` を直接編集しないこと
