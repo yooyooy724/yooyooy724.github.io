@@ -3,3 +3,6 @@ dist/
 .DS_Store
 *.log
 .idea/
+
+# DesignNotes からの生成物（ビルド中間。公開実体はリポジトリ直下の notes/）
+public/notes/

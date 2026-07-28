@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IdeaBoard</title>
+<style>
+  :root{
+    color-scheme:light;
+    --bg:#f4f4f5; --panel:#ffffff; --panel-2:#fafafa;
+    --ink:#1c1c1e; --sub:#6e6e73;
+    --line:#e4e4e7; --line-strong:#d1d1d6; --soft:#efeff1;
+    --sidebar-bg:#fafafa; --sidebar-line:#e4e4e7;
+    --sidebar-ink:#1c1c1e; --sidebar-sub:#6e6e73;
+    --field-bg:#ffffff;
+    --primary-bg:#2b2b2e; --primary-ink:#ffffff;
+    --sel:#ecebee; --sel-bar:#1c1c1e;
+    --shadow:0 8px 24px rgba(0,0,0,.06);
+  }
+  :root[data-theme="dark"]{
+    color-scheme:dark;
+    --bg:#161618; --panel:#1f1f22; --panel-2:#26262a;
+    --ink:#e9e9ec; --sub:#9a9aa1;
+    --line:#323236; --line-strong:#43434a; --soft:#2a2a2e;
+    --sidebar-bg:#1b1b1e; --sidebar-line:#323236;
+    --sidebar-ink:#e9e9ec; --sidebar-sub:#9a9aa1;
+    --field-bg:#26262a;
+    --primary-bg:#e9e9ec; --primary-ink:#1a1a1c;
+    --sel:#2c2c31; --sel-bar:#e9e9ec;
+    --shadow:0 8px 24px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Yu Gothic UI","Meiryo",sans-serif;font-size:14px;line-height:1.65}
+  button,input,textarea,select{font:inherit}
+  button{cursor:pointer}
+  #setup{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px;background:var(--bg)}
+  #setup.hidden{display:none}
+  .hidden{display:none}
+  .setup-card{width:min(760px,100%);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:26px 30px;box-shadow:var(--shadow)}
+  .setup-card h1{font-size:24px;margin:0 0 8px}
+  .setup-lead{color:var(--sub);margin:0 0 18px}
+  .setup-grid{display:grid;gap:14px}
+  .setup-field label{display:block;font-weight:700;margin-bottom:5px}
+  .setup-field input{width:100%;border:1px solid var(--line);border-radius:6px;padding:9px 10px;background:var(--field-bg);color:var(--ink)}
+  .setup-note{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:12px 14px;color:var(--sub)}
+  .setup-note p{margin:0 0 7px}
+  .setup-note p:last-child{margin-bottom:0}
+  .setup-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .setup-actions .primary{padding:10px 16px}
+  #setupStatus{color:var(--sub);font-size:12.5px}
+  #app{display:grid;grid-template-columns:280px minmax(420px,1fr) 360px;min-height:100vh}
+  #app.hidden{display:none}
+  aside{background:var(--sidebar-bg);color:var(--sidebar-ink);position:sticky;top:0;height:100vh;overflow:auto;border-right:1px solid var(--sidebar-line)}
+  .brand{padding:18px 18px 14px;border-bottom:1px solid var(--sidebar-line);display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .brand h1{font-size:18px;margin:0;color:var(--sidebar-ink);letter-spacing:.06em}
+  .brand .meta{font-size:12px;color:var(--sidebar-sub);margin-top:3px}
+  .theme-toggle{border:1px solid var(--sidebar-line);background:transparent;color:var(--sidebar-sub);border-radius:6px;padding:5px 9px;font-size:12px;white-space:nowrap;flex:0 0 auto}
+  .theme-toggle:hover{color:var(--sidebar-ink);border-color:var(--line-strong)}
+  .left-tools{padding:14px 14px 10px;border-bottom:1px solid var(--sidebar-line);display:grid;gap:8px}
+  .left-tools input,.left-tools select{width:100%;border:1px solid var(--line);background:var(--field-bg);color:var(--ink);border-radius:6px;padding:7px 9px}
+  .left-tools input::placeholder{color:var(--sub)}
+  .toolbar button,.ghost,.primary,.danger{border:1px solid var(--line);border-radius:6px;padding:7px 10px;background:var(--panel);color:var(--ink)}
+  #ideaList{padding:6px 8px 16px}
+  .idea-group-title{padding:14px 8px 5px;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--sidebar-sub);border-bottom:1px solid var(--sidebar-line);margin:0 0 4px}
+  .idea-group-title:first-child{padding-top:6px}
+  .idea-item{width:100%;text-align:left;background:transparent;color:var(--ink);border:0;border-left:3px solid transparent;padding:9px 9px 9px 17px;border-radius:0;margin-bottom:3px}
+  .idea-item:hover{background:var(--soft)}
+  .idea-item.on{background:var(--sel);border-left-color:var(--sel-bar)}
+  .idea-title{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .idea-sub{display:flex;gap:6px;align-items:center;color:var(--sub);font-size:11.5px;margin-top:2px}
+  .pill{display:inline-flex;align-items:center;max-width:100%;border:1px solid var(--line);border-radius:999px;padding:1px 8px;font-size:11.5px;color:var(--sub);background:var(--panel);white-space:nowrap}
+  .pill.status-done,.pill.status-active{color:var(--primary-ink);border-color:var(--primary-bg);background:var(--primary-bg)}
+  main{padding:24px 28px 60px;min-width:0}
+  .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+  .toolbar .spacer{flex:1}
+  .primary{background:var(--primary-bg);border-color:var(--primary-bg);color:var(--primary-ink)}
+  .primary:hover{opacity:.9}
+  .toolbar button:hover,.ghost:hover,.danger:hover{border-color:var(--line-strong);background:var(--soft)}
+  .danger{background:var(--panel);color:var(--ink);border-color:var(--line-strong)}
+  .ghost{background:var(--panel)}
+  .state-line{font-size:12px;color:var(--sub);min-height:20px}
+  .editor{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .editor-head{padding:14px 16px;background:var(--panel-2);border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr 140px;gap:10px}
+  .editor-head input,.editor-head select,.edit-panel textarea,.edit-panel input,.comment-box textarea,.side-panel input{border:1px solid var(--line);border-radius:6px;padding:8px 10px;background:var(--field-bg);color:var(--ink);width:100%}
+  .editor-head input{font-size:18px;font-weight:700}
+  .read-panel{padding:22px 26px;background:var(--panel)}
+  .doc{max-width:920px;color:var(--ink);font-size:14.5px;line-height:1.85}
+  .doc h1{font-size:23px;margin:0 0 16px;padding-bottom:9px;border-bottom:1px solid var(--line)}
+  .doc h2{font-size:19px;margin:24px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  .doc h3{font-size:16px;margin:20px 0 8px;color:var(--ink)}
+  .doc p{margin:0 0 11px}
+  .doc ul,.doc ol{margin:0 0 13px 24px;padding:0}
+  .doc li{margin:3px 0}
+  .doc code{background:var(--soft);border:1px solid var(--line);border-radius:4px;padding:1px 4px;font-family:Consolas,monospace;font-size:.92em}
+  .doc blockquote{border-left:4px solid var(--line-strong);background:var(--soft);margin:12px 0;padding:9px 13px;color:var(--sub)}
+  .doc table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13.5px}
+  .doc th,.doc td{border:1px solid var(--line);padding:7px 9px;vertical-align:top;text-align:left}
+  .doc th{background:var(--panel-2);font-weight:700}
+  .doc .hr{border:0;border-top:1px solid var(--line);margin:20px 0}
+  .edit-toggle{border-top:1px solid var(--line);background:var(--panel-2);padding:10px 16px}
+  .edit-toggle summary{cursor:pointer;font-weight:700;color:var(--ink)}
+  .edit-panel{display:grid;gap:10px;margin-top:10px}
+  .edit-panel textarea{min-height:180px;resize:vertical;line-height:1.75;font-family:Consolas,"Yu Gothic UI",monospace}
+  .field-row{display:grid;grid-template-columns:1fr 170px;gap:10px}
+  .empty{background:var(--panel);border:1px dashed var(--line);border-radius:8px;padding:38px 20px;text-align:center;color:var(--sub)}
+  .side{border-left:1px solid var(--line);background:var(--panel-2);padding:18px;height:100vh;position:sticky;top:0;overflow:auto}
+  .side h2{font-size:15px;margin:0 0 10px}
+  .side-panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:12px}
+  .side-panel label{display:block;font-size:12px;color:var(--sub);margin:8px 0 3px}
+  .comment-list{display:grid;gap:8px;margin-bottom:12px}
+  .comment{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 11px}
+  .comment.is-old{background:var(--soft);color:var(--sub)}
+  .comment .cm{display:flex;gap:8px;align-items:center;color:var(--sub);font-size:11.5px;margin-bottom:4px}
+  .comment .cm b{color:var(--ink)}
+  .comment .body{white-space:pre-wrap}
+  .comment-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .comment-actions button{border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);padding:3px 7px;font-size:11.5px}
+  .comment-actions button:hover{border-color:var(--line-strong);background:var(--soft)}
+  .comment-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;color:var(--sub);font-size:12px}
+  .comment-tools label{display:flex;align-items:center;gap:5px;margin:0;color:var(--sub);font-size:12px}
+  .comment-section-title{font-size:12px;font-weight:700;color:var(--sub);margin:10px 0 4px}
+  .comment-box{display:grid;gap:8px}
+  .comment-box textarea{min-height:92px;resize:vertical}
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .tag{background:var(--soft);color:var(--sub);border:1px solid var(--line);border-radius:999px;padding:1px 8px;font-size:11.5px}
+  .history{display:grid;gap:5px;font-size:12px;color:var(--sub)}
+  .history div{border-bottom:1px solid var(--line);padding-bottom:4px}
+  @media(max-width:1120px){
+    #app{grid-template-columns:250px 1fr}
+    .side{grid-column:1 / -1;height:auto;position:static;border-left:0;border-top:1px solid var(--line)}
+  }
+  @media(max-width:760px){
+    #app{display:block}
+    aside{height:auto;position:static}
+    main{padding:16px}
+    .editor-head,.field-row{grid-template-columns:1fr}
+  }
+</style>
+<script>
+  (function(){
+    var THEME_KEY = 'idea_board_theme_v1';
+    var saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch(e){}
+    var theme = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+</head>
+<body>
+<section id="setup" class="hidden">
+  <div class="setup-card">
+    <h1>IdeaBoard を開始</h1>
+    <p class="setup-lead">アイディアとコメントをGit管理できるファイルに保存するため、最初に必要な設定だけ行います。</p>
+    <div class="setup-grid">
+      <div class="setup-field">
+        <label for="setupAuthorName">コメントに表示する名前</label>
+        <input id="setupAuthorName" type="text" autocomplete="off">
+      </div>
+      <div class="setup-note">
+        <p><b>ローカルサーバーに接続して使います。</b></p>
+        <p><code>IdeaBoard/start_site.bat</code> をダブルクリックして起動し、<code>http://localhost:8139/</code> を開いてください。フォルダ選択は不要です。</p>
+        <p>保存されるコメントは <code>data/events/年/月/日付_名前.jsonl</code> に追記されます。</p>
+      </div>
+    </div>
+    <div class="setup-actions">
+      <button class="primary" id="setupConnectDir" type="button">再接続</button>
+      <span id="setupStatus"></span>
+    </div>
+  </div>
+</section>
+<div id="app" class="hidden">
+  <aside>
+    <div class="brand">
+      <div>
+        <h1>IdeaBoard</h1>
+        <div class="meta" id="repoStatus">データフォルダ未接続</div>
+      </div>
+      <button class="theme-toggle" id="themeToggle" type="button" title="Light / Dark 切り替え">☾ Dark</button>
+    </div>
+    <div class="left-tools">
+      <input id="search" type="search" placeholder="検索">
+      <select id="statusFilter">
+        <option value="active-list">有効なアイディア</option>
+        <option value="all">すべて</option>
+        <option value="active">有効</option>
+        <option value="discuss">要設計</option>
+        <option value="reflected">反映済み</option>
+        <option value="rejected">見送り</option>
+        <option value="old">古い案</option>
+        <option value="open">未整理</option>
+        <option value="review">検討中</option>
+        <option value="done">採用</option>
+        <option value="archive">保留</option>
+      </select>
+    </div>
+    <div id="ideaList"></div>
+  </aside>
+
+  <main>
+    <div class="toolbar">
+      <button class="primary" id="newIdea" type="button">新規</button>
+      <button class="ghost" id="saveIdea" type="button">保存</button>
+      <button class="ghost" id="connectDir" type="button">再接続</button>
+      <button class="ghost" id="reloadEvents" type="button">再読込</button>
+      <button class="danger" id="archiveIdea" type="button">保留</button>
+      <span class="spacer"></span>
+      <span class="state-line" id="saveState"></span>
+    </div>
+    <section id="workArea"></section>
+  </main>
+
+  <section class="side">
+    <div class="side-panel">
+      <h2>ユーザー</h2>
+      <label for="authorName">名前</label>
+      <input id="authorName" type="text" autocomplete="off">
+    </div>
+    <div class="side-panel">
+      <h2>コメント</h2>
+      <div class="comment-tools">
+        <span id="commentSummary">未処理 0 / 古い 0</span>
+        <label><input id="showOldComments" type="checkbox">古いコメント</label>
+      </div>
+      <div id="commentList" class="comment-list"></div>
+      <div class="comment-box">
+        <textarea id="commentText" placeholder="コメント"></textarea>
+        <button id="addComment" class="primary" type="button">コメント追加</button>
+      </div>
+    </div>
+    <div class="side-panel">
+      <h2>履歴</h2>
+      <div id="history" class="history"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+const AUTHOR_KEY = 'idea_board_author_v1';
+const API = (location.protocol === 'http:' || location.protocol === 'https:') ? '' : 'http://localhost:8139';
+const STATUS = {
+  active: '有効',
+  discuss: '要設計',
+  reflected: '反映済み',
+  rejected: '見送り',
+  old: '古い案',
+  open: '未整理',
+  review: '検討中',
+  done: '採用',
+  archive: '保留'
+};
+const COMMENT_STATUS = {
+  open: '未処理',
+  reflected: '反映済み',
+  discussed: '議論済み',
+  rejected: '見送り',
+  duplicate: '重複'
+};
+const OLD_COMMENT_STATUSES = new Set(['reflected', 'discussed', 'rejected', 'duplicate']);
+const HIDDEN_IDEA_STATUSES = new Set(['archive', 'reflected', 'rejected', 'old']);
+const GROUPS = [
+  { key: 'design',    label: '全体設計・方針' },
+  { key: 'challenge', label: 'Challenge 案（味変制約）' },
+  { key: 'spell',     label: 'Spell 案' },
+  { key: 'impl',      label: '実装・論点' },
+  { key: '',          label: '未分類' }
+];
+
+let connected = false;
+let readonly = false;   // 静的配信(GitHub Pages 等)。閲覧専用
+let events = [];
+let ideas = [];
+let selectedId = '';
+let dirty = false;
+
+const els = {
+  setup: document.getElementById('setup'),
+  app: document.getElementById('app'),
+  setupAuthorName: document.getElementById('setupAuthorName'),
+  setupConnectDir: document.getElementById('setupConnectDir'),
+  setupStatus: document.getElementById('setupStatus'),
+  repoStatus: document.getElementById('repoStatus'),
+  search: document.getElementById('search'),
+  statusFilter: document.getElementById('statusFilter'),
+  ideaList: document.getElementById('ideaList'),
+  workArea: document.getElementById('workArea'),
+  saveState: document.getElementById('saveState'),
+  newIdea: document.getElementById('newIdea'),
+  saveIdea: document.getElementById('saveIdea'),
+  connectDir: document.getElementById('connectDir'),
+  reloadEvents: document.getElementById('reloadEvents'),
+  archiveIdea: document.getElementById('archiveIdea'),
+  authorName: document.getElementById('authorName'),
+  commentList: document.getElementById('commentList'),
+  commentText: document.getElementById('commentText'),
+  addComment: document.getElementById('addComment'),
+  showOldComments: document.getElementById('showOldComments'),
+  commentSummary: document.getElementById('commentSummary'),
+  history: document.getElementById('history')
+};
+
+// サーバー接続。data/events の読み書きは server.js が担当する。
+async function connectServer(){
+  if (els.setupAuthorName && els.setupAuthorName.value.trim()) {
+    els.authorName.value = els.setupAuthorName.value.trim();
+    localStorage.setItem(AUTHOR_KEY, els.authorName.value);
+  }
+  try {
+    const res = await fetch(API + '/api/events', { cache: 'no-store' });
+    if (!res.ok) throw new Error('bad status');
+    const list = await res.json();
+    events = Array.isArray(list) ? list : [];
+    connected = true;
+    readonly = false;
+    rebuild();
+    setState('接続しました');
+    if (els.setupStatus) els.setupStatus.textContent = '接続済み';
+    render();
+    return;
+  } catch (err) {
+    connected = false;
+  }
+  // サーバーが無い場合、書き出し済みのスナップショットを読む。
+  // GitHub Pages などの閲覧専用配信はこの経路になる。
+  try {
+    const res = await fetch('data/events.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('bad status');
+    const list = await res.json();
+    if (!Array.isArray(list)) throw new Error('bad snapshot');
+    events = list;
+    readonly = true;
+    rebuild();
+    setState('閲覧専用');
+    if (els.setupStatus) els.setupStatus.textContent = '閲覧専用';
+  } catch (err) {
+    readonly = false;
+    events = [];
+    rebuild();
+    setState('サーバーに接続できません');
+    if (els.setupStatus) els.setupStatus.textContent = 'start_site.bat を起動してください';
+  }
+  render();
+}
+
+async function appendEvent(event){
+  if (readonly) {
+    setState('閲覧専用です。書き込みはローカル版で行ってください');
+    return false;
+  }
+  if (!connected) {
+    setState('サーバー未接続のため保存できません');
+    await connectServer();
+    if (!connected) return false;
+  }
+  try {
+    const res = await fetch(API + '/api/events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(event)
+    });
+    if (!res.ok) throw new Error('bad status');
+    events.push(event);
+    rebuild();
+    dirty = false;
+    setState(`保存済み ${formatClock(new Date())}`);
+    render();
+    return true;
+  } catch (err) {
+    connected = false;
+    setState('保存に失敗しました');
+    console.error(err);
+    render();
+    return false;
+  }
+}
+
+async function loadEvents(){
+  await connectServer();
+}
+
+function rebuild(){
+  const map = new Map();
+  for (const event of events) {
+    if (event.type === 'idea_created') {
+      map.set(event.ideaId, {
+        id: event.ideaId,
+        title: event.title || '無題',
+        body: event.body || '',
+        status: event.status || 'open',
+        tags: Array.isArray(event.tags) ? event.tags : [],
+        group: typeof event.group === 'string' ? event.group : '',
+        order: typeof event.order === 'number' ? event.order : null,
+        author: event.author || '',
+        createdAt: event.at,
+        updatedAt: event.at,
+        archived: false,
+        comments: [],
+        history: [event]
+      });
+      continue;
+    }
+    const idea = map.get(event.ideaId);
+    if (!idea) continue;
+    idea.history.push(event);
+    idea.updatedAt = event.at || idea.updatedAt;
+    if (event.type === 'idea_updated') {
+      idea.title = event.title || idea.title;
+      idea.body = event.body || '';
+      idea.tags = Array.isArray(event.tags) ? event.tags : [];
+    }
+    if (event.type === 'idea_status_changed') {
+      idea.status = event.status || idea.status;
+      idea.archived = idea.status === 'archive';
+    }
+    if (event.type === 'idea_meta_changed') {
+      if (typeof event.group === 'string') idea.group = event.group;
+      if (typeof event.order === 'number') idea.order = event.order;
+    }
+    if (event.type === 'comment_added') {
+      idea.comments.push({ ...event, status: event.status || 'open' });
+    }
+    if (event.type === 'comment_status_changed') {
+      const comment = idea.comments.find(c => c.commentId === event.commentId);
+      if (comment) {
+        comment.status = event.status || comment.status || 'open';
+        comment.statusNote = event.note || comment.statusNote || '';
+        comment.statusAt = event.at || comment.statusAt || '';
+        comment.statusAuthor = event.author || comment.statusAuthor || '';
+      }
+    }
+  }
+  ideas = Array.from(map.values());
+  if (!selectedId && ideas.length) selectedId = (orderedIdeas()[0] || ideas[0]).id;
+  if (selectedId && !ideas.some(x => x.id === selectedId)) selectedId = ideas[0]?.id || '';
+}
+
+function groupIndex(key){
+  const i = GROUPS.findIndex(g => g.key === (key || ''));
+  return i < 0 ? GROUPS.length - 1 : i;
+}
+
+function filteredIdeas(){
+  const q = els.search.value.trim().toLowerCase();
+  const status = els.statusFilter.value;
+  return ideas.filter(idea => {
+    if (status === 'active-list' && HIDDEN_IDEA_STATUSES.has(idea.status)) return false;
+    if (status !== 'active-list' && status !== 'all' && idea.status !== status) return false;
+    if (!q) return true;
+    const hay = `${idea.title}\n${idea.body}\n${idea.tags.join(' ')}`.toLowerCase();
+    return hay.includes(q);
+  });
+}
+
+function orderedIdeas(){
+  return filteredIdeas().slice().sort((a,b)=>{
+    const gi = groupIndex(a.group) - groupIndex(b.group);
+    if (gi) return gi;
+    const ao = a.order == null ? 9999 : a.order;
+    const bo = b.order == null ? 9999 : b.order;
+    if (ao !== bo) return ao - bo;
+    return String(a.createdAt).localeCompare(String(b.createdAt));
+  });
+}
+
+function currentIdea(){
+  return ideas.find(x => x.id === selectedId) || null;
+}
+
+function render(){
+  renderSetup();
+  els.repoStatus.textContent = connected ? '💾 自動保存ON' : (readonly ? '👁 閲覧専用' : '⚠ サーバー未接続');
+  // 閲覧専用では書き込み導線を出さない
+  for (const btn of [els.newIdea, els.saveIdea, els.archiveIdea, els.connectDir, els.addComment]) {
+    if (btn) btn.classList.toggle('hidden', readonly);
+  }
+  if (els.commentText) els.commentText.classList.toggle('hidden', readonly);
+  renderIdeaList();
+  renderWorkArea();
+  renderSide();
+}
+
+function renderSetup(){
+  const ready = connected || readonly;
+  els.setup.classList.toggle('hidden', ready);
+  els.app.classList.toggle('hidden', !ready);
+  els.setupStatus.textContent = connected ? '接続済み' : (readonly ? '閲覧専用' : '未接続');
+}
+
+function renderIdeaList(){
+  const list = orderedIdeas();
+  if (!list.length) {
+    els.ideaList.innerHTML = '<div class="empty">アイディアなし</div>';
+    return;
+  }
+  let html = '';
+  let lastGroup = -1;
+  for (const idea of list) {
+    const gi = groupIndex(idea.group);
+    if (gi !== lastGroup) {
+      html += `<div class="idea-group-title">${escapeHtml(GROUPS[gi].label)}</div>`;
+      lastGroup = gi;
+    }
+    html += `
+      <button class="idea-item ${idea.id === selectedId ? 'on' : ''}" type="button" data-id="${escapeHtml(idea.id)}">
+        <div class="idea-title">${escapeHtml(idea.title)}</div>
+        <div class="idea-sub">
+          <span>${STATUS[idea.status] || idea.status}</span>
+          <span>${idea.comments.length}件</span>
+          <span>${formatDate(idea.updatedAt)}</span>
+        </div>
+      </button>`;
+  }
+  els.ideaList.innerHTML = html;
+}
+
+function renderWorkArea(){
+  const idea = currentIdea();
+  if (!idea) {
+    els.workArea.innerHTML = '<div class="empty">新規ボタンから作成</div>';
+    return;
+  }
+  const ro = readonly ? ' readonly' : '';
+  els.workArea.innerHTML = `
+    <section class="editor">
+      <div class="editor-head">
+        <input id="ideaTitle" value="${escapeAttr(idea.title)}"${ro}>
+        <select id="ideaStatus"${readonly ? ' disabled' : ''}>
+          ${Object.entries(STATUS).map(([key,label]) => `<option value="${key}" ${idea.status === key ? 'selected' : ''}>${label}</option>`).join('')}
+        </select>
+      </div>
+      <div class="read-panel">
+        <article class="doc">${renderMarkdown(idea.body || '')}</article>
+      </div>
+      <details class="edit-toggle">
+        <summary>${readonly ? '本文とタグ' : '本文とタグを編集'}</summary>
+        <div class="edit-panel">
+          <textarea id="ideaBody"${ro}>${escapeHtml(idea.body)}</textarea>
+          <div class="field-row">
+            <input id="ideaTags" value="${escapeAttr(idea.tags.join(', '))}" placeholder="タグ"${ro}>
+            <button class="ghost" id="copySummary" type="button">要約コピー</button>
+          </div>
+          <div class="tags">${idea.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}</div>
+        </div>
+      </details>
+    </section>
+  `;
+  document.getElementById('ideaTitle').addEventListener('input', markDirty);
+  document.getElementById('ideaBody').addEventListener('input', markDirty);
+  document.getElementById('ideaTags').addEventListener('input', markDirty);
+  document.getElementById('ideaStatus').addEventListener('change', saveStatus);
+  document.getElementById('copySummary').addEventListener('click', copySummary);
+}
+
+function renderSide(){
+  const idea = currentIdea();
+  els.commentText.disabled = !idea;
+  els.addComment.disabled = !idea;
+  if (!idea) {
+    els.commentSummary.textContent = '未処理 0 / 古い 0';
+    els.commentList.innerHTML = '<div class="empty">コメントなし</div>';
+    els.history.innerHTML = '';
+    return;
+  }
+  const active = activeComments(idea);
+  const old = oldComments(idea);
+  els.commentSummary.textContent = `未処理 ${active.length} / 古い ${old.length}`;
+  const visible = [...active, ...(els.showOldComments.checked ? old : [])];
+  if (!visible.length) {
+    els.commentList.innerHTML = '<div class="empty">表示するコメントなし</div>';
+  } else {
+    const oldStart = active.length;
+    els.commentList.innerHTML = visible.map((c, index) => {
+      const isOld = OLD_COMMENT_STATUSES.has(c.status || 'open');
+      const title = index === 0
+        ? (isOld ? '<div class="comment-section-title">古いコメント</div>' : '<div class="comment-section-title">未処理コメント</div>')
+        : (index === oldStart && isOld ? '<div class="comment-section-title">古いコメント</div>' : '');
+      return title + renderComment(c, isOld);
+    }).join('');
+  }
+  els.history.innerHTML = idea.history.slice().reverse().slice(0, 12).map(e => `
+    <div>${escapeHtml(eventLabel(e))}<br>${escapeHtml(formatDateTime(e.at))} ${escapeHtml(e.author || '')}</div>
+  `).join('');
+}
+function eventLabel(event){
+  if (event.type === 'idea_created') return '作成';
+  if (event.type === 'idea_updated') return '編集';
+  if (event.type === 'idea_status_changed') return `状態: ${STATUS[event.status] || event.status}`;
+  if (event.type === 'idea_meta_changed') return '分類変更';
+  if (event.type === 'comment_added') return 'コメント';
+  if (event.type === 'comment_status_changed') return 'コメント: ' + (COMMENT_STATUS[event.status] || event.status);
+  return event.type;
+}
+
+function markDirty(){
+  dirty = true;
+  setState('未保存の変更');
+}
+
+async function createIdea(){
+  const now = new Date();
+  const id = `idea_${stamp(now)}_${rand()}`;
+  await appendEvent({
+    type: 'idea_created',
+    eventId: `event_${stamp(now)}_${rand()}`,
+    ideaId: id,
+    title: '無題のアイディア',
+    body: '',
+    status: 'open',
+    tags: [],
+    author: getAuthor(),
+    at: now.toISOString()
+  });
+  selectedId = id;
+  render();
+}
+
+async function saveIdea(){
+  const idea = currentIdea();
+  if (!idea) return;
+  const title = document.getElementById('ideaTitle')?.value.trim() || '無題';
+  const body = document.getElementById('ideaBody')?.value || '';
+  const tags = parseTags(document.getElementById('ideaTags')?.value || '');
+  const now = new Date();
+  await appendEvent({
+    type: 'idea_updated',
+    eventId: `event_${stamp(now)}_${rand()}`,
+    ideaId: idea.id,
+    title,
+    body,
+    tags,
+    author: getAuthor(),
+    at: now.toISOString()
+  });
+}
+
+async function saveStatus(){
+  const idea = currentIdea();
+  if (!idea) return;
+  const status = document.getElementById('ideaStatus').value;
+  if (status === idea.status) return;
+  const now = new Date();
+  await appendEvent({
+    type: 'idea_status_changed',
+    eventId: `event_${stamp(now)}_${rand()}`,
+    ideaId: idea.id,
+    status,
+    author: getAuthor(),
+    at: now.toISOString()
+  });
+}
+
+async function archiveIdea(){
+  const idea = currentIdea();
+  if (!idea) return;
+  const now = new Date();
+  await appendEvent({
+    type: 'idea_status_changed',
+    eventId: `event_${stamp(now)}_${rand()}`,
+    ideaId: idea.id,
+    status: 'archive',
+    author: getAuthor(),
+    at: now.toISOString()
+  });
+}
+
+async function setCommentStatus(commentId, status){
+  const idea = currentIdea();
+  if (!idea || !commentId) return;
+  const now = new Date();
+  await appendEvent({
+    type: 'comment_status_changed',
+    eventId: `event_${stamp(now)}_${rand()}`,
+    ideaId: idea.id,
+    commentId,
+    status,
+    author: getAuthor(),
+    at: now.toISOString()
+  });
+}
+
+function activeComments(idea){
+  return idea.comments.filter(c => !OLD_COMMENT_STATUSES.has(c.status || 'open'));
+}
+
+function oldComments(idea){
+  return idea.comments.filter(c => OLD_COMMENT_STATUSES.has(c.status || 'open'));
+}
+
+function renderComment(c, isOld){
+  const status = c.status || 'open';
+  return `
+    <div class="comment ${isOld ? 'is-old' : ''}" data-comment-id="${escapeAttr(c.commentId || '')}">
+      <div class="cm"><b>${escapeHtml(c.author || '')}</b><span>${formatDateTime(c.at)}</span><span class="pill">${COMMENT_STATUS[status] || status}</span></div>
+      <div class="body">${escapeHtml(c.body || '')}</div>
+      ${readonly ? '' : `<div class="comment-actions">
+        <button type="button" data-comment-status="reflected">反映済み</button>
+        <button type="button" data-comment-status="discussed">議論済み</button>
+        <button type="button" data-comment-status="rejected">見送り</button>
+        <button type="button" data-comment-status="duplicate">重複</button>
+        ${isOld ? '<button type="button" data-comment-status="open">未処理へ戻す</button>' : ''}
+      </div>`}
+    </div>
+  `;
+}
+async function addComment(){
+  const idea = currentIdea();
+  const body = els.commentText.value.trim();
+  if (!idea || !body) return;
+  const now = new Date();
+  const ok = await appendEvent({
+    type: 'comment_added',
+    eventId: `event_${stamp(now)}_${rand()}`,
+    commentId: `comment_${stamp(now)}_${rand()}`,
+    ideaId: idea.id,
+    body,
+    author: getAuthor(),
+    at: now.toISOString()
+  });
+  if (ok) els.commentText.value = '';
+}
+
+function copySummary(){
+  const idea = currentIdea();
+  if (!idea) return;
+  const lines = [
+    `# ${idea.title}`,
+    '',
+    idea.body,
+    '',
+    `Status: ${STATUS[idea.status] || idea.status}`,
+    `Tags: ${idea.tags.join(', ')}`,
+    '',
+    '## Comments',
+    ...idea.comments.map(c => `- ${formatDateTime(c.at)} ${c.author}: ${String(c.body || '').replace(/\n/g, ' / ')}`)
+  ];
+  navigator.clipboard.writeText(lines.join('\n')).then(
+    () => setState('要約をコピーしました'),
+    () => setState('コピーに失敗しました')
+  );
+}
+
+function setState(text){
+  els.saveState.textContent = text;
+}
+
+function getAuthor(){
+  const value = els.authorName.value.trim() || 'user';
+  localStorage.setItem(AUTHOR_KEY, value);
+  return value;
+}
+
+function sanitizeName(name){
+  return String(name || 'user')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40) || 'user';
+}
+
+function parseTags(text){
+  return text.split(',')
+    .map(x => x.trim())
+    .filter(Boolean)
+    .filter((x,i,a) => a.indexOf(x) === i)
+    .slice(0, 12);
+}
+
+function stamp(date){
+  return date.getFullYear()
+    + String(date.getMonth() + 1).padStart(2, '0')
+    + String(date.getDate()).padStart(2, '0')
+    + 'T'
+    + String(date.getHours()).padStart(2, '0')
+    + String(date.getMinutes()).padStart(2, '0')
+    + String(date.getSeconds()).padStart(2, '0');
+}
+
+function rand(){
+  return Math.random().toString(16).slice(2, 8);
+}
+
+function formatDate(value){
+  if (!value) return '';
+  const d = new Date(value);
+  return `${d.getMonth() + 1}/${d.getDate()} ${formatClock(d)}`;
+}
+
+function formatDateTime(value){
+  if (!value) return '';
+  const d = new Date(value);
+  return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()} ${formatClock(d)}`;
+}
+
+function formatClock(date){
+  return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+}
+
+function renderMarkdown(markdown){
+  const lines = String(markdown || '').replace(/\r/g, '').split('\n');
+  let html = '';
+  let list = null;
+  let quote = [];
+  let table = [];
+  const closeList = () => { if (list) { html += '</' + list + '>'; list = null; } };
+  const flushQuote = () => { if (quote.length) { closeList(); html += '<blockquote>' + quote.map(x => '<p>' + inlineMarkdown(x) + '</p>').join('') + '</blockquote>'; quote = []; } };
+  const flushTable = () => { if (table.length) { closeList(); html += renderTable(table); table = []; } };
+  for (let raw of lines) {
+    const line = raw.trimEnd();
+    if (!line.trim()) { closeList(); flushQuote(); flushTable(); continue; }
+    if (/^---+$/.test(line.trim())) { closeList(); flushQuote(); flushTable(); html += '<hr class="hr">'; continue; }
+    if (line.startsWith('|') && line.endsWith('|')) { flushQuote(); table.push(line); continue; }
+    flushTable();
+    const quoteMatch = line.match(/^>\s?(.*)$/);
+    if (quoteMatch) { quote.push(quoteMatch[1]); continue; }
+    flushQuote();
+    const heading = line.match(/^(#{1,4})\s+(.+)$/);
+    if (heading) { closeList(); const level = Math.min(3, heading[1].length); html += '<h' + level + '>' + inlineMarkdown(heading[2]) + '</h' + level + '>'; continue; }
+    const bullet = line.match(/^[-*]\s+(.+)$/);
+    if (bullet) { if (list !== 'ul') { closeList(); list = 'ul'; html += '<ul>'; } html += '<li>' + inlineMarkdown(bullet[1]) + '</li>'; continue; }
+    const ordered = line.match(/^\d+\.\s+(.+)$/);
+    if (ordered) { if (list !== 'ol') { closeList(); list = 'ol'; html += '<ol>'; } html += '<li>' + inlineMarkdown(ordered[1]) + '</li>'; continue; }
+    closeList();
+    html += '<p>' + inlineMarkdown(line) + '</p>';
+  }
+  closeList();
+  flushQuote();
+  flushTable();
+  return html || '<p></p>';
+}
+
+function renderTable(rows){
+  const data = rows
+    .filter(row => !/^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$/.test(row))
+    .map(row => row.replace(/^\||\|$/g, '').split('|').map(cell => inlineMarkdown(cell.trim())));
+  if (!data.length) return '';
+  const head = data[0];
+  const body = data.slice(1);
+  return '<table><thead><tr>' + head.map(cell => '<th>' + cell + '</th>').join('') + '</tr></thead><tbody>' + body.map(row => '<tr>' + row.map(cell => '<td>' + cell + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
+}
+
+function inlineMarkdown(value){
+  return escapeHtml(value)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/__([^_]+)__/g, '<strong>$1</strong>');
+}
+function escapeHtml(value){
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function escapeAttr(value){
+  return escapeHtml(value).replace(/\n/g, '&#10;');
+}
+
+els.ideaList.addEventListener('click', event => {
+  const button = event.target.closest('.idea-item');
+  if (!button) return;
+  if (dirty && !confirm('未保存の変更があります。移動しますか?')) return;
+  selectedId = button.dataset.id;
+  dirty = false;
+  setState('');
+  render();
+});
+els.search.addEventListener('input', renderIdeaList);
+els.statusFilter.addEventListener('change', renderIdeaList);
+els.newIdea.addEventListener('click', createIdea);
+els.saveIdea.addEventListener('click', saveIdea);
+els.archiveIdea.addEventListener('click', archiveIdea);
+els.connectDir.addEventListener('click', connectServer);
+els.setupConnectDir.addEventListener('click', connectServer);
+els.reloadEvents.addEventListener('click', async () => {
+  await loadEvents();
+  setState('再読込しました');
+  render();
+});
+els.addComment.addEventListener('click', addComment);
+els.showOldComments.addEventListener('change', renderSide);
+els.commentList.addEventListener('click', event => {
+  const button = event.target.closest('[data-comment-status]');
+  if (!button) return;
+  const comment = event.target.closest('[data-comment-id]');
+  if (!comment) return;
+  setCommentStatus(comment.dataset.commentId, button.dataset.commentStatus);
+});
+els.authorName.addEventListener('change', getAuthor);
+
+const THEME_KEY = 'idea_board_theme_v1';
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('themeToggle');
+  if (btn) btn.textContent = theme === 'dark' ? '☀ Light' : '☾ Dark';
+}
+function toggleTheme(){
+  const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  try { localStorage.setItem(THEME_KEY, next); } catch(e){}
+  applyTheme(next);
+}
+document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+async function boot(){
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+  els.authorName.value = localStorage.getItem(AUTHOR_KEY) || 'pukep';
+  els.setupAuthorName.value = els.authorName.value;
+  await connectServer();
+}
+boot();
+</script>
+</body>
+</html>
+
+
+
+
