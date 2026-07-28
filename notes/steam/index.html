@@ -182,20 +182,29 @@ const DB = [
   <table><tr><th>論点</th><th>決定</th><th>効いてくる先</th></tr>
   <tr><td>AppID <code>3217600</code></td><td><b>旧作用。新規取得が必要</b></td><td>Steam Direct $100 と審査待ちが発生。<b>スケジュールの起点</b></td></tr>
   <tr><td>対応 OS</td><td><b>Windows + macOS 同時</b></td><td>Apple 公証・Universal Binary・別 Depot・別テスト機が必須作業に</td></tr>
-  <tr><td>1.0 のスコープ</td><td><b>全部入り</b></td><td>横長は段階3まで。ショートカット・リーダーボード・リッチプレゼンスも対象</td></tr>
+  <tr><td>1.0 のスコープ</td><td><b>全部入り</b></td><td>横長は<b>段階4(リサイズ追従)まで</b>が既定線。ショートカット・リーダーボード・リッチプレゼンスも対象 → <a href="#display" onclick="go('display')">05</a></td></tr>
   <tr><td>時期</td><td><b>期限なし。品質優先</b></td><td>スケジュールを理由にスコープを削らない</td></tr>
   <tr><td>モバイル版</td><td><b>継続。並行運用</b></td><td>モバイルを壊さない制約を維持。暗号化を変える場合は移行処理が必須</td></tr>
   <tr><td>コスト</td><td><b>自作のみ</b></td><td>実績アイコン等は自作前提。金額そのものは制約にしない</td></tr>
   <tr><td>広告</td><td><b>導線ごとに個別判断</b></td><td>デフォルトを下げ、課金で解禁・増加。→ <a href="#money" onclick="go('money')">マネタイズ</a></td></tr>
   <tr><td>検証ビルド</td><td><b>フェーズ3の頭で実施</b></td><td>DLL が Standalone で動くかは<b>それまで未確認のまま</b> → <a href="#risk" onclick="go('risk')">リスク</a></td></tr></table>
+  <h4>2026-07-28（夕）に追加で確定したもの</h4>
+  <table><tr><th>論点</th><th>決定</th><th>効いてくる先</th></tr>
+  <tr><td>抽象化の深さ</td><td><b>全面抽象化(6インターフェース)</b></td><td>既存ファイルは1行も変更しない制約付き。<code>#if</code> 3箇所原則が前提に復帰 → <a href="#platform" onclick="go('platform')">02</a></td></tr>
+  <tr><td>改ざん対策</td><td><b>「一切できないように」＝ 平文維持は破棄</b></td><td>AES + ACTk を有効化。<span class="ng">60件ぶんの移行処理が最重量作業に</span> → <a href="#save" onclick="go('save')">04</a></td></tr>
+  <tr><td>サーバー</td><td><b>使う。NetherCompanion があるため</b></td><td>既存バックエンドは<b>元から REST</b>だったと判明。セーブは Steam Cloud、共有機能は Firestore → <a href="#save" onclick="go('save')">04</a></td></tr>
+  <tr><td>リーダーボード</td><td><b>フレンド内のみ</b></td><td>改ざん対策の強化と噛み合い、成立条件が整った → <a href="#feature" onclick="go('feature')">06</a></td></tr>
+  <tr><td>リッチプレゼンス</td><td><b>最新の Cave 名 + 到達深度</b></td><td>Steamworks 側に翻訳登録が要る。運用手順を残すこと → <a href="#feature" onclick="go('feature')">06</a></td></tr>
+  <tr><td>ビルド除外</td><td><b>「除外」から「無効化」へ緩和</b></td><td>ローカライズテーブル等は含めてよい。広告 SDK のネイティブ部分だけは例外 → <a href="#money" onclick="go('money')">03</a></td></tr></table>
+  <p class="note"><b>未決のまま残っているもの:</b> ダイヤ販売のモデル(案1/2/3)、RemoveAds の分割方法、導線ごとの数値の置き場所、価格設定(調査待ち)、暗号化の適用範囲。→ <a href="#money" onclick="go('money')">03</a> / <a href="#save" onclick="go('save')">04</a></p>
   <h4>当初からの前提</h4>
   <ul>
    <li><b>モバイルと同一コードベースで並行運用</b>。Steam 版のためにモバイル版を壊さない。</li>
    <li><b>F2P + Steam 内課金</b>を第一候補として設計する(ただし §マネタイズ の承認次第でプランBへ)。</li>
-   <li>横長対応で <b>UXML を複製しない</b>。「横長 = 縦長の画面を並べたもの」と定義を固定する。</li>
-   <li>モバイル版からのセーブ引き継ぎは<b>スコープ外</b>。</li>
+   <li>横長対応で <b>UXML を複製しない</b>。<span class="kw">定義は 2026-07-28 に差し替え</span>: 「横長 = <b>縦の圧縮(タブ・上下積み)を1段だけ解いたもの</b>」。<s>縦長の画面を並べたもの</s> → <a href="#display" onclick="go('display')">05</a></li>
+   <li>モバイル版からのセーブ引き継ぎは<b>スコープ外</b>。<span class="ng">⚠️ ただし <a href="#money" onclick="go('money')">マネタイズ案3(Mobile 限定販売)</a>を採る場合、この前提は撤回が必要になります(購入したダイヤを Steam へ持ち越す必要があるため)。</span></li>
   </ul>
-  <p class="note">「ゲームロジックに <code>#if</code> を書き足さない」は<b>前提から外し、選択肢に降格しました</b>(2026-07-28 のコメントによる)。→ <a href="#platform" onclick="go('platform')">抽象化の深さ</a>で決めます。</p>`},
+  <p class="note">「ゲームロジックに <code>#if</code> を書き足さない」は一度<b>選択肢に降格しましたが、2026-07-28 に全面抽象化(C)が選ばれたことで前提へ復帰しました</b>。→ <a href="#platform" onclick="go('platform')">抽象化の深さ</a></p>`},
  {id:'ho-files', h:'原典ファイル対応', s:null, b:`
   <table><tr><th>ページ</th><th>原典(GamesDomain/docs/steam-release/)</th></tr>
   <tr><td>プラットフォーム抽象化</td><td>02_Platform_Abstraction.md</td></tr>
@@ -353,9 +362,43 @@ const DB = [
 
 /* ============================ 03 マネタイズ ============================ */
 {id:'money', nav:'03 マネタイズ', group:'仕様', title:'マネタイズ(F2P + Steam 内課金)', desc:'最大の外部リスクがここ。ゲーム内通貨販売が Steam で通るかで、下流の設計が連鎖的に変わります。', src:'docs/steam-release/03_Monetization_Steam.md', secs:[
- {id:'mn-risk', h:'🔴 ゲーム内通貨販売が Steam で通るか(未調査)', s:'q', b:`
-  <p>現在の課金の主軸は<b>ダイヤ(ゲーム内通貨)の販売</b>(5ティア × 通常 / 初回 / 割引)。Steam でリアルマネーによるゲーム内通貨販売を行うには <b>Valve への申請と承認が別途必要</b>で、モバイルストアのように自動では通りません。<span class="ng">承認されない可能性があります。</span></p>
-  <p class="note">Steamworks 管理画面と最新のパートナー向けドキュメントで、現時点の申請要件・審査基準を確認すること。<b>ここが全体の設計を左右します</b>(暗号化の要否まで連鎖)。</p>`},
+ {id:'mn-risk', h:'ダイヤ販売のモデル選択 ── 3案の比較', s:'d', b:`
+  <p class="note">2026-07-28 コメント:「マーケティング的に二つの手法を比較したい。一つは単純に Diamond を売る今と同じマネタイズ。もう一つは『Tap Ninja - Idle game』のように毎日 Diamond を XX 獲得できるというような課金商品。もう一つ可能性としてあるのが、Diamond は Mobile のみで販売し、これによって Steam 側では P2W としての批判を回避し、Mobile での Diamond の販売は Steam にも持ち越せるため、Mobile でのインプレッションを上げていくという方法。(中略)ただし、この案の問題点は Steam だけで遊んだ場合、Diamond の獲得数が足りなくなりバランスが乱れる点である。解決案を提案してほしい。」</p>
+  <p>前提として <span class="ng">🔴 Steam でのゲーム内通貨販売には Valve への申請と承認が別途必要</span>(モバイルストアのように自動では通らない)という<b>未調査のリスク</b>が残っています。以下の3案は、そのリスクの受け方が根本的に違います。</p>
+  <h4>3案の比較</h4>
+  <table><tr><th></th><th>案1 直接販売(現状同型)</th><th>案2 デイリー付与型</th><th>案3 Mobile 限定販売</th></tr>
+  <tr><td><b>形</b></td><td>5ティア × 通常/初回/割引をそのまま移植</td><td>「毎日ダイヤ XX を受け取れる権利」を売る</td><td>Steam ではダイヤを売らない。Mobile での購入分が Steam に反映される</td></tr>
+  <tr><td><b>Valve 承認</b></td><td><span class="ng">必須。落ちたら主軸が消える</span></td><td><span class="okw">不要にできる</span> ── 「毎日付与される権利」は<b>非消費型 = DLC</b> として売れる</td><td><span class="okw">不要</span>。Steam では何も売らない</td></tr>
+  <tr><td><b>P2W 批判</b></td><td>受けやすい。Steam レビューは通貨販売に厳しい</td><td>受けるが緩和される(上限が明示されるため青天井に見えない)</td><td><span class="okw">構造的に発生しない</span></td></tr>
+  <tr><td><b>実況との相性</b></td><td>悪い(購入導線が画面に出る)</td><td>中(1商品だけなので目立たない)</td><td><span class="okw">最良</span>。売り物が画面に無い</td></tr>
+  <tr><td><b>収益の型</b></td><td>スパイク型。大型課金者に依存</td><td><b>継続型</b>。DAU に比例し予測しやすい</td><td>Steam 単体では<b>ゼロ</b>。Mobile の送客効果に賭ける</td></tr>
+  <tr><td><b>モバイル送客</b></td><td>無し</td><td>無し</td><td><span class="okw">これが狙い</span></td></tr>
+  <tr><td><b>最大の弱点</b></td><td>承認リスクをそのまま被る</td><td>「毎日ログインしないと損」を作る。<b>放置ゲームの思想と衝突しうる</b></td><td><b>下記のダイヤ不足</b>＋クロスプログレッション必須化</td></tr></table>
+  <p><span class="ng">案2 の注意点を1つ。</span>「毎日 XX 獲得」は<b>毎日起動させる装置</b>です。Idle Minertia は OfflineBonus を持つ「放置してよい」ゲームなので、<b>デイリー受け取りを付けると設計思想が逆を向きます</b>。採るなら「n日分まとめて受け取れる」「受け取り忘れが失効しない」形にして、ログイン強制にしないこと。</p>
+  <h4>🔴 案3 は、実は「スコープ外」の前提を壊します</h4>
+  <blockquote>案3 が成立する条件は「<b>Mobile での購入が Steam に持ち越せる</b>」ことです。これは<span class="ng">クロスプログレッション（アカウント連携）そのもの</span>であり、本企画では現在<b>「モバイル版からのセーブ引き継ぎはスコープ外」と前提に置いています</b>(→ <a href="#hypothesis" onclick="go('hypothesis')">前提</a>)。<br>
+  <b>案3 を選ぶなら、この前提を撤回し、04 のクラウドセーブ方針も「Steam Cloud のみ」では足りなくなります</b>(→ <a href="#save" onclick="go('save')">04</a>)。</blockquote>
+  <p class="note">ただしこれは致命傷ではありません。<b>持ち越す必要があるのは「セーブ全体」ではなく「購入したダイヤの総額」だけ</b>です。進行データを双方向で同期する必要はなく、<b>所有権だけを共有する軽い連携</b>で足ります。サーバーを使う方針(→ <a href="#save" onclick="go('save')">サーバー活用</a>)とも噛み合います。</p>
+  <h4>ダイヤ不足への解決案</h4>
+  <p>「Steam だけで遊ぶとダイヤが足りない」は<b>正しい懸念ですが、前提が1つ間違っています</b>。ダイヤの入手は購入だけではありません。実際の蛇口を調べたところ:</p>
+  <table><tr><th>現在のダイヤ入手経路</th><th>実装</th><th>Steam での扱い</th></tr>
+  <tr><td><b>鉱石コレクション達成</b></td><td><code>GemCollectionMissionReward</code> ── 50 + 5×⌊(index-1)/4⌋ ダイヤ。<b>広告に一切依存しない</b>。深く潜るほど増える</td><td><span class="okw">そのまま使える。むしろ主軸にできる</span></td></tr>
+  <tr><td>FlyingPresent</td><td><code>FlyingCurrencyRewardFactory</code> ── ランダム <b>20〜50 ダイヤ</b></td><td>頻度・量が調整可能なパラメータ</td></tr>
+  <tr><td><code>AdId.DailyDiamond</code></td><td>広告視聴でダイヤ</td><td><span class="ng">広告が無いので蛇口ごと消える。ここが穴</span></td></tr></table>
+  <p><span class="okw">つまり、ダイヤの主要な蛇口である「鉱石コレクション」は既にプレイ由来で、広告とも課金とも無関係に機能しています。</span>穴が空くのは <code>DailyDiamond</code> の1本だけです。</p>
+  <p><b>解決案 ── Steam ではダイヤを「買う通貨」から「プレイで稼ぐ通貨」へ再定義する。</b></p>
+  <ol>
+   <li><b>消えた <code>DailyDiamond</code> の枠を、プレイ由来の実績報酬に置き換える。</b>Steam 実績(→ <a href="#feature" onclick="go('feature')">06</a>)は Q3「全部入り」で 30〜60 個作ることが確定しています。<span class="kw">この実績にダイヤを紐づければ、新規のバランス設計をほとんど足さずに蛇口を1本作れます。</span>実績は一度きりなので配りすぎにもなりません。</li>
+   <li><b>鉱石コレクション報酬の係数を Steam 側で引き上げる。</b><code>GetDiamondReward</code> は index の関数なので、<b>係数を差し替えるだけ</b>で総供給量を調整できます。Config を差し替える器は <a href="#platform" onclick="go('platform')"><code>IRewardService</code></a> 側に既に用意する方針です。</li>
+   <li><b>ダイヤの出口(シンク)側も併せて緩める。</b>現在の主なシンクは装備変換のリフィル(<code>EquipmentConvertLimit.DiamondCost</code> ── 使うほど単価が上がる)。<span class="kw">蛇口を増やすより、Steam 版でシンクの単価上昇を緩める方が、体感バランスを崩さずに調整できます。</span></li>
+  </ol>
+  <p class="note"><b>逆方向のリスクを1つ明記しておきます。</b>案3 は「Steam ではプレイで手に入るものを、Mobile では現金で売っている」構図になります。クロスプログレッションを公言する以上、<span class="ng">Mobile の課金者から「Steam なら無料で手に入る」と読まれる</span>可能性があります。<b>Mobile 側の購入は「時間の短縮」として位置づけ、Steam 側の入手速度を意図的に遅く保つ</b>ことでしか回避できません。ここは数値設計の問題として残ります。</p>`,
+  opt:{items:[
+   {k:'3',t:'案3 ── Steam では売らない(Mobile 限定販売)',d:'Steam レビューでの P2W 批判と実況文化との衝突を構造的に回避でき、広告方針(導線ごとに個別判断)とも一貫する。Valve の通貨販売承認リスクも消える。代償はクロスプログレッションの必須化と、ダイヤ蛇口の再設計。上記の解決案でカバー可能。'},
+   {k:'2',t:'案2 ── デイリー付与型を DLC として売る',d:'非消費型なので Valve の通貨販売承認が要らず、収益が継続型になる。ただし「毎日起動させる装置」を放置ゲームに持ち込む副作用がある。受け取り失効なしの設計が必須。'},
+   {k:'1',t:'案1 ── 現状どおり直接販売',d:'移植コストは最小だが、Valve の承認リスクをそのまま被り、Steam レビューでの P2W 批判も最も受けやすい。実況との相性という今回の判断基準に最も合わない。'},
+   {k:'23',t:'案2 + 案3 の併用',d:'Steam では単発のダイヤ販売はせず、デイリー付与型 DLC のみ置く。Mobile の直接販売は持ち越せる。売り物が1つだけなので実況で目立たず、Steam 単体の収益もゼロにならない。'},
+  ]}},
  {id:'mn-plan', h:'プランB ── 通貨販売が通らなかった場合', s:'d', b:`
   <p>結果を待たずに切り替え先を先に決めておきます。この決定は <b>04 の暗号化の要否</b>と直結します。</p>`,
   opt:{items:[
@@ -363,13 +406,50 @@ const DB = [
    {k:'B1',t:'買い切り化',d:'本体を有料にし、課金要素を全廃。バランスは「全アンロック済み」相当に。ストアページの見せ方も変わる。'},
    {k:'A',t:'通貨販売に賭ける(プランBを用意しない)',d:'申請が通る前提で進める。通らなかったときの手戻りが大きい。'},
   ]}},
- {id:'mn-map', h:'既存アイテムの写像', s:'k', b:`
+ {id:'mn-map', h:'既存アイテムの写像 ── RemoveAds の実効果と再設計', s:'d', b:`
+  <p class="note">2026-07-28 コメント:「広告解除と対応した商品を組めばいい。つまり、広告によって得られる報酬にアクセスできる課金商品である。ただし、安直に設計せずにしっかり、現状の RemoveAds の効果を調査したうえで、Steam にあった課金商品としてリデザインする。」</p>
+  <h4>調査結果 ── RemoveAds は「広告を消す商品」ではありませんでした</h4>
+  <p>実装を追ったところ、<code>RemoveAds</code> の効果は <code>AdRoot.ShowRewardedAd()</code> の<b>分岐1箇所</b>に集約されています:</p>
+  <blockquote><code>IsRemoveAdsPurchased() ? OnAdRewarded(callback) : OnAdRewardedWithAd(id, callback)</code><br>
+  <span style="font-size:12px">── <code>Assets/1.Games/IdleGem/Ads/AdRoot.cs</code></span></blockquote>
+  <p><span class="kw">つまり購入者は「広告が消える」のではなく、<b>全11導線の報酬が、視聴なしで・無制限に・即時付与される</b>状態になります。</span>回数制限も、クールダウンも、1日あたりの上限もかかりません。</p>
+  <p>効果が及ぶ <code>AdId</code> は以下の11本です(<code>AdRoot.cs</code> の <code>enum AdId</code> 全量):</p>
+  <table><tr><th>#</th><th>AdId</th><th>報酬の性質</th></tr>
+  <tr><td>1</td><td><code>RandomTimeBoost</code></td><td>時間短縮</td></tr>
+  <tr><td>2</td><td><code>DailyDiamond</code></td><td><b>ダイヤ(課金通貨)</b></td></tr>
+  <tr><td>3</td><td><code>DailyBox</code></td><td>アイテム</td></tr>
+  <tr><td>4</td><td><code>DailyBlueBox</code></td><td>アイテム</td></tr>
+  <tr><td>5</td><td><code>PrestigeDoubleReward_Soil</code></td><td><b>倍率</b></td></tr>
+  <tr><td>6</td><td><code>PrestigeDoubleReward_Tear</code></td><td><b>倍率</b></td></tr>
+  <tr><td>7</td><td><code>OfflineBonusDoubleReward</code></td><td><b>倍率</b></td></tr>
+  <tr><td>8</td><td><code>BattleLootX2</code></td><td><b>倍率</b></td></tr>
+  <tr><td>9</td><td><code>Booster_CaveATK</code></td><td>一時強化</td></tr>
+  <tr><td>10</td><td><code>Booster_BattleATK</code></td><td>一時強化</td></tr>
+  <tr><td>11</td><td><code>Booster_TimeATK</code></td><td>一時強化</td></tr></table>
+  <h4>だから「そのまま移植」は成立しません</h4>
+  <p><span class="ng">RemoveAds を Steam にそのまま持ち込むと、それは「1回買えば全ての報酬ゲートが無料・無制限で開きっぱなしになる商品」になります。</span>これは <a href="#money" onclick="go('money')">§広告の扱い</a> で破棄したはずの「単に広告を解除した状態」そのものです。<b>モバイルでは広告視聴という時間コストがゲートとして残っていたので成立していましたが、Steam にはそのゲートがありません。</b></p>
+  <p class="note">補足: 効果の強さの割に、これは<b>単価の低い1商品</b>として売られています。モバイルでは「広告を見なくて済む」という UX 対価として妥当でしたが、Steam では対価の実質が「11導線の恒久アンロック」に変わるため、<b>同じ値付けでは明らかに安すぎます</b>。</p>
+  <h4>再設計 ── 1商品を、報酬の性質ごとに分割する</h4>
+  <p>上の表の「報酬の性質」で分けると、Steam で売るべき単位が自然に出てきます。</p>
+  <table><tr><th>再設計後の商品</th><th>含む AdId</th><th>Steam での形</th></tr>
+  <tr><td><b>倍率の恒久解禁</b></td><td>5, 6, 7, 8</td><td><b>DLC</b>。「Prestige / OfflineBonus / Battle の倍率が常時有効になる」。<span class="okw">最も DLC の形をしており、所有権を Steam が持つので改ざん不能</span></td></tr>
+  <tr><td><b>ブースター強化</b></td><td>9, 10, 11</td><td><b>DLC</b>。既存の <code>idle_gem_booster_plus</code> と統合できる</td></tr>
+  <tr><td><b>デイリー報酬の受け取り</b></td><td>2, 3, 4</td><td>→ <a href="#money" onclick="go('money')">マネタイズ案2</a>の「デイリー付与型」と同じもの。<span class="ng">ここだけは無制限にしてはいけない</span>(ダイヤが絡むため)</td></tr>
+  <tr><td><b>時間短縮</b></td><td>1</td><td>FlyingPresent 側の頻度・報酬量パラメータとして扱う(デフォルトを下げ、課金で増やす)</td></tr></table>
+  <blockquote><b>設計の芯:</b> モバイルの RemoveAds は「<b>ゲートを外す</b>」商品だった。Steam 版は「<b>デフォルト値を上げる</b>」商品にする。<br>
+  前者は無制限を生むが、後者は<span class="okw">上限を設計者が握ったまま</span>でいられます。</blockquote>
+  <h4>既存アイテムの写像(更新)</h4>
   <table><tr><th>既存 ID</th><th>内容</th><th>Steam での扱い</th></tr>
-  <tr><td><code>idle_gem_remove_ad_v2</code> / <code>remove_ads</code></td><td>広告削除</td><td><b>廃止</b>(Steam に広告が無い)</td></tr>
-  <tr><td><code>idle_gem_booster_plus</code></td><td>恒久ブースター強化</td><td>DLC</td></tr>
+  <tr><td><code>idle_gem_remove_ad_v2</code> / <code>remove_ads</code></td><td>広告削除(実体は11導線の無制限解禁)</td><td><b>そのままは廃止。</b>上表のとおり<b>性質ごとに分割して再設計</b></td></tr>
+  <tr><td><code>idle_gem_booster_plus</code></td><td>恒久ブースター強化</td><td>DLC。<code>Booster_*</code> 3本と統合</td></tr>
   <tr><td><code>idle_gem_nether_plus</code></td><td>Nether 挑戦 3 → 5</td><td>DLC</td></tr></table>
   <p>DLC は <code>IStoreService.IsOwned()</code> で所有判定でき、<b>Steam 側が所有権を持つため復元処理が不要</b>。現在 PlayerPrefs にキャッシュしている課金フラグ(<code>AdsClient</code>)を Steam の所有権判定に置き換えます。<br>
-  <span class="okw">→ これで 04 の「課金アンロックが別 PC で復元されない」問題も同時に解決します。</span></p>`},
+  <span class="okw">→ これで 04 の「課金アンロックが別 PC で復元されない」問題も同時に解決します。</span></p>`,
+  opt:{items:[
+   {k:'A',t:'性質ごとに4分割する(上表のとおり)',d:'倍率 / ブースター / デイリー / 時間短縮 に分ける。倍率とブースターは DLC、デイリーは付与型商品、時間短縮はパラメータ。売り物の粒度が Steam の DLC と一致し、無制限を作らずに済む。',rec:true},
+   {k:'B',t:'倍率系だけを1つの DLC にまとめ、残りは無償化',d:'商品数を1つに絞り、実況で目立たせない。デイリー系(ダイヤ含む)を無償で配ることになるので、案3(Mobile限定販売)を採る場合のみ整合する。'},
+   {k:'C',t:'RemoveAds 相当を1商品として維持し、上限だけ設ける',d:'移植コストが最小。ただし「1商品で全部開く」構造が残るため、値付けが難しく P2W にも見えやすい。'},
+  ]}},
  {id:'mn-ad', h:'広告の扱い ── 方針確定', s:'k', b:`
   <p class="note">2026-07-28 コメント反映。<b>当初案(クールダウン / 回数上限への置換)は破棄</b>し、以下を方針として確定しました。</p>
   <blockquote>Steam で広告は適切でない。<b>実況文化との相性が悪い</b>から。<br>
@@ -389,29 +469,68 @@ const DB = [
    <li><span class="ng">注意すべき副作用</span>: デフォルト値を下げる以上、<b>無課金の Steam プレイヤーはモバイルの広告視聴プレイヤーより体験が薄くなります</b>。「PC 版は劣化している」と読まれない水準をどこに置くかは、導線ごとの数値設計で決まります。</li>
    <li><code>#if</code> で書ける形ではなくなります(導線ごとに値が違うため)。→ <a href="#platform" onclick="go('platform')">抽象化の深さ</a>の判断材料。</li>
   </ul>`},
- {id:'mn-where', h:'導線ごとの差分をどこに持たせるか', s:'d', b:`
-  <p>「導線ごとに報酬量・頻度・解禁条件が違う」を実装でどう表現するかの選択です。<b>キーは既に揃っています</b> — <code>AdCountRoot</code> が <code>IncrementAttemptCount(AdId)</code> で導線ごとの識別子(<code>AdId</code>)を持っています(<code>Games/_OTHERS/AdCount/</code>)。</p>`,
+ {id:'mn-where', h:'導線ごとの数値を、どのファイルに書くか', s:'d', b:`
+  <p class="note">2026-07-28 コメント:「説明不足。何のことかわからない。」<br><b>質問の立て方が悪かったので、具体例から書き直します。</b></p>
+  <h4>何が問題になっているのか</h4>
+  <p>「導線ごとに個別判断する」と決めた結果(→ <a href="#money" onclick="go('money')">広告の扱い</a>)、<b>同じ機能なのにモバイルと Steam で数値が違う</b>状態が 11 箇所ぶん発生します。具体的にはこういう表が必要になります:</p>
+  <table><tr><th>導線</th><th>モバイルでの条件</th><th>Steam での条件</th></tr>
+  <tr><td><code>OfflineBonusDoubleReward</code></td><td>広告を1回見る → 倍率 ×2</td><td>倍率 DLC を持っていれば常時 ×2 / 未所持なら ×1</td></tr>
+  <tr><td><code>FlyingPresent</code>(ダイヤ)</td><td>20〜50 ダイヤ / 通常頻度</td><td>10〜25 ダイヤ / 頻度を下げる。DLC 所持で元に戻す</td></tr>
+  <tr><td><code>BattleLootX2</code></td><td>広告を1回見る → 戦利品 ×2</td><td>倍率 DLC を持っていれば常時 ×2</td></tr></table>
+  <p><b>この表そのものを、コードのどこに置くか</b> ── それがこの節の問いです。置き場所によって「後から数値を調整できるか」「テストが書けるか」「モバイルを壊すリスクがあるか」が変わります。</p>
+  <h4>選択肢のイメージ</h4>
+  <p><b>案A</b> なら、ドメイン側に <code>AdId</code> をキーにした定義が1枚でき、プラットフォームごとに値セットを差し替えます:</p>
+  <blockquote><code>RewardConfig[AdId.OfflineBonusDoubleReward] = { Multiplier: 2.0, RequiresDlc: "multiplier_pack", Frequency: 1.0 }</code></blockquote>
+  <p><b>案B</b> なら、同じ表を Unity 側の <code>SteamRewardService.cs</code> の中に書きます。<b>案C</b> なら、表を作らず <code>FlyingPresent</code> や <code>OfflineBonus</code> のそれぞれの実装箇所で個別に条件分岐を書きます。</p>
+  <p class="note">⚠️ 前版で「<code>AdCountRoot</code> にキーが揃っているので流用できる」と書きましたが、<b>これは言い過ぎでした</b>。<code>AdCountRoot</code> が持っているのは <code>AdId</code> をキーにした<b>累積カウンタ(<code>AttemptCount</code> / <code>WatchedCount</code>)だけ</b>で、<span class="ng">日付も、日次リセットも、上限判定も持っていません</span>(<code>ResetAllCounts()</code> が全消しするのみ)。<b>「1日 n 回まで」のような制限を入れる場合は、日付管理を新規に作る必要があります。</b>流用できるのは「導線を <code>AdId</code> で識別する」という枠組みだけです。</p>`,
   opt:{items:[
-   {k:'A',t:'AdId ごとの Config をドメインに持つ',d:'「報酬倍率 / 出現頻度 / 解禁に必要な DLC」を AdId をキーにした Config/Master として定義し、プラットフォームで値セットを差し替える。テストが書け、数値調整がコードから分離される。DLL のビルドと Unity への反映が必要。',rec:true},
-   {k:'B',t:'Unity 側の IRewardService 実装に持たせる',d:'ドメインを触らない。Steam 版の都合をドメインに持ち込まないで済むが、数値がコードに埋まりテスト外に出る。'},
-   {k:'C',t:'導線ごとに個別対応する(共通の器を作らない)',d:'FlyingPresent, OfflineBonus... をそれぞれの場所で個別に実装。着手は速いが、後から一覧・調整できなくなる。'},
+   {k:'A',t:'AdId ごとの Config をドメイン(GamesDomain)に持つ',d:'上記の表を AdId をキーにした Config/Master としてドメインに定義し、プラットフォームで値セットを差し替える。数値がコードから分離されて一覧でき、テストが書ける。11導線ぶんの数値を後から何度も調整することになるので、この利点は大きい。代償は DLL のビルドと Unity への反映が挟まること。',rec:true},
+   {k:'B',t:'Unity 側の IRewardService 実装に持たせる',d:'ドメインを触らないので DLL ビルドが不要。ただし数値が C# のコードに埋まり、テスト対象外になる。調整のたびに Unity 側のビルドが要る点は A と大差ない。'},
+   {k:'C',t:'導線ごとに個別対応する(共通の器を作らない)',d:'FlyingPresent, OfflineBonus... をそれぞれの場所で個別に実装。着手は最速だが、11箇所に散った数値を後から一覧・比較できなくなる。「デフォルトを下げる」というバランス調整を繰り返す前提とは相性が悪い。'},
   ]}},
  {id:'mn-drop', h:'廃止するもの(削除ではなく「Steam ビルドに含めない」)', s:'k', b:`
   <table><tr><th>対象</th><th>理由</th></tr>
   <tr><td><code>Ads/AdsScene.unity</code>, <code>Ads/AdsView.cs</code></td><td>広告タブ UI</td></tr>
-  <tr><td>ローカライズテーブル <code>UI_Ads</code></td><td>丸ごと不要</td></tr>
+  <tr><td>ローカライズテーブル <code>UI_Ads</code></td><td><s>丸ごと不要</s> → <b>ビルドから外さない。</b>参照されなければ無害(2026-07-28)</td></tr>
   <tr><td><code>Ads/AttPermissionRequest.cs</code></td><td>iOS ATT</td></tr>
   <tr><td><code>remove_ads</code> / <code>idle_gem_remove_ad_v2</code></td><td>広告が無いので意味が無い</td></tr>
   <tr><td><code>Shop/IAP/MobileIAPManager.cs</code></td><td>ほぼ全行コメントアウトの旧実装</td></tr>
   <tr><td><code>FirstPurchaseDiamondDef.cs</code> のハードコードされたセール期間</td><td>2026/6/28〜7/5 で失効済み</td></tr></table>
-  <blockquote><b>モバイル版と同一コードベースなので、削除ではなく「Steam ビルドに含めない」形にすること。</b>シーンはビルド対象から外し、UI は <code>IStoreService</code> / <code>IRewardService</code> の能力フラグで出し分ける。</blockquote>`},
- {id:'mn-price', h:'価格設定', s:'d', b:`
-  <p>モバイル版と揃えるか、PC 向けに変えるか。PC は一般に単価が高めでも通りますが、同一コードベースで表示を出し分ける必要が出ます。</p>`,
-  opt:{items:[
-   {k:'A',t:'モバイル版と同じ価格',d:'表示ロジックを共通化できる。ユーザーからの不公平感も出ない。',rec:true},
-   {k:'B',t:'PC 向けに設定し直す',d:'PC の相場に合わせる。Steam の地域別価格表を別途作る。'},
-   {k:'C',t:'あとで決める',d:'ストアページ作成のタイミングまで保留。'},
-  ]}},
+  <blockquote><b>モバイル版と同一コードベースなので、削除ではなく「Steam ビルドに含めない」形にすること。</b>シーンはビルド対象から外し、UI は <code>IStoreService</code> / <code>IRewardService</code> の能力フラグで出し分ける。</blockquote>
+  <p class="note">2026-07-28 コメント:「広告を出さないことは重要だが、ローカライズテーブルなどをビルドから外す手間は必要ない。<b>無効化されてればよい。</b>」<br>
+  → <b>方針を「除外」から「無効化」へ緩めます。</b>判断基準を分けます:</p>
+  <table><tr><th>対象</th><th>扱い</th><th>理由</th></tr>
+  <tr><td><b>広告 SDK の初期化・表示</b>(<code>MobileAds.Initialize</code>, <code>AdsScene</code>)</td><td><span class="kw">確実に無効化する</span></td><td>実際に広告が出てしまうと Steam での方針そのものが崩れる。<b>ここだけは厳密に</b></td></tr>
+  <tr><td><b>ローカライズテーブル <code>UI_Ads</code> / 未使用アセット</b></td><td><span class="okw">そのまま含めてよい</span></td><td>参照されなければ動作に影響しない。除外作業のほうがモバイル版を壊すリスクが高い</td></tr>
+  <tr><td><b>UI(広告ボタン・広告タブ)</b></td><td>能力フラグで非表示</td><td>ビルド対象から外さなくても、表示されなければ十分</td></tr></table>
+  <p><span class="okw">この緩和で、除外作業に伴う「モバイル版が壊れるリスク」がほぼ消えます。</span>ビルドサイズの数 MB より、同一コードベースの安全性を優先します。<br>
+  <span class="ng">ただし GoogleMobileAds プラグインのネイティブライブラリだけは例外です。</span>Standalone ビルドに含まれると<b>そもそもビルドが通らない / 起動時に落ちる</b>可能性があるため、これは「無効化」では済まず、プラットフォーム設定で除外する必要があります。<b>フェーズ3頭の検証ビルドで最初に確認すべき項目</b>です(→ <a href="#risk" onclick="go('risk')">リスク</a>)。</p>`},
+ {id:'mn-price', h:'🔴 価格設定 ── 事例調査が先(未実施)', s:'q', b:`
+  <p class="note">2026-07-28 コメント:「この点はしっかりと Steam での成功事例を調査し、戦略を組む。」<br>
+  <b>了解しました。値付けの選択肢を並べる前に、調査を先に置きます。</b>以下は調査の設計だけで、<span class="ng">結論はまだ出ていません</span>。</p>
+  <p>ここで数字を推測で書くと、それが既成事実として下流の設計に流れてしまいます。<b>この節は意図的に空のまま残し、調査結果で埋めます。</b></p>
+  <h4>調査対象 ── Steam の F2P / 買い切り放置ゲーム</h4>
+  <table><tr><th>タイトル</th><th>見るべき点</th></tr>
+  <tr><td><b>Tap Ninja - Idle game</b></td><td>コメントで挙がった参照元。<b>デイリー付与型の商品構成・価格・上限</b>を実際に確認する</td></tr>
+  <tr><td><b>Melvor Idle</b></td><td>買い切り + 拡張 DLC 型の代表例。本体価格と DLC 価格の比</td></tr>
+  <tr><td><b>Leaf Blower Revolution</b></td><td>F2P 寄りの放置ゲームで DLC を多数展開している例。DLC の粒度</td></tr>
+  <tr><td><b>NGU IDLE / Idling to Rule the Gods</b></td><td>基本無料 + 少数の課金要素。<b>売らない判断をどこで引いているか</b></td></tr>
+  <tr><td><b>Idle Champions of the Forgotten Realms</b></td><td>通貨販売を実際に行っている F2P。<span class="kw">Valve の承認が通っている実例として、商品ページの見せ方を確認する</span></td></tr></table>
+  <h4>各タイトルで取るデータ</h4>
+  <ol>
+   <li><b>商品構成</b> ── DLC か、ゲーム内通貨か、その併用か。DLC なら何個あり、どういう粒度で分けているか</li>
+   <li><b>価格帯</b> ── 最低額と最高額。Steam のストアページから直接読める</li>
+   <li><b>レビューでの言及</b> ── 「P2W」「pay to win」「microtransaction」でレビューを絞り込み、<span class="kw">どういう売り方が叩かれ、どういう売り方が許容されているか</span>を読む。<b>これが今回いちばん重要</b>。実況文化との相性を判断基準に置いた以上、数字より言説を見るべき</li>
+   <li><b>モバイル版の有無と価格差</b> ── 両方出しているタイトルで、価格を揃えているか変えているか(案3 の検討材料)</li>
+  </ol>
+  <h4>調査で答えを出したい問い</h4>
+  <ul>
+   <li>Steam の放置ゲームで<b>ゲーム内通貨を売っているタイトルは実在するか</b>(実在すれば <a href="#money" onclick="go('money')">承認リスク</a>の見積もりが下がる)</li>
+   <li>DLC の価格帯は、モバイルの同等商品より<b>高いのか安いのか</b></li>
+   <li><b>「毎日 XX 付与」型はレビューでどう受け止められているか</b>(案2 の可否に直結)</li>
+   <li>日本語対応の有無が売上・レビュー数にどう効いているか(本作は13言語対応済みなので、活かせる強み)</li>
+  </ul>
+  <p class="note">この調査が終わるまで、価格に関する決定(モバイルと揃えるか / PC 向けに上げるか / 地域別価格をどう作るか)は<b>保留</b>とします。ストアページ作成より前に片付ければ十分間に合います。</p>`},
 ]},
 
 /* ============================ 04 セーブ ============================ */
@@ -421,13 +540,17 @@ const DB = [
   <table><tr><th>OS</th><th>パス</th></tr>
   <tr><td>Windows</td><td><code>%USERPROFILE%\\AppData\\LocalLow\\IdleSystem\\Idle Minertia\\</code></td></tr>
   <tr><td>macOS</td><td><code>~/Library/Application Support/IdleSystem/Idle Minertia/</code></td></tr></table>
-  <blockquote><b><code>productName</code> / <code>companyName</code> を変えるとパスが変わり既存セーブが読めなくなります。変更しないこと。</b>Standalone の bundle ID(<code>com.idlesystem.IdleSphere</code>)は変更してよい。</blockquote>`},
+  <blockquote><b><code>productName</code> / <code>companyName</code> を変えるとパスが変わり既存セーブが読めなくなります。変更しないこと。</b>Standalone の bundle ID(<code>com.idlesystem.IdleSphere</code>)は変更してよい。</blockquote>
+  <p class="note">2026-07-28 コメント:「ただし、暗号化しなければ改竄する人が現れると考えている。」<br>
+  <span class="okw">そのとおりです。</span>上記は「<b>読み書きが動く</b>」という意味だけで、<b>安全という意味ではありません</b>。パスが公開ディレクトリにある以上、平文なら改ざんは確実に起きます。→ <b>この判断は <a href="#save" onclick="go('save')">§セーブデータの暗号化</a> で扱い、2026-07-28 に方針が変わりました。</b></p>`},
  {id:'sv-single', h:'🔴 二重起動によるセーブ破損(最優先)', s:'k', b:`
   <p><code>forceSingleInstance: 0</code> のため二重起動できます。PC では Steam ライブラリ / ショートカット / 再起動で容易に起きます。同じ <code>local_save/</code> に2プロセスが書くと、アトミック書き込みをしていても<b>進行が巻き戻る / 混ざる</b>。</p>
   <ol><li><b><code>forceSingleInstance: 1</code> に変更</b> — これでほぼ解決</li>
   <li>保険としてロックファイル(<code>local_save/.lock</code>)の取得を検討</li></ol>
   <p><b>移植の最初期に入れること。</b></p>`},
- {id:'sv-enc', h:'セーブデータの暗号化', s:'d', b:`
+ {id:'sv-enc', h:'セーブデータの改ざん対策 ── 方針転換', s:'d', b:`
+  <p class="note">2026-07-28 コメント:「<b>改竄は課金通貨限らず一切できないようにしたい。</b>」<br>
+  <span class="ng">これは前版の結論(A: 平文のまま)を覆します。</span>前版は「改ざんされても<b>売上が減らない</b>から放置してよい」という<b>収益防衛</b>の観点で A を推していました。今回の指示は<b>作品の健全性</b>を基準に置くもので、判断軸そのものが変わります。<b>A は選択肢から外します。</b></p>
   <h4>現状: 全て平文</h4>
   <ul><li><code>BindRepository&lt;T&gt;(key, isEncrypted)</code> の呼び出しは <b>60件すべて <code>isEncrypted: false</code></b></li>
   <li>暗号化パス(<code>EncryptedUpdateJsonPlayerData.cs</code> + <code>AES.cs</code>)は<b>実装済みだが一度も使われていない</b></li>
@@ -437,27 +560,63 @@ const DB = [
   <tr><td>セーブの場所</td><td>アプリサンドボックス内</td><td><code>%APPDATA%\\LocalLow\\...\\*.json</code></td></tr>
   <tr><td>改ざんの難易度</td><td>root / 脱獄が必要</td><td><b>メモ帳で開いて数字を書き換えるだけ</b></td></tr></table>
   <p><b>OS が守ってくれていた前提が消えます。</b></p>
-  <blockquote>この判断は独立していません。<b>03 で通貨を売るなら必須、DLC のみ(B2)なら不要</b>。DLC の所有権は Steam 側が持つので偽造できず、セーブを改ざんされても売上は減りません。</blockquote>
-  <p><span class="okw">2026-07-28 の広告方針の確定で、この天秤はさらに A(平文のまま)へ傾きました。</span>倍率や FlyingPresent 強化を<b>課金解禁</b>にするということは、価値のあるものが軒並み <b>Steam 側が所有権を持つ DLC</b> になるということです。セーブを書き換えても解禁できません。</p>
-  <p class="note">⚠️ 移行の罠(<b>Q5「モバイル版を継続」が確定したため、この罠は生きています</b>): <code>isEncrypted</code> を false → true に変えると<b>保存先ファイル名が変わります</b>(<code>_saveData.json</code> → <code>_saveData.encrypted</code>)。モバイル版の既存プレイヤーのセーブが読めなくなるため、切り替えるなら「旧 .json があれば読んで .encrypted に書き直す」移行処理が必須です。<b>B / C を選ぶ場合は、暗号化そのものより移行処理の方が重い作業になります。</b></p>`,
+  <blockquote>収益の観点では、この判断は 03 に依存していました。<b>通貨を売るなら必須、DLC のみなら不要</b> ── DLC の所有権は Steam 側が持つので偽造できず、セーブを改ざんされても売上は減らないからです。<br>
+  <span class="okw">その結論自体は今も正しいです。</span>ただし<b>今回の指示はそこを基準にしていません。</b></blockquote>
+  <h4>「一切できないように」はどこまで到達できるか</h4>
+  <p>先に限界を明示します。<span class="ng">クライアント上で完結するゲームである限り、改ざんを理論的にゼロにすることはできません。</span>セーブを暗号化しても鍵はバイナリの中にあり、メモリ上の値は実行中に書き換えられます。<b>できるのは「割に合わなくする」ことだけ</b>です。</p>
+  <p>そのうえで、対策には明確な段階があります:</p>
+  <table><tr><th>段階</th><th>防げるもの</th><th>本作での状況</th></tr>
+  <tr><td><b>1. セーブの暗号化</b>(AES)</td><td>メモ帳で開いて数字を書き換える。<span class="kw">改ざん者の大多数はここで止まります</span></td><td><code>EncryptedUpdateJsonPlayerData.cs</code> + <code>AES.cs</code> が<b>実装済み。フラグを変えるだけ</b></td></tr>
+  <tr><td><b>2. メモリ改ざんの検出</b>(ACTk)</td><td>CheatEngine 等での実行中の値書き換え</td><td>Anti-Cheat Toolkit が<b>導入済み・未使用。追加費用なし</b></td></tr>
+  <tr><td><b>3. 進行の妥当性検証</b></td><td>「深度が1フレームで100万進んだ」等、<b>あり得ない変化の検出</b>。暗号を破られても効く</td><td>未実装。ドメイン側に判定を書けば<span class="okw">テストが書ける</span></td></tr>
+  <tr><td><b>4. サーバー権威</b></td><td>ほぼ全て。ただしオフライン放置ゲームとは根本的に相性が悪い</td><td>→ 下記</td></tr></table>
+  <p><span class="okw">1 と 2 は、本作では「実装済みのものを有効にする」だけで到達できます。</span>費用も新規実装もほぼ不要で、これは非常に恵まれた状況です。</p>
+  <h4>4(サーバー権威)について ── 今回だけは検討に値します</h4>
+  <p>前版は「本作の規模では過剰」として切り捨てていました。しかし <b>サーバーを使いたいという方針が別途出ている</b>(→ <a href="#save" onclick="go('save')">クラウドセーブ</a>)ため、前提が変わります。</p>
+  <p><span class="ng">ただし全面的なサーバー権威は依然として現実的ではありません。</span>本作は<b>オフラインで進行し、OfflineBonus で放置時間を報酬に変える</b>ゲームです。進行をサーバーで検証するということは、オフラインプレイを否定するか、オフライン中の進行を後から丸ごと信用するかのどちらかになり、後者では検証の意味がありません。<br>
+  <b>現実的なのは「全部を検証する」ではなく「他人に見える値だけを検証する」</b>です ── リーダーボード(→ <a href="#feature" onclick="go('feature')">06</a>)や NetherCompanion の共有ビルドのように、<span class="kw">改ざんが他プレイヤーに迷惑をかける経路だけ</span>をサーバー側で弾く。これなら既存の REST 基盤に乗り、オフライン進行も壊しません。</p>
+  <p class="note">⚠️ <b>移行の罠 ── これが今回いちばん重い作業になります。</b>Q5「モバイル版を継続」が確定しているため、この罠は生きています。<code>isEncrypted</code> を false → true に変えると<b>保存先ファイル名が変わります</b>(<code>_saveData.json</code> → <code>_saveData.encrypted</code>)。<span class="ng">モバイル版の既存プレイヤー全員のセーブが読めなくなります。</span><br>
+  「旧 <code>.json</code> があれば読んで <code>.encrypted</code> に書き直す」移行処理が必須で、対象は <b><code>BindRepository</code> の呼び出し 60 件すべて</b>です。<b>暗号化そのものは1行ですが、移行処理と、その全件テストが本体です。</b>ここを失敗するとリリース済みのモバイル版が壊れるため、<span class="kw">Steam 対応の中で最も慎重に進めるべき箇所</span>として扱ってください。</p>
+  <p class="note">補足: <b>Steam 版だけ暗号化する</b>という逃げ道もあります(新規プレイヤーしかいないので移行処理が不要)。ただしコメントの「一切できないようにしたい」がモバイルも含む意図なら、この逃げ道は使えません。<b>下の選択肢はその点で分かれます。</b></p>`,
   opt:{items:[
-   {k:'A',t:'平文のまま(03 が B2 の場合)',d:'何もしない。シングルプレイのアイドルゲームで、他人に迷惑がかからない改造は放置でよいという判断も成立する。',rec:true},
-   {k:'B',t:'既存の AES を有効化',d:'isEncrypted: true に変えるだけ。実装コストほぼゼロ、カジュアルな改ざんは防げる。業界標準の水準。ただし移行処理が必要。'},
-   {k:'C',t:'B + ACTk',d:'導入済みの Anti-Cheat Toolkit でメモリ改ざんも検出。CheatEngine 系に対応。追加費用なし。'},
-   {k:'D',t:'サーバー権威',d:'進行をサーバーで検証。本作の規模では過剰。'},
+   {k:'C',t:'AES 有効化 + ACTk(両プラットフォーム)',d:'実装済みのものを2つとも有効にする。クライアント側で到達できる実用上の上限で、追加費用ゼロ。「一切できないように」への最も素直な回答。代償は 60 件ぶんの移行処理とそのテストで、これがこの案の作業の大半を占める。',rec:true},
+   {k:'CS',t:'Steam 版のみ AES + ACTk。モバイルは平文のまま',d:'移行処理が丸ごと不要になり、リリース済みモバイル版を壊すリスクがゼロ。Steam の脅威モデル(ファイルが %APPDATA% で丸見え)にだけ対処するという整理も筋が通る。ただしモバイルの改ざんは放置される。'},
+   {k:'CD',t:'C + 共有値のサーバー検証',d:'C に加えて、リーダーボードや NetherCompanion の共有ビルドなど「他人に見える値」だけをサーバー側で妥当性検証する。改ざんが他プレイヤーに影響する経路を塞ぐ。サーバー方針とも一貫するが、新規実装が必要。'},
+   {k:'B',t:'AES 有効化のみ',d:'メモ帳での書き換えは防げる。ACTk を入れない分だけ手数が減るが、既に導入済みのものを使わない理由は乏しい。'},
   ]}},
- {id:'sv-cloud', h:'クラウドセーブ ── Firebase は Standalone 非対応', s:'d', b:`
-  <p>現状は Firebase Firestore。<code>Settings/CloudSaveController.cs</code>(860行超)が競合解決まで担当しています。</p>
-  <p><span class="ng">Firebase Unity SDK は Standalone を正式サポートしていません。</span>デスクトップ版は「開発用の限定サポート」で、Auth と Firestore は本番利用の対象外。逃げ道は2つ: (1) <code>FirebaseAuthHelper.cs</code> が既に REST API を直接叩いている (2) Firestore にも REST API がある。</p>
-  <h4>A を採ると連鎖して解決すること</h4>
-  <ul><li><b>ログイン UI が不要になる</b>(Steam アカウント = プレイヤー識別)</li>
-  <li><code>AppleLogin.cs</code> が Windows でコンパイルから消える問題が消滅</li>
-  <li>SimpleSignIn の Google OAuth を PC で検証する必要がなくなる</li>
-  <li><code>CloudSaveController</code> の競合解決(575-691行)は Steam クライアントに任せられる</li></ul>`,
+ {id:'sv-cloud', h:'クラウドセーブとサーバー ── 前提が誤っていました', s:'d', b:`
+  <p class="note">2026-07-28 コメント:「<b>NetherCompanion があるので、サーバーは使いたい。どのような方法が考えられるか？</b>」</p>
+  <h4>まず訂正 ── 「Firebase は Standalone 非対応」は本作には当てはまりません</h4>
+  <p>前版は「Firebase Unity SDK は Standalone を正式サポートしていない」ことを理由に、Firebase を避ける方向で書いていました。<span class="ng">この記述は、本プロジェクトに関しては誤りでした。</span>実際にコードを確認した結果:</p>
+  <table><tr><th>確認したこと</th><th>結果</th></tr>
+  <tr><td><code>using Firebase.*</code> の出現箇所</td><td><b>Assets 配下に 1 件も無い</b></td></tr>
+  <tr><td><code>FirebaseAuthHelper.cs</code></td><td><code>System.Net.Http.HttpClient</code> で <code>identitytoolkit.googleapis.com</code> を直接叩いている</td></tr>
+  <tr><td><code>CloudSaveController.cs</code></td><td>同じく <code>System.Net.Http.HttpClient</code> 経由(<code>IdleSystem.Backend.Client</code>)</td></tr>
+  <tr><td>Firebase SDK の実体</td><td><code>Plugins/Android/FirebaseApp.androidlib</code> のみ。<b>Android 専用で、Standalone ビルドには最初から入らない</b></td></tr></table>
+  <p><span class="okw">つまり本作のバックエンドは、最初から Firebase Unity SDK ではなく <b>REST(HTTPS + JSON)</b> で書かれています。</span>REST に Standalone 非対応という概念はありません。<b>「Firebase を REST 化する」という作業は存在せず、既に REST です。</b>Windows / macOS でそのまま動く見込みが高く、必要なのは<b>実装ではなく確認</b>です。</p>
+  <p class="note">前版の選択肢 B「Firebase を REST 化(実装コスト大)」は、この事実により<b>無効です</b>。コストの見積もりが根本的に間違っていました。</p>
+  <h4>そのうえで ── サーバーで何をしたいのかを分けます</h4>
+  <p>「クラウドセーブ」と「サーバー機能」は別の問題で、<b>別々に決められます</b>。混ぜていたのが前版の失敗でした。</p>
+  <table><tr><th>用途</th><th>必要なもの</th><th>推奨</th></tr>
+  <tr><td><b>セーブのバックアップ・端末間同期</b></td><td>ファイルの保管と競合解決</td><td><span class="kw">Steam Cloud</span>。無料、設定のみ、競合解決も Steam クライアント任せ</td></tr>
+  <tr><td><b>NetherCompanion</b>(他プレイヤーのビルド共有)</td><td>プレイヤー間でデータを交換する場</td><td><span class="kw">Firestore REST を継続</span>。Steam Cloud では代替不可能(他人のデータを読む必要があるため)</td></tr>
+  <tr><td><b>リーダーボード</b></td><td>スコアの集約</td><td>Steamworks の機能を使う(→ <a href="#feature" onclick="go('feature')">06</a>)</td></tr>
+  <tr><td><b>クロスプログレッション</b>(案3 を採る場合)</td><td>購入ダイヤ総額の共有</td><td>Firestore REST。<b>セーブ全体ではなく所有権だけ</b>を持てば足りる(→ <a href="#money" onclick="go('money')">03</a>)</td></tr></table>
+  <blockquote><b>結論の形:</b> セーブは Steam Cloud、プレイヤー間で共有が必要なものだけ Firestore REST。<br>
+  <span class="okw">この分け方なら「サーバーを使いたい」も「実装を軽くしたい」も両立します。</span></blockquote>
+  <h4>NetherCompanion を Steam に載せるときの確認事項</h4>
+  <p>設計上は <code>idle-gem-companion-builds/**</code> という専用コレクションに閉じており(<code>nether-companion-plan.md</code>)、通信は<b>1日あたり書込1回・読取3回</b>に固定されています。Standalone に持っていく際の論点は実装ではなく運用側です:</p>
+  <ol>
+   <li><b>匿名認証の UID がプラットフォーム間で別物になる。</b>Steam 版と Mobile 版で同一人物が別 UID を持つことになりますが、Companion 機能は「他人のビルドを借りる」だけなので<b>実害はありません</b>。ただしクロスプログレッションを採るなら UID の統合が必要になります</li>
+   <li><b>プレイヤー名のモデレーション。</b>PC は入力が容易なぶん不適切名のリスクが上がります。<code>nether-companion-consent.md</code> で課題として残されている論点が、Steam ではより重くなります</li>
+   <li><b>Firestore の課金。</b>Steam 版のユーザーが増えても 1 ユーザーあたり 1日 4 リクエストのままなので、<span class="okw">コスト構造は変わりません</span></li>
+   <li><b>ネットワーク不通時の挙動。</b>PC ではオフライン起動が普通にあるため、失敗時に静かに諦める設計(実装済み)がそのまま効きます</li>
+  </ol>`,
   opt:{items:[
-   {k:'A',t:'Steam Cloud のみ',d:'Steam 版は Steam Cloud に一本化し、Firebase を使わない。実装が最も軽く、Firebase の Standalone 検証を丸ごと回避できる。クロスプログレッションはスコープ外なのでこれで足りる。',rec:true},
-   {k:'B',t:'Firebase を REST 化',d:'モバイルと同じバックエンド。将来のクロスプログレッションに繋がるが実装コスト大。'},
-   {k:'C',t:'両方',d:'Steam Cloud を主、Firebase を副。競合解決が3者間になり複雑。'},
+   {k:'A2',t:'セーブは Steam Cloud、共有機能は Firestore REST を継続',d:'用途で分ける案。セーブの競合解決を Steam に任せつつ、NetherCompanion とクロスプログレッションの道を残す。既存コードが既に REST なので追加実装はほぼ不要で、必要なのは Standalone での動作確認のみ。',rec:true},
+   {k:'A',t:'Steam Cloud のみ。サーバー機能は Steam 版で無効化',d:'最も軽い。ただし NetherCompanion が Steam 版で使えなくなり、「サーバーを使いたい」という方針に反する。'},
+   {k:'B',t:'すべて Firestore REST に寄せる(Steam Cloud を使わない)',d:'モバイルと完全に同じバックエンドになり、クロスプログレッションが自然に実現する。ただし CloudSaveController の競合解決(575-691行)を PC でも自前で抱えることになり、Steam Cloud の無料の恩恵を捨てることになる。'},
+   {k:'C',t:'両方(Steam Cloud を主、Firestore を副)',d:'セーブを二重に持つ。競合解決が3者間になり複雑さが跳ね上がる。セーブ喪失が致命傷である以上、複雑さ自体がリスク。'},
   ]}},
  {id:'sv-sync', h:'同期対象の設計', s:'k', b:`
   <table><tr><th>#</th><th>論点</th><th>方針</th></tr>
@@ -481,63 +640,124 @@ const DB = [
 
 /* ============================ 05 表示・入力 ============================ */
 {id:'display', nav:'05 横長レイアウトと PC 操作', group:'仕様', title:'横長レイアウトと PC 操作', desc:'最大工数。縦画面 UI の横長対応、Equipment のマウス操作、キーボードショートカット。', src:'docs/steam-release/05_Input_and_Display.md', secs:[
- {id:'ds-cost', h:'管理コストを2倍にしない ── 原因の特定', s:'k', b:`
-  <p>管理コストが2倍になるのは <b>「UXML を縦用と横用の2セット持つ」場合だけ</b>です。レイアウト差分をどう吸収するかではなく、<b>資産を複製するかどうか</b>が分岐点。</p>
-  <blockquote><b>UXML は単一ソースのまま。プラットフォーム差は「どこに置くか」だけに閉じる。</b></blockquote>
-  <h4>使える資産が既にある</h4>
-  <p><code>Main/SceneInitializer.cs</code> は起動時に<b>全シーンを Additive でロード済み</b>で、<code>SceneInfo.ActiveScenes</code> で<b>同時表示するシーンを宣言</b>しています。Cave は既に5シーンを同時表示中。<br>
-  <span class="okw">「複数コンテンツを同時に画面に出す」機構は既に本番で動いています。</span>横長対応は新機能ではなく、この宣言を増やして配置先を指定するだけ。</p>`},
- {id:'ds-design', h:'3カラム設計と差し込み点', s:'k', b:`
-  <blockquote>論理キャンバス(16:9 で 2844 × 1600)<br>
-  ┌────────────┬────────────┬────────────┐<br>
-  │ Left 972 │ Center 900 │ Right 972 │<br>
-  │ Equipment │ Cave(既存) │ Relic │<br>
-  └────────────┴────────────┴────────────┘</blockquote>
-  <p>中央 900 は設計値そのまま。左右の 972 も設計幅 900 とほぼ同じなので、<b>既存 UXML をそのまま挿せます</b>。各 UIDocument のルートを列コンテナに<b>実行時に付け替える</b>(<code>RemoveFromHierarchy()</code> → <code>column.Add()</code>)。UXML の中身は触りません。</p>
-  <table><tr><th>要素名(<code>Main/MainUI2.uxml</code>)</th><th>役割</th></tr>
-  <tr><td><code>MainArea</code></td><td><b>コンテンツの描画先。ここを3カラム化する</b></td></tr>
-  <tr><td><code>BottomArea</code> / <code>ButtomButtonUXML</code></td><td>タブバー。横長でも<b>下部に横断させたまま</b>でよい</td></tr>
-  <tr><td><code>PopUpContainer</code> / <code>GlobalModalBlocker</code></td><td>ポップアップ。<b>中央カラムではなく画面全体に対して出す</b></td></tr></table>
-  <p><span class="okw">改修は MainArea の中に <code>flex-direction: row</code> の3カラムコンテナを入れるだけ。タブバーとポップアップの仕組みは無改修。</span></p>`},
- {id:'ds-rules', h:'2倍にしないための運用ルール', s:'k', b:`
-  <table><tr><th>#</th><th>ルール</th></tr>
-  <tr><td>R1</td><td><b>UXML を複製しない。</b>横長専用 UXML を作った時点で敗北</td></tr>
-  <tr><td>R2</td><td><b>横長専用の画面を作らない。</b>「横長 = 縦長の画面を並べたもの」と定義を固定する</td></tr>
-  <tr><td>R3</td><td><b>新機能は常に縦長 900 幅で作る。</b>横長対応は <code>WideExtraScenes</code> に1行足すだけ</td></tr>
-  <tr><td>R4</td><td><b>アスペクト比判定は1箇所。</b><code>LayoutMode</code>(Narrow/Wide)を <code>ReactiveProperty</code> で公開し、各 View は購読するだけ</td></tr>
-  <tr><td>R5</td><td><b>USS は新規ファイルを作らず、既存 USS に <code>.wide</code> セレクタを足す。</b></td></tr>
-  <tr><td>R6</td><td><b>判定はプラットフォームではなくアスペクト比。</b>折りたたみ端末やタブレット横持ちが自動で恩恵を受ける</td></tr></table>`},
+ {id:'ds-principle', h:'原則の入れ替え ── 「並べる」から「展開する」へ', s:'k', b:`
+  <p class="note">2026-07-28 <b>「Horizontal Layout for Idle Minertia」(手描き仕様・全7ページ)を受けて、この章はゼロから作り直しました。</b>方針として<span class="kw">変更容易性よりクオリティを優先</span>します。前版の「3カラムに別シーンを挿す」案は<b>破棄</b>します。</p>
+  <h4>前版が間違っていた点</h4>
+  <p>前版は横長を <b>「縦長の画面を並べたもの」</b>と定義していました(左に Equipment、中央に Cave、右に Relic)。これは<span class="ng">実装の都合から出た定義</span>であって、プレイヤー体験から出た定義ではありません。実際、前版自身が「Equipment は 972 幅の常設サイドには詰め込みすぎ」と自分で懸念を書いていました。<b>定義が悪いから無理が出ていたのです。</b></p>
+  <h4>新しい原則</h4>
+  <blockquote><b>縦長画面は、狭さを埋め合わせるために情報を「縦に圧縮」している。<br>
+  横長画面では、その圧縮を解く。</b></blockquote>
+  <p>圧縮の手段は2つしかありません。<b>タブで畳む</b>か、<b>上下に積む</b>かです。横長ではどちらも<b>左右に並べる</b>へ置き換わります。頂いた仕様の全ページが、例外なくこの1つの規則で説明できます:</p>
+  <table><tr><th>画面</th><th>縦長での圧縮</th><th>横長での展開</th></tr>
+  <tr><td><b>Cave</b></td><td>Soil / Tear Upgrade を<b>2タブで畳む</b></td><td>2つを<b>左右に並べて同時表示</b></td></tr>
+  <tr><td><b>Mission, Trade</b></td><td>2タブで畳む</td><td>タブを廃し<b>二列</b>で表示</td></tr>
+  <tr><td><b>Prestige</b></td><td>2タブで畳む</td><td>2つをいっぺんに表示し横並びに</td></tr>
+  <tr><td><b>Equipment</b></td><td>インベントリと操作系を<b>上下に積む</b></td><td>インベントリを左、操作系を右に。<span class="kw">操作系の内側の3タブはタブのまま</span></td></tr>
+  <tr><td><b>Battle</b></td><td>3ブロックが<b>2段に折り返す</b></td><td>折り返しを解いて<b>1行に並べる</b></td></tr></table>
+  <p><span class="okw">この原則の価値は、新しい情報設計を一切作らないことです。</span>同じ内容・同じグループのまま、畳み方だけを変えます。だから<b>新規のUX設計も、新規のアートも発生しません</b>。前版の3カラム案は「Cave を見ながら Equipment を触る」という<b>新しい遊び方</b>を発明しようとしていて、それが難しさの正体でした。</p>
+  <p class="note">Equipment の内側3タブが<b>タブのまま残る</b>点に注意してください。原則は「<b>いちばん外側の畳みを1段だけ解く</b>」です。全部の階層を開くと横長でも入りません。</p>`},
+ {id:'ds-nav', h:'ナビゲーション ── 下タブバーから右レールへ', s:'k', b:`
+  <p>横長では、画面下部のタブバー(<code>MainUI2.uxml</code> の <code>BottomArea</code> / <code>ButtomButtonUXML</code>)を<b>画面右端の縦レール</b>に置き換えます。</p>
+  <h4>仕様</h4>
+  <table><tr><th>#</th><th>仕様</th><th>理由・補足</th></tr>
+  <tr><td>N1</td><td><b>右端に縦一列</b>で並べる</td><td>横長では横幅が余り、縦が足りない。下部を占有しないぶんコンテンツの高さが稼げる</td></tr>
+  <tr><td>N2</td><td><b>上から順に並べ、下寄せ</b>にする</td><td>項目数が増減しても<b>最下段の位置が動かない</b>。マウスが最後に置かれる位置が安定する</td></tr>
+  <tr><td>N3</td><td><b>いちばん下がハンバーガーボタン</b>(Options)</td><td>縦長では右上にあったもの。<b>下寄せと組み合わせると常に同じ位置</b>に来る</td></tr>
+  <tr><td>N4</td><td><b>区切り線を入れない</b></td><td>レールに枠や背景を持たせない。コンテンツの上に浮かせる</td></tr>
+  <tr><td>N5</td><td>各ボタンに<b>番号を振る</b></td><td>下記のとおりキーボードショートカットと直結する</td></tr></table>
+  <h4>番号がそのままキーボードショートカットになります</h4>
+  <p><span class="okw">この仕様の最良の副産物です。</span>本企画では既に「数字キー 1〜6 でコンテンツ切替」を実装する方針が決まっています(→ 下記 §キーボードショートカット)。<b>レールの番号は、そのショートカットを画面に可視化したものになります。</b>PC ゲームで「番号付きの縦メニュー」は、押すべきキーの説明そのものとして機能します。<span class="kw">別々に決めた2つの仕様が、追加コストなしで噛み合いました。</span></p>
+  <h4>🔴 未決 ── レールに何を載せるか</h4>
+  <p>頂いた Cave の図では、<b>Map / Booster / INDEX を開くボタンがレールに移動</b>していました(「Map, Booster, Index を開くボタンはコンテンツボタンとする」)。一方で<b>鉱石一覧ボタンと Mission ボタンはコンテンツ側に残って</b>います。</p>
+  <p>この線引きは「<b>全画面を開くボタンはレールへ / いま居る Cave に紐づくものはコンテンツに残す</b>」と読めますが、確定ではありません。<span class="ng">ここには構造的な問題が1つあります:</span></p>
+  <blockquote><b>画面ごとにレールの項目数が変わると、番号がずれます。</b><br>
+  Cave では Map/Booster/INDEX が加わって 6 項目、Equipment では 4 項目、というように変動すると、<span class="ng">「3 を押すと何が出るか」が画面によって変わってしまいます</span>。N5 とキーボードショートカットの利点が失われます。</blockquote>
+  <p>回避案は2つあります:</p>
+  <ol>
+   <li><b>レールを2段に分ける。</b>上段=画面固有ボタン(番号なし)、下段=グローバルなコンテンツ切替(番号あり・下寄せ・最下段ハンバーガー)。<span class="okw">N2/N3 の「下寄せ」がそのまま活き、番号の安定も保てます。</span>区切り線を入れないという N4 とも両立します(間隔だけで分ける)</li>
+   <li><b>番号はグローバル項目にだけ振る。</b>画面固有ボタンはレールに混ぜるがアイコンのみ。実装は軽いが、並びの中で番号が飛ぶ</li>
+  </ol>`,
+  opt:null},
+ {id:'ds-screens', h:'画面ごとの展開仕様', s:'k', b:`
+  <p>頂いた図をそのまま仕様として書き起こしたものです。</p>
+  <h4>Cave</h4>
+  <table><tr><th>領域</th><th>横長での配置</th></tr>
+  <tr><td>上部</td><td>左に <b>Depth X-X</b>、中央にメイン通貨、右に通貨3行。<b>横一列に伸ばす</b>(縦長では2段だったものが1段に収まる)</td></tr>
+  <tr><td>中段左</td><td>鉱石一覧ボタン + Mission ボタン(緑バー)。<b>コンテンツ側に残す</b></td></tr>
+  <tr><td>中央</td><td>Cave の描画領域</td></tr>
+  <tr><td>下部</td><td><b>Soil Upgrade と Tear Upgrade を左右2列で同時表示。タブバーは消す</b></td></tr>
+  <tr><td>右端</td><td>レール(Map / Booster / INDEX + グローバル切替 + ハンバーガー)</td></tr></table>
+  <h4>Mission, Trade</h4>
+  <p>2タブを廃止し、<b>二列</b>で並べる。それ以外の変更なし。</p>
+  <h4>Equipment</h4>
+  <p><b>左にインベントリ等(広い方)、右に操作系。</b>操作系の3タブは<b>右パネルの下部にタブとして残す</b>。<br>
+  <span class="okw">前版で懸念していた「972 幅に Equipment を詰め込む」問題は、この構成では発生しません。</span>Equipment は横長でも全画面を使うためです。</p>
+  <h4>Battle</h4>
+  <p>上部に Battle の描画領域を<b>全幅で</b>。下部に3つのパネルを<b>1行に並べる</b>(縦長では2段に折り返していたもの)。3番目のパネルは横幅に余裕があるぶん<b>広く取る</b>。操作ボタン3つは<b>右下</b>に維持。</p>
+  <h4>Prestige</h4>
+  <p>2つのタブをいっぺんに表示し、横並びに。</p>
+  <p class="note">🔴 未確認: <b>Shop / Relic / Nether の横長仕様は頂いた資料に含まれていません。</b>同じ原則(いちばん外側の畳みを1段解く)で機械的に導けるはずですが、<b>Shop は縦長前提の商品リストなので要検討</b>です。この3画面は別途詰める必要があります。</p>`},
+ {id:'ds-howto', h:'実装方式 ── UXML を複製せずに実現できるか(検証済み)', s:'k', b:`
+  <p>「クオリティ優先」は「保守を捨てる」ことではありません。<b>この原則が UXML の複製なしに実装できるか</b>を実際のファイルで検証しました。</p>
+  <h4>検証: Cave の Upgrade タブ</h4>
+  <p><code>Cave/UI/CaveUXML.uxml</code> の該当部分の構造は次のようになっていました:</p>
+  <blockquote><code>UpgradeArea</code> (flex-direction: column-reverse)<br>
+  &nbsp;&nbsp;├─ <code>TabButtonView</code> ── タブボタン2つ<br>
+  &nbsp;&nbsp;├─ <code>UpgradeView</code> ── Soil 側 (display: flex)<br>
+  &nbsp;&nbsp;└─ <code>AnotherUpgradeView</code> ── Tear 側 (display: none)</blockquote>
+  <p><span class="okw">2つのパネルは最初から両方ツリーに存在しており、タブは <code>display</code> を切り替えているだけでした。</span>つまり横長化に必要なのは<b>実質3行</b>です:</p>
+  <blockquote><code>.wide #UpgradeArea { flex-direction: row; }</code><br>
+  <code>.wide #AnotherUpgradeView { display: flex; }</code><br>
+  <code>.wide #TabButtonView { display: none; }</code></blockquote>
+  <p><b>UXML の複製も、C# の作り直しも要りません。</b>Mission / Trade / Prestige も同じ構造なら同様に扱えます(要確認)。</p>
+  <h4>⚠️ ただし障害が1つあります ── インラインスタイル</h4>
+  <p><span class="ng">上の <code>display: none</code> は UXML の <code>style="..."</code> 属性で直接書かれています。</span>UI Toolkit では <b>UXML の <code>style</code> 属性はインラインスタイルとして扱われ、USS のクラスセレクタでは上書きできません</b>(優先度が上)。</p>
+  <p>したがって前提作業が1つ必要です:</p>
+  <blockquote><b>レイアウトに関わるインラインスタイルを、USS のクラスへ移す。</b></blockquote>
+  <p>これは UXML を<b>複製する作業ではなく、整理する作業</b>です。単一ソースは保たれます。<span class="kw">「変更容易性よりクオリティ」という方針の下でこそ、やる価値のある片付けです</span> ── 現状は 1 ファイルに数百行のインラインスタイルが埋まっており、横長対応の有無に関係なく保守の負債になっています。</p>
+  <p class="note">代替案: C# 側で <code>element.style.display</code> を直接書き換える。インライン整理を回避できますが、<b>レイアウトの知識が USS と C# に二分されます</b>。将来の調整のたびに両方を見る必要が出るため、クオリティ優先の方針とは合いません。</p>
+  <h4>タブの二面性を1つの部品にまとめる</h4>
+  <p>Cave / Mission / Trade / Prestige が同じ「タブ ⇄ 二列」の変換をするので、<b>個別に書かず1つの部品として作ります</b>。</p>
+  <table><tr><th></th><th>Narrow</th><th>Wide</th></tr>
+  <tr><td>タブバー</td><td>表示</td><td>非表示</td></tr>
+  <tr><td>各パネル</td><td>選択中の1枚のみ</td><td>全て表示</td></tr>
+  <tr><td>並び</td><td>重ねる</td><td><code>flex-direction: row</code></td></tr></table>
+  <p><span class="okw">これを1箇所で実装すれば、新しい画面にタブを足しても横長対応は自動で付いてきます。</span>この部品が、この章でいちばん重要な設計判断です。</p>`},
+ {id:'ds-rules', h:'運用ルール(改訂)', s:'k', b:`
+  <table><tr><th>#</th><th>ルール</th><th>前版から</th></tr>
+  <tr><td>R1</td><td><b>UXML を複製しない。</b>横長専用 UXML を作った時点で敗北</td><td><span class="okw">維持</span>。上記の検証により、複製せずに実現できる見込みが立ちました</td></tr>
+  <tr><td>R2</td><td><b>横長 = 縦の圧縮(タブ・上下積み)を1段だけ解いたもの。</b>横長専用の画面や新しい情報設計を作らない</td><td><span class="kw">差し替え</span>。前版は「縦長の画面を並べたもの」でした</td></tr>
+  <tr><td>R3</td><td><b>タブと上下積みは、専用の部品を通して作る。</b>そうすれば横長対応は自動で付く</td><td><span class="kw">差し替え</span>。前版は「新機能は常に縦長 900 幅で作る」でした</td></tr>
+  <tr><td>R4</td><td><b>アスペクト比判定は1箇所。</b><code>LayoutMode</code>(Narrow/Wide)を <code>ReactiveProperty</code> で公開し、各 View は購読するだけ</td><td>維持</td></tr>
+  <tr><td>R5</td><td><b>レイアウトは USS に書く。</b>既存 USS に <code>.wide</code> セレクタを足す。C# にレイアウトを書かない</td><td>維持。<span class="kw">インライン整理が前提作業として加わりました</span></td></tr>
+  <tr><td>R6</td><td><b>判定はプラットフォームではなくアスペクト比。</b>折りたたみ端末やタブレット横持ちが自動で恩恵を受ける</td><td>維持</td></tr>
+  <tr><td>R7</td><td><b>ナビゲーションの番号は画面によって変えない。</b>キーボードショートカットと1対1で対応させる</td><td><span class="kw">新規</span></td></tr></table>
+  <p class="note">前版の R1〜R6 のうち、<b>破棄したのは R2 と R3 だけ</b>です。「複製しない」「判定は1箇所」「USS に書く」「アスペクト比で判定」という保守側の規律はすべて残っています。<span class="okw">クオリティを優先しても、単一ソースは手放さずに済みました。</span></p>`},
  {id:'ds-stage', h:'どの段階まで 1.0 に入れるか', s:'d', b:`
+  <p class="note">前版の段階分け(3カラム前提)は<b>新しい原則に合わせて作り直しました</b>。</p>
   <table><tr><th>段階</th><th>内容</th><th>到達点</th></tr>
-  <tr><td>1</td><td>3カラムのフレックス枠を用意し、左右を <code>display: none</code> に(= 中央900固定のレターボックス)</td><td><b>崩れない状態</b>。ここまでで遊べる</td></tr>
-  <tr><td>2</td><td><code>WideExtraScenes</code> を実装し、コンテンツを左右に挿す</td><td>横長らしい画面</td></tr>
-  <tr><td>3</td><td>幅が足りないときに自動で段階1に戻す</td><td>ウィンドウリサイズ対応</td></tr></table>
-  <p class="note">段階1は段階2の前提であり、捨て仕事になりません。</p>
-  <p class="note">→ <b>Q3「1.0 のスコープ = 全部入り」が確定済み</b>なので、実質 C(段階3)が既定線です。念のため明示的に選んでください。</p>`,
+  <tr><td>0</td><td>レイアウトに関わる<b>インラインスタイルを USS へ整理</b>する</td><td>横長対応の前提。単体では見た目が変わらない</td></tr>
+  <tr><td>1</td><td><code>LayoutMode</code> と<b>右レール</b>を実装。コンテンツは縦長のまま中央に置き、左右を余白にする</td><td><b>崩れない状態</b>。ここまでで遊べる</td></tr>
+  <tr><td>2</td><td><b>タブ ⇄ 二列の部品</b>を作り、Cave / Mission / Prestige に適用</td><td>横長らしい画面。<b>体験上の価値はここで出ます</b></td></tr>
+  <tr><td>3</td><td>Equipment / Battle の上下積みを左右へ展開。Shop / Relic / Nether も対応</td><td>全画面が横長対応</td></tr>
+  <tr><td>4</td><td>ウィンドウ幅が足りないときに自動で縦長レイアウトへ戻す</td><td>リサイズ追従</td></tr></table>
+  <p class="note">段階0は捨て仕事に見えますが、<b>ここを飛ばすと段階2以降で C# にレイアウトが漏れ出します</b>(R5 が壊れる)。クオリティ優先の方針なら、ここは省略しないことを勧めます。</p>
+  <p class="note">→ <b>Q3「1.0 のスコープ = 全部入り」が確定済み</b>なので、実質 D(段階4)が既定線です。念のため明示的に選んでください。</p>`,
   opt:{items:[
-   {k:'C',t:'段階3まで',d:'ウィンドウリサイズに追従。Q3=全部入り と整合。PC では実質必須という見方もある。',rec:true},
-   {k:'B',t:'段階2まで',d:'左右に常設コンテンツを出す。リサイズ追従は 1.1 以降。'},
-   {k:'A',t:'段階1まで(レターボックス)',d:'1.0 は「崩れない」で出す。工数最小だが Q3 の決定とは矛盾します。'},
+   {k:'D',t:'段階4まで(リサイズ追従)',d:'ウィンドウリサイズに追従。Q3=全部入り と整合し、PC では実質必須。工数は最大だが、段階0を踏んでいれば段階4は差分が小さい。',rec:true},
+   {k:'C',t:'段階3まで',d:'全画面が横長対応。リサイズ追従は 1.1 以降とし、起動時の解像度で固定する。'},
+   {k:'B',t:'段階2まで',d:'Cave / Mission / Prestige だけ横長化し、Equipment / Battle は縦長のまま中央に置く。画面ごとに完成度が揃わない点が気になる。'},
+   {k:'A',t:'段階1まで(レールのみ・中央寄せ)',d:'1.0 は「崩れない」で出す。工数最小だが Q3 の決定とは矛盾し、今回の「クオリティ優先」とも合いません。'},
   ]}},
- {id:'ds-place', h:'何を左右に置くか', s:'d', b:`
-  <p>現在のタブは Cave / Equipment / Battle_New / Shop / Prestige / Relic の6つ(+ 廃止予定の Ads)。<b>コンテンツを「常設サイド」と「中央切替」に二分する</b>案:</p>
-  <table><tr><th>配置</th><th>コンテンツ</th><th>理由</th></tr>
-  <tr><td><b>左に常設</b></td><td>Equipment</td><td>装備は Cave / Battle の両方に影響する。切り替えずに効果を確認しながら遊べるのが横長の最大の価値</td></tr>
-  <tr><td><b>中央(タブ切替)</b></td><td>Cave / Battle_New / Prestige / Shop / Nether</td><td>主活動。1つずつ見れば足りる</td></tr>
-  <tr><td><b>右に常設</b></td><td>Relic</td><td>常時見えていて嬉しい情報</td></tr></table>
-  <p><b>左右に常設したコンテンツはタブバーから外します。</b>「常に見えているのにタブもある」状態は混乱を招くため。これが「タブボタンをどう扱うか」への答えになります。</p>
-  <p class="note">懸念: <b>Equipment は 3タブ構成(スロット/ストレージ・アップグレード・変換)+ 30件/ページのストレージ + 詳細パネルを持つフル画面</b>で、972 幅の常設サイドには詰め込みすぎな可能性があります。</p>`,
-  opt:{items:[
-   {k:'A',t:'左 Equipment(全体) / 右 Relic',d:'資料の案そのまま。実装は最も単純(シーンをそのまま挿すだけ)。'},
-   {k:'B',t:'左 Equipment の Tab0 のみ / 右 Relic',d:'スロットとストレージだけをサイドに出し、アップグレード・変換は中央タブに残す。詰め込みすぎを回避。',rec:true},
-   {k:'C',t:'別の配置にする',d:'コメントに希望の配置を書く。'},
-  ]}},
- {id:'ds-camera', h:'Cave のカメラ ── 横長で中央からはみ出す', s:'k', b:`
-  <p><code>Cave/SquareFitCamera.cs</code> の <code>Fit()</code> は <code>Screen.width</code> / <code>height</code> / <code>safeArea</code> から正方形が収まる <code>orthographicSize</code> を算出しています。横長画面では縦方向の制約が支配的になり、<b>Cave が画面いっぱいに広がって中央カラムからはみ出します。</b></p>
-  <ol><li><b>カメラの <code>rect</code> を中央カラムの正規化矩形に設定する</b>(<code>cam.rect = new Rect(x, 0, w, 1)</code>)</li>
-  <li><b><code>Fit()</code> の基準を <code>Screen.*</code> から <code>cam.pixelWidth</code> / <code>cam.pixelHeight</code> に変える</b></li></ol>
-  <p>これで縦長・横長を問わず「与えられた描画領域に正方形を収める」という同じロジックで動きます。<code>Screen.safeArea</code> 依存も同時に外せます。</p>
-  <p class="note">⚠️ <code>cam.rect</code> を絞るとカメラは自分の矩形しかクリアしません。左右カラムの背景を別途用意するか、背景専用カメラを1枚置く必要があります。</p>`},
+ {id:'ds-camera', h:'Cave のカメラ ── 新方針で問題が小さくなりました', s:'k', b:`
+  <p><code>Cave/SquareFitCamera.cs</code> の <code>Fit()</code> は <code>Screen.width</code> / <code>height</code> / <code>safeArea</code> から正方形が収まる <code>orthographicSize</code> を算出しています。横長画面では縦方向の制約が支配的になり、<b>Cave の描画が想定より大きく広がります。</b></p>
+  <p class="note"><span class="okw">3カラム案を破棄したことで、この問題は軽くなりました。</span>前版では「カメラの <code>rect</code> を中央カラムの矩形に絞る」必要があり、その副作用として<b>左右カラムの背景が塗られない</b>(カメラは自分の矩形しかクリアしない)ため、背景専用カメラの追加が必要でした。<b>新方針では Cave が全幅を使うので、この追加作業は不要です。</b></p>
+  <h4>それでも必要な修正</h4>
+  <ol>
+   <li><b><code>Fit()</code> の基準を <code>Screen.*</code> から <code>cam.pixelWidth</code> / <code>cam.pixelHeight</code> に変える。</b>縦長・横長を問わず「与えられた描画領域に正方形を収める」という同じロジックで動くようになり、<code>Screen.safeArea</code> 依存も同時に外せます</li>
+   <li><b>UI が覆う領域を <code>Fit()</code> に伝える。</b>横長では下部に Soil / Tear Upgrade の2列が乗ります。画面全体に対して正方形を収めると、<span class="ng">Cave の下部が Upgrade パネルの裏に隠れます</span>。UI が実際に空けている中央領域の矩形を渡す必要があります</li>
+   <li><b>レールの視認性。</b>レールに区切り線も背景も付けない方針(N4)なので、レールの背後に Cave が見えること自体は意図どおりです。ただし<b>ボタンが Cave の明るい部分に重なると視認性が落ちます</b>。レール直下だけ薄いグラデーションを敷く等の処理を検討してください</li>
+  </ol>`},
  {id:'ds-mouse', h:'Equipment のマウス操作 ── 前提の訂正あり', s:'k', b:`
   <p class="note">⚠️ 調査の結果、<b>このゲームに Minecraft 的な「1マスにN個」のスタックは無い</b>ことが分かりました。1アイテム = 1インスタンス = 1スロット占有(guid で個体識別)、<code>StackBasedLevel</code> は「同種を何個マージしたか」であって個数ではありません。マージ条件は<b>同 Kind かつ同 Level の2個 → 1個</b>。<br>
   したがって Minecraft の「ダブルクリックで集約」は<b>そのままでは写像できず</b>、本作での対応物は「<b>同種同レベルのアイテムを可能な限り連続マージする</b>」になります。</p>
@@ -628,21 +848,25 @@ const DB = [
    {k:'A',t:'ドメインに判定を置く',d:'テストが書ける。モバイル版でも同じ判定が使える(No-Op なので実害なし)。DLL ビルドと反映が必要。',rec:true},
    {k:'B',t:'Unity 側に判定を置く',d:'ドメインを触らない。ただし判定ロジックがテスト外に出る。'},
   ]}},
- {id:'ft-lb', h:'リーダーボードの採否', s:'d', b:`
-  <p>実装コストは低い(スコア送信と取得の API のみ)。ただしアイドルゲームのランキングは<b>チートと放置時間の勝負になりやすい</b>: セーブがローカルにある以上改ざんは容易で(→ 04 の暗号化と関連)、上位が現実的に届かない数字だとかえってモチベーションを下げます。</p>
-  <p class="note">→ <b>Q3「全部入り」</b>なら採用前提(B か C)。A(導入しない)を選ぶ場合は、Q3 の例外として意図的に外す判断になります。</p>`,
-  opt:{items:[
-   {k:'B',t:'フレンド内ランキングのみ',d:'全世界順位は出さない。改ざんの影響が身内に閉じ、比較対象としては機能する。',rec:true},
-   {k:'A',t:'導入しない',d:'工数ゼロ。アイドルゲームに順位は要らないという判断。'},
-   {k:'C',t:'放置時間に比例しない指標に限定',d:'プレステージ回数など。設計に手間はかかるが健全。'},
-  ]}},
- {id:'ft-rp', h:'リッチプレゼンスに何を出すか', s:'d', b:`
-  <p>フレンドリストに現在の状況を表示します(例: 「Idle Minertia をプレイ中 / Cave 深度 1,240 を探索中」)。表示文字列は<b>ローカライズ用のキー</b>で送るので、既存の13言語対応がそのまま活きます。更新頻度は低くてよい。</p>`,
-  opt:{items:[
-   {k:'A',t:'Cave 深度',d:'進行が一目で伝わり、フレンド間の比較になる。最も分かりやすい。',rec:true},
-   {k:'B',t:'現在のコンテンツ名',d:'「Equipment を整理中」など。状況は分かるが自慢にならない。'},
-   {k:'C',t:'深度 + プレステージ回数',d:'情報量は最大。文字列が長くなる。'},
-  ]}},
+ {id:'ft-lb', h:'リーダーボード ── フレンド内のみで確定', s:'k', b:`
+  <p>2026-07-28 <b>B(フレンド内ランキングのみ)で確定。</b>全世界順位は出しません。実装コストは低く(スコア送信と取得の API のみ)、比較対象としては機能しつつ、<span class="okw">改ざんの影響が身内に閉じます</span>。</p>
+  <h4>この決定と噛み合った他の決定</h4>
+  <ul>
+   <li><span class="okw">同日に <a href="#save" onclick="go('save')">改ざん対策の強化</a>が決まったため、リーダーボードの最大の弱点が同時に手当てされます。</span>前版では「セーブがローカルにある以上改ざんは容易」という理由でリーダーボードに慎重でしたが、暗号化と ACTk が入る前提なら成立します。</li>
+   <li>フレンド内に閉じることで、<b>サーバー側での妥当性検証を必須にしないで済みます</b>。全世界ランキングなら不正対策が本格的に必要になりますが、フレンド内なら「身内の見栄」の範囲で収まります。</li>
+   <li><span class="ng">残る論点:</span> 何をスコアにするか。<b>放置時間に比例する指標(深度・累計通貨)は、長くプレイした人が自動的に上位になる</b>ため順位が固定化します。プレステージ回数のような「密度」を表す指標を併置するかは、実装時に決めます。</li>
+  </ul>`},
+ {id:'ft-rp', h:'リッチプレゼンス ── Cave 名 + 到達深度で確定', s:'k', b:`
+  <p>2026-07-28 <b>「もっとも新しい Cave 名と到達した深度」で確定。</b>フレンドリストに次の形で表示されます:</p>
+  <blockquote>Idle Minertia をプレイ中 ── <b>{Cave 名} 深度 {N}</b></blockquote>
+  <p>表示文字列は<b>ローカライズ用のキー</b>で送るので、既存の13言語対応がそのまま活きます。更新頻度は低くてよい(深度が変わったときだけで十分)。</p>
+  <h4>実装時に決めること</h4>
+  <table><tr><th>#</th><th>論点</th><th>方針案</th></tr>
+  <tr><td>1</td><td><b>Cave 名のローカライズ</b></td><td>Cave 名は既存のローカライズテーブルにあるはず。<span class="ng">Steam のリッチプレゼンスは自前の翻訳トークンを Steamworks 側に登録する必要がある</span>ため、<b>ゲーム内の13言語と Steamworks 側の登録を二重管理することになります</b>。ここは要確認</td></tr>
+  <tr><td>2</td><td>「もっとも新しい Cave」の定義</td><td><b>到達済みの最深 Cave</b>か、<b>今いる Cave</b>か。放置中に前の Cave を周回している場合に表示が食い違う</td></tr>
+  <tr><td>3</td><td>Cave 未到達時・起動直後</td><td>フォールバック文字列を用意する(「探索の準備中」等)</td></tr>
+  <tr><td>4</td><td>Cave 名のネタバレ</td><td>後半の Cave 名がフレンドリストに出ることで、<b>未プレイのフレンドにネタバレになる可能性</b>。ストーリー性を持たせる方針(→ <a href="#hypothesis" onclick="go('hypothesis')">前提</a>)なら、名前の出し方に注意が要ります</td></tr></table>
+  <p class="note">論点 1 は工数として無視できません。<b>Steamworks 側のリッチプレゼンス翻訳は管理画面での登録作業</b>になるため、Cave が追加されるたびに登録漏れが起きます。<span class="kw">Cave 名を出さず深度だけにすればこの問題は消えます</span>が、今回の決定は Cave 名を出す方針なので、<b>登録手順を Steamworks 覚書に残しておくべきです</b>(→ <a href="#steamworks" onclick="go('steamworks')">Steamworks 管理画面</a>)。</p>`},
  {id:'ft-ov', h:'オーバーレイの確認事項', s:'k', b:`
   <p><b>基本的に何もしなくても動きます。</b>ただし:</p>
   <table><tr><th>#</th><th>確認</th></tr>
@@ -793,9 +1017,9 @@ const DB = [
   <tr><td>3</td><td>インターフェース群 + Editor 実装</td><td>Editor で開発を続けられる状態を保つ</td></tr>
   <tr><td>4</td><td><code>IRewardService</code>(広告除去)</td><td>影響範囲が最も狭く効果が最も大きい</td></tr>
   <tr><td>5</td><td>Steam Cloud + 実績</td><td>Steam 版として成立する最低ライン</td></tr>
-  <tr><td>6</td><td>横長 段階1(レターボックス)</td><td>崩れない状態</td></tr>
+  <tr><td>6</td><td><b>横長 段階0(インラインスタイルの USS 整理)+ 段階1(レール・中央寄せ)</b></td><td>崩れない状態。<span class="kw">段階0 は以降すべての前提</span> → <a href="#display" onclick="go('display')">05</a></td></tr>
   <tr><td>7</td><td>DLC / 課金</td><td>マネタイズの結論が出てから</td></tr>
-  <tr><td>8</td><td>横長 段階2〜3 + マウス操作 + ショートカット</td><td>PC ゲームとしての完成度</td></tr>
+  <tr><td>8</td><td><b>横長 段階2〜4</b>(タブ⇄二列の部品 → 全画面展開 → リサイズ追従)+ マウス操作 + ショートカット</td><td>PC ゲームとしての完成度</td></tr>
   <tr><td>9</td><td>macOS ビルド・公証パイプライン</td><td>Q2=同時対応。Windows が固まってから着手(R6)</td></tr></table>
   <p class="note"><b>Q3「全部入り」が確定したので、1.0 は 9 まで全部やる</b>ことになります。切り落とす段階はありません。その代わり Q4 で期限を設けないと決めているため、順序さえ守れば途中で妥協する必要はありません。</p>`},
  {id:'rd-site', h:'このサイト自体の運用', s:'d', b:`

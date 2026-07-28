@@ -133,6 +133,11 @@
   .board-head h1{font-size:20px;margin:0;letter-spacing:.06em}
   .board-head .meta{font-size:12px;color:var(--sub);margin-top:3px}
   .board-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .kind-tabs{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  .kind-tabs button{border:0;background:var(--panel);color:var(--sub);padding:7px 14px;font-weight:700}
+  .kind-tabs button + button{border-left:1px solid var(--line)}
+  .kind-tabs button:hover{background:var(--soft);color:var(--ink)}
+  .kind-tabs button.on{background:var(--primary-bg);color:var(--primary-ink)}
   .board-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
   .board-tools input,.board-tools select{border:1px solid var(--line);background:var(--field-bg);color:var(--ink);border-radius:6px;padding:7px 9px}
   .board-tools input{min-width:220px}
@@ -291,10 +296,14 @@
 <div id="board" class="hidden">
   <div class="board-head">
     <div>
-      <h1>Challenge カード</h1>
+      <h1 id="boardTitle">Challenge カード</h1>
       <div class="meta" id="boardStatus"></div>
     </div>
     <div class="board-actions">
+      <div class="kind-tabs">
+        <button type="button" data-kind="challenge">Challenge</button>
+        <button type="button" data-kind="spell">Spell</button>
+      </div>
       <button class="primary" id="boardNew" type="button">＋ 新規カード</button>
       <button class="primary hidden" id="boardSubmitGh" type="button">📤 GitHubへ送信</button>
       <button class="ghost" id="boardReload" type="button">再読込</button>
@@ -322,21 +331,12 @@
       <button class="ghost" id="cardClose" type="button">閉じる</button>
     </div>
     <div class="modal-body">
-      <div class="field">
-        <label for="cardConstraint">制約</label>
-        <textarea id="cardConstraint" placeholder="この Challenge 固有の制約を1〜2行で"></textarea>
-      </div>
-      <div class="field">
-        <label for="cardClear">クリア条件</label>
-        <textarea id="cardClear" placeholder="達成すべきことを1〜2行で"></textarea>
-      </div>
-      <div class="field">
-        <label for="cardReward">報酬</label>
-        <textarea id="cardReward" placeholder="クリア時に得られるものを1〜2行で"></textarea>
-      </div>
+      <div id="cardFields"></div>
 
-      <h3>Tier</h3>
-      <table class="tier-table"><tbody id="cardTierBody"></tbody></table>
+      <div id="cardTierSection">
+        <h3>Tier</h3>
+        <table class="tier-table"><tbody id="cardTierBody"></tbody></table>
+      </div>
 
       <h3>メモ</h3>
       <div class="field">
@@ -406,26 +406,58 @@ const GROUPS = [
 // Challenge は 1カード1Challenge。Tier は全カード共通で、固有制約に倍率無効を重ねていく。
 // カード側に Tier ごとのデータは持たせない(制約文から自動生成する)。
 const VIEW_KEY = 'idea_board_view_v1';
+const KIND_KEY = 'idea_board_kind_v1';
 const TIER_EXTRA = [
   '',
   'Prestige による倍率を無効化',
   'Battle による倍率を無効化',
   'Prestige と Battle による倍率を無効化'
 ];
-// 一覧の並び。決まっているものから先に見せる。
-const CHALLENGE_RANK = { active: 0, discuss: 1, review: 2, open: 3, done: 4, reflected: 5, archive: 6, rejected: 7, old: 8 };
+const SPELL_CATEGORIES = ['Special', 'Enchant', 'Gem'];
+// カードの種類ごとの違いはここだけにまとめる。処理は共通。
+// id フィールドを分けているのは、イベントログを見ただけで種類が分かるようにするため。
+const KINDS = {
+  challenge: {
+    label: 'Challenge',
+    idKey: 'challengeId',
+    idPrefix: 'challenge',
+    newTitle: '新しい Challenge',
+    fields: [
+      { key: 'constraint', label: '制約',       placeholder: 'この Challenge 固有の制約を1〜2行で' },
+      { key: 'clear',      label: 'クリア条件', placeholder: '達成すべきことを1〜2行で' },
+      { key: 'reward',     label: '報酬',       placeholder: 'クリア時に得られるものを1〜2行で' }
+    ],
+    tiers: true
+  },
+  spell: {
+    label: 'Spell',
+    idKey: 'spellId',
+    idPrefix: 'spell',
+    newTitle: '新しい Spell',
+    fields: [
+      { key: 'category', label: 'カテゴリ', options: SPELL_CATEGORIES },
+      { key: 'effect',   label: '効果',     placeholder: '何が起きるかを1〜2行で（代償があればここに書く）' },
+      { key: 'source',   label: '入手',     placeholder: 'どの Challenge の報酬か。未定なら「未定」' }
+    ],
+    tiers: false
+  }
+};
+const CREATE_TYPE_TO_KIND = Object.fromEntries(Object.keys(KINDS).map(k => [`${k}_created`, k]));
+// 一覧の並び。決まっているものから先に見せ、片付いたものを後ろへ送る。
+const CARD_RANK = { done: 0, active: 1, review: 2, discuss: 3, open: 4, reflected: 5, archive: 6, rejected: 7, old: 8 };
 
 let connected = false;
 let propose = false;    // 静的配信(GitHub Pages)。変更は手元に溜め、Issue で送る
 let pending = [];       // まだ送っていないイベント
 let events = [];
 let ideas = [];
-let challenges = [];
+let cards = [];
 let selectedId = '';
 let openCardId = '';
 let dirty = false;
 let cardDirty = false;
 let view = 'challenge';
+let kind = 'challenge';
 
 const els = {
   setup: document.getElementById('setup'),
@@ -454,7 +486,9 @@ const els = {
   history: document.getElementById('history'),
   toBoard: document.getElementById('toBoard'),
   board: document.getElementById('board'),
+  boardTitle: document.getElementById('boardTitle'),
   boardStatus: document.getElementById('boardStatus'),
+  kindTabs: Array.from(document.querySelectorAll('.kind-tabs [data-kind]')),
   boardNew: document.getElementById('boardNew'),
   boardSubmitGh: document.getElementById('boardSubmitGh'),
   boardReload: document.getElementById('boardReload'),
@@ -462,17 +496,17 @@ const els = {
   boardSearch: document.getElementById('boardSearch'),
   boardStatusFilter: document.getElementById('boardStatusFilter'),
   boardCount: document.getElementById('boardCount'),
+  tierLegend: document.getElementById('tierLegend'),
   tierLegendList: document.getElementById('tierLegendList'),
   cardGrid: document.getElementById('cardGrid'),
   cardModal: document.getElementById('cardModal'),
   cardTitle: document.getElementById('cardTitle'),
   cardStatus: document.getElementById('cardStatus'),
   cardClose: document.getElementById('cardClose'),
-  cardConstraint: document.getElementById('cardConstraint'),
-  cardClear: document.getElementById('cardClear'),
-  cardReward: document.getElementById('cardReward'),
+  cardFields: document.getElementById('cardFields'),
   cardMemo: document.getElementById('cardMemo'),
   cardTags: document.getElementById('cardTags'),
+  cardTierSection: document.getElementById('cardTierSection'),
   cardTierBody: document.getElementById('cardTierBody'),
   cardCommentSummary: document.getElementById('cardCommentSummary'),
   cardShowOld: document.getElementById('cardShowOld'),
@@ -600,18 +634,26 @@ async function loadEvents(){
   await connectServer();
 }
 
+function eventCardId(event){
+  for (const kindDef of Object.values(KINDS)) {
+    if (event[kindDef.idKey]) return event[kindDef.idKey];
+  }
+  return '';
+}
+
 function rebuild(){
   const map = new Map();
-  const cards = new Map();
+  const cardMap = new Map();
   for (const event of events) {
-    // Challenge カード。イベントログはアイディアと共通で、challengeId を持つものがカード側。
-    if (event.type === 'challenge_created') {
-      cards.set(event.challengeId, {
-        id: event.challengeId,
-        title: event.title || '無題の Challenge',
-        constraint: event.constraint || '',
-        clear: event.clear || '',
-        reward: event.reward || '',
+    // カード(Challenge / Spell)。イベントログはアイディアと共通で、
+    // challengeId / spellId を持つものがカード側。
+    const createdKind = CREATE_TYPE_TO_KIND[event.type];
+    if (createdKind) {
+      const def = KINDS[createdKind];
+      const card = {
+        id: event[def.idKey],
+        kind: createdKind,
+        title: event.title || def.newTitle,
         memo: event.memo || '',
         status: event.status || 'open',
         tags: Array.isArray(event.tags) ? event.tags : [],
@@ -620,23 +662,24 @@ function rebuild(){
         updatedAt: event.at,
         comments: [],
         history: [event]
-      });
+      };
+      for (const field of def.fields) card[field.key] = event[field.key] || '';
+      cardMap.set(card.id, card);
       continue;
     }
-    if (event.challengeId) {
-      const card = cards.get(event.challengeId);
+    const cardId = eventCardId(event);
+    if (cardId) {
+      const card = cardMap.get(cardId);
       if (!card) continue;
       card.history.push(event);
       card.updatedAt = event.at || card.updatedAt;
-      if (event.type === 'challenge_updated') {
+      if (event.type === `${card.kind}_updated`) {
         card.title = event.title || card.title;
-        card.constraint = event.constraint || '';
-        card.clear = event.clear || '';
-        card.reward = event.reward || '';
         card.memo = event.memo || '';
         card.tags = Array.isArray(event.tags) ? event.tags : [];
+        for (const field of KINDS[card.kind].fields) card[field.key] = event[field.key] || '';
       }
-      if (event.type === 'challenge_status_changed') {
+      if (event.type === `${card.kind}_status_changed`) {
         card.status = event.status || card.status;
       }
       if (event.type === 'comment_added') {
@@ -701,10 +744,10 @@ function rebuild(){
     }
   }
   ideas = Array.from(map.values());
-  challenges = Array.from(cards.values());
+  cards = Array.from(cardMap.values());
   if (!selectedId && ideas.length) selectedId = (orderedIdeas()[0] || ideas[0]).id;
   if (selectedId && !ideas.some(x => x.id === selectedId)) selectedId = ideas[0]?.id || '';
-  if (openCardId && !challenges.some(x => x.id === openCardId)) openCardId = '';
+  if (openCardId && !cards.some(x => x.id === openCardId)) openCardId = '';
 }
 
 function groupIndex(key){
@@ -878,16 +921,16 @@ function renderSide(){
   `).join('');
 }
 function eventLabel(event){
-  if (event.type === 'idea_created' || event.type === 'challenge_created') return '作成';
-  if (event.type === 'idea_updated' || event.type === 'challenge_updated') return '編集';
-  if (event.type === 'idea_status_changed' || event.type === 'challenge_status_changed') return `状態: ${STATUS[event.status] || event.status}`;
+  if (/_created$/.test(event.type)) return '作成';
+  if (/_updated$/.test(event.type)) return '編集';
+  if (/_status_changed$/.test(event.type) && event.type !== 'comment_status_changed') return `状態: ${STATUS[event.status] || event.status}`;
   if (event.type === 'idea_meta_changed') return '分類変更';
   if (event.type === 'comment_added') return 'コメント';
   if (event.type === 'comment_status_changed') return 'コメント: ' + (COMMENT_STATUS[event.status] || event.status);
   return event.type;
 }
 
-/* ===== Challenge カードボード ===== */
+/* ===== カードボード（Challenge / Spell） ===== */
 
 function tierRows(constraint){
   const base = String(constraint || '').trim() || '（制約 未記入）';
@@ -898,35 +941,48 @@ function tierRows(constraint){
 }
 
 function currentCard(){
-  return challenges.find(x => x.id === openCardId) || null;
+  return cards.find(x => x.id === openCardId) || null;
+}
+
+function kindCards(){
+  return cards.filter(card => card.kind === kind);
 }
 
 function filteredCards(){
   const q = els.boardSearch.value.trim().toLowerCase();
   const status = els.boardStatusFilter.value;
-  return challenges.filter(card => {
+  const fields = KINDS[kind].fields;
+  return kindCards().filter(card => {
     if (status === 'active-list' && HIDDEN_IDEA_STATUSES.has(card.status)) return false;
     if (status !== 'active-list' && status !== 'all' && card.status !== status) return false;
     if (!q) return true;
-    const hay = `${card.title}\n${card.constraint}\n${card.clear}\n${card.reward}\n${card.memo}\n${card.tags.join(' ')}`.toLowerCase();
+    const hay = [card.title, ...fields.map(f => card[f.key]), card.memo, card.tags.join(' ')]
+      .join('\n').toLowerCase();
     return hay.includes(q);
   });
 }
 
 function orderedCards(){
   return filteredCards().slice().sort((a, b) => {
-    const ra = CHALLENGE_RANK[a.status] ?? 9;
-    const rb = CHALLENGE_RANK[b.status] ?? 9;
+    const ra = CARD_RANK[a.status] ?? 9;
+    const rb = CARD_RANK[b.status] ?? 9;
     if (ra !== rb) return ra - rb;
     return String(a.createdAt).localeCompare(String(b.createdAt));
   });
 }
 
 function renderCardGrid(){
-  els.boardCount.textContent = `${filteredCards().length} / ${challenges.length} 件`;
+  const def = KINDS[kind];
+  els.boardTitle.textContent = `${def.label} カード`;
+  els.boardNew.textContent = `＋ 新規${def.label}`;
+  els.tierLegend.classList.toggle('hidden', !def.tiers);
+  for (const button of els.kindTabs) {
+    button.classList.toggle('on', button.dataset.kind === kind);
+  }
+  els.boardCount.textContent = `${filteredCards().length} / ${kindCards().length} 件`;
   const list = orderedCards();
   if (!list.length) {
-    els.cardGrid.innerHTML = '<div class="empty">カードなし。「＋ 新規カード」から作成します。</div>';
+    els.cardGrid.innerHTML = `<div class="empty">カードなし。「＋ 新規${def.label}」から作成します。</div>`;
     return;
   }
   els.cardGrid.innerHTML = list.map(card => `
@@ -936,12 +992,10 @@ function renderCardGrid(){
         <span class="pill">${escapeHtml(STATUS[card.status] || card.status)}</span>
       </div>
       <div class="card-rows">
-        ${cardRow('制約', card.constraint)}
-        ${cardRow('クリア条件', card.clear)}
-        ${cardRow('報酬', card.reward)}
+        ${def.fields.map(f => cardRow(f.label, card[f.key])).join('')}
       </div>
       <div class="card-foot">
-        <span class="tier-chips">${TIER_EXTRA.map((_, i) => `<span class="tier-chip">T${i + 1}</span>`).join('')}</span>
+        ${def.tiers ? `<span class="tier-chips">${TIER_EXTRA.map((_, i) => `<span class="tier-chip">T${i + 1}</span>`).join('')}</span>` : ''}
         ${card.memo ? '<span>メモ有</span>' : ''}
         ${card.comments.length ? `<span>コメント ${card.comments.length}</span>` : ''}
       </div>
@@ -951,7 +1005,19 @@ function renderCardGrid(){
 
 function cardRow(label, value){
   const text = String(value || '').trim();
-  return `<div class="card-row"><span class="k">${label}</span><span class="v${text ? '' : ' none'}">${escapeHtml(text || '未記入')}</span></div>`;
+  return `<div class="card-row"><span class="k">${escapeHtml(label)}</span><span class="v${text ? '' : ' none'}">${escapeHtml(text || '未記入')}</span></div>`;
+}
+
+function setKind(next){
+  if (kind === next) return;
+  if (cardDirty && !confirm('未保存の変更があります。移動しますか?')) return;
+  kind = next;
+  openCardId = '';
+  cardDirty = false;
+  try { localStorage.setItem(KIND_KEY, kind); } catch (e) {}
+  setState('');
+  renderCardGrid();
+  renderCardModal();
 }
 
 function openCard(id){
@@ -968,22 +1034,50 @@ function closeCard(){
   renderCardModal();
 }
 
+// 3項目は種類ごとに違うので、入力欄そのものを組み立て直す。
+function renderCardFields(card){
+  const def = KINDS[card.kind];
+  els.cardFields.innerHTML = def.fields.map(field => {
+    const value = card[field.key] || '';
+    const input = field.options
+      ? `<select data-field="${field.key}">
+           <option value="">未定</option>
+           ${field.options.map(o => `<option value="${escapeAttr(o)}" ${value === o ? 'selected' : ''}>${escapeHtml(o)}</option>`).join('')}
+         </select>`
+      : `<textarea data-field="${field.key}" placeholder="${escapeAttr(field.placeholder || '')}">${escapeHtml(value)}</textarea>`;
+    return `<div class="field"><label>${escapeHtml(field.label)}</label>${input}</div>`;
+  }).join('');
+  for (const el of els.cardFields.querySelectorAll('[data-field]')) {
+    el.addEventListener('input', markCardDirty);
+    if (el.tagName === 'SELECT') el.addEventListener('change', markCardDirty);
+  }
+}
+
+function cardFieldValue(key){
+  const el = els.cardFields.querySelector(`[data-field="${key}"]`);
+  return el ? el.value.trim() : '';
+}
+
+function renderTierTable(constraint){
+  els.cardTierBody.innerHTML = tierRows(constraint)
+    .map(row => `<tr><th>${row.tier}</th><td>${escapeHtml(row.text)}</td></tr>`).join('');
+}
+
 function renderCardModal(){
   const card = currentCard();
   els.cardModal.classList.toggle('hidden', !card);
   if (!card) return;
+  const def = KINDS[card.kind];
   // 編集中の入力は上書きしない(コメント追加などで再描画されるため)
   if (!cardDirty) {
     els.cardTitle.value = card.title;
-    els.cardConstraint.value = card.constraint;
-    els.cardClear.value = card.clear;
-    els.cardReward.value = card.reward;
     els.cardMemo.value = card.memo;
     els.cardTags.value = card.tags.join(', ');
+    renderCardFields(card);
   }
   els.cardStatus.value = card.status;
-  els.cardTierBody.innerHTML = tierRows(cardDirty ? els.cardConstraint.value : card.constraint)
-    .map(row => `<tr><th>${row.tier}</th><td>${escapeHtml(row.text)}</td></tr>`).join('');
+  els.cardTierSection.classList.toggle('hidden', !def.tiers);
+  if (def.tiers) renderTierTable(cardFieldValue('constraint'));
 
   const active = activeComments(card);
   const old = oldComments(card);
@@ -1001,49 +1095,46 @@ function markCardDirty(){
   cardDirty = true;
   setState('未保存の変更');
   const card = currentCard();
-  if (card) {
-    els.cardTierBody.innerHTML = tierRows(els.cardConstraint.value)
-      .map(row => `<tr><th>${row.tier}</th><td>${escapeHtml(row.text)}</td></tr>`).join('');
-  }
+  if (card && KINDS[card.kind].tiers) renderTierTable(cardFieldValue('constraint'));
 }
 
 async function createCard(){
   const now = new Date();
-  const id = `challenge_${stamp(now)}_${rand()}`;
-  await appendEvent({
-    type: 'challenge_created',
+  const def = KINDS[kind];
+  const id = `${def.idPrefix}_${stamp(now)}_${rand()}`;
+  const event = {
+    type: `${kind}_created`,
     eventId: `event_${stamp(now)}_${rand()}`,
-    challengeId: id,
-    title: '新しい Challenge',
-    constraint: '',
-    clear: '',
-    reward: '',
+    [def.idKey]: id,
+    title: def.newTitle,
     memo: '',
     status: 'open',
     tags: [],
     author: getAuthor(),
     at: now.toISOString()
-  });
+  };
+  for (const field of def.fields) event[field.key] = '';
+  await appendEvent(event);
   openCard(id);
 }
 
 async function saveCard(){
   const card = currentCard();
   if (!card) return;
+  const def = KINDS[card.kind];
   const now = new Date();
-  const ok = await appendEvent({
-    type: 'challenge_updated',
+  const event = {
+    type: `${card.kind}_updated`,
     eventId: `event_${stamp(now)}_${rand()}`,
-    challengeId: card.id,
-    title: els.cardTitle.value.trim() || '無題の Challenge',
-    constraint: els.cardConstraint.value.trim(),
-    clear: els.cardClear.value.trim(),
-    reward: els.cardReward.value.trim(),
+    [def.idKey]: card.id,
+    title: els.cardTitle.value.trim() || def.newTitle,
     memo: els.cardMemo.value,
     tags: parseTags(els.cardTags.value),
     author: getAuthor(),
     at: now.toISOString()
-  });
+  };
+  for (const field of def.fields) event[field.key] = cardFieldValue(field.key);
+  const ok = await appendEvent(event);
   if (ok) {
     cardDirty = false;
     renderCardModal();
@@ -1055,15 +1146,15 @@ async function saveCardStatus(){
   if (!card) return;
   const status = els.cardStatus.value;
   if (status === card.status) return;
-  await changeCardStatus(card.id, status);
+  await changeCardStatus(card, status);
 }
 
-async function changeCardStatus(challengeId, status){
+async function changeCardStatus(card, status){
   const now = new Date();
   await appendEvent({
-    type: 'challenge_status_changed',
+    type: `${card.kind}_status_changed`,
     eventId: `event_${stamp(now)}_${rand()}`,
-    challengeId,
+    [KINDS[card.kind].idKey]: card.id,
     status,
     author: getAuthor(),
     at: now.toISOString()
@@ -1079,7 +1170,7 @@ async function addCardComment(){
     type: 'comment_added',
     eventId: `event_${stamp(now)}_${rand()}`,
     commentId: `comment_${stamp(now)}_${rand()}`,
-    challengeId: card.id,
+    [KINDS[card.kind].idKey]: card.id,
     body,
     author: getAuthor(),
     at: now.toISOString()
@@ -1097,7 +1188,7 @@ async function setCardCommentStatus(commentId, status){
   await appendEvent({
     type: 'comment_status_changed',
     eventId: `event_${stamp(now)}_${rand()}`,
-    challengeId: card.id,
+    [KINDS[card.kind].idKey]: card.id,
     commentId,
     status,
     author: getAuthor(),
@@ -1427,14 +1518,17 @@ els.cardClose.addEventListener('click', closeCard);
 els.cardModal.addEventListener('click', event => {
   if (event.target === els.cardModal) closeCard();
 });
-for (const el of [els.cardTitle, els.cardConstraint, els.cardClear, els.cardReward, els.cardMemo, els.cardTags]) {
+for (const el of [els.cardTitle, els.cardMemo, els.cardTags]) {
   el.addEventListener('input', markCardDirty);
+}
+for (const button of els.kindTabs) {
+  button.addEventListener('click', () => setKind(button.dataset.kind));
 }
 els.cardStatus.addEventListener('change', saveCardStatus);
 els.cardSave.addEventListener('click', saveCard);
 els.cardArchive.addEventListener('click', () => {
   const card = currentCard();
-  if (card) changeCardStatus(card.id, 'archive');
+  if (card) changeCardStatus(card, 'archive');
 });
 els.cardShowOld.addEventListener('change', renderCardModal);
 els.cardAddComment.addEventListener('click', addCardComment);
@@ -1482,6 +1576,7 @@ async function boot(){
   els.authorName.value = localStorage.getItem(AUTHOR_KEY) || 'pukep';
   els.setupAuthorName.value = els.authorName.value;
   try { view = localStorage.getItem(VIEW_KEY) === 'idea' ? 'idea' : 'challenge'; } catch (e) {}
+  try { if (KINDS[localStorage.getItem(KIND_KEY)]) kind = localStorage.getItem(KIND_KEY); } catch (e) {}
   buildStaticUi();
   await connectServer();
 }
