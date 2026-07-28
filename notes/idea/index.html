@@ -458,6 +458,11 @@ let dirty = false;
 let cardDirty = false;
 let view = 'challenge';
 let kind = 'challenge';
+// 検索と絞り込みは種類ごとに独立させる。片方の絞り込みがもう片方に残ると、
+// カードが消えたように見えて混乱するため。
+const boardFilters = Object.fromEntries(
+  Object.keys(KINDS).map(k => [k, { q: '', status: 'active-list' }])
+);
 
 const els = {
   setup: document.getElementById('setup'),
@@ -1011,13 +1016,21 @@ function cardRow(label, value){
 function setKind(next){
   if (kind === next) return;
   if (cardDirty && !confirm('未保存の変更があります。移動しますか?')) return;
+  boardFilters[kind] = { q: els.boardSearch.value, status: els.boardStatusFilter.value };
   kind = next;
   openCardId = '';
   cardDirty = false;
+  applyBoardFilter();
   try { localStorage.setItem(KIND_KEY, kind); } catch (e) {}
   setState('');
   renderCardGrid();
   renderCardModal();
+}
+
+function applyBoardFilter(){
+  const saved = boardFilters[kind];
+  els.boardSearch.value = saved.q;
+  els.boardStatusFilter.value = saved.status;
 }
 
 function openCard(id){
