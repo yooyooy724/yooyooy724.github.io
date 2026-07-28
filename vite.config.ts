@@ -6,6 +6,9 @@ import { defineConfig } from "vite";
 // （outDir を直接リポジトリ直下にすると、emptyOutDir の設定次第で
 //   .git ごと消えかねないため、必ず dist/ を経由させる）
 export default defineConfig({
+  // ポートフォリオは https://yooyooy724.github.io/yayu_portfolio/ に置く。
+  // ルート直下には何も置かない（/notes/ は publish.mjs が別扱いで直下へ配置する）。
+  base: "/yayu_portfolio/",
   root: "src",
   publicDir: "../public",
   plugins: [react()],

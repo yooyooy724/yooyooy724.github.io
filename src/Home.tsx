@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+// public/ の画像はサイト直下ではなく base（/yayu_portfolio/）配下に置かれる。
+// JSX 内の文字列は Vite が書き換えないので、参照するときにここで base を付ける。
+const asset = (path: string) => import.meta.env.BASE_URL + path.replace(/^\//, "");
+
 // 概要は時間軸上の一点ではないので、時系列の章とは分けて扱う。
 const overview = { id: "overview", label: "概要" };
 
@@ -373,7 +377,7 @@ function WorkGallery({ work }: { work: Work }) {
         <div className="carousel-track" ref={trackRef}>
           {work.images.map((image) => (
             <figure key={image.src}>
-              <img src={image.src} alt={image.alt} loading="lazy" />
+              <img src={asset(image.src)} alt={image.alt} loading="lazy" />
             </figure>
           ))}
         </div>
@@ -500,7 +504,7 @@ export default function Home() {
       >
         <div className="chapter-meta">
           <span>{work.chapterLabel}</span>
-          <img className="chapter-logo" src={work.logo} alt="" aria-hidden="true" />
+          <img className="chapter-logo" src={asset(work.logo)} alt="" aria-hidden="true" />
         </div>
 
         <div className="featured-title">
@@ -579,7 +583,7 @@ export default function Home() {
         <section className="hero chapter" id="overview">
           <div className="hero-copy">
             <h1 className="hero-logo-title">
-              <img className="hero-logo" src="/yayu.png" alt="Yayu" />
+              <img className="hero-logo" src={asset("/yayu.png")} alt="Yayu" />
             </h1>
             <p className="hero-subtitle">活動経歴をまとめる</p>
           </div>
@@ -598,7 +602,7 @@ export default function Home() {
             <div className="career-summary" aria-label="これまで携わった作品">
               {participatedWorks.map((work) => (
                 <article key={work.title}>
-                  <img src={work.icon} alt={`${work.title}のアプリアイコン`} />
+                  <img src={asset(work.icon)} alt={`${work.title}のアプリアイコン`} />
                   <div className="work-summary-copy">
                     <h3>{work.title}</h3>
                     <p>{work.summary}</p>
