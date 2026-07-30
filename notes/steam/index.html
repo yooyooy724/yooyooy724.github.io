@@ -1,575 +1,382 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
 <meta name="robots" content="noindex,nofollow">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Idle Minertia — Steam リリース計画</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Idle Minertia Steam移植 — 決定事項と実行計画</title>
 <style>
   :root{
-    color-scheme:dark;
-    --bg:#17191d;
-    --panel:#202329;
-    --panel-2:#262a31;
-    --ink:#e7ebef;
-    --sub:#9da6b0;
-    --line:#343941;
-    --blue:#66c0f4;
-    --blue-dim:#263c4c;
-    --green:#83ca91;
-    --green-dim:#22372a;
-    --amber:#e4c875;
-    --amber-dim:#3a3421;
-    --red:#e89a92;
-    --red-dim:#3b2728;
+    color-scheme:light;
+    --bg:#f5f5f2;
+    --paper:#fff;
+    --ink:#202326;
+    --sub:#626970;
+    --line:#d7d9d7;
+    --soft:#f0f2f1;
+    --blue:#245f83;
+    --green:#2d6a45;
+    --amber:#8b641b;
     --max:1040px;
   }
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth;scroll-padding-top:78px}
+  html{scroll-behavior:smooth}
   body{
     margin:0;
     background:var(--bg);
     color:var(--ink);
-    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic UI","Meiryo",sans-serif;
-    line-height:1.85;
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic","Meiryo",sans-serif;
     font-size:15px;
+    line-height:1.75;
   }
-  a{color:var(--blue)}
+  article{
+    width:min(calc(100% - 32px),var(--max));
+    margin:28px auto 56px;
+    padding:52px 64px;
+    background:var(--paper);
+    border:1px solid var(--line);
+  }
+  a{color:var(--blue);text-underline-offset:3px}
+  header{padding-bottom:28px;border-bottom:2px solid var(--ink)}
+  .eyebrow{margin:0 0 8px;color:var(--sub);font-size:12px;letter-spacing:.12em}
+  h1{margin:0;font-size:32px;line-height:1.35;letter-spacing:.02em}
+  .lead{margin:16px 0 0;max-width:800px;font-size:16px}
+  .meta{margin:16px 0 0;color:var(--sub);font-size:12px}
+  h2{
+    margin:54px 0 16px;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--ink);
+    font-size:23px;
+    line-height:1.4;
+  }
+  h3{margin:30px 0 8px;font-size:17px;line-height:1.5}
+  p{margin:10px 0}
+  ul,ol{margin:8px 0 14px;padding-left:1.6em}
+  li{margin:4px 0}
   code{
-    padding:.08em .38em;
-    border:1px solid #3a414a;
-    border-radius:4px;
-    background:#191c20;
-    color:#c6dfef;
+    padding:1px 5px;
+    border:1px solid #d9dcda;
+    border-radius:3px;
+    background:#f4f5f4;
     font-family:Consolas,"SFMono-Regular",monospace;
-    font-size:.9em;
+    font-size:.92em;
   }
-  .topbar{
-    position:sticky;
-    top:0;
-    z-index:20;
-    border-bottom:1px solid var(--line);
-    background:rgba(23,25,29,.94);
-    backdrop-filter:blur(12px);
+  .summary{
+    margin:26px 0 0;
+    padding:18px 22px;
+    border-left:4px solid var(--green);
+    background:#f1f6f2;
   }
-  .topbar-inner{
-    width:min(var(--max),calc(100% - 36px));
-    margin:0 auto;
-    min-height:62px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:24px;
-  }
-  .brand{
-    color:var(--ink);
-    text-decoration:none;
-    font-size:13px;
-    font-weight:800;
-    letter-spacing:.14em;
-    white-space:nowrap;
-  }
-  .topnav{
-    display:flex;
-    align-items:center;
-    gap:4px;
-    overflow-x:auto;
-    scrollbar-width:none;
-  }
-  .topnav::-webkit-scrollbar{display:none}
-  .topnav a{
-    flex:none;
-    padding:8px 10px;
-    border-radius:6px;
-    color:var(--sub);
-    text-decoration:none;
-    font-size:12px;
-  }
-  .topnav a:hover,.topnav a.active{background:var(--panel-2);color:var(--ink)}
-  main{width:min(var(--max),calc(100% - 36px));margin:0 auto}
-  .hero{
-    padding:78px 0 58px;
-    border-bottom:1px solid var(--line);
-  }
-  .eyebrow{
-    margin:0 0 10px;
-    color:var(--blue);
-    font-size:12px;
-    font-weight:800;
-    letter-spacing:.16em;
-    text-transform:uppercase;
-  }
-  h1{
-    margin:0;
-    max-width:780px;
-    font-size:clamp(34px,5.5vw,64px);
-    line-height:1.14;
-    letter-spacing:-.035em;
-  }
-  .lead{
-    max-width:760px;
-    margin:24px 0 0;
-    color:#c0c7ce;
-    font-size:17px;
-  }
-  .status-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:30px}
-  .status{
-    display:inline-flex;
-    align-items:center;
-    gap:7px;
-    padding:7px 11px;
-    border:1px solid var(--line);
-    border-radius:999px;
-    background:var(--panel);
-    color:#c4cbd2;
-    font-size:12px;
-  }
-  .status::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green)}
-  .status.next::before{background:var(--blue)}
-  .status.pending::before{background:var(--amber)}
-  section{padding:58px 0;border-bottom:1px solid var(--line)}
-  .section-head{
+  .summary strong{display:block;margin-bottom:4px;color:var(--green)}
+  .current{
     display:grid;
-    grid-template-columns:180px 1fr;
-    gap:34px;
-    margin-bottom:28px;
+    grid-template-columns:140px 1fr;
+    margin:22px 0 0;
+    border-top:1px solid var(--line);
   }
-  .section-no{color:#737d87;font-size:12px;letter-spacing:.12em}
-  h2{margin:0;font-size:28px;line-height:1.35}
-  .section-desc{max-width:720px;margin:9px 0 0;color:var(--sub)}
-  h3{margin:0 0 10px;font-size:17px}
-  h4{margin:0 0 8px;font-size:14px}
-  p{margin:0 0 14px}
-  ul,ol{margin:10px 0 0;padding-left:1.45em}
-  li+li{margin-top:5px}
-  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-  .grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .card{
-    padding:20px;
-    border:1px solid var(--line);
-    border-radius:10px;
-    background:var(--panel);
-  }
-  .card p:last-child,.card ul:last-child{margin-bottom:0}
-  .label{
-    margin:0 0 8px;
-    color:var(--blue);
-    font-size:11px;
-    font-weight:800;
-    letter-spacing:.1em;
-  }
-  .muted{color:var(--sub)}
-  .callout{
-    margin-top:18px;
-    padding:16px 18px;
-    border-left:3px solid var(--amber);
-    border-radius:0 8px 8px 0;
-    background:var(--amber-dim);
-    color:#e8dfbf;
-  }
-  .callout strong{color:#fff0b9}
-  .callout.danger{border-color:var(--red);background:var(--red-dim);color:#ebc3bf}
-  .callout.ok{border-color:var(--green);background:var(--green-dim);color:#c6e7cc}
-  table{
-    width:100%;
-    border-collapse:collapse;
-    overflow:hidden;
-    border:1px solid var(--line);
-    border-radius:8px;
-    background:var(--panel);
-  }
-  th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-  th{background:#2a2f36;color:#cbd2d9;font-size:12px}
-  td:first-child{width:24%;color:#cdd4db;font-weight:700}
-  tr:last-child td{border-bottom:0}
-  .steps{list-style:none;padding:0;margin:0;counter-reset:step}
-  .steps li{
-    position:relative;
+  .current dt,.current dd{
     margin:0;
-    padding:0 0 24px 54px;
+    padding:8px 10px;
+    border-bottom:1px solid var(--line);
+  }
+  .current dt{font-weight:700;background:var(--soft)}
+  .toc{
+    margin:32px 0 0;
+    padding:20px 24px;
+    border:1px solid var(--line);
+    background:#fafafa;
+  }
+  .toc h2{margin:0 0 8px;padding:0;border:0;font-size:16px}
+  .toc ol{margin:0;columns:2;column-gap:44px}
+  .toc li{break-inside:avoid;margin:5px 0}
+  .table-wrap{margin:14px 0 24px;overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;line-height:1.55}
+  th,td{padding:9px 11px;border:1px solid var(--line);text-align:left;vertical-align:top}
+  th{background:var(--soft);font-weight:700}
+  td ul{margin:0;padding-left:1.35em}
+  td li{margin:1px 0}
+  .status{white-space:nowrap;font-weight:700}
+  .done{color:var(--green)}
+  .pending{color:var(--amber)}
+  .note{
+    margin:16px 0;
+    padding:12px 16px;
+    border:1px solid #ddd4bd;
+    background:#fffaf0;
+  }
+  .note strong{color:var(--amber)}
+  .steps{padding:0;list-style:none;counter-reset:step}
+  .steps li{
+    display:grid;
+    grid-template-columns:38px 1fr;
+    gap:10px;
+    margin:0;
+    padding:13px 0;
+    border-bottom:1px solid var(--line);
     counter-increment:step;
   }
   .steps li::before{
     content:counter(step);
-    position:absolute;
-    left:0;
-    top:0;
-    display:grid;
-    place-items:center;
-    width:32px;
-    height:32px;
-    border:1px solid #46657a;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:28px;height:28px;
     border-radius:50%;
-    background:var(--blue-dim);
-    color:#c9e9fb;
-    font-weight:800;
+    background:var(--ink);
+    color:#fff;
+    font-size:12px;
+    font-weight:700;
   }
-  .steps li::after{
-    content:"";
-    position:absolute;
-    left:16px;
-    top:34px;
-    bottom:2px;
-    width:1px;
-    background:var(--line);
-  }
-  .steps li:last-child::after{display:none}
-  .steps p{margin:4px 0 0;color:var(--sub)}
-  .checklist{list-style:none;padding:0;margin:0}
-  .checklist li{position:relative;padding-left:28px;margin-top:9px}
-  .checklist li::before{
-    content:"";
-    position:absolute;
-    left:0;
-    top:.45em;
-    width:14px;
-    height:14px;
-    border:1px solid #69747e;
-    border-radius:3px;
-    background:#191c20;
-  }
-  .source-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
-  .source-links a{
-    padding:8px 11px;
-    border:1px solid var(--line);
-    border-radius:6px;
-    background:var(--panel);
-    color:#b9c5ce;
-    text-decoration:none;
+  .steps b{display:block;margin-bottom:2px}
+  footer{
+    margin-top:58px;
+    padding-top:18px;
+    border-top:1px solid var(--line);
+    color:var(--sub);
     font-size:12px;
   }
-  .source-links a:hover{border-color:#527b97;color:#d9effc}
-  footer{
-    width:min(var(--max),calc(100% - 36px));
-    margin:0 auto;
-    padding:36px 0 54px;
-    display:flex;
-    justify-content:space-between;
-    gap:24px;
-    color:#69737d;
-    font-size:11px;
+  footer .archive{color:var(--sub)}
+  @media(max-width:720px){
+    article{width:100%;margin:0;padding:30px 20px;border:0}
+    h1{font-size:26px}
+    h2{margin-top:42px;font-size:21px}
+    .toc ol{columns:1}
+    .current{grid-template-columns:1fr}
+    .current dt{padding-bottom:2px;border-bottom:0}
+    .current dd{padding-top:2px}
   }
-  .archive-link{color:#737e88;text-decoration:none}
-  .archive-link:hover{color:#aab4bd;text-decoration:underline}
-  @media(max-width:760px){
-    .topbar-inner{width:100%;padding:0 16px;display:block}
-    .brand{display:block;padding:12px 0 4px}
-    .topnav{padding-bottom:8px}
-    main,footer{width:min(100% - 28px,var(--max))}
-    .hero{padding:54px 0 44px}
-    section{padding:44px 0}
-    .section-head{grid-template-columns:1fr;gap:4px}
-    .grid,.grid.three{grid-template-columns:1fr}
-    th,td{padding:10px}
-    td:first-child{width:32%}
-    footer{display:block}
-    footer a{display:inline-block;margin-top:10px}
+  @media print{
+    body{background:#fff;font-size:11pt}
+    article{width:100%;margin:0;padding:0;border:0}
+    a{color:inherit;text-decoration:none}
+    .toc{break-after:page}
+    table{font-size:9.5pt}
   }
 </style>
 </head>
 <body>
-<header class="topbar">
-  <div class="topbar-inner">
-    <a class="brand" href="#top">MINERTIA / STEAM</a>
-    <nav class="topnav" aria-label="ページ内ナビゲーション">
-      <a href="#decisions">決定事項</a>
-      <a href="#architecture">設計</a>
-      <a href="#workstreams">作業領域</a>
-      <a href="#phase2">フェーズ2</a>
-      <a href="#roadmap">実装順序</a>
-      <a href="#actions">次にすること</a>
-    </nav>
-  </div>
-</header>
-
-<main id="top">
-  <div class="hero">
-    <p class="eyebrow">Idle Minertia / Steam Release Plan</p>
-    <h1>決めたことを、<br>実装できる計画へ。</h1>
+<article>
+  <header>
+    <p class="eyebrow">IDLE MINERTIA / STEAM RELEASE / PHASE 1</p>
+    <h1>Steam移植の決定事項と実行計画</h1>
     <p class="lead">
       モバイル版 Idle Minertia を Windows / macOS の Steam へ展開する。
-      このページは、フェーズ1で決定した方針と、これから行う作業をチームで共有するための実行計画です。
+      本文は、フェーズ1で決めたことと、フェーズ2以降にチームが行う作業を共有するための資料である。
+      議論の経緯ではなく、現時点の結論と実行順を記載する。
     </p>
-    <div class="status-row">
-      <span class="status">フェーズ1の議論を整理済み</span>
-      <span class="status next">次工程: フェーズ2の指示書作成</span>
-      <span class="status pending">最終確認: クラウドセーブ方式</span>
-    </div>
-  </div>
+    <p class="meta">最終更新: 2026-07-30　／　対象: 企画・Model・ViewModel・Unity View・リリース作業</p>
 
-  <section id="decisions">
-    <div class="section-head">
-      <div class="section-no">01 / DECISIONS</div>
-      <div>
-        <h2>プロジェクトの前提</h2>
-        <p class="section-desc">以降の設計と実装は、ここにある前提を変えずに進めます。</p>
-      </div>
+    <div class="summary">
+      <strong>結論</strong>
+      Steam版はモバイル版と同じコードベースで並行運用し、プラットフォーム差分を6つの境界へ閉じ込める。
+      次工程では、以下の決定を変更せず、実装単位の指示書と受け入れ条件へ分解する。
     </div>
-    <div class="grid three">
-      <article class="card">
-        <p class="label">PLATFORM</p>
-        <h3>Windows / macOS 同時対応</h3>
-        <p class="muted">旧作の AppID 3217600 は使わず、本作用の AppID を新規取得します。</p>
-      </article>
-      <article class="card">
-        <p class="label">PRODUCT</p>
-        <h3>F2P + Steam向けDLC</h3>
-        <p class="muted">売上拡大を目的とし、Steamの文化に合わせて広告導線と商品を再設計します。</p>
-      </article>
-      <article class="card">
-        <p class="label">OPERATION</p>
-        <h3>モバイル版も継続</h3>
-        <p class="muted">同一コードベースで並行運用し、Steam対応によって既存ユーザーを壊しません。</p>
-      </article>
-      <article class="card">
-        <p class="label">QUALITY</p>
-        <h3>期限より完成度を優先</h3>
-        <p class="muted">単なる移植ではなく、横長・マウス・Steam機能を備えたPCゲームとして仕上げます。</p>
-      </article>
-      <article class="card">
-        <p class="label">SCOPE</p>
-        <h3>1.0は原則すべて対応</h3>
-        <p class="muted">例外はQWERT個別操作とフレンド内リーダーボード。これらは初回リリースから外します。</p>
-      </article>
-      <article class="card">
-        <p class="label">DELIVERY</p>
-        <h3>小さなPRへ分解</h3>
-        <p class="muted">フェーズ2で、1指示書 = 1PR相当の独立した作業へ変換します。</p>
-      </article>
-    </div>
-  </section>
 
-  <section id="architecture">
-    <div class="section-head">
-      <div class="section-no">02 / ARCHITECTURE</div>
-      <div>
-        <h2>モバイルとSteamの差分を境界に閉じる</h2>
-        <p class="section-desc">既存APIを壊さず、新しいプラットフォーム層を上から被せます。</p>
-      </div>
-    </div>
-    <table>
-      <thead><tr><th>境界</th><th>モバイル</th><th>Steam</th></tr></thead>
-      <tbody>
-        <tr><td><code>IRewardService</code></td><td>既存広告処理へ委譲</td><td>導線ごとの報酬・解禁条件</td></tr>
-        <tr><td><code>IStoreService</code></td><td>Unity IAP</td><td>Steam DLC / 所有権</td></tr>
-        <tr><td><code>ICloudSaveBackend</code></td><td>Firestore REST</td><td>最終確認後に確定</td></tr>
-        <tr><td><code>IAuthService</code></td><td>Google / Apple</td><td>Steam ID</td></tr>
-        <tr><td><code>IAchievementService</code></td><td>No-Op</td><td>Steamworks実績</td></tr>
-        <tr><td><code>IReviewPrompt</code></td><td>既存レビュー導線</td><td>No-Op</td></tr>
-      </tbody>
-    </table>
-    <div class="grid" style="margin-top:14px">
-      <article class="card">
-        <h3>変更しないもの</h3>
-        <p class="muted"><code>AdRoot.cs</code>、<code>Shop/IAP/</code>、既存Firebase実装は直接書き換えません。新規実装から委譲します。</p>
-      </article>
-      <article class="card">
-        <h3>守る境界</h3>
-        <p class="muted"><code>#if</code> はInstaller、プラットフォーム固有実装、Editor内部に閉じます。View / ViewModel / Domainへ分散させません。</p>
-      </article>
-    </div>
-    <div class="callout danger">
-      <strong>UpgradeDomainを変更したらDLL反映が必須です。</strong>
-      ビルド済みDLLをUnityへコピーするまで、その修正はゲーム側には反映されません。
-    </div>
-  </section>
+    <dl class="current">
+      <dt>現在地</dt><dd>フェーズ1の決定事項を整理済み</dd>
+      <dt>次工程</dt><dd>フェーズ2: 実装AI・担当者向け指示書の作成</dd>
+      <dt>残る最終確認</dt><dd>Steam版クラウドセーブの方式</dd>
+      <dt>最初の実装</dt><dd>Standalone検証ビルドとプラットフォーム抽象化</dd>
+    </dl>
+  </header>
 
-  <section id="workstreams">
-    <div class="section-head">
-      <div class="section-no">03 / WORKSTREAMS</div>
-      <div>
-        <h2>領域ごとに決めたこと</h2>
-        <p class="section-desc">各担当は、自分の領域だけでなく、前後の依存関係も確認してください。</p>
-      </div>
-    </div>
-    <div class="grid">
-      <article class="card">
-        <p class="label">SAVE / SERVER</p>
-        <h3>セーブ互換性を最優先する</h3>
-        <ul>
-          <li>AES暗号化を有効化する</li>
-          <li>平文セーブからのマイグレーションを必須とする</li>
-          <li>ACTkは見送り、メモリ・時計改ざんは残存リスクとして扱う</li>
-          <li>NetherCompanionはFirestore RESTで継続する</li>
-        </ul>
-      </article>
-      <article class="card">
-        <p class="label">MONETIZATION</p>
-        <h3>広告を消すのではなく商品を作り直す</h3>
-        <ul>
-          <li>本線はデイリーダイヤ付与型DLC</li>
-          <li>受け取り忘れを失効させず、複数日分をまとめて受領可能にする</li>
-          <li>RemoveAds効果は倍率 / ブースター / デイリー / 時間短縮に分ける</li>
-          <li>不成立時は買い切り化し、課金要素を全廃する</li>
-        </ul>
-      </article>
-      <article class="card">
-        <p class="label">UI / INPUT</p>
-        <h3>縦UIの畳みを、横では1段だけ解く</h3>
-        <ul>
-          <li>器のUXMLはVertical / Horizontalで分ける</li>
-          <li>表示内容を持つ部品は共有する</li>
-          <li>V/Hの<code>name</code>集合を機械的に検証する</li>
-          <li>全画面対応とリサイズ追従まで行う</li>
-        </ul>
-      </article>
-      <article class="card">
-        <p class="label">PC OPERATION</p>
-        <h3>マウスの手数を減らす</h3>
-        <ul>
-          <li>Shift+クリックで即時移動</li>
-          <li>ダブルクリックで可能な限り連続マージ</li>
-          <li>右クリックで詳細、Ctrl+クリックで複数選択</li>
-          <li>連続マージAPIはDomainに置き、既存オートマージと共有する</li>
-        </ul>
-      </article>
-      <article class="card">
-        <p class="label">STEAM FEATURES</p>
-        <h3>Steam版として必要な機能を揃える</h3>
-        <ul>
-          <li>実績30〜60件。判定はDomain</li>
-          <li>リッチプレゼンスは最新Cave名 + 到達深度</li>
-          <li>オーバーレイ中もゲーム進行を止めない</li>
-          <li>フレンド内リーダーボードは初回リリース後</li>
-        </ul>
-      </article>
-      <article class="card">
-        <p class="label">RELEASE / QA</p>
-        <h3>配信は手動、確認は広く</h3>
-        <ul>
-          <li>Steamビルドのアップロードは手動</li>
-          <li>ストアページは英・日・中・韓・独・仏・西</li>
-          <li>ゲーム内13言語は維持</li>
-          <li>解像度、DPI、リサイズ、オフライン、長時間放置をQA対象にする</li>
-        </ul>
-      </article>
-    </div>
-  </section>
-
-  <section id="phase2">
-    <div class="section-head">
-      <div class="section-no">04 / PHASE 2</div>
-      <div>
-        <h2>決定を、実装指示書へ変換する</h2>
-        <p class="section-desc">フェーズ2は再び仕様を議論する工程ではありません。決定を安全に実装できる粒度へ分解します。</p>
-      </div>
-    </div>
-    <div class="grid">
-      <article class="card">
-        <h3>1指示書に必要なもの</h3>
-        <ul class="checklist">
-          <li>目的と対応する決定事項</li>
-          <li>触ってよい / 触ってはいけないファイル</li>
-          <li>Model / ViewModel / Viewの責務</li>
-          <li>前提作業と依存関係</li>
-          <li>受け入れ条件とテスト方法</li>
-          <li>DLL反映のタイミング</li>
-          <li>失敗時のロールバック条件</li>
-        </ul>
-      </article>
-      <article class="card">
-        <h3>最初に作る指示書</h3>
-        <ol>
-          <li>プラットフォーム抽象化</li>
-          <li>Steamworks.NET整理と初期化</li>
-          <li>セーブ暗号化と移行</li>
-          <li>横長UXMLの1画面試作</li>
-        </ol>
-        <p class="muted" style="margin-top:14px">各指示書は1PR相当とし、単独でレビュー・検証・ロールバックできるようにします。</p>
-      </article>
-    </div>
-  </section>
-
-  <section id="roadmap">
-    <div class="section-head">
-      <div class="section-no">05 / ROADMAP</div>
-      <div>
-        <h2>実装は、この順序で進める</h2>
-        <p class="section-desc">最大の未知数を先に検証し、土台から順に積み上げます。</p>
-      </div>
-    </div>
-    <ol class="steps">
-      <li>
-        <h3>検証ビルドを通す</h3>
-        <p>Windows StandaloneでDomain DLL、<code>SteamAPI.Init()</code>、横長での実際の崩れ方を確認します。ここが通るまで他の実装へ進みません。</p>
-      </li>
-      <li>
-        <h3>AppID取得を並行して開始する</h3>
-        <p>Steam Directの支払いと審査は、自分たちで短縮できない待ち時間です。</p>
-      </li>
-      <li>
-        <h3>Steamworks.NETとDefineを整理する</h3>
-        <p>二重導入を解消し、Steam固有コードがモバイルビルドへ混入しない状態を作ります。</p>
-      </li>
-      <li>
-        <h3>PCの基本設定とプラットフォーム境界を作る</h3>
-        <p>二重起動防止、フレームレート、インターフェース群、Editor用実装を整えます。</p>
-      </li>
-      <li>
-        <h3>セーブ、報酬、Steam機能を実装する</h3>
-        <p>セーブ移行、広告導線の置換、Steam Cloud、実績を、安全性の高い単位へ分けて実装します。</p>
-      </li>
-      <li>
-        <h3>横長とPC操作を段階的に展開する</h3>
-        <p>1画面で方式を検証してから全画面へ広げ、最後にリサイズ追従と入力を完成させます。</p>
-      </li>
-      <li>
-        <h3>商品、macOS、ストア、QAを仕上げる</h3>
-        <p>DLC、署名・公証、ストア素材、多言語ページ、実機・長時間テストを終えてリリースへ進みます。</p>
-      </li>
+  <nav class="toc" aria-label="目次">
+    <h2>目次</h2>
+    <ol>
+      <li><a href="#decisions">決定事項一覧</a></li>
+      <li><a href="#architecture">アーキテクチャ方針</a></li>
+      <li><a href="#workstreams">領域別の方針と作業</a></li>
+      <li><a href="#phase2">フェーズ2で作る指示書</a></li>
+      <li><a href="#roadmap">実装順序</a></li>
+      <li><a href="#actions">直近のチーム作業</a></li>
     </ol>
-  </section>
+  </nav>
 
-  <section id="actions">
-    <div class="section-head">
-      <div class="section-no">06 / NEXT ACTIONS</div>
-      <div>
-        <h2>チームが次にすること</h2>
-        <p class="section-desc">この3点を終えると、フェーズ2の指示書作成を開始できます。</p>
+  <main>
+    <section id="decisions">
+      <h2>1. 決定事項一覧</h2>
+      <p>
+        以降の設計と実装は、次の前提を変えずに進める。
+        変更が必要になった場合は、個別実装の都合で書き換えず、Steam移植全体の決定として再確認する。
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>論点</th><th>決定</th><th>実装への影響</th></tr></thead>
+          <tbody>
+            <tr><td>対応OS</td><td>Windows / macOS 同時対応</td><td>macOS公証、Universal Binary、OS別Depotと実機確認を含める。</td></tr>
+            <tr><td>販売方式</td><td>F2P + Steam向けDLC</td><td>モバイル課金をそのまま移植せず、Steamの商品として設計し直す。</td></tr>
+            <tr><td>モバイル版</td><td>継続して並行運用</td><td>Steam対応で既存モバイル版を壊さない。同じドメインを使う。</td></tr>
+            <tr><td>品質と時期</td><td>期限より完成度を優先</td><td>日程だけを理由に設計やQAを削らない。</td></tr>
+            <tr><td>1.0スコープ</td><td>原則すべて対応</td><td>横長・PC操作・実績・リッチプレゼンス・多言語ストアを含める。</td></tr>
+            <tr><td>1.0の例外</td><td>QWERTショートカットとフレンド内リーダーボード</td><td>初回リリース後の追加対象として管理する。</td></tr>
+            <tr><td>開発単位</td><td>小さなPRへ分解</td><td>1PRで確認できる変更量とし、依存順に統合する。</td></tr>
+            <tr><td>AppID</td><td><code>3217600</code>は旧作用。新規取得</td><td>Steam Directと審査を実装と並行して開始する。</td></tr>
+          </tbody>
+        </table>
       </div>
-    </div>
-    <div class="grid three">
-      <article class="card">
-        <p class="label">ACTION 01</p>
-        <h3>クラウド方式を最終確定</h3>
-        <p class="muted">推奨は、セーブをSteam Cloud、NetherCompanionをFirestore RESTに分けるA2です。二重同期は行いません。</p>
-      </article>
-      <article class="card">
-        <p class="label">ACTION 02</p>
-        <h3>外部調査の担当を置く</h3>
-        <p class="muted">デイリーDLCの可否、価格事例、Steam Cloud設定、macOS公証、ストア素材要件に担当者と期限を設定します。</p>
-      </article>
-      <article class="card">
-        <p class="label">ACTION 03</p>
-        <h3>フェーズ2の指示書を作る</h3>
-        <p class="muted">まず抽象化、Steamworks初期化、セーブ移行、横長1画面試作の4本を作成します。</p>
-      </article>
-    </div>
-    <div class="callout ok">
-      <strong>実装開始の条件:</strong>
-      フェーズ2の指示書と受け入れ条件をレビューし、フェーズ3最初の検証ビルドが通ること。
-    </div>
-    <div class="source-links" aria-label="詳細仕様">
-      <a href="https://github.com/appopiss/UpgradeDomain/blob/minertia_area3/docs/steam-release/01_Phase1_Decisions_and_Action_Plan.md">決定事項・実行計画</a>
-      <a href="https://github.com/appopiss/UpgradeDomain/tree/minertia_area3/docs/steam-release">詳細仕様一式</a>
-    </div>
-  </section>
-</main>
+    </section>
 
-<footer>
-  <span>Idle Minertia Steam Release Plan — updated 2026-07-30</span>
-  <a class="archive-link" href="archive.html">フェーズ1の議論・コメント・選択肢を振り返る</a>
-</footer>
+    <section id="architecture">
+      <h2>2. アーキテクチャ方針</h2>
+      <p>
+        モバイルとSteamの差分は、呼び出し側へ条件分岐を広げず、次の6インターフェースへ閉じ込める。
+        ViewModelからは共通の契約だけを参照し、起動時にプラットフォーム別実装を注入する。
+      </p>
 
-<script>
-  const links=[...document.querySelectorAll('.topnav a')];
-  const sections=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
-  const observer=new IntersectionObserver(entries=>{
-    const current=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
-    if(!current)return;
-    links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+current.target.id));
-  },{rootMargin:'-20% 0px -65% 0px',threshold:[0,.1,.4]});
-  sections.forEach(section=>observer.observe(section));
-</script>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>境界</th><th>モバイル</th><th>Steam</th></tr></thead>
+          <tbody>
+            <tr><td><code>IRewardService</code></td><td>既存広告処理へ委譲</td><td>導線ごとの報酬・解禁条件</td></tr>
+            <tr><td><code>IStoreService</code></td><td>Unity IAP</td><td>Steam DLC / 所有権</td></tr>
+            <tr><td><code>ICloudSaveBackend</code></td><td>Firestore REST</td><td><span class="pending">最終確認後に確定</span></td></tr>
+            <tr><td><code>IAuthService</code></td><td>Google / Apple</td><td>Steam ID</td></tr>
+            <tr><td><code>IAchievementService</code></td><td>No-Op</td><td>Steamworks実績</td></tr>
+            <tr><td><code>IReviewPrompt</code></td><td>既存レビュー導線</td><td>No-Op</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>変更しないもの</h3>
+      <p>
+        ドメインルール、既存モバイルの動作、セーブ互換性を正本とする。
+        Steam都合の処理をModelへ直接持ち込まず、<code>ViewModel → Root → Repository</code> の流れを維持する。
+      </p>
+
+      <h3>守る境界</h3>
+      <ul>
+        <li><code>#if</code>は起動・構成・ネイティブSDK境界に限定する。</li>
+        <li>ViewはViewModelとの接続だけを担い、Modelを直接参照しない。</li>
+        <li>UpgradeDomainのC#を変更したら、必ずビルド済みDLLをUnityへ反映する。</li>
+        <li>広告SDKのネイティブ部分はSteamビルドから除外し、それ以外は必要に応じて無効化する。</li>
+      </ul>
+    </section>
+
+    <section id="workstreams">
+      <h2>3. 領域別の方針と作業</h2>
+      <p>
+        実装は次の6領域に分ける。表の「次に行うこと」はフェーズ2の指示書へそのまま展開する。
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>領域</th><th>決定した方針</th><th>次に行うこと</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>セーブとサーバー</td>
+              <td><ul><li>AES暗号化を有効化</li><li>平文セーブからの移行を必須化</li><li>ACTkは見送り</li><li>NetherCompanionはFirestore RESTを継続</li></ul></td>
+              <td>移行の失敗・中断・ロールバック条件を定義し、クラウド方式を最終確定する。</td>
+            </tr>
+            <tr>
+              <td>マネタイズ</td>
+              <td><ul><li>本線はデイリーダイヤ付与型DLC</li><li>未受領分は失効させない</li><li>RemoveAds効果を4分類</li><li>不成立時は買い切り化</li></ul></td>
+              <td>DLC所有権、付与履歴、二重付与防止、プランB切替値を設計する。</td>
+            </tr>
+            <tr>
+              <td>横長UI</td>
+              <td><ul><li>器はVertical / Horizontalで分離</li><li>表示部品は共有</li><li>V/Hの<code>name</code>集合を自動検証</li><li>リサイズ追従まで対応</li></ul></td>
+              <td>代表画面を1つ選び、横長UXMLとリサイズ追従を試作する。</td>
+            </tr>
+            <tr>
+              <td>PC操作</td>
+              <td><ul><li>Shift+クリックで即時移動</li><li>ダブルクリックで連続マージ</li><li>右クリックで詳細</li><li>Ctrl+クリックで複数選択</li></ul></td>
+              <td>入力競合と誤操作条件を整理し、連続マージAPIをDomainへ置く。</td>
+            </tr>
+            <tr>
+              <td>Steam機能</td>
+              <td><ul><li>実績30〜60件、判定はDomain</li><li>Rich PresenceはCave名 + 深度</li><li>Overlay中も進行を継続</li><li>Leaderboardは初回後</li></ul></td>
+              <td>Steamworks.NET初期化、実績ID、翻訳キー、同期タイミングを定義する。</td>
+            </tr>
+            <tr>
+              <td>配信とQA</td>
+              <td><ul><li>ビルドアップロードは手動</li><li>ストアは7言語</li><li>ゲーム内13言語を維持</li><li>Windows / macOSを同時確認</li></ul></td>
+              <td>解像度、DPI、リサイズ、オフライン、長時間放置、公証をチェックリスト化する。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <strong>残存リスク:</strong>
+        AESのみではメモリ改変と時計改ざんを防げない。現時点では既知の残存リスクとして扱い、
+        セーブ移行と進行互換性を優先する。
+      </div>
+    </section>
+
+    <section id="phase2">
+      <h2>4. フェーズ2で作る指示書</h2>
+      <p>
+        フェーズ2では、決定事項を実装担当者または実装AIが迷わず着手できる単位へ変換する。
+        指示書は設計の再議論ではなく、変更範囲・依存関係・完了条件を固定するために作る。
+      </p>
+
+      <h3>すべての指示書に含める項目</h3>
+      <ul>
+        <li>目的と根拠となる決定事項</li>
+        <li>触ってよいファイル、触ってはいけないファイル</li>
+        <li>Model / ViewModel / Viewそれぞれの責務</li>
+        <li>前提作業と依存関係</li>
+        <li>受け入れ条件とテスト方法</li>
+        <li>UpgradeDomainのビルドとDLL反映のタイミング</li>
+        <li>失敗時のロールバック条件</li>
+      </ul>
+
+      <h3>最初に作る4本</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>順番</th><th>指示書</th><th>目的</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>プラットフォーム抽象化</td><td>6境界と注入位置を確定する。</td></tr>
+            <tr><td>2</td><td>Steamworks.NET整理と初期化</td><td>SDK、Define、起動失敗時の挙動を固定する。</td></tr>
+            <tr><td>3</td><td>セーブ暗号化と移行</td><td>既存ユーザーを壊さずAESへ移行する。</td></tr>
+            <tr><td>4</td><td>横長UXMLの1画面試作</td><td>V/H分離と部品共有の成立性を確認する。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="roadmap">
+      <h2>5. 実装順序</h2>
+      <p>依存関係が強い順に、次の流れで進める。</p>
+      <ol class="steps">
+        <li><div><b>Standalone検証ビルドを通す</b>既存DLLと主要機能がWindows / macOS向けビルドで動くか確認する。</div></li>
+        <li><div><b>AppID取得を並行して開始する</b>Steam Direct、審査、ストア準備を実装の待ち時間に進める。</div></li>
+        <li><div><b>Steamworks.NETとDefineを整理する</b>初期化、失敗時のフォールバック、ネイティブSDK境界を確定する。</div></li>
+        <li><div><b>PC基本設定とプラットフォーム境界を作る</b>解像度・終了処理・6インターフェースを先に整える。</div></li>
+        <li><div><b>セーブ、報酬、Steam機能を実装する</b>移行リスクが高い領域から小さなPRで統合する。</div></li>
+        <li><div><b>横長UIとPC操作を段階展開する</b>代表画面で成立性を確認後、全画面へ広げる。</div></li>
+        <li><div><b>商品、macOS、ストア、QAを仕上げる</b>DLC・公証・多言語・長時間動作を含めてリリース品質へ持っていく。</div></li>
+      </ol>
+    </section>
+
+    <section id="actions">
+      <h2>6. 直近のチーム作業</h2>
+      <p>次の3点が、フェーズ2開始時の作業である。</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>状態</th><th>作業</th><th>完了条件</th></tr></thead>
+          <tbody>
+            <tr><td class="status pending">最終確認</td><td>Steam版クラウドセーブ方式を確定する</td><td><code>ICloudSaveBackend</code>のSteam実装と競合解決方針が1つに決まっている。</td></tr>
+            <tr><td class="status done">着手可能</td><td>外部調査の担当を置く</td><td>AppID、macOS公証、Steamworks設定、ストア審査の担当と記録先が決まっている。</td></tr>
+            <tr><td class="status done">着手可能</td><td>最初の4指示書を作る</td><td>変更範囲・依存・受け入れ条件・テスト・ロールバックが記載されている。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      詳細資料:
+      <a href="https://github.com/appopiss/UpgradeDomain/tree/minertia_area3/docs/steam-release">UpgradeDomain / docs / steam-release</a>
+    </p>
+    <p>
+      議論の経緯を確認する場合のみ、
+      <a class="archive" href="archive.html">フェーズ1の議論・コメント・選択肢のアーカイブ</a>
+      を参照する。
+    </p>
+  </footer>
+</article>
 </body>
 </html>
