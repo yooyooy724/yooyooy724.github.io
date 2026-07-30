@@ -191,8 +191,8 @@ const DB = [
   <h4>2026-07-28（夕）に追加で確定したもの</h4>
   <table><tr><th>論点</th><th>決定</th><th>効いてくる先</th></tr>
   <tr><td>抽象化の深さ</td><td><b>全面抽象化(6インターフェース)</b></td><td>既存ファイルは1行も変更しない制約付き。<code>#if</code> 3箇所原則が前提に復帰 → <a href="#platform" onclick="go('platform')">02</a></td></tr>
-  <tr><td>改ざん対策</td><td><b>「一切できないように」＝ 平文維持は破棄</b></td><td>AES + ACTk を有効化。<span class="ng">60件ぶんの移行処理が最重量作業に</span> → <a href="#save" onclick="go('save')">04</a></td></tr>
-  <tr><td>サーバー</td><td><b>使う。NetherCompanion があるため</b></td><td>既存バックエンドは<b>元から REST</b>だったと判明。セーブは Steam Cloud、共有機能は Firestore → <a href="#save" onclick="go('save')">04</a></td></tr>
+  <tr><td>改ざん対策</td><td><b>「一切できないように」＝ 平文維持は破棄</b></td><td>その後の最終決定は<b>AES のみ</b>。ACTk は見送り。既存セーブの移行処理が最重量作業 → <a href="#save" onclick="go('save')">04</a></td></tr>
+  <tr><td>サーバー</td><td><b>使う。NetherCompanion があるため</b></td><td>既存バックエンドは<b>元から REST</b>だったと判明。共有機能は Firestore を継続。<span class="ng">セーブの権威は未決</span> → <a href="#save" onclick="go('save')">04</a></td></tr>
   <tr><td>リーダーボード</td><td><b>フレンド内のみ</b></td><td>改ざん対策の強化と噛み合い、成立条件が整った → <a href="#feature" onclick="go('feature')">06</a></td></tr>
   <tr><td>リッチプレゼンス</td><td><b>最新の Cave 名 + 到達深度</b></td><td>Steamworks 側に翻訳登録が要る。運用手順を残すこと → <a href="#feature" onclick="go('feature')">06</a></td></tr>
   <tr><td>ビルド除外</td><td><b>「除外」から「無効化」へ緩和</b></td><td>ローカライズテーブル等は含めてよい。広告 SDK のネイティブ部分だけは例外 → <a href="#money" onclick="go('money')">03</a></td></tr></table>
@@ -207,14 +207,20 @@ const DB = [
   <tr><td>横長の到達段階</td><td><b>段階4(リサイズ追従)まで</b></td><td>→ <a href="#display" onclick="go('display')">05</a></td></tr>
   <tr><td>実績</td><td><b>30以上。判定はドメイン</b></td><td>アイコン最低60枚。テンプレの量産設計が前提 → <a href="#feature" onclick="go('feature')">06</a></td></tr>
   <tr><td>リーダーボード</td><td><b>フレンド内のみ。初回リリースからは外す</b></td><td><span class="ng">Q3「全部入り」への初の例外</span> → <a href="#feature" onclick="go('feature')">06</a></td></tr>
-  <tr><td>QWERT ショートカット</td><td><b>採用</b></td><td>→ <a href="#display" onclick="go('display')">05</a></td></tr></table>
-  <p class="note"><b>未決のまま残っているもの:</b> 価格設定(調査待ち)、一括マージ API の置き場所、レールに何を載せるか、Shop / Relic / Nether の横長仕様。<br>
+  <tr><td>QWERT ショートカット</td><td><b>1.0 では実装しない</b></td><td>数字キー / Esc / Space は維持。コンテンツ別 QWERT は後回し → <a href="#display" onclick="go('display')">05</a></td></tr></table>
+  <h4>Issue #5 で追加確定したもの</h4>
+  <table><tr><th>論点</th><th>決定</th><th>効いてくる先</th></tr>
+  <tr><td>一括マージ API</td><td><b>ドメインに置く</b></td><td>既存オートマージも同じ実装へ寄せ、回帰テストを行う → <a href="#display" onclick="go('display')">05</a></td></tr>
+  <tr><td>Steam アップロード</td><td><b>手動でよい</b></td><td>Steam Guard の非対話自動化は今回行わない → <a href="#build" onclick="go('build')">ビルド</a></td></tr>
+  <tr><td>ストアページ言語</td><td><b>主要7言語</b></td><td>英・日・中・韓・独・仏・西 → <a href="#qa" onclick="go('qa')">QA</a></td></tr>
+  <tr><td>企画サイト</td><td><b>フェーズ2以降も継続</b></td><td>決定だけでなく実装進捗の共有にも使用 → <a href="#roadmap" onclick="go('roadmap')">工程</a></td></tr></table>
+  <p class="note"><b>未決のまま残っているもの:</b> クラウドセーブ方式、価格設定(調査待ち)、レールに何を載せるか、Shop / Relic / Nether の横長仕様。<br>
   <span class="ng">確認したいこと:</span> ①「0.1 には含めない」の 0.1 が指すもの(→ <a href="#feature" onclick="go('feature')">06</a>) ②「継続的にダイヤが付与される権利」を Valve が通貨販売とみなすか(→ <a href="#money" onclick="go('money')">03</a>)</p>
   <h4>当初からの前提</h4>
   <ul>
    <li><b>モバイルと同一コードベースで並行運用</b>。Steam 版のためにモバイル版を壊さない。</li>
    <li><b>F2P + Steam 内課金</b>を第一候補として設計する(ただし §マネタイズ の承認次第でプランBへ)。</li>
-   <li>横長対応で <b>UXML を複製しない</b>。<span class="kw">定義は 2026-07-28 に差し替え</span>: 「横長 = <b>縦の圧縮(タブ・上下積み)を1段だけ解いたもの</b>」。<s>縦長の画面を並べたもの</s> → <a href="#display" onclick="go('display')">05</a></li>
+   <li>横長対応では<b>器を Vertical / Horizontal で分け、表示内容を持つ部品は共有する</b>。V/H の <code>name</code> 集合を機械的に検証する。横長の定義は「<b>縦の圧縮(タブ・上下積み)を1段だけ解いたもの</b>」 → <a href="#display" onclick="go('display')">05</a></li>
    <li>モバイル版からのセーブ引き継ぎは<b>スコープ外</b>。<span class="ng">⚠️ ただし <a href="#money" onclick="go('money')">マネタイズ案3(Mobile 限定販売)</a>を採る場合、この前提は撤回が必要になります(購入したダイヤを Steam へ持ち越す必要があるため)。</span></li>
   </ul>
   <p class="note">「ゲームロジックに <code>#if</code> を書き足さない」は一度<b>選択肢に降格しましたが、2026-07-28 に全面抽象化(C)が選ばれたことで前提へ復帰しました</b>。→ <a href="#platform" onclick="go('platform')">抽象化の深さ</a></p>`},
@@ -228,6 +234,78 @@ const DB = [
   <tr><td>Steamworks / ビルド / QA・法務</td><td>Memo/*.md</td></tr>
   <tr><td>あなたに聞きたいこと・決定ボード</td><td>未保存(このサイトが初出)</td></tr></table>
   <p class="note">当面の正本は MD ファイル。サイトは決定を集める場として使い、確定した内容を MD へ反映していく。</p>`},
+]},
+
+/* ============================ フェーズ1まとめ ============================ */
+{id:'phase1', nav:'✅ フェーズ1まとめ', group:'案内', title:'フェーズ1 チーム共有サマリー', desc:'合意事項、残件、フェーズ2への引き継ぎをチーム向けに集約。実装指示書ではなく、判断の共有資料。', src:'docs/steam-release/01_Phase1_Team_Summary.md', secs:[
+ {id:'p1-status', h:'現在地 ── 21件中20件が確定', s:'k', b:`
+  <p>Issue #5 までの選択を反映し、選択式の確認は<b>21件中20件が確定</b>しました。最後に確定したのは次の4件です。</p>
+  <ul>
+   <li>一括マージ API は<b>ドメイン</b>に置き、既存オートマージも同じ実装へ寄せる</li>
+   <li>Steam ビルドのアップロードは<b>手動</b>でよい</li>
+   <li>ストアページは<b>主要7言語</b>(英・日・中・韓・独・仏・西)</li>
+   <li>このサイトは<b>フェーズ2以降も更新</b>する</li>
+  </ul>
+  <p class="note"><span class="ng">選択が残るのはクラウドセーブ方式 <code>sv-cloud</code> の1件だけです。</span>まとめ作業へは進めますが、フェーズ1の正式完了宣言前に明示的な選択が必要です。</p>`},
+ {id:'p1-product', h:'プロジェクトの骨格', s:'k', b:`
+  <table><tr><th>領域</th><th>合意</th></tr>
+  <tr><td>目的</td><td><b>Steam 版で売上を伸ばす</b></td></tr>
+  <tr><td>AppID</td><td><code>3217600</code> は旧作用。本作用を新規取得</td></tr>
+  <tr><td>OS</td><td><b>Windows / macOS 同時</b></td></tr>
+  <tr><td>品質</td><td>期限で切らず、PC ゲームとして完成した状態を目指す</td></tr>
+  <tr><td>モバイル</td><td>継続運用。同一コードベースを維持し、Steam 対応で壊さない</td></tr>
+  <tr><td>1.0</td><td>基本は全部入り。ただし<b>QWERT 個別割り当てとフレンド内リーダーボードは初回から外す</b></td></tr></table>`},
+ {id:'p1-decisions', h:'領域別の主要決定', s:'k', b:`
+  <h4>アーキテクチャ</h4>
+  <ul>
+   <li><code>IRewardService</code> / <code>IStoreService</code> / <code>ICloudSaveBackend</code> / <code>IAuthService</code> / <code>IAchievementService</code> / <code>IReviewPrompt</code> の6インターフェースを整備</li>
+   <li>既存の広告 / IAP / Firebase 実装は変更せず、新しい薄い実装から委譲</li>
+   <li><code>#if</code> は Installer、プラットフォーム固有実装、Editor 内部に閉じる</li>
+  </ul>
+  <h4>マネタイズ</h4>
+  <ul>
+   <li>本線は F2P + <b>デイリーダイヤ付与型 DLC</b>。受け取り忘れは失効させない</li>
+   <li>不成立時のプランBは<b>買い切り化 + 課金要素全廃</b></li>
+   <li>RemoveAds は性質ごとに4分割。11導線は個別対応し、現在値の一覧を別途持つ</li>
+  </ul>
+  <h4>セーブ</h4>
+  <ul>
+   <li>AES 暗号化を有効化し、既存セーブのマイグレーションを必須とする</li>
+   <li>ACTk は見送り。メモリ改変と時計改ざんは未対策として残る</li>
+   <li>NetherCompanion は Firestore REST で継続。セーブの権威だけ未決</li>
+  </ul>
+  <h4>横長 / PC 操作</h4>
+  <ul>
+   <li>器の UXML は V/H で分け、部品は共有。<code>name</code> 集合の一致を自動検証</li>
+   <li>段階4(全画面 + リサイズ追従)まで実装</li>
+   <li>一括マージはドメイン API とし、PC 操作と既存オートマージで共有</li>
+  </ul>
+  <h4>Steam 機能 / 配信</h4>
+  <ul>
+   <li>実績30〜60件、判定はドメイン。リッチプレゼンスは最新 Cave 名 + 到達深度</li>
+   <li>フレンド内リーダーボードは採用するが初回リリースから外す</li>
+   <li>アップロードは手動。ストアは主要7言語。ゲーム内13言語は維持</li>
+  </ul>`},
+ {id:'p1-open', h:'フェーズ1の残件と外部確認', s:'k', b:`
+  <table><tr><th>種類</th><th>残件</th><th>扱い</th></tr>
+  <tr><td><span class="ng">要決定</span></td><td>クラウドセーブ方式 <code>sv-cloud</code></td><td>A2 / A / B / C から明示的に選ぶ。現決定との整合は A2 が最も高い</td></tr>
+  <tr><td>設計詳細</td><td>右レールの画面固有項目、Shop / Relic / Nether の横長仕様</td><td>フェーズ2で指示書化する前に決める</td></tr>
+  <tr><td>表現確認</td><td>「リーダーボードを0.1に含めない」の意味</td><td>初回リリースから外す解釈で共有確認</td></tr>
+  <tr><td>外部調査</td><td>デイリー DLC の可否、価格、Steam Cloud 設定、ストア素材要件</td><td>Steamworks 公式情報と成功事例で確認</td></tr>
+  <tr><td>技術リスク</td><td>Standalone DLL / <code>SteamAPI.Init()</code> / macOS 公証</td><td>担当と完了条件を置く。検証ビルドはフェーズ3の最初</td></tr></table>`},
+ {id:'p1-phase2', h:'フェーズ2へ渡すもの', s:'t', b:`
+  <p>フェーズ2は仕様を増やす工程ではなく、フェーズ1の決定を<b>実装可能な作業単位へ変換する工程</b>です。</p>
+  <ol>
+   <li>1指示書 = 1 PR 相当の独立した作業単位</li>
+   <li>触ってよい / 触ってはいけないファイル</li>
+   <li>Model / ViewModel / View の責務境界</li>
+   <li>前提作業、依存関係、推奨順序</li>
+   <li>セーブ互換性とモバイル版への影響</li>
+   <li>テスト、ビルド、Unity 確認を含む受け入れ条件</li>
+   <li>UpgradeDomain 変更時の DLL 反映タイミング</li>
+   <li>失敗時のロールバック条件</li>
+  </ol>
+  <p class="note">最初に作る指示書は、プラットフォーム抽象化、Steamworks 初期化、セーブ移行、横長 UXML の1画面試作です。</p>`},
 ]},
 
 /* ============================ 聞きたいこと ============================ */
