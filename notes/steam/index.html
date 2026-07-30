@@ -196,7 +196,20 @@ const DB = [
   <tr><td>リーダーボード</td><td><b>フレンド内のみ</b></td><td>改ざん対策の強化と噛み合い、成立条件が整った → <a href="#feature" onclick="go('feature')">06</a></td></tr>
   <tr><td>リッチプレゼンス</td><td><b>最新の Cave 名 + 到達深度</b></td><td>Steamworks 側に翻訳登録が要る。運用手順を残すこと → <a href="#feature" onclick="go('feature')">06</a></td></tr>
   <tr><td>ビルド除外</td><td><b>「除外」から「無効化」へ緩和</b></td><td>ローカライズテーブル等は含めてよい。広告 SDK のネイティブ部分だけは例外 → <a href="#money" onclick="go('money')">03</a></td></tr></table>
-  <p class="note"><b>未決のまま残っているもの:</b> ダイヤ販売のモデル(案1/2/3)、RemoveAds の分割方法、導線ごとの数値の置き場所、価格設定(調査待ち)、暗号化の適用範囲。→ <a href="#money" onclick="go('money')">03</a> / <a href="#save" onclick="go('save')">04</a></p>
+  <h4>2026-07-30 に確定したもの</h4>
+  <table><tr><th>論点</th><th>決定</th><th>効いてくる先</th></tr>
+  <tr><td>マネタイズ本線</td><td><b>案2 デイリー付与型(DLC)</b></td><td><span class="okw">クロスプログレッションは不要のまま</span>。通貨販売の承認依存も下がる → <a href="#money" onclick="go('money')">03</a></td></tr>
+  <tr><td>プランB</td><td><b>B1 買い切り化</b></td><td><span class="ng">発動すると DLC 設計とバランス調整が捨て仕事に</span>。値セット差し替えで手戻りを抑える → <a href="#money" onclick="go('money')">03</a></td></tr>
+  <tr><td>RemoveAds</td><td><b>性質ごとに4分割</b></td><td>倍率 / ブースター / デイリー / 時間短縮 → <a href="#money" onclick="go('money')">03</a></td></tr>
+  <tr><td>導線ごとの数値</td><td><b>個別対応(共通の器を作らない)</b></td><td>着手最速。一覧性と一括差し替えは失われる → <a href="#money" onclick="go('money')">03</a></td></tr>
+  <tr><td>改ざん対策</td><td><b>AES 有効化のみ(ACTk は見送り)</b></td><td>移行処理が本体。<span class="ng">メモリ改変と時計改ざんは未対策のまま</span> → <a href="#save" onclick="go('save')">04</a></td></tr>
+  <tr><td>横長の UXML 管理</td><td><b>器は V/H で分け、部品は共有</b></td><td>「複製しない」を撤回。<b>name 集合の自動チェック</b>で担保 → <a href="#display" onclick="go('display')">05</a></td></tr>
+  <tr><td>横長の到達段階</td><td><b>段階4(リサイズ追従)まで</b></td><td>→ <a href="#display" onclick="go('display')">05</a></td></tr>
+  <tr><td>実績</td><td><b>30以上。判定はドメイン</b></td><td>アイコン最低60枚。テンプレの量産設計が前提 → <a href="#feature" onclick="go('feature')">06</a></td></tr>
+  <tr><td>リーダーボード</td><td><b>フレンド内のみ。初回リリースからは外す</b></td><td><span class="ng">Q3「全部入り」への初の例外</span> → <a href="#feature" onclick="go('feature')">06</a></td></tr>
+  <tr><td>QWERT ショートカット</td><td><b>採用</b></td><td>→ <a href="#display" onclick="go('display')">05</a></td></tr></table>
+  <p class="note"><b>未決のまま残っているもの:</b> 価格設定(調査待ち)、一括マージ API の置き場所、レールに何を載せるか、Shop / Relic / Nether の横長仕様。<br>
+  <span class="ng">確認したいこと:</span> ①「0.1 には含めない」の 0.1 が指すもの(→ <a href="#feature" onclick="go('feature')">06</a>) ②「継続的にダイヤが付与される権利」を Valve が通貨販売とみなすか(→ <a href="#money" onclick="go('money')">03</a>)</p>
   <h4>当初からの前提</h4>
   <ul>
    <li><b>モバイルと同一コードベースで並行運用</b>。Steam 版のためにモバイル版を壊さない。</li>
@@ -392,7 +405,24 @@ const DB = [
    <li><b>鉱石コレクション報酬の係数を Steam 側で引き上げる。</b><code>GetDiamondReward</code> は index の関数なので、<b>係数を差し替えるだけ</b>で総供給量を調整できます。Config を差し替える器は <a href="#platform" onclick="go('platform')"><code>IRewardService</code></a> 側に既に用意する方針です。</li>
    <li><b>ダイヤの出口(シンク)側も併せて緩める。</b>現在の主なシンクは装備変換のリフィル(<code>EquipmentConvertLimit.DiamondCost</code> ── 使うほど単価が上がる)。<span class="kw">蛇口を増やすより、Steam 版でシンクの単価上昇を緩める方が、体感バランスを崩さずに調整できます。</span></li>
   </ol>
-  <p class="note"><b>逆方向のリスクを1つ明記しておきます。</b>案3 は「Steam ではプレイで手に入るものを、Mobile では現金で売っている」構図になります。クロスプログレッションを公言する以上、<span class="ng">Mobile の課金者から「Steam なら無料で手に入る」と読まれる</span>可能性があります。<b>Mobile 側の購入は「時間の短縮」として位置づけ、Steam 側の入手速度を意図的に遅く保つ</b>ことでしか回避できません。ここは数値設計の問題として残ります。</p>`,
+  <p class="note"><b>逆方向のリスクを1つ明記しておきます。</b>案3 は「Steam ではプレイで手に入るものを、Mobile では現金で売っている」構図になります。クロスプログレッションを公言する以上、<span class="ng">Mobile の課金者から「Steam なら無料で手に入る」と読まれる</span>可能性があります。<b>Mobile 側の購入は「時間の短縮」として位置づけ、Steam 側の入手速度を意図的に遅く保つ</b>ことでしか回避できません。ここは数値設計の問題として残ります。</p>
+  <h4>2026-07-30 決定: 案2(デイリー付与型)</h4>
+  <p>連鎖して確定したこと:</p>
+  <ul>
+   <li><span class="okw">クロスプログレッションは不要のままです。</span>案3 を採らなかったため、「モバイル版からのセーブ引き継ぎはスコープ外」という前提を撤回する必要はなくなりました(→ <a href="#save" onclick="go('save')">04</a>)。</li>
+   <li><span class="okw">Valve の通貨販売承認への依存が下がります。</span>「毎日ダイヤを受け取れる権利」は非消費型なので DLC として売れます。</li>
+   <li><b>ただし完全にリスクゼロではありません。</b><span class="ng">🔴 「継続的にゲーム内通貨が付与される権利」を Valve が実質的な通貨販売とみなすかは未確認です。</span>DLC として申請する前に、Steamworks のドキュメントで<b>この形態の前例</b>を確認してください(→ <a href="#money" onclick="go('money')">価格設定の調査</a>で <b>Tap Ninja</b> の商品構成を見るのが最短です)。</li>
+   <li><b>設計上の宿題:</b> 前述のとおり「毎日 XX 獲得」は<b>毎日起動させる装置</b>です。放置ゲームの思想と衝突しないよう、<span class="kw">受け取り忘れが失効しない / n日分まとめて受け取れる</span>形にしてください。これは実装前に決めるべき仕様です。</li>
+  </ul>
+  <h4>⚠️ プランB(B1 買い切り化)との整合について</h4>
+  <p>同日に <a href="#money" onclick="go('money')">プランB</a> で <b>B1(買い切り化・課金要素を全廃)</b> が選ばれています。<b>この2つは切り替え先として噛み合いますが、片方が発動すると、もう片方向けの作業が丸ごと不要になります。</b></p>
+  <table><tr><th></th><th>本線(案2)</th><th>プランB(B1)</th></tr>
+  <tr><td>本体</td><td>F2P</td><td><b>有料</b></td></tr>
+  <tr><td>課金要素</td><td>デイリー付与型 DLC + 分割した DLC 群</td><td><span class="ng">全廃</span></td></tr>
+  <tr><td><a href="#money" onclick="go('money')">RemoveAds の4分割</a>(A で確定)</td><td>必要</td><td><span class="ng">不要。「全アンロック済み」相当にするだけ</span></td></tr>
+  <tr><td>バランス</td><td>デフォルトを下げ、課金で戻す</td><td>最初から緩い状態が正</td></tr></table>
+  <p class="note"><span class="ng">つまり B1 に倒れた場合、DLC の商品設計と「デフォルト値を下げる」バランス調整は捨て仕事になります。</span>これは B1 が悪いという話ではなく、<b>「どの時点で本線を確定させるか」が重要になる</b>という話です。<br>
+  <span class="okw">対策はシンプルです:</span> <a href="#money" onclick="go('money')">導線ごとの数値</a>を「デフォルト値のセット」として持てば、B1 に倒れたときは<b>全部を「解禁済み」の値セットに差し替えるだけ</b>で済みます。<b>手戻りを最小化するのはこの一点です。</b></p>`,
   opt:{items:[
    {k:'3',t:'案3 ── Steam では売らない(Mobile 限定販売)',d:'Steam レビューでの P2W 批判と実況文化との衝突を構造的に回避でき、広告方針(導線ごとに個別判断)とも一貫する。Valve の通貨販売承認リスクも消える。代償はクロスプログレッションの必須化と、ダイヤ蛇口の再設計。上記の解決案でカバー可能。'},
    {k:'2',t:'案2 ── デイリー付与型を DLC として売る',d:'非消費型なので Valve の通貨販売承認が要らず、収益が継続型になる。ただし「毎日起動させる装置」を放置ゲームに持ち込む副作用がある。受け取り失効なしの設計が必須。'},
@@ -482,7 +512,15 @@ const DB = [
   <p><b>案A</b> なら、ドメイン側に <code>AdId</code> をキーにした定義が1枚でき、プラットフォームごとに値セットを差し替えます:</p>
   <blockquote><code>RewardConfig[AdId.OfflineBonusDoubleReward] = { Multiplier: 2.0, RequiresDlc: "multiplier_pack", Frequency: 1.0 }</code></blockquote>
   <p><b>案B</b> なら、同じ表を Unity 側の <code>SteamRewardService.cs</code> の中に書きます。<b>案C</b> なら、表を作らず <code>FlyingPresent</code> や <code>OfflineBonus</code> のそれぞれの実装箇所で個別に条件分岐を書きます。</p>
-  <p class="note">⚠️ 前版で「<code>AdCountRoot</code> にキーが揃っているので流用できる」と書きましたが、<b>これは言い過ぎでした</b>。<code>AdCountRoot</code> が持っているのは <code>AdId</code> をキーにした<b>累積カウンタ(<code>AttemptCount</code> / <code>WatchedCount</code>)だけ</b>で、<span class="ng">日付も、日次リセットも、上限判定も持っていません</span>(<code>ResetAllCounts()</code> が全消しするのみ)。<b>「1日 n 回まで」のような制限を入れる場合は、日付管理を新規に作る必要があります。</b>流用できるのは「導線を <code>AdId</code> で識別する」という枠組みだけです。</p>`,
+  <p class="note">⚠️ 前版で「<code>AdCountRoot</code> にキーが揃っているので流用できる」と書きましたが、<b>これは言い過ぎでした</b>。<code>AdCountRoot</code> が持っているのは <code>AdId</code> をキーにした<b>累積カウンタ(<code>AttemptCount</code> / <code>WatchedCount</code>)だけ</b>で、<span class="ng">日付も、日次リセットも、上限判定も持っていません</span>(<code>ResetAllCounts()</code> が全消しするのみ)。<b>「1日 n 回まで」のような制限を入れる場合は、日付管理を新規に作る必要があります。</b>流用できるのは「導線を <code>AdId</code> で識別する」という枠組みだけです。</p>
+  <h4>2026-07-30 決定: C(導線ごとに個別対応する)</h4>
+  <p><b>了解しました。着手は最速です。</b>そのうえで、この決定が後で効いてくる点だけ記録しておきます。</p>
+  <table><tr><th>影響</th><th>内容</th></tr>
+  <tr><td>数値調整</td><td>11導線の値が各実装箇所に散るため、<span class="ng">「今どうなっているか」を一覧できません</span>。「デフォルトを下げる」調整を何度も回す前提とは相性が良くありません</td></tr>
+  <tr><td><a href="#money" onclick="go('money')">プランB(B1)</a>への切り替え</td><td><span class="ng">値セットの一括差し替えができません。</span>B1 に倒れた場合、11箇所を個別に「解禁済み」へ直すことになります</td></tr>
+  <tr><td>テスト</td><td>数値がコードに埋まるため、ドメインのテストからは検証できません</td></tr></table>
+  <p class="note"><b>中間案として、器を作らずにコストを下げる方法が1つあります。</b>共通の Config クラスや Master データを新設せず、<span class="kw">単に「11導線の現在値を1枚の表にまとめた定数クラス(または Markdown 1枚)」を置いて、各実装箇所はそこを参照する</span>だけでも、一覧性と一括差し替えはかなり回復します。<b>設計としての「器」を作らずに済むので、C の軽さは保ったままです。</b>実装時に検討する価値はあります。</p>
+  <p class="note">なお、<a href="#display" onclick="go('display')">UXML の管理方針</a>では「将来的な管理が容易であること」を重視すると伺っています。<b>その基準をこの節に当てはめると A が選ばれるはずでした。</b>もし C を選んだ理由が「11導線ぶんの器を作るのが重すぎる」ということであれば、上の中間案が折り合い点になるかもしれません。<span class="okw">意図的に軽さを取ったのであれば、このままで問題ありません。</span></p>`,
   opt:{items:[
    {k:'A',t:'AdId ごとの Config をドメイン(GamesDomain)に持つ',d:'上記の表を AdId をキーにした Config/Master としてドメインに定義し、プラットフォームで値セットを差し替える。数値がコードから分離されて一覧でき、テストが書ける。11導線ぶんの数値を後から何度も調整することになるので、この利点は大きい。代償は DLL のビルドと Unity への反映が挟まること。',rec:true},
    {k:'B',t:'Unity 側の IRewardService 実装に持たせる',d:'ドメインを触らないので DLL ビルドが不要。ただし数値が C# のコードに埋まり、テスト対象外になる。調整のたびに Unity 側のビルドが要る点は A と大差ない。'},
@@ -571,13 +609,45 @@ const DB = [
   <tr><td><b>3. 進行の妥当性検証</b></td><td>「深度が1フレームで100万進んだ」等、<b>あり得ない変化の検出</b>。暗号を破られても効く</td><td>未実装。ドメイン側に判定を書けば<span class="okw">テストが書ける</span></td></tr>
   <tr><td><b>4. サーバー権威</b></td><td>ほぼ全て。ただしオフライン放置ゲームとは根本的に相性が悪い</td><td>→ 下記</td></tr></table>
   <p><span class="okw">1 と 2 は、本作では「実装済みのものを有効にする」だけで到達できます。</span>費用も新規実装もほぼ不要で、これは非常に恵まれた状況です。</p>
+  <h4>2026-07-30 の質問: CheatEngine を利用する利点とは</h4>
+  <p>「なぜ AES だけでは足りず、ACTk(段階2)が要るのか」という論点です。<b>攻撃者から見た CheatEngine の利点</b>を書きます。</p>
+  <blockquote><b>CheatEngine はセーブファイルを一切触りません。実行中のメモリを書き換えます。</b></blockquote>
+  <p>手順はこうです ── ダイヤを 1,234 持っている状態で「1234」を検索し、少し使ってから再検索して候補を絞り、アドレスを特定して値を書き換える。<span class="ng">ゲームは暗号化されたセーブを自分で復号してメモリに載せるので、攻撃者は復号をゲームにやらせるだけで済みます。</span></p>
+  <p><b>そして最悪なのはこの後です。</b>メモリを書き換えた状態で通常どおりセーブすると、<span class="ng">改ざんされた値が正規の鍵で正しく暗号化されて保存されます</span>。<b>ファイルとしては完全に正当で、後から検出する手がかりも残りません。</b>つまり AES は<b>完全に迂回されます</b>。</p>
+  <p>ACTk が対抗する仕組みは主に2つです:</p>
+  <table><tr><th>機能</th><th>効果</th><th>本作での適用性</th></tr>
+  <tr><td><code>Obscured*</code> 型</td><td>値をランダムなオフセット/XOR で保持し、素朴な値検索でヒットしなくする。改変を検出したらコールバック</td><td><span class="ng">⚠️ 主要通貨は <code>BigDouble</code>(<code>Currency.Number</code>)で、ACTk の <code>ObscuredInt</code> / <code>ObscuredFloat</code> では直接包めません。</span>ドメイン DLL 側の型なので、適用するには追加設計が要ります</td></tr>
+  <tr><td>スピードハック検出</td><td>時間の進みの改ざんを検出</td><td><span class="okw">放置ゲームでは最も価値が高い</span>。下記参照</td></tr></table>
+  <h4>🔴 本作で最も価値の高い対策は、実は暗号化ではありません</h4>
+  <p>放置ゲームに対する最も効率のよい改ざんは、<b>セーブの数値いじりでもメモリ改変でもなく「時間を進めること」</b>です。オフライン報酬がそのまま時間の関数だからです。実装を確認しました:</p>
+  <blockquote><code>var pending = (DateTime.UtcNow - repo.lastOnlineTime).TotalSeconds;</code><br>
+  <span style="font-size:12px">── <code>Games/_OTHERS/OfflineBonus/OfflineBonusRoot.cs</code></span></blockquote>
+  <p><span class="ng">端末のシステム時計をそのまま信用しています。</span>PC では時計の変更に管理者権限すら要らないため、<b>OS の日付を進めて再起動するだけで、任意量のオフライン報酬が得られます</b>。AES も ACTk の <code>Obscured*</code> 型も、この攻撃には何の効果もありません。</p>
+  <p><span class="okw">そして、これを塞ぐ部品は既にこのプロジェクトにあります。</span></p>
+  <table><tr><th>既にあるもの</th><th>状況</th></tr>
+  <tr><td><code>OfflineBonusFunction.GetServerTime()</code></td><td><code>getServerTime</code> Cloud Function を叩く実装済み。<b>普通の HTTPS POST なので Standalone でも動きます</b></td></tr>
+  <tr><td><code>ServerTimeService</code></td><td><code>RootInstaller</code> で DI 登録済み</td></tr>
+  <tr><td>実際の利用箇所</td><td><span class="ng">現状 <code>ShopView</code>(セール期間の判定)のみ。オフライン報酬の経路からは呼ばれていません</span></td></tr></table>
+  <blockquote><b>提案:</b> <code>OfflineBonusRoot</code> の時刻ソースを、端末時計からサーバー時刻へ差し替える(取得失敗時は端末時計にフォールバックし、その回のボーナスに上限を設ける)。<br>
+  <span class="okw">新規のインフラは不要です。既にあるものを繋ぐだけで、本作で最も効く改ざん対策になります。</span>「サーバーを使いたい」という方針とも一致します。</blockquote>
+  <p class="note">優先度の考え方: <b>AES(段階1)は「メモ帳で開ける」という一番恥ずかしい穴を塞ぐもの</b>で、費用対効果が高く最初にやる価値があります。<b>時刻のサーバー化は、本作固有の最大の穴を塞ぐもの</b>です。<span class="ng">ACTk の <code>Obscured*</code> 型は、BigDouble との相性の問題があるため、この2つより後に検討するのが妥当です。</span></p>
   <h4>4(サーバー権威)について ── 今回だけは検討に値します</h4>
   <p>前版は「本作の規模では過剰」として切り捨てていました。しかし <b>サーバーを使いたいという方針が別途出ている</b>(→ <a href="#save" onclick="go('save')">クラウドセーブ</a>)ため、前提が変わります。</p>
   <p><span class="ng">ただし全面的なサーバー権威は依然として現実的ではありません。</span>本作は<b>オフラインで進行し、OfflineBonus で放置時間を報酬に変える</b>ゲームです。進行をサーバーで検証するということは、オフラインプレイを否定するか、オフライン中の進行を後から丸ごと信用するかのどちらかになり、後者では検証の意味がありません。<br>
   <b>現実的なのは「全部を検証する」ではなく「他人に見える値だけを検証する」</b>です ── リーダーボード(→ <a href="#feature" onclick="go('feature')">06</a>)や NetherCompanion の共有ビルドのように、<span class="kw">改ざんが他プレイヤーに迷惑をかける経路だけ</span>をサーバー側で弾く。これなら既存の REST 基盤に乗り、オフライン進行も壊しません。</p>
   <p class="note">⚠️ <b>移行の罠 ── これが今回いちばん重い作業になります。</b>Q5「モバイル版を継続」が確定しているため、この罠は生きています。<code>isEncrypted</code> を false → true に変えると<b>保存先ファイル名が変わります</b>(<code>_saveData.json</code> → <code>_saveData.encrypted</code>)。<span class="ng">モバイル版の既存プレイヤー全員のセーブが読めなくなります。</span><br>
   「旧 <code>.json</code> があれば読んで <code>.encrypted</code> に書き直す」移行処理が必須で、対象は <b><code>BindRepository</code> の呼び出し 60 件すべて</b>です。<b>暗号化そのものは1行ですが、移行処理と、その全件テストが本体です。</b>ここを失敗するとリリース済みのモバイル版が壊れるため、<span class="kw">Steam 対応の中で最も慎重に進めるべき箇所</span>として扱ってください。</p>
-  <p class="note">補足: <b>Steam 版だけ暗号化する</b>という逃げ道もあります(新規プレイヤーしかいないので移行処理が不要)。ただしコメントの「一切できないようにしたい」がモバイルも含む意図なら、この逃げ道は使えません。<b>下の選択肢はその点で分かれます。</b></p>`,
+  <p class="note">補足: <b>Steam 版だけ暗号化する</b>という逃げ道もあります(新規プレイヤーしかいないので移行処理が不要)。ただしコメントの「一切できないようにしたい」がモバイルも含む意図なら、この逃げ道は使えません。<b>下の選択肢はその点で分かれます。</b></p>
+  <h4>2026-07-30 決定: B(AES 有効化のみ)</h4>
+  <p>コメント:「AES 有効化にあたっては必ず、マイグレーションが必要であり、かなり慎重に組む必要がある。」<span class="okw">認識は完全に一致しています。</span>この節でいちばん重い作業は暗号化ではなく移行処理です。</p>
+  <p><b>移行処理を安全に組むための最低条件</b>を、実装時のチェックリストとして置いておきます:</p>
+  <table><tr><th>#</th><th>条件</th><th>理由</th></tr>
+  <tr><td>M1</td><td><b>旧 <code>.json</code> を削除しない。</b>読み込んで <code>.encrypted</code> を書いた後も、旧ファイルはリネームして残す</td><td>移行に失敗しても手で戻せる。<span class="ng">消してしまうと復旧手段が消えます</span></td></tr>
+  <tr><td>M2</td><td><b>書き込みが完全に成功してから、旧ファイルを「移行済み」に印付けする。</b>順序を逆にしない</td><td>途中でアプリが落ちた場合に、二重移行も未移行も起きないようにする</td></tr>
+  <tr><td>M3</td><td><b>60件すべてを網羅したテストを書く。</b><code>BindRepository</code> の呼び出し一覧から機械的に生成する</td><td>「1つだけ移行漏れ」が最も起きやすく、最も気づきにくい</td></tr>
+  <tr><td>M4</td><td><b>実機の既存セーブで検証する。</b>新規プレイでは移行経路を1行も通りません</td><td>移行バグは新規プレイでは絶対に再現しない</td></tr>
+  <tr><td>M5</td><td><b>モバイルへ先に配信しない。</b>Steam 版で移行経路を十分に踏んでから、モバイルへ展開する</td><td>リリース済みモバイル版が最大の被害範囲。<span class="kw">Steam を実質の先行検証環境として使えます</span></td></tr></table>
+  <p class="note">B を選んだことで <b>ACTk(段階2)は当面見送り</b>になります。上の CheatEngine の説明のとおり、<span class="ng">B だけではメモリ改変は防げません</span>。ただし ACTk は <code>BigDouble</code> との相性問題があるため、<b>先に「時刻のサーバー化」を入れるほうが本作では効果が大きい</b>と考えています。「一切できないようにしたい」という目標に対しては、B は出発点であって到達点ではありません。</p>`,
   opt:{items:[
    {k:'C',t:'AES 有効化 + ACTk(両プラットフォーム)',d:'実装済みのものを2つとも有効にする。クライアント側で到達できる実用上の上限で、追加費用ゼロ。「一切できないように」への最も素直な回答。代償は 60 件ぶんの移行処理とそのテストで、これがこの案の作業の大半を占める。',rec:true},
    {k:'CS',t:'Steam 版のみ AES + ACTk。モバイルは平文のまま',d:'移行処理が丸ごと不要になり、リリース済みモバイル版を壊すリスクがゼロ。Steam の脅威モデル(ファイルが %APPDATA% で丸見え)にだけ対処するという整理も筋が通る。ただしモバイルの改ざんは放置される。'},
@@ -604,6 +674,22 @@ const DB = [
   <tr><td><b>クロスプログレッション</b>(案3 を採る場合)</td><td>購入ダイヤ総額の共有</td><td>Firestore REST。<b>セーブ全体ではなく所有権だけ</b>を持てば足りる(→ <a href="#money" onclick="go('money')">03</a>)</td></tr></table>
   <blockquote><b>結論の形:</b> セーブは Steam Cloud、プレイヤー間で共有が必要なものだけ Firestore REST。<br>
   <span class="okw">この分け方なら「サーバーを使いたい」も「実装を軽くしたい」も両立します。</span></blockquote>
+  <h4>2026-07-30 の指摘: 「A2 ではセーブをモバイルと PC 間で同期できないのでは？」</h4>
+  <p><span class="okw">そのとおりです。ご指摘は正しく、A2 の表はその点を書いていませんでした。</span></p>
+  <p><b>Steam Cloud は Steam のインストール間でしか同期しません。</b>PC ⇄ PC(自宅とノート、Steam Deck)は同期されますが、<span class="ng">モバイル ⇄ PC は同期されません</span>。A2 を採ると、モバイルと Steam は<b>別々のセーブを持つ2つのゲーム</b>になります。</p>
+  <h4>それが問題になるかは、マネタイズの決定で決まります</h4>
+  <table><tr><th>マネタイズ</th><th>クロスセーブ</th><th>理由</th></tr>
+  <tr><td><b>案2(デイリー付与型)</b> ← <span class="kw">2026-07-30 に選択</span></td><td><span class="okw">不要</span></td><td>Steam で売って Steam で完結する。持ち越すものが無い</td></tr>
+  <tr><td>案3(Mobile 限定販売)</td><td><span class="ng">必須</span></td><td>Mobile で買ったダイヤを Steam に反映する必要がある</td></tr></table>
+  <p><span class="okw">案2 が選ばれたので、マネタイズ上の理由でクロスセーブが必要になることはなくなりました。</span>「モバイル版からのセーブ引き継ぎはスコープ外」という当初の前提も、そのまま維持できます。</p>
+  <p class="note">ただし<b>「要件ではないが、あると嬉しい機能」</b>としてクロスセーブを入れたいのであれば、話は別です。その場合の選択肢を下に整理しました。</p>
+  <h4>クロスセーブを入れる場合 ── 二重同期だけは避けてください</h4>
+  <blockquote><span class="ng">最も危険なのは「Steam Cloud と Firestore の両方を自動同期させる」構成(選択肢C)です。</span>同じセーブファイルに<b>2つの権威</b>ができ、3者間(PC ローカル / Steam Cloud / Firestore)の競合解決が必要になります。<b>セーブ喪失が致命傷であるこのゲームでは、複雑さそのものが最大のリスク</b>です。</blockquote>
+  <p>入れるなら、どちらか一方を<b>セーブの唯一の権威</b>にしてください:</p>
+  <table><tr><th>案</th><th>構成</th><th>評価</th></tr>
+  <tr><td><b>B'</b></td><td><b>Firestore を正本にし、Steam Cloud はゲームのセーブに使わない</b>(Steamworks 側で同期対象を空にする)</td><td><span class="okw">クロスセーブが自然に成立</span>。<code>CloudSaveController</code> の競合解決(575-691行)は<b>モバイルで実運用されている実績品</b>で、そのまま流用できる。<span class="ng">代償は Steam Cloud の無料の恩恵を捨てること</span></td></tr>
+  <tr><td><b>A2'</b></td><td>A2 のまま。<b>クロスセーブは「明示的な手動エクスポート/インポート」としてだけ提供</b>する</td><td>自動同期の競合が原理的に発生しない。<span class="kw">プレイヤーが意図したときだけ上書きが起きる</span>ので、事故の説明がつく。実装も軽い</td></tr></table>
+  <p><span class="okw">クロスセーブが「必須要件ではない」なら、A2' を勧めます。</span>自動同期は便利ですが、2プラットフォーム間で常時走らせると<b>「どちらが新しいか」の判定を間違えた瞬間に進行が消えます</b>。手動なら、最悪でもプレイヤーが自分で押した操作の結果として説明できます。</p>
   <h4>NetherCompanion を Steam に載せるときの確認事項</h4>
   <p>設計上は <code>idle-gem-companion-builds/**</code> という専用コレクションに閉じており(<code>nether-companion-plan.md</code>)、通信は<b>1日あたり書込1回・読取3回</b>に固定されています。Standalone に持っていく際の論点は実装ではなく運用側です:</p>
   <ol>
@@ -697,52 +783,63 @@ const DB = [
   <h4>Prestige</h4>
   <p>2つのタブをいっぺんに表示し、横並びに。</p>
   <p class="note">🔴 未確認: <b>Shop / Relic / Nether の横長仕様は頂いた資料に含まれていません。</b>同じ原則(いちばん外側の畳みを1段解く)で機械的に導けるはずですが、<b>Shop は縦長前提の商品リストなので要検討</b>です。この3画面は別途詰める必要があります。</p>`},
- {id:'ds-howto', h:'実装方式 ── UXML を複製せずに実現できるか(検証済み)', s:'k', b:`
-  <p>「クオリティ優先」は「保守を捨てる」ことではありません。<b>この原則が UXML の複製なしに実装できるか</b>を実際のファイルで検証しました。</p>
-  <h4>検証: Cave の Upgrade タブ</h4>
-  <p><code>Cave/UI/CaveUXML.uxml</code> の該当部分の構造は次のようになっていました:</p>
-  <blockquote><code>UpgradeArea</code> (flex-direction: column-reverse)<br>
-  &nbsp;&nbsp;├─ <code>TabButtonView</code> ── タブボタン2つ<br>
-  &nbsp;&nbsp;├─ <code>UpgradeView</code> ── Soil 側 (display: flex)<br>
-  &nbsp;&nbsp;└─ <code>AnotherUpgradeView</code> ── Tear 側 (display: none)</blockquote>
-  <p><span class="okw">2つのパネルは最初から両方ツリーに存在しており、タブは <code>display</code> を切り替えているだけでした。</span>つまり横長化に必要なのは<b>実質3行</b>です:</p>
-  <blockquote><code>.wide #UpgradeArea { flex-direction: row; }</code><br>
-  <code>.wide #AnotherUpgradeView { display: flex; }</code><br>
-  <code>.wide #TabButtonView { display: none; }</code></blockquote>
-  <p><b>UXML の複製も、C# の作り直しも要りません。</b>Mission / Trade / Prestige も同じ構造なら同様に扱えます(要確認)。</p>
-  <h4>⚠️ ただし障害が1つあります ── インラインスタイル</h4>
-  <p><span class="ng">上の <code>display: none</code> は UXML の <code>style="..."</code> 属性で直接書かれています。</span>UI Toolkit では <b>UXML の <code>style</code> 属性はインラインスタイルとして扱われ、USS のクラスセレクタでは上書きできません</b>(優先度が上)。</p>
-  <p>したがって前提作業が1つ必要です:</p>
-  <blockquote><b>レイアウトに関わるインラインスタイルを、USS のクラスへ移す。</b></blockquote>
-  <p>これは UXML を<b>複製する作業ではなく、整理する作業</b>です。単一ソースは保たれます。<span class="kw">「変更容易性よりクオリティ」という方針の下でこそ、やる価値のある片付けです</span> ── 現状は 1 ファイルに数百行のインラインスタイルが埋まっており、横長対応の有無に関係なく保守の負債になっています。</p>
-  <p class="note">代替案: C# 側で <code>element.style.display</code> を直接書き換える。インライン整理を回避できますが、<b>レイアウトの知識が USS と C# に二分されます</b>。将来の調整のたびに両方を見る必要が出るため、クオリティ優先の方針とは合いません。</p>
-  <h4>タブの二面性を1つの部品にまとめる</h4>
-  <p>Cave / Mission / Trade / Prestige が同じ「タブ ⇄ 二列」の変換をするので、<b>個別に書かず1つの部品として作ります</b>。</p>
-  <table><tr><th></th><th>Narrow</th><th>Wide</th></tr>
-  <tr><td>タブバー</td><td>表示</td><td>非表示</td></tr>
-  <tr><td>各パネル</td><td>選択中の1枚のみ</td><td>全て表示</td></tr>
-  <tr><td>並び</td><td>重ねる</td><td><code>flex-direction: row</code></td></tr></table>
-  <p><span class="okw">これを1箇所で実装すれば、新しい画面にタブを足しても横長対応は自動で付いてきます。</span>この部品が、この章でいちばん重要な設計判断です。</p>`},
+ {id:'ds-howto', h:'UXML の管理方針 ── 「器」と「部品」で分ける', s:'k', b:`
+  <p class="note">2026-07-30 コメント:「やはり、UXML を複製しないというのは現実ではないかもしれない。もっと良い管理方法はないだろうか？例えば、Vertical と Horizontal で UXML は分けつつ、表示が変わらない要素は UXML 化し、それを共有したり、要素によってはクラスで区別するなどの方法。とにかく意見が欲しい。<b>将来的な管理が容易であることを望む。</b>」</p>
+  <h4>結論から: その方向で正しいです。しかも新しい仕組みは要りません</h4>
+  <p><span class="okw">ご提案の「器は分ける / 中身は共有する」は、この状況での標準解です。</span>そして重要なのは、<b>このプロジェクトが既にそう作られている</b>ことです。</p>
+  <p>UXML は現在 <b>133 ファイル</b>あり、<code>CaveUXML.uxml</code> の中では次のように部品が差し込まれています:</p>
+  <blockquote><code>&lt;engine:Instance template="UpgradeUXML"/&gt;</code></blockquote>
+  <p><code>UpgradeUXML</code> / <code>GaugeButton</code> / <code>CrusherItemSlotsView</code> などは<b>既に独立した部品として切り出され、複数箇所から共有されています</b>。<span class="kw">つまり「部品を共有する」仕組みは導入済みで、実績もあります。</span>足りていないのは<b>その境界を意識的に引き直すこと</b>だけです。</p>
+  <h4>境界の引き方</h4>
+  <table><tr><th></th><th>器(レイアウト)</th><th>部品(中身)</th></tr>
+  <tr><td>役割</td><td>何をどこに置くか。並び・比率・入れ子</td><td>1つの UI 要素の見た目と構造</td></tr>
+  <tr><td>例</td><td><code>CaveUXML.Vertical</code> / <code>CaveUXML.Horizontal</code></td><td><code>UpgradeUXML</code>, <code>GaugeButton</code>, 通貨表示, Depth 表示</td></tr>
+  <tr><td>V/H で</td><td><b>分ける</b></td><td><b>共有する(1ファイル)</b></td></tr>
+  <tr><td>中身</td><td>コンテナと <code>&lt;Instance&gt;</code> タグだけ。<b>数十行に収まるはず</b></td><td>実際のマークアップとスタイル。<b>ここに9割が入る</b></td></tr>
+  <tr><td>C# から</td><td>触らない</td><td><code>Q&lt;T&gt;("Name")</code> で参照する</td></tr></table>
+  <p><span class="okw">この分け方なら、器が2倍になっても増える行数はごくわずかです。</span>「管理コストが2倍」になるのは<b>中身ごと複製した場合</b>であって、器だけなら2倍にはなりません。</p>
+  <h4>唯一の本当のリスクは「ズレ」です ── そしてこれは自動検出できます</h4>
+  <p>器を分けたときに怖いのは、<span class="ng">Vertical にボタンを足して Horizontal に足し忘れる</span>ことです。C# は <code>Q&lt;VisualElement&gt;("NewButton")</code> で探しに行くので、<b>Horizontal でだけ null になり、その画面を開くまで気づきません</b>。これが「複製するな」と言っていた本当の理由でした。</p>
+  <blockquote><b>対策: V/H ペアの <code>name</code> 属性の集合が一致しているかを機械的に検証する。</b><br>
+  一致しなければ<b>エラーにする</b>(Editor スクリプト、またはテスト)。</blockquote>
+  <p>UXML はただの XML なので、<b>name 属性を集めて集合比較するだけの数十行</b>で書けます。これを CI かエディタ起動時に走らせれば、<span class="kw">「片方に足し忘れた」はコミット前に必ず見つかります</span>。</p>
+  <p><span class="okw">これが「将来的な管理が容易であること」への直接の回答です。</span>規律を人間の注意力に頼るのをやめ、<b>ズレを検出可能にする</b>。複製そのものは危険ではなく、<b>検出されない複製</b>が危険なのです。</p>
+  <h4>どちらを使うかの判断基準</h4>
+  <table><tr><th>差分の種類</th><th>手段</th><th>例</th></tr>
+  <tr><td><b>木構造が変わる</b>(親子関係・並び順・要素の有無)</td><td><span class="kw">器を分ける</span></td><td>下タブバー → 右レール。インベントリの上下積み → 左右</td></tr>
+  <tr><td><b>見た目だけ変わる</b>(余白・文字サイズ・flex 方向)</td><td><span class="kw">USS クラス</span>(<code>.wide</code>)</td><td>通貨表示が2段 → 1段。パネルの余白調整</td></tr>
+  <tr><td><b>部品の中身が変わる</b></td><td><span class="ng">原則やらない</span></td><td>やるなら部品自体を2つに分け、器がどちらを差すか選ぶ</td></tr></table>
+  <p class="note">迷ったら<b>器を分ける</b>側に倒してください。USS で無理に吸収した木構造の差は、後から読んだときに<span class="ng">「なぜこう書いてあるのか分からない」</span>状態になります。今回は<b>クオリティと可読性を優先</b>する方針なので、素直に2つ書いたほうが良い場面が多いはずです。</p>
+  <h4>前版から変わること</h4>
+  <table><tr><th></th><th>前版</th><th>今回</th></tr>
+  <tr><td>R1</td><td>UXML を複製しない</td><td><b>器は分ける / 部品は共有する。ズレは自動検出</b></td></tr>
+  <tr><td>インラインスタイル整理(段階0)</td><td><b>必須</b>。USS で上書きできないため</td><td><span class="okw">大幅に縮小。</span>器を分ければ、器のインラインスタイルはそのままでよい。<b>共有部品のうち V/H で見た目が変わるものだけ</b>整理すれば足りる</td></tr>
+  <tr><td>タブ ⇄ 二列の部品</td><td>USS で <code>display</code> を上書きする必要があった</td><td><b>Horizontal の器が最初から2枚を横に並べて書くだけ</b>。上書き合戦が消える</td></tr></table>
+  <p><span class="okw">ご提案の方式に変えることで、前版で最大の障害だった「UXML の <code>style</code> 属性は USS クラスで上書きできない」問題が、ほぼ回避できます。</span>前版は単一 UXML に固執していたせいで、その制約と正面衝突していました。</p>
+  <h4>作業量の見積もり</h4>
+  <p>器を分ける対象は画面数ぶんです: <b>Cave / Equipment / Battle / Prestige / Mission-Trade / Shop / Relic / Nether + MainUI2</b> の<b>9セット程度</b>。ただし全部を最初に作る必要はなく、<a href="#display" onclick="go('display')">段階</a>に沿って1画面ずつ増やせます。<span class="kw">器が無い画面は Vertical の器をそのまま使えばよく、中途半端な状態でも壊れません。</span></p>
+  <p class="note">🔴 着手前に確認すること: <b>UI Builder で「器だけの UXML」が扱いやすいか</b>を実際に1画面で試してください。<code>&lt;Instance&gt;</code> だらけのファイルは、UI Builder のプレビュー上で中身が見えない/編集しづらい可能性があります。ここが致命的に使いづらいなら、部品の粒度を粗くする(＝共有単位を大きくする)調整が要ります。<b>Cave 1画面で試してから全体に広げるのが安全です。</b></p>`},
  {id:'ds-rules', h:'運用ルール(改訂)', s:'k', b:`
   <table><tr><th>#</th><th>ルール</th><th>前版から</th></tr>
-  <tr><td>R1</td><td><b>UXML を複製しない。</b>横長専用 UXML を作った時点で敗北</td><td><span class="okw">維持</span>。上記の検証により、複製せずに実現できる見込みが立ちました</td></tr>
+  <tr><td>R1</td><td><b>UXML は「器」と「部品」に分ける。</b>器(配置)は V/H で分けてよい。<b>部品(中身)は1ファイルを共有する</b></td><td><span class="ng">差し替え(2026-07-30)</span>。前版は「UXML を複製しない」でした</td></tr>
+  <tr><td>R1b</td><td><b>V/H の器で <code>name</code> 属性の集合が一致していることを機械的に検証する。</b>不一致はエラーにする</td><td><span class="kw">新規(2026-07-30)</span>。R1 を緩めた代わりに、ズレを注意力ではなく仕組みで防ぐ</td></tr>
   <tr><td>R2</td><td><b>横長 = 縦の圧縮(タブ・上下積み)を1段だけ解いたもの。</b>横長専用の画面や新しい情報設計を作らない</td><td><span class="kw">差し替え</span>。前版は「縦長の画面を並べたもの」でした</td></tr>
-  <tr><td>R3</td><td><b>タブと上下積みは、専用の部品を通して作る。</b>そうすれば横長対応は自動で付く</td><td><span class="kw">差し替え</span>。前版は「新機能は常に縦長 900 幅で作る」でした</td></tr>
+  <tr><td>R3</td><td><b>器を追加したら、必ず V/H の両方を用意する。</b>片方だけの状態でコミットしない(R1b が検出する)</td><td><span class="kw">差し替え(2026-07-30)</span>。前版は「タブと上下積みは専用の部品を通して作る」でした</td></tr>
   <tr><td>R4</td><td><b>アスペクト比判定は1箇所。</b><code>LayoutMode</code>(Narrow/Wide)を <code>ReactiveProperty</code> で公開し、各 View は購読するだけ</td><td>維持</td></tr>
-  <tr><td>R5</td><td><b>レイアウトは USS に書く。</b>既存 USS に <code>.wide</code> セレクタを足す。C# にレイアウトを書かない</td><td>維持。<span class="kw">インライン整理が前提作業として加わりました</span></td></tr>
+  <tr><td>R5</td><td><b>C# にレイアウトを書かない。</b>配置は器の UXML に、見た目の差分は USS クラスに書く</td><td>維持。<span class="okw">器を分けたことで USS での上書きが減り、守りやすくなりました</span></td></tr>
   <tr><td>R6</td><td><b>判定はプラットフォームではなくアスペクト比。</b>折りたたみ端末やタブレット横持ちが自動で恩恵を受ける</td><td>維持</td></tr>
   <tr><td>R7</td><td><b>ナビゲーションの番号は画面によって変えない。</b>キーボードショートカットと1対1で対応させる</td><td><span class="kw">新規</span></td></tr></table>
-  <p class="note">前版の R1〜R6 のうち、<b>破棄したのは R2 と R3 だけ</b>です。「複製しない」「判定は1箇所」「USS に書く」「アスペクト比で判定」という保守側の規律はすべて残っています。<span class="okw">クオリティを優先しても、単一ソースは手放さずに済みました。</span></p>`},
+  <p class="note">2026-07-30 の方針変更で <b>R1 / R3 が入れ替わり、R1b が増えました</b>。「複製しない」という禁止は撤回しましたが、<span class="okw">代わりに「ズレたら必ず気づく」という保証を入れています。</span>禁止で守るのをやめ、検出で守る形にしたということです。<b>R2 / R4 / R5 / R6 / R7 は変わりません。</b></p>`},
  {id:'ds-stage', h:'どの段階まで 1.0 に入れるか', s:'d', b:`
-  <p class="note">前版の段階分け(3カラム前提)は<b>新しい原則に合わせて作り直しました</b>。</p>
+  <p class="note">2026-07-30 <b>D(段階4まで)で確定。</b>あわせて、<a href="#display" onclick="go('display')">UXML の管理方針</a>を「器と部品に分ける」へ変更したことで、<span class="okw">段階0 の内容が大幅に軽くなりました。</span></p>
   <table><tr><th>段階</th><th>内容</th><th>到達点</th></tr>
-  <tr><td>0</td><td>レイアウトに関わる<b>インラインスタイルを USS へ整理</b>する</td><td>横長対応の前提。単体では見た目が変わらない</td></tr>
+  <tr><td>0</td><td><b>Cave 1画面で「器 + 部品」の分割を試す。</b>あわせて <b>name 集合の一致チェック(R1b)</b> を用意する</td><td>方式の検証。<span class="kw">UI Builder での扱いやすさをここで確かめる</span></td></tr>
   <tr><td>1</td><td><code>LayoutMode</code> と<b>右レール</b>を実装。コンテンツは縦長のまま中央に置き、左右を余白にする</td><td><b>崩れない状態</b>。ここまでで遊べる</td></tr>
-  <tr><td>2</td><td><b>タブ ⇄ 二列の部品</b>を作り、Cave / Mission / Prestige に適用</td><td>横長らしい画面。<b>体験上の価値はここで出ます</b></td></tr>
+  <tr><td>2</td><td>Cave / Mission-Trade / Prestige の<b>横長の器</b>を作る(タブを二列へ)</td><td>横長らしい画面。<b>体験上の価値はここで出ます</b></td></tr>
   <tr><td>3</td><td>Equipment / Battle の上下積みを左右へ展開。Shop / Relic / Nether も対応</td><td>全画面が横長対応</td></tr>
-  <tr><td>4</td><td>ウィンドウ幅が足りないときに自動で縦長レイアウトへ戻す</td><td>リサイズ追従</td></tr></table>
-  <p class="note">段階0は捨て仕事に見えますが、<b>ここを飛ばすと段階2以降で C# にレイアウトが漏れ出します</b>(R5 が壊れる)。クオリティ優先の方針なら、ここは省略しないことを勧めます。</p>
-  <p class="note">→ <b>Q3「1.0 のスコープ = 全部入り」が確定済み</b>なので、実質 D(段階4)が既定線です。念のため明示的に選んでください。</p>`,
+  <tr><td>4</td><td>ウィンドウ幅が足りないときに自動で縦長レイアウト(=Vertical の器)へ戻す</td><td>リサイズ追従</td></tr></table>
+  <p class="note"><b>段階0 を最初に置く理由が変わりました。</b>前版は「インラインスタイルを整理しないと USS で上書きできないから」でしたが、器を分ける方式ではその上書き自体が要りません。<span class="kw">今の段階0 は「方式が実際に運用できるかを1画面で確かめる」ための試作</span>です。ここで UI Builder が使いづらいと分かれば、部品の粒度を粗くする調整が効きます ── <b>9画面ぶん作ってから気づくより圧倒的に安い</b>ので、省略しないでください。</p>
+  <p class="note"><span class="okw">段階4 は、器を分けた方式では素直に実現できます。</span>Narrow/Wide で差し替えるのは器そのものなので、幅が足りなくなったら Vertical の器に戻すだけです。前版の USS 上書き方式では「どこまで戻すか」が曖昧になりがちでした。</p>`,
   opt:{items:[
    {k:'D',t:'段階4まで(リサイズ追従)',d:'ウィンドウリサイズに追従。Q3=全部入り と整合し、PC では実質必須。工数は最大だが、段階0を踏んでいれば段階4は差分が小さい。',rec:true},
    {k:'C',t:'段階3まで',d:'全画面が横長対応。リサイズ追従は 1.1 以降とし、起動時の解像度で固定する。'},
@@ -770,11 +867,26 @@ const DB = [
   <tr><td><b>ホイール</b></td><td>ストレージのページ送り</td><td>30件/ページのページング式</td></tr></table>
   <p class="note">修飾キーの判定は<b>プロジェクト全体で未実装</b>(<code>shiftKey</code> / <code>ctrlKey</code> / <code>evt.button</code> は未使用)。<code>ItemDragHandler.OnPointerDown</code> に足すのが最小変更です。また <code>LongPressDuration = 0.1f</code> はマウスだと体感で引っかかるため<b>入力デバイスで値を分ける</b>べき。アイコンの表示制御が <code>display</code> でなく <code>opacity</code> 依存で、D&D のゴースト生成がこれを見ているので<b>触ると D&D が壊れます</b>。</p>
   <p><span class="okw">効果の見積もり:</span> 既に一括操作は充実しています(オートマージ / オート装備 / オート生成 / 一括削除 / 一括リロール / 一括変換 / 整列)。<b>PC 化で本当に効くのは Shift+クリックによる手数削減</b>で、それ以外は既存機能で足りている可能性が高いです。</p>`},
- {id:'ds-mergeapi', h:'一括マージ API をどこに置くか', s:'d', b:`
-  <p>ドメインに一括 API はありません(<code>CanMerge</code> / <code>Merge</code> は全て 1:1)。既存の <code>CrusherAutoMergeManager</code> は ViewModel 層で 1:1 をループする方式です。<b>ドメインを変更した場合は DLL のビルドと Unity への反映が必須</b>(→ AGENTS.md)。</p>`,
+ {id:'ds-mergeapi', h:'「まとめてマージ」の処理をどこに書くか', s:'d', b:`
+  <p class="note">2026-07-30 コメント:「何のことかわからない。」<b>前提の説明が抜けていたので、書き直します。</b></p>
+  <h4>なぜこの話が出てきたか</h4>
+  <p>PC 操作の提案の中に <b>「ダブルクリックで、可能な限り連続マージする」</b>という項目があります(→ 上の <a href="#display" onclick="go('display')">Equipment のマウス操作</a>)。<span class="kw">この1操作が、内部では「マージを何十回も繰り返す」処理になります。</span></p>
+  <p>ところが、ドメイン(<code>GamesDomain</code>)側にあるマージの API は <code>CanMerge</code> / <code>Merge</code> だけで、<b>すべて「2個を1個にする」1回ぶんの処理</b>です。「できるだけ全部マージする」という API はありません。</p>
+  <blockquote>例: 同じ種類・同じレベルのツルハシが 8 個ある<br>
+  → 2個ずつマージして 4 個 → さらにマージして 2 個 → さらに 1 個<br>
+  <b>この「繰り返す部分」を誰が書くのか、という話です。</b></blockquote>
+  <h4>選択肢の違い</h4>
+  <p>既存の<b>オートマージ機能</b>(<code>CrusherAutoMergeManager</code>)は、この繰り返しを <b>Unity 側(ViewModel 層)</b>に書いています。つまり既に前例があります。</p>
+  <table><tr><th></th><th>A: Unity 側に書く</th><th>B: ドメインに書く</th></tr>
+  <tr><td>書く場所</td><td><code>CrusherAutoMergeManager</code> と同じ層</td><td><code>GamesDomain</code> に <code>MergeAll()</code> のような API を足す</td></tr>
+  <tr><td>テスト</td><td>書きにくい(Unity 依存)</td><td><span class="okw">書ける</span></td></tr>
+  <tr><td>ビルド手順</td><td>不要</td><td><span class="ng">DLL のビルドと Unity への反映が必要</span>(→ AGENTS.md)</td></tr>
+  <tr><td>モバイル版</td><td>既存オートマージとロジックが二重になる</td><td><span class="okw">オートマージも同じ API に寄せられる</span></td></tr></table>
+  <p class="note">判断のポイントは<b>「既存のオートマージと同じロジックを2箇所に持つことを許すか」</b>です。<span class="ng">A を選ぶと、「連続マージ」と「オートマージ」というほぼ同じ処理が別々の場所に2つ存在することになります。</span>片方だけ修正して挙動がズレる、という形の不具合が起きやすくなります。</p>
+  <p>なお、この判断は<b>横長対応とは無関係</b>です(PC のマウス操作の話です)。急ぎではありません。</p>`,
   opt:{items:[
-   {k:'A',t:'ViewModel 層で 1:1 をループ',d:'既存 CrusherAutoMergeManager と同じ方式。ドメイン変更なし = DLL ビルド不要。',rec:true},
-   {k:'B',t:'ドメインに一括 API を足す',d:'テストが書け、モバイル版のオートマージとも共有できる。DLL ビルドと反映が必要。'},
+   {k:'B',t:'ドメインに一括 API を足し、オートマージもそこへ寄せる',d:'「連続マージ」と既存のオートマージが同じ実装を共有するので、ロジックの二重化を作らずに済む。テストも書ける。代償は DLL ビルドと反映の手間。既存のオートマージを触ることになるので、そこだけ慎重に。',rec:true},
+   {k:'A',t:'Unity 側(ViewModel 層)に書く',d:'既存 CrusherAutoMergeManager と同じ方式で、ドメインを触らないので DLL ビルドが不要。着手は速いが、似た処理が2箇所に増える。'},
   ]}},
  {id:'ds-key', h:'キーボードショートカット ── 数字キーとディスパッチャ', s:'k', b:`
   <p><b>実装点は1箇所。</b><code>Main/SceneSwitcherMono.cs:73-82</code> の <code>RegisterButtonFunc()</code> 呼び出しがタブ登録の唯一の場所で、<code>buttonReferences</code>(SceneKind → Button)を持っています。ここで<b>登録順に</b>キーを振るだけ。</p>
@@ -836,7 +948,10 @@ const DB = [
   <blockquote><b>実績は後から削除できません。</b>追加はできますが、削除・意味の変更は取得済みプレイヤーに影響します。<b>最初に全体像を決めてから登録すること。</b></blockquote>`},
  {id:'ft-achnum', h:'実績の数', s:'d', b:`
   <p>多すぎると1つの価値が下がり、少なすぎるとコンプリート欲が働きません。アイドルゲームは 30〜60 が相場。<b>アイコン制作コスト(解除前/解除後の2種 × 実績数)が直結します</b>。</p>
-  <p class="note">→ <b>Q6「自作のみ」が確定済み</b>なので、選んだ数だけ自分でアイコンを描くことになります(B なら 60〜120 枚)。<b>統一テンプレートを先に決めて量産できる形にする</b>のが前提条件です。Q3「全部入り」との整合なら B 以上。</p>`,
+  <p class="note">→ <b>Q6「自作のみ」が確定済み</b>なので、選んだ数だけ自分でアイコンを描くことになります(B なら 60〜120 枚)。<b>統一テンプレートを先に決めて量産できる形にする</b>のが前提条件です。Q3「全部入り」との整合なら B 以上。</p>
+  <h4>2026-07-30 決定: B(30〜60)。コメント「30以上を目指す。」</h4>
+  <p><b>下限を 30 として進めます。</b>アイコンは<span class="ng">解除前/解除後の2種 × 30 = 最低 60 枚</span>からの出発になります。</p>
+  <p class="note"><span class="okw">実績には、マネタイズ側で1つ役割が付きました。</span><a href="#money" onclick="go('money')">ダイヤの蛇口</a>の検討で、Steam では <code>DailyDiamond</code>(広告視聴でダイヤ)の枠が消えるため、<b>実績にダイヤを紐づけて蛇口の1本にする</b>案を出しています。案2(デイリー付与型)が選ばれたので必須ではなくなりましたが、<b>実績の設計時に「報酬を持たせるか」を一度決めておく</b>と後から足しやすくなります。</p>`,
   opt:{items:[
    {k:'A',t:'20〜30(絞る)',d:'アイコン制作が現実的。既存コンテンツの節目だけを拾う。'},
    {k:'B',t:'30〜60(相場)',d:'コンプリート欲が働く。アイコンは統一テンプレで量産する前提。',rec:true},
@@ -848,8 +963,13 @@ const DB = [
    {k:'A',t:'ドメインに判定を置く',d:'テストが書ける。モバイル版でも同じ判定が使える(No-Op なので実害なし)。DLL ビルドと反映が必要。',rec:true},
    {k:'B',t:'Unity 側に判定を置く',d:'ドメインを触らない。ただし判定ロジックがテスト外に出る。'},
   ]}},
- {id:'ft-lb', h:'リーダーボード ── フレンド内のみで確定', s:'k', b:`
+ {id:'ft-lb', h:'リーダーボード ── フレンド内のみ。初回リリースからは外す', s:'k', b:`
   <p>2026-07-28 <b>B(フレンド内ランキングのみ)で確定。</b>全世界順位は出しません。実装コストは低く(スコア送信と取得の API のみ)、比較対象としては機能しつつ、<span class="okw">改ざんの影響が身内に閉じます</span>。</p>
+  <p class="note">2026-07-30 追記コメント:「<b>0.1 には含めない。</b>」<br>
+  → <b>作るが、初回リリースには載せない</b>と解釈しました。つまり「採用するが後回し」です。</p>
+  <blockquote><span class="ng">⚠️ これは Q3「1.0 のスコープ = 全部入り」に対する、初めての明示的な削減です。</span><b>リリース計画上、意図的な例外として扱ってよいか確認させてください。</b><br>
+  また「<b>0.1</b>」が <b>1.0(初回リリース)</b>を指すのか、それとも<b>1.0 より前の内部ビルド</b>を指すのかで意味が変わります。前者なら「1.0 では出さず 1.1 以降」、後者なら「1.0 には入る」になります。</blockquote>
+  <p><span class="okw">後回しにする判断自体は筋が通っています。</span>リーダーボードは<b>他の機能に依存されていない末端の機能</b>で、後から足しても既存の設計に影響しません。さらに、<a href="#save" onclick="go('save')">改ざん対策</a>が B(AES のみ)で、メモリ改変が防げないまま残ることを踏まえると、<b>スコアを公開する機能を急がないのは妥当です</b>。</p>
   <h4>この決定と噛み合った他の決定</h4>
   <ul>
    <li><span class="okw">同日に <a href="#save" onclick="go('save')">改ざん対策の強化</a>が決まったため、リーダーボードの最大の弱点が同時に手当てされます。</span>前版では「セーブがローカルにある以上改ざんは容易」という理由でリーダーボードに慎重でしたが、暗号化と ACTk が入る前提なら成立します。</li>
