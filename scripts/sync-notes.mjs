@@ -37,8 +37,8 @@ const SITES = [
     dir: "steam",
     from: "SteamSite",
     title: "Steam リリース企画",
-    desc: "移植の仕様すり合わせと決定ボード。",
-    files: ["index.html", "feedback.json"],
+    desc: "決定事項と、これから行う作業の実行計画。",
+    files: ["index.html", "archive.html", "feedback.json"],
     dirs: [],
   },
   {
@@ -113,15 +113,15 @@ for (const site of SITES) {
   for (const f of site.files) {
     const src = join(fromDir, f);
     if (!existsSync(src)) continue;
-    await cp(src, join(toDir, f));
+    const destFile = join(toDir, f);
+    await cp(src, destFile);
+    if (f.endsWith(".html")) await injectNoindex(destFile);
   }
   for (const d of site.dirs) {
     const src = join(fromDir, d);
     if (!existsSync(src)) continue;
     await cp(src, join(toDir, d), { recursive: true });
   }
-  await injectNoindex(join(toDir, "index.html"));
-
   let note = "";
   if (site.dir === "idea") {
     note = `events ${await buildEventSnapshot(fromDir, toDir)}件`;
