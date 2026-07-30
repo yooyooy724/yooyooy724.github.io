@@ -140,6 +140,10 @@
     "ds-stage": "D",
     "ds-qwert": "A",
     "ft-achnum": "B",
-    "ft-achwhere": "A"
+    "ft-achwhere": "A",
+    "ds-mergeapi": "B",
+    "bd-ci": "A",
+    "qa-store-lang": "B",
+    "rd-site": "B"
   }
 }
