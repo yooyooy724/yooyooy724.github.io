@@ -181,6 +181,10 @@
   .tier-table{width:100%;border-collapse:collapse;font-size:13px}
   .tier-table th,.tier-table td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
   .tier-table th{background:var(--panel-2);width:58px;white-space:nowrap}
+  .tier-table td.tier-constraint{color:var(--sub)}
+  .tier-table td.tier-reward{width:44%;padding:4px}
+  .tier-table td.tier-reward textarea{min-height:40px;resize:vertical;line-height:1.6;border:1px solid var(--line);border-radius:6px;padding:6px 8px;background:var(--field-bg);color:var(--ink);width:100%}
+  .tier-chip.on{color:var(--ink);border-color:var(--line-strong);background:var(--soft)}
   @media(max-width:1120px){
     #app{grid-template-columns:250px 1fr}
     .side{grid-column:1 / -1;height:auto;position:static;border-left:0;border-top:1px solid var(--line)}
@@ -340,7 +344,10 @@
 
       <div id="cardTierSection">
         <h3>Tier</h3>
-        <table class="tier-table"><tbody id="cardTierBody"></tbody></table>
+        <table class="tier-table">
+          <thead><tr><th></th><th>制約（自動生成）</th><th>報酬</th></tr></thead>
+          <tbody id="cardTierBody"></tbody>
+        </table>
       </div>
 
       <h3>メモ</h3>
@@ -408,7 +415,8 @@ const GROUPS = [
 ];
 
 // Challenge は 1カード1Challenge。Tier は全カード共通で、固有制約に倍率無効を重ねていく。
-// カード側に Tier ごとのデータは持たせない(制約文から自動生成する)。
+// 制約は Tier ごとに自動生成するが、報酬は Tier ごとに別物になるためカード側に持たせる
+// (rewards[0..3])。ドメイン側の ChallengeTierConfig も Tier ごとに Rewards を持つ。
 const VIEW_KEY = 'idea_board_view_v1';
 const KIND_KEY = 'idea_board_kind_v1';
 const TIER_EXTRA = [
@@ -429,7 +437,7 @@ const KINDS = {
     fields: [
       { key: 'constraint', label: '制約',       placeholder: 'この Challenge 固有の制約を1〜2行で' },
       { key: 'clear',      label: 'クリア条件', placeholder: '達成すべきことを1〜2行で' },
-      { key: 'reward',     label: '報酬',       placeholder: 'クリア時に得られるものを1〜2行で' }
+      { key: 'reward',     label: '報酬メモ',   placeholder: 'Tier に割り振る前の下書き。割り振ったら空にする' }
     ],
     tiers: true
   },
@@ -676,6 +684,10 @@ function rebuild(){
         history: [event]
       };
       for (const field of def.fields) card[field.key] = event[field.key] || '';
+      if (def.tiers) {
+        card.rewards = normalizeRewards(event);
+        card.reward = legacyRewardMemo(event);
+      }
       cardMap.set(card.id, card);
       continue;
     }
@@ -690,6 +702,10 @@ function rebuild(){
         card.memo = event.memo || '';
         card.tags = Array.isArray(event.tags) ? event.tags : [];
         for (const field of KINDS[card.kind].fields) card[field.key] = event[field.key] || '';
+        if (KINDS[card.kind].tiers) {
+          card.rewards = normalizeRewards(event);
+          card.reward = legacyRewardMemo(event);
+        }
       }
       if (event.type === `${card.kind}_status_changed`) {
         card.status = decisionOf(event.status);
@@ -952,6 +968,29 @@ function tierRows(constraint){
   }));
 }
 
+// Tier ごとの報酬。rewards を持たない古いイベントは、報酬欄に手書きされた
+// 「Tier1 : ○○」形式から拾う(Tier 別に持つ前のデータがそう書かれている)。
+function normalizeRewards(event){
+  const out = TIER_EXTRA.map(() => '');
+  if (Array.isArray(event.rewards)) {
+    event.rewards.forEach((value, i) => { if (i < out.length) out[i] = String(value || '').trim(); });
+    return out;
+  }
+  for (const line of String(event.reward || '').split(/\r?\n/)) {
+    const m = line.match(/^\s*Tier\s*(\d+)\s*[:：]?\s*(.*)$/i);
+    if (!m) continue;
+    const i = Number(m[1]) - 1;
+    if (i >= 0 && i < out.length) out[i] = m[2].trim();
+  }
+  return out;
+}
+
+// 報酬欄が「Tier1 : ○○」形式そのものだった場合、Tier 表と二重に出さない
+function legacyRewardMemo(event){
+  const text = String(event.reward || '');
+  return /(^|\n)\s*Tier\s*\d+\s*[:：]/i.test(text) ? '' : text;
+}
+
 function currentCard(){
   return cards.find(x => x.id === openCardId) || null;
 }
@@ -970,7 +1009,7 @@ function filteredCards(){
     if (card.status === 'adopted' && !showAdopted) return false;
     if (card.status === 'rejected' && !showRejected) return false;
     if (!q) return true;
-    const hay = [card.title, ...fields.map(f => card[f.key]), card.memo, card.tags.join(' ')]
+    const hay = [card.title, ...fields.map(f => card[f.key]), ...(card.rewards || []), card.memo, card.tags.join(' ')]
       .join('\n').toLowerCase();
     return hay.includes(q);
   });
@@ -1009,14 +1048,23 @@ function renderCardGrid(){
       </div>
       <div class="card-rows">
         ${def.fields.map(f => cardRow(f.label, card[f.key])).join('')}
+        ${def.tiers ? cardRow('Tier 報酬', tierRewardSummary(card)) : ''}
       </div>
       <div class="card-foot">
-        ${def.tiers ? `<span class="tier-chips">${TIER_EXTRA.map((_, i) => `<span class="tier-chip">T${i + 1}</span>`).join('')}</span>` : ''}
+        ${def.tiers ? `<span class="tier-chips">${TIER_EXTRA.map((_, i) => `<span class="tier-chip${(card.rewards || [])[i] ? ' on' : ''}">T${i + 1}</span>`).join('')}</span>` : ''}
         ${card.memo ? '<span>メモ有</span>' : ''}
         ${card.comments.length ? `<span>コメント ${card.comments.length}</span>` : ''}
       </div>
     </button>
   `).join('');
+}
+
+// 一覧は3行でクランプされるので、Tier 報酬は1行にまとめて出す
+function tierRewardSummary(card){
+  const filled = (card.rewards || [])
+    .map((value, i) => (value ? `T${i + 1} ${value}` : ''))
+    .filter(Boolean);
+  return filled.join('　/　');
 }
 
 function cardRow(label, value){
@@ -1091,9 +1139,32 @@ function cardFieldValue(key){
   return el ? el.value.trim() : '';
 }
 
-function renderTierTable(constraint){
-  els.cardTierBody.innerHTML = tierRows(constraint)
-    .map(row => `<tr><th>${row.tier}</th><td>${escapeHtml(row.text)}</td></tr>`).join('');
+// 報酬は入力欄なので、制約文の更新でテーブルごと作り直すと入力中の値が消える。
+// 組み立ては カードを開いたときだけ。制約の変更は updateTierConstraints で文字だけ差し替える。
+function renderTierTable(card){
+  const rewards = card.rewards || TIER_EXTRA.map(() => '');
+  els.cardTierBody.innerHTML = tierRows(card.constraint).map((row, i) => `
+    <tr>
+      <th>${row.tier}</th>
+      <td class="tier-constraint">${escapeHtml(row.text)}</td>
+      <td class="tier-reward">
+        <textarea data-tier-reward="${i}" placeholder="この Tier の報酬">${escapeHtml(rewards[i] || '')}</textarea>
+      </td>
+    </tr>`).join('');
+  for (const el of els.cardTierBody.querySelectorAll('[data-tier-reward]')) {
+    el.addEventListener('input', markCardDirty);
+  }
+}
+
+function updateTierConstraints(){
+  const rows = tierRows(cardFieldValue('constraint'));
+  els.cardTierBody.querySelectorAll('td.tier-constraint').forEach((td, i) => {
+    if (rows[i]) td.textContent = rows[i].text;
+  });
+}
+
+function tierRewardValues(){
+  return Array.from(els.cardTierBody.querySelectorAll('[data-tier-reward]')).map(el => el.value.trim());
 }
 
 function renderCardModal(){
@@ -1107,10 +1178,10 @@ function renderCardModal(){
     els.cardMemo.value = card.memo;
     els.cardTags.value = card.tags.join(', ');
     renderCardFields(card);
+    if (def.tiers) renderTierTable(card);
   }
   els.cardStatus.value = card.status;
   els.cardTierSection.classList.toggle('hidden', !def.tiers);
-  if (def.tiers) renderTierTable(cardFieldValue('constraint'));
 
   const active = activeComments(card);
   const old = oldComments(card);
@@ -1128,7 +1199,7 @@ function markCardDirty(){
   cardDirty = true;
   setState('未保存の変更');
   const card = currentCard();
-  if (card && KINDS[card.kind].tiers) renderTierTable(cardFieldValue('constraint'));
+  if (card && KINDS[card.kind].tiers) updateTierConstraints();
 }
 
 async function createCard(){
@@ -1147,6 +1218,7 @@ async function createCard(){
     at: now.toISOString()
   };
   for (const field of def.fields) event[field.key] = '';
+  if (def.tiers) event.rewards = TIER_EXTRA.map(() => '');
   await appendEvent(event);
   openCard(id);
 }
@@ -1167,6 +1239,7 @@ async function saveCard(){
     at: now.toISOString()
   };
   for (const field of def.fields) event[field.key] = cardFieldValue(field.key);
+  if (def.tiers) event.rewards = tierRewardValues();
   const ok = await appendEvent(event);
   if (ok) {
     cardDirty = false;
