@@ -36,6 +36,7 @@ jobs:
         id: apply
         env:
           ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
         run: node scripts/apply-inbox.mjs
 
       - name: コミット

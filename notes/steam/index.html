@@ -128,6 +128,58 @@
     font-weight:700;
   }
   .steps b{display:block;margin-bottom:2px}
+  .comment-guide{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin:18px 0 0;
+    padding:12px 16px;
+    border:1px solid var(--line);
+    background:#fafafa;
+    font-size:13px;
+  }
+  .comment-guide p{margin:0;flex:1}
+  .comment-guide button,.comment-add,.comment-remove{
+    border:1px solid var(--ink);
+    border-radius:4px;
+    background:var(--ink);
+    color:#fff;
+    font:inherit;
+    cursor:pointer;
+  }
+  .comment-guide button{padding:7px 12px;white-space:nowrap}
+  .comment-guide button:disabled,.comment-add:disabled{cursor:default;opacity:.45}
+  .comment-box{
+    margin:28px 0 0;
+    padding:16px 18px;
+    border:1px solid var(--line);
+    background:#fafafa;
+  }
+  .comment-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .comment-head h3{margin:0;font-size:15px}
+  .comment-count{color:var(--sub);font-size:12px}
+  .comment-list{display:grid;gap:8px;margin:12px 0}
+  .comment-item{padding:9px 11px;border-left:3px solid #aeb6ba;background:#fff}
+  .comment-item.pending-item{border-left-color:var(--amber);background:#fffaf0}
+  .comment-meta{display:flex;align-items:center;gap:8px;margin-bottom:3px;color:var(--sub);font-size:11px}
+  .comment-text{margin:0;white-space:pre-wrap}
+  .comment-remove{margin-left:auto;padding:1px 7px;border-color:#9a8570;background:transparent;color:#765a3a;font-size:11px}
+  .comment-form{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-top:12px}
+  .comment-form textarea{
+    width:100%;
+    min-height:64px;
+    padding:8px 10px;
+    border:1px solid #bfc4c1;
+    border-radius:4px;
+    background:#fff;
+    color:var(--ink);
+    font:inherit;
+    line-height:1.55;
+    resize:vertical;
+  }
+  .comment-form textarea:focus{outline:2px solid #9bc2d8;outline-offset:1px}
+  .comment-add{padding:8px 12px}
+  .comment-empty{margin:10px 0;color:var(--sub);font-size:12px}
   footer{
     margin-top:58px;
     padding-top:18px;
@@ -144,6 +196,8 @@
     .current{grid-template-columns:1fr}
     .current dt{padding-bottom:2px;border-bottom:0}
     .current dd{padding-top:2px}
+    .comment-guide{align-items:stretch;flex-direction:column}
+    .comment-form{grid-template-columns:1fr}
   }
   @media print{
     body{background:#fff;font-size:11pt}
@@ -151,6 +205,7 @@
     a{color:inherit;text-decoration:none}
     .toc{break-after:page}
     table{font-size:9.5pt}
+    .comment-guide,.comment-box{display:none}
   }
 </style>
 </head>
@@ -192,8 +247,14 @@
     </ol>
   </nav>
 
+  <aside class="comment-guide">
+    <p>各章の末尾からコメントを追加できます。入力後、まとめてGitHubへ送信してください。</p>
+    <span id="pending-summary">未送信 0件</span>
+    <button id="submit-comments" type="button" disabled>GitHubへ送信</button>
+  </aside>
+
   <main>
-    <section id="decisions">
+    <section id="decisions" data-comment-id="spec-decisions" data-comment-title="決定事項一覧">
       <h2>1. 決定事項一覧</h2>
       <p>
         以降の設計と実装は、次の前提を変えずに進める。
@@ -217,7 +278,7 @@
       </div>
     </section>
 
-    <section id="architecture">
+    <section id="architecture" data-comment-id="spec-architecture" data-comment-title="アーキテクチャ方針">
       <h2>2. アーキテクチャ方針</h2>
       <p>
         モバイルとSteamの差分は、呼び出し側へ条件分岐を広げず、次の6インターフェースへ閉じ込める。
@@ -253,7 +314,7 @@
       </ul>
     </section>
 
-    <section id="workstreams">
+    <section id="workstreams" data-comment-id="spec-workstreams" data-comment-title="領域別の方針と作業">
       <h2>3. 領域別の方針と作業</h2>
       <p>
         実装は次の6領域に分ける。表の「次に行うこと」はフェーズ2の指示書へそのまま展開する。
@@ -304,7 +365,7 @@
       </div>
     </section>
 
-    <section id="phase2">
+    <section id="phase2" data-comment-id="spec-phase2" data-comment-title="フェーズ2で作る指示書">
       <h2>4. フェーズ2で作る指示書</h2>
       <p>
         フェーズ2では、決定事項を実装担当者または実装AIが迷わず着手できる単位へ変換する。
@@ -336,7 +397,7 @@
       </div>
     </section>
 
-    <section id="roadmap">
+    <section id="roadmap" data-comment-id="spec-roadmap" data-comment-title="実装順序">
       <h2>5. 実装順序</h2>
       <p>依存関係が強い順に、次の流れで進める。</p>
       <ol class="steps">
@@ -350,7 +411,7 @@
       </ol>
     </section>
 
-    <section id="actions">
+    <section id="actions" data-comment-id="spec-actions" data-comment-title="直近のチーム作業">
       <h2>6. 直近のチーム作業</h2>
       <p>次の3点が、フェーズ2開始時の作業である。</p>
       <div class="table-wrap">
@@ -378,5 +439,207 @@
     </p>
   </footer>
 </article>
+<script>
+(() => {
+  const SITE = "steam";
+  const ISSUE_URL = "https://github.com/yooyooy724/yooyooy724.github.io/issues/new";
+  const PENDING_KEY = "minertia-steam-spec-comments-v1";
+  const sections = [...document.querySelectorAll("section[data-comment-id]")];
+  const submitButton = document.getElementById("submit-comments");
+  const pendingSummary = document.getElementById("pending-summary");
+  let published = { comments: {} };
+  let pending = loadPending();
+
+  function loadPending() {
+    try {
+      const value = JSON.parse(localStorage.getItem(PENDING_KEY) || "{}");
+      return { comments: value.comments && typeof value.comments === "object" ? value.comments : {} };
+    } catch {
+      return { comments: {} };
+    }
+  }
+
+  function savePending() {
+    try { localStorage.setItem(PENDING_KEY, JSON.stringify(pending)); } catch {}
+  }
+
+  function keyOf(comment) {
+    return `${String(comment.ts || "")}|${String(comment.text || "")}`;
+  }
+
+  function timestamp() {
+    const date = new Date();
+    const pad = value => String(value).padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  }
+
+  function pendingCount() {
+    return Object.values(pending.comments).reduce(
+      (count, comments) => count + (Array.isArray(comments) ? comments.length : 0),
+      0,
+    );
+  }
+
+  function reconcile() {
+    for (const [id, comments] of Object.entries(pending.comments)) {
+      const seen = new Set((published.comments[id] || []).map(keyOf));
+      const rest = comments.filter(comment => !seen.has(keyOf(comment)));
+      if (rest.length) pending.comments[id] = rest;
+      else delete pending.comments[id];
+    }
+    savePending();
+  }
+
+  function combinedComments(id) {
+    const result = [];
+    const seen = new Set();
+    for (const comment of published.comments[id] || []) {
+      const key = keyOf(comment);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      result.push({ ...comment, pending: false });
+    }
+    for (const comment of pending.comments[id] || []) {
+      const key = keyOf(comment);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      result.push({ ...comment, pending: true });
+    }
+    return result.sort((a, b) => String(a.ts).localeCompare(String(b.ts)));
+  }
+
+  function removePending(id, target) {
+    const comments = pending.comments[id] || [];
+    pending.comments[id] = comments.filter(comment => keyOf(comment) !== keyOf(target));
+    if (!pending.comments[id].length) delete pending.comments[id];
+    savePending();
+    render();
+  }
+
+  function addComment(id, textarea) {
+    const text = textarea.value.trim();
+    if (!text) return;
+    if (!pending.comments[id]) pending.comments[id] = [];
+    pending.comments[id].push({ text, ts: timestamp() });
+    savePending();
+    render();
+  }
+
+  function renderSection(section) {
+    const id = section.dataset.commentId;
+    const title = section.dataset.commentTitle;
+    let box = section.querySelector(":scope > .comment-box");
+    if (!box) {
+      box = document.createElement("div");
+      box.className = "comment-box";
+      section.append(box);
+    }
+    box.replaceChildren();
+
+    const comments = combinedComments(id);
+    const head = document.createElement("div");
+    head.className = "comment-head";
+    const heading = document.createElement("h3");
+    heading.textContent = `${title}へのコメント`;
+    const count = document.createElement("span");
+    count.className = "comment-count";
+    count.textContent = `${comments.length}件`;
+    head.append(heading, count);
+    box.append(head);
+
+    if (comments.length) {
+      const list = document.createElement("div");
+      list.className = "comment-list";
+      for (const comment of comments) {
+        const item = document.createElement("div");
+        item.className = `comment-item${comment.pending ? " pending-item" : ""}`;
+        const meta = document.createElement("div");
+        meta.className = "comment-meta";
+        const who = comment.pending ? "未送信" : comment.author ? `@${comment.author}` : "反映済み";
+        meta.append(document.createTextNode(`${who} · ${comment.ts || ""}`));
+        if (comment.pending) {
+          const remove = document.createElement("button");
+          remove.type = "button";
+          remove.className = "comment-remove";
+          remove.textContent = "取り消す";
+          remove.addEventListener("click", () => removePending(id, comment));
+          meta.append(remove);
+        }
+        const text = document.createElement("p");
+        text.className = "comment-text";
+        text.textContent = comment.text;
+        item.append(meta, text);
+        list.append(item);
+      }
+      box.append(list);
+    } else {
+      const empty = document.createElement("p");
+      empty.className = "comment-empty";
+      empty.textContent = "コメントはありません。";
+      box.append(empty);
+    }
+
+    const form = document.createElement("div");
+    form.className = "comment-form";
+    const textarea = document.createElement("textarea");
+    textarea.maxLength = 2000;
+    textarea.placeholder = "この章へのコメントを入力";
+    textarea.setAttribute("aria-label", `${title}へのコメント`);
+    const add = document.createElement("button");
+    add.type = "button";
+    add.className = "comment-add";
+    add.textContent = "追加";
+    add.disabled = true;
+    textarea.addEventListener("input", () => { add.disabled = !textarea.value.trim(); });
+    add.addEventListener("click", () => addComment(id, textarea));
+    form.append(textarea, add);
+    box.append(form);
+  }
+
+  function render() {
+    for (const section of sections) renderSection(section);
+    const count = pendingCount();
+    pendingSummary.textContent = `未送信 ${count}件`;
+    submitButton.disabled = count === 0;
+  }
+
+  function submitComments() {
+    const count = pendingCount();
+    if (!count) return;
+    const payload = {
+      site: SITE,
+      at: new Date().toISOString(),
+      comments: pending.comments,
+      reactions: {},
+      choices: {},
+    };
+    const body = "### notes-inbox\n\nこの Issue は自動処理されます。内容を編集しないでください。\n\n```json\n"
+      + JSON.stringify(payload) + "\n```\n";
+    const title = `[notes-inbox] steam 仕様書コメント ${count}件`;
+    const url = `${ISSUE_URL}?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+    if (url.length <= 7500) {
+      window.open(url, "_blank");
+      return;
+    }
+    navigator.clipboard.writeText(body).then(() => {
+      alert("コメント本文をコピーしました。開いたIssueへ貼り付けてください。");
+      window.open(ISSUE_URL, "_blank");
+    }, () => {
+      prompt(`Issue本文をコピーしてください（タイトル: ${title}）`, body);
+    });
+  }
+
+  submitButton.addEventListener("click", submitComments);
+  render();
+  fetch("feedback.json", { cache: "no-store" })
+    .then(response => response.ok ? response.json() : Promise.reject())
+    .then(data => {
+      published = { comments: data.comments && typeof data.comments === "object" ? data.comments : {} };
+      reconcile();
+      render();
+    })
+    .catch(() => {});
+})();
+</script>
 </body>
 </html>

@@ -56,9 +56,21 @@ if (site === "idea") {
 } else {
   const file = join(repoRoot, "notes", site, "feedback.json");
   const before = readJson(file, emptyFeedback());
+  const issueAuthor = String(process.env.ISSUE_AUTHOR || "").trim();
+  const rawComments =
+    payload.comments && typeof payload.comments === "object" ? payload.comments : {};
+  const comments = {};
+  for (const [id, items] of Object.entries(rawComments)) {
+    if (!Array.isArray(items)) continue;
+    comments[id] = items.map((comment) =>
+      comment && typeof comment === "object"
+        ? { ...comment, ...(issueAuthor ? { author: issueAuthor } : {}) }
+        : comment,
+    );
+  }
 
   const patch = {
-    comments: payload.comments && typeof payload.comments === "object" ? payload.comments : {},
+    comments,
     reactions: payload.reactions && typeof payload.reactions === "object" ? payload.reactions : {},
     choices: payload.choices && typeof payload.choices === "object" ? payload.choices : {},
   };

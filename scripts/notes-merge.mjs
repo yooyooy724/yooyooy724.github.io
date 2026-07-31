@@ -36,7 +36,11 @@ export function mergeFeedback(base, patch) {
       const k = commentKey(c);
       if (seen.has(k)) continue;
       seen.add(k);
-      arr.push({ text: c.text, ts: String(c.ts || "") });
+      const item = { text: c.text, ts: String(c.ts || "") };
+      if (typeof c.author === "string" && c.author.trim()) {
+        item.author = c.author.trim();
+      }
+      arr.push(item);
     }
     arr.sort((x, y) => String(x.ts).localeCompare(String(y.ts)));
     if (arr.length) out.comments[id] = arr;
