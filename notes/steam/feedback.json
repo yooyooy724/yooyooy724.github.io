@@ -58,6 +58,10 @@
       {
         "text": "A2の案ではセーブデータをモバイルとPC間で同期できないのでは？",
         "ts": "2026-07-30 18:05"
+      },
+      {
+        "text": "Firestoreをクラウドセーブの正本とし、Steam版は同じセーブをSteam Cloud APIへ自動複製する。Apple・Google・Steam認証は独立して扱い、アカウント連携とセーブ統合は行わない。食い違った場合はユーザーが選択する。",
+        "ts": "2026-07-31 09:45"
       }
     ],
     "mn-risk": [
@@ -137,6 +141,7 @@
     "mn-where": "C",
     "mn-map": "A",
     "sv-enc": "B",
+    "sv-cloud": "D",
     "ds-stage": "D",
     "ds-qwert": "A",
     "ft-achnum": "B",

@@ -246,7 +246,7 @@ const DB = [
    <li>ストアページは<b>主要7言語</b>(英・日・中・韓・独・仏・西)</li>
    <li>このサイトは<b>フェーズ2以降も更新</b>する</li>
   </ul>
-  <p class="note"><span class="ng">選択が残るのはクラウドセーブ方式 <code>sv-cloud</code> の1件だけです。</span>まとめ作業へは進めますが、フェーズ1の正式完了宣言前に明示的な選択が必要です。</p>`},
+  <p class="note"><span class="okw">全21件の選択が確定しました。</span>フェーズ1の議論は完了し、フェーズ2の作業分解へ進みます。</p>`},
  {id:'p1-product', h:'プロジェクトの骨格', s:'k', b:`
   <table><tr><th>領域</th><th>合意</th></tr>
   <tr><td>目的</td><td><b>Steam 版で売上を伸ばす</b></td></tr>
@@ -288,7 +288,7 @@ const DB = [
   </ul>`},
  {id:'p1-open', h:'フェーズ1の残件と外部確認', s:'k', b:`
   <table><tr><th>種類</th><th>残件</th><th>扱い</th></tr>
-  <tr><td><span class="ng">要決定</span></td><td>クラウドセーブ方式 <code>sv-cloud</code></td><td>A2 / A / B / C から明示的に選ぶ。現決定との整合は A2 が最も高い</td></tr>
+  <tr><td><span class="okw">決定済み</span></td><td>クラウドセーブ方式 <code>sv-cloud</code></td><td>Firestoreを正本とし、Steam版は確定セーブをSteam Cloud APIへ自動複製する</td></tr>
   <tr><td>設計詳細</td><td>右レールの画面固有項目、Shop / Relic / Nether の横長仕様</td><td>フェーズ2で指示書化する前に決める</td></tr>
   <tr><td>表現確認</td><td>「リーダーボードを0.1に含めない」の意味</td><td>初回リリースから外す解釈で共有確認</td></tr>
   <tr><td>外部調査</td><td>デイリー DLC の可否、価格、Steam Cloud 設定、ストア素材要件</td><td>Steamworks 公式情報と成功事例で確認</td></tr>
@@ -768,6 +768,9 @@ const DB = [
   <tr><td><b>B'</b></td><td><b>Firestore を正本にし、Steam Cloud はゲームのセーブに使わない</b>(Steamworks 側で同期対象を空にする)</td><td><span class="okw">クロスセーブが自然に成立</span>。<code>CloudSaveController</code> の競合解決(575-691行)は<b>モバイルで実運用されている実績品</b>で、そのまま流用できる。<span class="ng">代償は Steam Cloud の無料の恩恵を捨てること</span></td></tr>
   <tr><td><b>A2'</b></td><td>A2 のまま。<b>クロスセーブは「明示的な手動エクスポート/インポート」としてだけ提供</b>する</td><td>自動同期の競合が原理的に発生しない。<span class="kw">プレイヤーが意図したときだけ上書きが起きる</span>ので、事故の説明がつく。実装も軽い</td></tr></table>
   <p><span class="okw">クロスセーブが「必須要件ではない」なら、A2' を勧めます。</span>自動同期は便利ですが、2プラットフォーム間で常時走らせると<b>「どちらが新しいか」の判定を間違えた瞬間に進行が消えます</b>。手動なら、最悪でもプレイヤーが自分で押した操作の結果として説明できます。</p>
+  <h4>2026-07-31 最終決定</h4>
+  <blockquote><b>Firestoreをクラウドセーブの正本とし、Steam版は同じ確定セーブをSteam Cloud APIへ自動複製する。</b><br>
+  Apple / Google / Steam認証はそれぞれ独立したFirebaseアカウントとして扱い、アカウント連携とセーブ統合は行わない。FirestoreとSteam Cloudが食い違った場合はユーザーが適用するセーブを選ぶ。</blockquote>
   <h4>NetherCompanion を Steam に載せるときの確認事項</h4>
   <p>設計上は <code>idle-gem-companion-builds/**</code> という専用コレクションに閉じており(<code>nether-companion-plan.md</code>)、通信は<b>1日あたり書込1回・読取3回</b>に固定されています。Standalone に持っていく際の論点は実装ではなく運用側です:</p>
   <ol>
@@ -777,7 +780,8 @@ const DB = [
    <li><b>ネットワーク不通時の挙動。</b>PC ではオフライン起動が普通にあるため、失敗時に静かに諦める設計(実装済み)がそのまま効きます</li>
   </ol>`,
   opt:{items:[
-   {k:'A2',t:'セーブは Steam Cloud、共有機能は Firestore REST を継続',d:'用途で分ける案。セーブの競合解決を Steam に任せつつ、NetherCompanion とクロスプログレッションの道を残す。既存コードが既に REST なので追加実装はほぼ不要で、必要なのは Standalone での動作確認のみ。',rec:true},
+   {k:'D',t:'Firestoreを正本、Steam Cloudを自動複製先にする',d:'既存CloudSaveをSteam版でも利用し、確定した同じセーブをSteam Cloud APIへコピーする。各認証は独立し、競合時はユーザーが選択する。',rec:true},
+   {k:'A2',t:'セーブは Steam Cloud、共有機能は Firestore REST を継続',d:'用途で分ける案。セーブの競合解決を Steam に任せつつ、NetherCompanion とクロスプログレッションの道を残す。既存コードが既に REST なので追加実装はほぼ不要で、必要なのは Standalone での動作確認のみ。'},
    {k:'A',t:'Steam Cloud のみ。サーバー機能は Steam 版で無効化',d:'最も軽い。ただし NetherCompanion が Steam 版で使えなくなり、「サーバーを使いたい」という方針に反する。'},
    {k:'B',t:'すべて Firestore REST に寄せる(Steam Cloud を使わない)',d:'モバイルと完全に同じバックエンドになり、クロスプログレッションが自然に実現する。ただし CloudSaveController の競合解決(575-691行)を PC でも自前で抱えることになり、Steam Cloud の無料の恩恵を捨てることになる。'},
    {k:'C',t:'両方(Steam Cloud を主、Firestore を副)',d:'セーブを二重に持つ。競合解決が3者間になり複雑さが跳ね上がる。セーブ喪失が致命傷である以上、複雑さ自体がリスク。'},

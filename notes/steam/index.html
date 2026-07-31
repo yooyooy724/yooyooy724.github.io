@@ -164,7 +164,7 @@
       本文は、フェーズ1で決めたことと、フェーズ2以降にチームが行う作業を共有するための資料である。
       議論の経緯ではなく、現時点の結論と実行順を記載する。
     </p>
-    <p class="meta">最終更新: 2026-07-30　／　対象: 企画・Model・ViewModel・Unity View・リリース作業</p>
+    <p class="meta">最終更新: 2026-07-31　／　対象: 企画・Model・ViewModel・Unity View・リリース作業</p>
 
     <div class="summary">
       <strong>結論</strong>
@@ -173,9 +173,9 @@
     </div>
 
     <dl class="current">
-      <dt>現在地</dt><dd>フェーズ1の決定事項を整理済み</dd>
+      <dt>現在地</dt><dd>フェーズ1の全決定事項を確定済み</dd>
       <dt>次工程</dt><dd>フェーズ2: 実装AI・担当者向け指示書の作成</dd>
-      <dt>残る最終確認</dt><dd>Steam版クラウドセーブの方式</dd>
+      <dt>クラウドセーブ</dt><dd>Firestoreを正本とし、Steam Cloudへ自動複製</dd>
       <dt>最初の実装</dt><dd>Standalone検証ビルドとプラットフォーム抽象化</dd>
     </dl>
   </header>
@@ -230,8 +230,8 @@
           <tbody>
             <tr><td><code>IRewardService</code></td><td>既存広告処理へ委譲</td><td>導線ごとの報酬・解禁条件</td></tr>
             <tr><td><code>IStoreService</code></td><td>Unity IAP</td><td>Steam DLC / 所有権</td></tr>
-            <tr><td><code>ICloudSaveBackend</code></td><td>Firestore REST</td><td><span class="pending">最終確認後に確定</span></td></tr>
-            <tr><td><code>IAuthService</code></td><td>Google / Apple</td><td>Steam ID</td></tr>
+            <tr><td><code>ICloudSaveBackend</code></td><td>Firestore REST</td><td>Firestore REST + Steam Cloud APIへの自動複製</td></tr>
+            <tr><td><code>IAuthService</code></td><td>Google / Apple</td><td>Google / Apple / Steam（各認証は独立）</td></tr>
             <tr><td><code>IAchievementService</code></td><td>No-Op</td><td>Steamworks実績</td></tr>
             <tr><td><code>IReviewPrompt</code></td><td>既存レビュー導線</td><td>No-Op</td></tr>
           </tbody>
@@ -265,8 +265,8 @@
           <tbody>
             <tr>
               <td>セーブとサーバー</td>
-              <td><ul><li>AES暗号化を有効化</li><li>平文セーブからの移行を必須化</li><li>ACTkは見送り</li><li>NetherCompanionはFirestore RESTを継続</li></ul></td>
-              <td>移行の失敗・中断・ロールバック条件を定義し、クラウド方式を最終確定する。</td>
+              <td><ul><li>AES暗号化を有効化</li><li>平文セーブからの移行を必須化</li><li>Firestoreをクラウドセーブの正本とする</li><li>Steam版は確定セーブをSteam Cloud APIへ自動複製する</li><li>Apple / Google / Steam認証は連携・セーブ統合を行わない</li><li>FirestoreとSteam Cloudが食い違った場合はユーザーが選択する</li><li>NetherCompanionはFirestore RESTを継続</li></ul></td>
+              <td>既存CloudSaveを流用し、Steam認証、Steam Cloud複製、競合時の復旧処理を追加する。</td>
             </tr>
             <tr>
               <td>マネタイズ</td>
@@ -357,7 +357,7 @@
         <table>
           <thead><tr><th>状態</th><th>作業</th><th>完了条件</th></tr></thead>
           <tbody>
-            <tr><td class="status pending">最終確認</td><td>Steam版クラウドセーブ方式を確定する</td><td><code>ICloudSaveBackend</code>のSteam実装と競合解決方針が1つに決まっている。</td></tr>
+            <tr><td class="status done">着手可能</td><td>Steam版クラウドセーブの指示書を作る</td><td>Steam認証、Firestore保存、Steam Cloud複製、競合時選択の変更範囲と受け入れ条件が記載されている。</td></tr>
             <tr><td class="status done">着手可能</td><td>外部調査の担当を置く</td><td>AppID、macOS公証、Steamworks設定、ストア審査の担当と記録先が決まっている。</td></tr>
             <tr><td class="status done">着手可能</td><td>最初の4指示書を作る</td><td>変更範囲・依存・受け入れ条件・テスト・ロールバックが記載されている。</td></tr>
           </tbody>
