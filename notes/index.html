@@ -4,29 +4,88 @@
 <meta name="robots" content="noindex,nofollow">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Design Notes（閲覧専用）</title>
+<title>Idle Minertia / Design Notes</title>
 <style>
-  :root{color-scheme:dark}
+  :root{
+    --ink:#151a17; --paper:#f2efe7; --card:#e5e2d9;
+    --muted:#757a74; --muted-strong:#5f645e; --line:#cbc8bf;
+    --green:#b8de50; --orange:#f06b45; --blue:#a7c6f1;
+    --font-jp:"Yu Gothic","Hiragino Kaku Gothic ProN",sans-serif;
+    --font-display:Arial,Helvetica,sans-serif;
+  }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#1a1c20;color:#e2e6ea;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic UI","Meiryo",sans-serif;line-height:1.8;padding:48px 20px}
-  .wrap{max-width:720px;margin:0 auto}
-  h1{font-size:22px;letter-spacing:.08em;margin-bottom:6px}
-  .lead{color:#949ca6;font-size:13.5px;margin-bottom:28px}
-  a.card{display:block;text-decoration:none;color:inherit;background:#23262b;border:1px solid #353a41;border-radius:10px;padding:14px 18px;margin-bottom:12px}
-  a.card:hover{border-color:#66c0f4}
-  a.card h2{font-size:16px;margin-bottom:2px;color:#eaf1f7}
-  a.card p{font-size:13px;color:#949ca6}
-  .foot{margin-top:28px;font-size:12px;color:#6f777f;border-top:1px solid #353a41;padding-top:14px}
+  body{background:var(--paper);color:var(--ink);font-family:var(--font-jp);line-height:1.9;font-size:15px;
+    padding:clamp(40px,8vw,88px) clamp(22px,6vw,40px) 80px}
+  .wrap{max-width:760px;margin:0 auto}
+  .label{font-family:var(--font-display);font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+  .eyebrow{color:var(--orange);margin-bottom:10px}
+  h1{font-size:clamp(2rem,6vw,3.4rem);font-weight:550;letter-spacing:-.055em;line-height:1.1}
+  .lead{color:var(--muted-strong);font-size:.82rem;line-height:1.95;margin:16px 0 0;max-width:600px}
+  .list{border-top:1px solid var(--line);margin-top:clamp(34px,5vw,52px)}
+  a.card{display:grid;grid-template-columns:auto 1fr auto;gap:6px 20px;align-items:baseline;
+    border-bottom:1px solid var(--line);padding:22px 4px;text-decoration:none;color:inherit;
+    transition:background 160ms ease,padding 160ms ease}
+  a.card:hover,a.card:focus-visible{background:var(--card);outline:none;padding-left:14px;padding-right:14px}
+  a.card .no{font-family:var(--font-display);font-size:.62rem;font-weight:700;color:var(--muted);letter-spacing:.1em}
+  a.card h2{font-size:clamp(1.05rem,2vw,1.4rem);font-weight:600;letter-spacing:-.035em}
+  a.card .go{font-family:var(--font-display);font-size:.62rem;font-weight:700;letter-spacing:.1em;color:var(--orange);white-space:nowrap}
+  a.card .body{grid-column:2;min-width:0}
+  a.card p{color:var(--muted-strong);font-size:.75rem;line-height:1.85;margin-top:6px}
+  a.card p.can{color:var(--muted);font-size:.68rem;margin-top:2px}
+  .how{background:var(--blue);border-radius:16px;padding:18px 22px;margin-top:clamp(34px,5vw,52px)}
+  .how .t{margin-bottom:6px;opacity:.7}
+  .how p{font-size:.78rem;line-height:1.9}
+  .foot{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;
+    border-top:1px solid var(--line);margin-top:40px;padding-top:16px;
+    font-family:var(--font-display);font-size:.58rem;letter-spacing:.1em;color:var(--muted)}
+  @media (max-width:560px){
+    a.card{grid-template-columns:auto 1fr}
+    a.card .go{display:none}
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
+  <p class="eyebrow label">Idle Minertia</p>
   <h1>Design Notes</h1>
-  <p class="lead">Idle Minertia の設計メモ。<b>閲覧専用の公開版</b>です。コメント・決定の書き込みはローカル版から行います。</p>
-  <a class="card" href="story/"><h2>ストーリー設定</h2><p>世界観・表ストーリー・キャラクター・脚本。</p></a>
-  <a class="card" href="steam/"><h2>Steam リリース企画</h2><p>決定事項と、これから行う作業の実行計画。</p></a>
-  <a class="card" href="idea/"><h2>IdeaBoard（Challenge / Spell）</h2><p>Challenge カードと、アイディア・コメントのイベントログ。</p></a>
-  <p class="foot">最終更新: 2026-07-31</p>
+  <p class="lead">設計・企画のメモをまとめた場所。ここは<b>公開版</b>で、書き込みは端末に溜めてから GitHub 経由で反映されます。決定やコメントを直接保存したいときは、手元のローカル版から開いてください。</p>
+
+  <div class="list">
+    <a class="card" href="story/">
+      <span class="no">01</span>
+      <h2>ストーリー設定</h2>
+      <span class="go">Open →</span>
+      <div class="body"><p>世界観・表ストーリー・キャラクター・脚本。</p><p class="can">脚本はチャット形式。新しい脚本を作って書き足せます。</p></div>
+    </a>
+    <a class="card" href="steam/">
+      <span class="no">02</span>
+      <h2>Steam リリース企画</h2>
+      <span class="go">Open →</span>
+      <div class="body"><p>決定事項と、これから行う作業の実行計画。</p><p class="can">各ブロックに OK / 要変更・コメント。要決定は選択肢から選べます。</p></div>
+    </a>
+    <a class="card" href="idea/">
+      <span class="no">03</span>
+      <h2>IdeaBoard（Challenge / Spell）</h2>
+      <span class="go">Open →</span>
+      <div class="body"><p>Challenge カードと、アイディア・コメントのイベントログ。</p><p class="can">Challenge（試練）と Spell の正本。仕様書より新しいことがあります。</p></div>
+    </a>
+    <a class="card" href="promotion/">
+      <span class="no">04</span>
+      <h2>プロモーションメモ</h2>
+      <span class="go">Open →</span>
+      <div class="body"><p>前提 / X 運用 / イベント / スケジュールの4ページ。</p><p class="can">思いついたことをメモとして積んでいくだけの場所。</p></div>
+    </a>
+  </div>
+
+  <div class="how">
+    <p class="t label">書き込みについて</p>
+    <p>この公開版で書いたものは、いったんその端末に溜まります。各ページの「GitHubへ送信」を押すと Issue になり、1分ほどで反映されます。公開済みの内容を消したり書き換えたりするのはローカル版からだけです。</p>
+  </div>
+
+  <div class="foot">
+    <span>Last updated 2026-08-04</span>
+    <span>4 notes</span>
+  </div>
 </div>
 </body>
 </html>

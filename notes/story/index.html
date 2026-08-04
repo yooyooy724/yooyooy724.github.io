@@ -58,6 +58,44 @@
   .dlg-choices button{background:rgba(240,236,224,.95);color:#2b2a26;border:2px solid #2b2a26;border-radius:10px;padding:8px 10px;font-size:13px;cursor:pointer;font-family:inherit}
   .dlg-choices button:hover{background:#fff}
   .dlg-cap{position:absolute;top:8px;left:12px;font-size:10px;color:#8f8a7c}
+  /* 脚本チャット */
+  .scr-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .scr-tabs button{border:1px solid var(--line);background:#2a2823;color:var(--ink);border-radius:16px;padding:4px 13px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .scr-tabs button:hover{border-color:var(--accent)}
+  .scr-tabs button.on{background:var(--ink);color:#1c1b18;border-color:var(--ink)}
+  .scr-tabs button.add{border-style:dashed;color:var(--accent)}
+  .scr-tabs button .n{font-size:10.5px;color:var(--sub);margin-left:5px}
+  .scr-tabs button.on .n{color:#5c574c}
+  .scr-title{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+  .scr-title h3{font-size:16px}
+  .scr-title .k{font-size:11px;color:var(--sub)}
+  .chat{background:#201e1a;border:1px solid var(--line);border-radius:10px;padding:16px 16px 6px;max-height:600px;overflow-y:auto}
+  .cmsg{display:flex;gap:10px;margin-bottom:14px;align-items:flex-start}
+  .cmsg .av{width:34px;height:34px;border-radius:50%;flex:none;object-fit:cover;object-position:top center;background:#33302a;border:1px solid var(--line)}
+  .cmsg .av.txt{display:flex;align-items:center;justify-content:center;font-size:15px}
+  .cmsg .bub{max-width:min(560px,84%);background:var(--panel);border:1px solid var(--line);border-radius:3px 12px 12px 12px;padding:8px 14px}
+  .cmsg .who{font-size:11px;margin-bottom:2px;font-weight:600}
+  .cmsg .txt{font-size:14px;line-height:1.85;white-space:pre-wrap;word-break:break-word}
+  .cmsg .meta{font-size:10px;color:#7d7768;margin-top:5px;display:flex;gap:10px;align-items:center}
+  .cmsg .meta button{border:none;background:none;color:#7d7768;font-size:10px;cursor:pointer;font-family:inherit;padding:0}
+  .cmsg .meta button:hover{color:var(--warn)}
+  .cmsg.me{flex-direction:row-reverse}
+  .cmsg.me .bub{border-radius:12px 3px 12px 12px;background:#2c3830;border-color:#41533f}
+  .cmsg.me .meta{justify-content:flex-end}
+  .cmsg.narr,.cmsg.sys{justify-content:center}
+  .cmsg.narr .bub,.cmsg.sys .bub{background:transparent;border:none;border-radius:0;text-align:center;color:var(--sub);max-width:100%;padding:2px 8px}
+  .cmsg.narr .txt{font-size:13.5px;line-height:2.1}
+  .cmsg.sys .txt{font-size:12px;font-style:italic}
+  .chat .fixed-note{font-size:10px;color:#6d685c;border:1px solid var(--line);border-radius:8px;padding:0 6px}
+  /* 入力バー */
+  .compose{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:12px 14px;margin-top:12px}
+  .compose .row{display:flex;gap:8px;align-items:flex-end}
+  .compose select{background:#2a2823;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-family:inherit;font-size:13px;flex:none;min-width:132px}
+  .compose textarea{flex:1;min-height:52px;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-family:inherit;font-size:14px;line-height:1.8;resize:vertical;background:#20242b;color:var(--ink)}
+  .compose textarea:focus,.compose select:focus{outline:none;border-color:var(--accent)}
+  .compose .send{border:none;background:var(--accent);color:#1c1b18;border-radius:8px;padding:10px 20px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;flex:none}
+  .compose .send:hover{background:#e4bb6c}
+  .compose .hint{font-size:11.5px;color:var(--sub);margin-top:7px}
   /* page header */
   .phead{margin-bottom:20px;border-bottom:2px solid var(--line);padding-bottom:12px}
   .phead h2{font-size:24px;letter-spacing:.05em}
@@ -202,13 +240,85 @@ const DLGS=[
   {sys:'(ショップへ誘導 → チュートリアル完了)'},
  ]},
 ];
+/* ---------- 脚本チャット ----------
+   脚本は「発言の並び」。表示も入力もチャット形式で扱う。
+
+   保存は他ページのコメントと同じ comments/ に相乗りする。
+   新しいデータ形式を足さないので、feedback.json も Issue 経由の書き込みも既存のまま動く。
+     comments['scr-index']   … 追加した脚本の目録。1件 = '<脚本ID>\n<タイトル>'
+     comments['scr:<脚本ID>'] … その脚本の発言。1件 = '<話者キー>\n<本文>'
+   ID01〜11(コード内の DLGS)は原稿として読み取り専用。その続きは追記できる。 */
+const SCR_SPEAKERS={
+ naeka :{name:'なえか',   img:'images/naeka.png', color:'#2e7f8f'},
+ kosuke:{name:'コウスケ', img:'images/kosuke.png',color:'#6f7a4e'},
+ gen   :{name:'げん',     img:'images/gen.png',   color:'#c07a1d'},
+ hero  :{name:'主人公',   mark:'⛏',              color:'#5f8a63', me:true},
+ narr  :{name:'ナレーション', kind:'narr'},
+ sys   :{name:'ト書き',       kind:'sys'},
+};
+const SCR_INDEX='scr-index';
+const scrKey=(id)=>'scr:'+id;
+
+// DLGS の行を、チャットが扱う {sp,t} の形へ寄せる
+function scrFromDlgLine(l){
+ if(l.narr)return {sp:'narr',t:l.narr};
+ if(l.sys)return {sp:'sys',t:l.sys};
+ if(l.choice)return {sp:'hero',t:l.choice.map(o=>'『'+o+'』').join(' / ')};
+ return {sp:l.c,t:l.t};
+}
+// 目録に載っている追加分の脚本
+function scrUserList(){
+ return (STORE.comments[SCR_INDEX]||[]).map(c=>{
+   const i=c.text.indexOf('\n');
+   return {id:c.text.slice(0,i<0?c.text.length:i).trim(),
+           title:(i<0?'':c.text.slice(i+1)).trim()||'(無題)',
+           ts:c.ts, builtin:false};
+ }).filter(s=>s.id);
+}
+function scrList(){
+ return DLGS.map(d=>({id:d.id,title:d.title,builtin:true})).concat(scrUserList());
+}
+// 原稿(あれば) + 追記分。追記分だけ削除できる
+function scrLines(id){
+ const d=DLGS.find(x=>x.id===id);
+ const out=d?d.lines.map(l=>Object.assign(scrFromDlgLine(l),{builtin:true})):[];
+ (STORE.comments[scrKey(id)]||[]).forEach((c,i)=>{
+   const at=c.text.indexOf('\n');
+   const sp=(at<0?c.text:c.text.slice(0,at)).trim();
+   out.push({sp:SCR_SPEAKERS[sp]?sp:'sys', t:at<0?'':c.text.slice(at+1), ts:c.ts, idx:i, builtin:false});
+ });
+ return out;
+}
+function scrMsgHtml(id,l,canDel){
+ const s=SCR_SPEAKERS[l.sp]||SCR_SPEAKERS.sys;
+ if(s.kind==='narr'||s.kind==='sys'){
+   return '<div class="cmsg '+s.kind+'"><div class="bub"><div class="txt">'+esc(l.t)+'</div>'
+     +(l.builtin?'':'<div class="meta"><span>'+esc(l.ts||'')+'</span>'
+       +(canDel?'<button onclick="scrDel(\''+id+'\','+l.idx+')">削除</button>':'')+'</div>')
+     +'</div></div>';
+ }
+ const av=s.img
+   ?'<img class="av" src="'+s.img+'" alt="'+s.name+'">'
+   :'<div class="av txt" style="color:'+s.color+'">'+(s.mark||'●')+'</div>';
+ return '<div class="cmsg'+(s.me?' me':'')+'">'+av
+   +'<div class="bub"><div class="who" style="color:'+s.color+'">'+s.name+'</div>'
+   +'<div class="txt">'+esc(l.t)+'</div>'
+   +'<div class="meta">'
+   +(l.builtin?'<span class="fixed-note">原稿</span>':'<span>'+esc(l.ts||'')+'</span>')
+   +(!l.builtin&&canDel?'<button onclick="scrDel(\''+id+'\','+l.idx+')">削除</button>':'')
+   +'</div></div></div>';
+}
+function scrChatHtml(id){
+ const lines=scrLines(id);
+ if(!lines.length)return '<div class="chat"><div class="empty">まだ発言がありません。下の欄から書いてください。</div></div>';
+ const pend=PROPOSE?(PENDING.comments[scrKey(id)]||[]):[];
+ const store=STORE.comments[scrKey(id)]||[];
+ // 公開済みの発言は提案モードからは消せないので、削除ボタンも出さない
+ const canDel=(l)=>l.builtin?false:(!PROPOSE||pend.some(p=>{const c=store[l.idx];return c&&p.ts===c.ts&&p.text===c.text;}));
+ return '<div class="chat">'+lines.map(l=>scrMsgHtml(id,l,canDel(l))).join('')+'</div>';
+}
 function dlgScriptHtml(d){
- return '<blockquote class="line">'+d.lines.map(l=>{
-   if(l.narr)return '<i>'+l.narr+'</i>';
-   if(l.sys)return '<i>'+l.sys+'</i>';
-   if(l.choice)return '<b>主人公</b>▷'+l.choice.map(o=>'『'+o+'』').join(' / ▷');
-   const c=DLG_CHARS[l.c];return '<b>'+c.name+'</b>「'+l.t+'」';
- }).join('<br>')+'</blockquote>'+(d.note?'<p class="note">'+d.note+'</p>':'');
+ return scrChatHtml(d.id)+(d.note?'<p class="note">'+d.note+'</p>':'');
 }
 function dlgViewerHtml(){
  return '<p class="note">スマホ想定の会話UIモック。<b>画面をタップするとセリフが進みます</b>。立ち絵の位置・文字サイズ・ボックスの寸法はすべて仮。<b>チュートリアル会話に主人公の選択肢は使わない</b>(2026-07-07確定・テンポ優先で一方向)。</p>'
@@ -491,6 +601,8 @@ const DB = [
   <li><b>なえか×げん</b>:幼馴染的な気安さ。飯の話しかしていない。</li></ul>`},
 ]},
 /* ============================ SCRIPT ============================ */
+{id:'sc-write', nav:'✎ 脚本を書く', group:'脚本', title:'脚本を書く', chat:true,
+ desc:'脚本を新しく作って、チャットで書き足していく。ID01〜11 は既存の原稿で、その続きも書ける。', secs:[]},
 {id:'sc-open', nav:'冒頭会話', group:'脚本', title:'冒頭会話(起動直後)', desc:'なえか×主人公。ゲーム開始直後の掴み。本文は未確定。', secs:[
  {id:'op-rules', h:'執筆制約(確定)', s:'k', b:`
   <ul><li>プレイヤーの返答は「……」「はい/いいえ」+ごく短い一言(最大12文字程度)。</li>
@@ -663,7 +775,8 @@ const DB = [
 ]},
 {id:'sc-mock', nav:'会話モック(スマホUI)', group:'脚本', title:'チュートリアル会話 ── スマホUIモック', desc:'ID01〜11の会話本文と、実機イメージ確認用のインタラクティブモック。担当キャラの声ルール(詳細シート)準拠。', secs:[
  {id:'mock-viewer', h:'会話モック(タップで送り)', s:'t', b:dlgViewerHtml()},
- ...DLGS.map(d=>({id:'mock-'+d.id.toLowerCase(), h:'脚本 '+d.title, s:'t', b:dlgScriptHtml(d)})),
+ // b を関数にしているのは、追記した発言をその場で反映させるため(DBは起動時に1度しか作られない)
+ ...DLGS.map(d=>({id:'mock-'+d.id.toLowerCase(), h:'脚本 '+d.title, s:'t', b:()=>dlgScriptHtml(d)})),
 ]},
 {id:'sc-flavor', nav:'宝石フレーバー', group:'脚本', title:'宝石フレーバーテキスト', desc:'主人公(プレイヤー)の主観――感想・実感・聞きかじりを一人称で。', secs:[
  {id:'fl-policy', h:'執筆方針', s:'k', b:`
@@ -928,8 +1041,14 @@ function submitToGitHub(){
 let curPage=location.hash?location.hash.slice(1):'home';
 let filter='all';
 function secTitle(id){for(const p of DB){for(const s of p.secs){if(s.id===id)return {page:p,sec:s};}}return null;}
-function pageCommentCount(p){let n=0;for(const s of p.secs){n+=(STORE.comments[s.id]||[]).length;}return n;}
-function totalFeedback(){let n=0;for(const k in STORE.comments)n+=STORE.comments[k].length;for(const k in STORE.reactions)if(STORE.reactions[k])n++;return n;}
+function isScrKey(k){return k===SCR_INDEX||k.indexOf('scr:')===0;}
+function scrLineCount(){let n=0;for(const k in STORE.comments)if(k.indexOf('scr:')===0)n+=STORE.comments[k].length;return n;}
+function pageCommentCount(p){
+  if(p.chat)return scrLineCount();   // 脚本ページはコメントではなく発言数を出す
+  let n=0;for(const s of p.secs){n+=(STORE.comments[s.id]||[]).length;}return n;
+}
+// 脚本の発言は「フィードバック」ではないので数に入れない
+function totalFeedback(){let n=0;for(const k in STORE.comments)if(!isScrKey(k))n+=STORE.comments[k].length;for(const k in STORE.reactions)if(STORE.reactions[k])n++;return n;}
 
 /* ---------- nav ---------- */
 function renderNav(){
@@ -973,6 +1092,7 @@ function renderPage(){
   const el=document.getElementById('page');
   if(curPage==='feedback'){renderFeedback(el);return;}
   const p=DB.find(x=>x.id===curPage)||DB[0];
+  if(p.chat){renderChat(el,p);return;}
   let html='<div class="phead"><h2>'+p.title+'</h2><p>'+p.desc+'</p></div>';
   for(const s of p.secs){
     const cms=STORE.comments[s.id]||[];
@@ -1003,7 +1123,7 @@ function renderPage(){
       +'</div>';
     html+='<div class="sec'+(vis?'':' hide')+'" id="sec-'+s.id+'">'
       +'<div class="shead"><h3>'+s.h+'</h3>'+badge+'</div>'
-      +'<div class="sbody">'+s.b+'</div>'
+      +'<div class="sbody">'+(typeof s.b==='function'?s.b():s.b)+'</div>'
       +fz+'</div>';
   }
   el.innerHTML=html;
@@ -1073,7 +1193,7 @@ function clearAll(){
     if(!confirm('未送信の変更をすべて破棄します。公開済みの内容は消えません。よろしいですか?'))return;
     PENDING=emptyFb();savePending();STORE=mergeFb(BASE,PENDING);render();return;
   }
-  if(confirm('すべてのコメントとリアクションを消去します。よろしいですか?')){STORE={comments:{},reactions:{}};save();render();}
+  if(confirm('すべてのコメント・リアクションと、書いた脚本を消去します。よろしいですか?')){STORE={comments:{},reactions:{}};save();render();}
 }
 function buildMD(){
   const d=new Date();
@@ -1087,6 +1207,20 @@ function buildMD(){
     for(const c of cms)md+='- コメント('+c.ts+'): '+c.text.replace(/\n/g,' / ')+'\n';
     md+='\n';
   }}
+  // 脚本は、追記のあったものだけ本文ごと書き出す
+  const scripts=scrList().filter(s=>(STORE.comments[scrKey(s.id)]||[]).length);
+  if(scripts.length){
+    any=true;
+    md+='# 脚本\n\n';
+    for(const s of scripts){
+      md+='## '+s.title+' ('+s.id+(s.builtin?' / 原稿あり':'')+')\n\n';
+      for(const l of scrLines(s.id)){
+        const sp=SCR_SPEAKERS[l.sp]||SCR_SPEAKERS.sys;
+        const body=l.t.replace(/\n/g,' / ');
+        md+=(sp.kind?'*'+body+'*':'**'+sp.name+'**「'+body+'」')+(l.builtin?'':' `'+l.ts+'`')+'\n\n';
+      }
+    }
+  }
   return any?md:null;
 }
 function exportMD(){
@@ -1098,6 +1232,106 @@ function exportMD(){
 function exportJSON(){
   const blob=new Blob([JSON.stringify(STORE,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='minertia_feedback.json';a.click();
+}
+
+/* ---------- 脚本チャット(ページ) ---------- */
+let SCR_CUR=null;   // 表示中の脚本
+let SCR_SP='naeka'; // 直前に選んだ話者。連続で書くとき毎回選び直さずに済む
+function nowStamp(){
+  const d=new Date(),p=(n)=>String(n).padStart(2,'0');
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());
+}
+function renderChat(el,p){
+  const list=scrList();
+  if(!SCR_CUR||!list.some(s=>s.id===SCR_CUR))SCR_CUR=list.length?list[list.length-1].id:null;
+
+  let html='<div class="phead"><h2>'+p.title+'</h2><p>'+p.desc+'</p></div>';
+  html+='<div class="scr-tabs">'
+    +list.map(s=>'<button class="'+(s.id===SCR_CUR?'on':'')+'" onclick="scrSelect(\''+s.id+'\')">'
+        +esc(s.title)+'<span class="n">'+scrLines(s.id).length+'</span></button>').join('')
+    +'<button class="add" onclick="scrNew()">＋ 新しい脚本</button></div>';
+
+  if(!SCR_CUR){
+    el.innerHTML=html+'<div class="empty">脚本がありません。「＋ 新しい脚本」から作ってください。</div>';
+    return;
+  }
+  const cur=list.find(s=>s.id===SCR_CUR);
+  html+='<div class="scr-title"><h3>'+esc(cur.title)+'</h3>'
+    +'<span class="k">'+(cur.builtin?'原稿 / ':'')+esc(cur.id)+'</span></div>';
+  html+=scrChatHtml(SCR_CUR);
+  html+='<div class="compose"><div class="row">'
+    +'<select id="scr-sp">'
+    +Object.keys(SCR_SPEAKERS).map(k=>'<option value="'+k+'"'+(k===SCR_SP?' selected':'')+'>'
+        +SCR_SPEAKERS[k].name+'</option>').join('')
+    +'</select>'
+    +'<textarea id="scr-t" placeholder="発言を入力…（Ctrl+Enter で送信）"></textarea>'
+    +'<button class="send" onclick="scrSend()">送信</button>'
+    +'</div><div class="hint">'
+    +(cur.builtin?'この脚本の原稿部分はコードにあるので消せません。追記した発言だけ削除できます。'
+                 :'書いた発言は他のコメントと同じ場所に保存されます。')
+    +'</div></div>';
+  el.innerHTML=html;
+
+  const box=el.querySelector('.chat');
+  if(box)box.scrollTop=box.scrollHeight;   // 最新の発言を出す
+  const ta=document.getElementById('scr-t');
+  if(ta){
+    ta.addEventListener('keydown',(e)=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')scrSend();});
+    ta.focus();
+  }
+}
+function scrSelect(id){SCR_CUR=id;render();}
+function scrNew(){
+  const t=prompt('新しい脚本のタイトル（例: 中盤 なえかとの再会）');
+  if(t===null)return;
+  const title=t.trim();
+  if(!title)return;
+  const d=new Date(),p=(n)=>String(n).padStart(2,'0');
+  const id='S'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds());
+  scrPush(SCR_INDEX,id+'\n'+title);
+  SCR_CUR=id;
+  save();render();
+}
+function scrSend(){
+  const sel=document.getElementById('scr-sp'),ta=document.getElementById('scr-t');
+  if(!sel||!ta)return;
+  const txt=ta.value.trim();
+  if(!txt)return;
+  SCR_SP=sel.value;
+  scrPush(scrKey(SCR_CUR),SCR_SP+'\n'+txt);
+  ta.value='';
+  save();render();
+}
+// comments/ への追記。提案モードでは未送信リストにも積む(他のコメントと同じ扱い)
+function scrPush(key,text){
+  const ts=nowStamp();
+  if(!STORE.comments[key])STORE.comments[key]=[];
+  STORE.comments[key].push({text,ts});
+  if(PROPOSE){
+    if(!PENDING.comments[key])PENDING.comments[key]=[];
+    PENDING.comments[key].push({text,ts});
+  }
+  if(SERVER){
+    fetch(API+'/api/log',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sec:key,text,ts})}).catch(()=>{});
+  }
+}
+function scrDel(id,i){
+  const key=scrKey(id);
+  const c=(STORE.comments[key]||[])[i];
+  if(!c)return;
+  if(!confirm('この発言を削除します。よろしいですか?'))return;
+  if(PROPOSE){
+    // 公開済みの発言はここからは消せない(消すならローカル版で)
+    const p=PENDING.comments[key]||[];
+    const at=p.findIndex(x=>x.ts===c.ts&&x.text===c.text);
+    if(at<0){alert('公開済みの発言は、ここからは削除できません。');return;}
+    p.splice(at,1);
+    if(!p.length)delete PENDING.comments[key];
+  }
+  STORE.comments[key].splice(i,1);
+  if(!STORE.comments[key].length)delete STORE.comments[key];
+  save();render();
 }
 
 /* ---------- dialogue mock player ---------- */

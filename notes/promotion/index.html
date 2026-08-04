@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MINERTIA プロモーションメモ</title>
+<style>
+  /* 配色・字組みはポートフォリオ(src/globals.css)に合わせる。
+     紙のような淡色地 + ink/orange/green/blue の4色だけで組む。 */
+  :root{
+    --ink:#151a17;
+    --paper:#f2efe7;
+    --card:#e5e2d9;
+    --muted:#757a74;
+    --muted-strong:#5f645e;
+    --line:#cbc8bf;
+    --green:#b8de50;
+    --orange:#f06b45;
+    --blue:#a7c6f1;
+    --font-jp:"Yu Gothic","Hiragino Kaku Gothic ProN",sans-serif;
+    --font-display:Arial,Helvetica,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--font-jp);line-height:1.9;font-size:15px}
+  a{color:inherit}
+
+  /* 小見出しラベル。ポートフォリオの .label / .eyebrow と同じ字組み */
+  .label{font-family:var(--font-display);font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+
+  /* layout */
+  #app{display:flex;min-height:100vh}
+  nav{width:244px;flex:none;border-right:1px solid var(--line);padding:26px 0 40px;position:sticky;top:0;height:100vh;overflow-y:auto}
+  nav .brand{padding:0 22px 18px;border-bottom:1px solid var(--line);margin-bottom:6px}
+  nav .brand h1{font-family:var(--font-display);font-size:1.15rem;font-weight:700;letter-spacing:-.03em}
+  nav .brand small{color:var(--muted-strong);font-size:.62rem;font-family:var(--font-display);letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+  nav .grp{padding:20px 22px 6px;color:var(--orange)}
+  nav button.nv{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;text-align:left;
+    padding:9px 22px;background:none;border:none;color:var(--muted-strong);font-size:.86rem;font-weight:500;
+    cursor:pointer;font-family:inherit;position:relative;transition:color .2s ease}
+  nav button.nv:hover{color:var(--ink)}
+  nav button.nv.on{color:var(--ink);font-weight:700}
+  /* 現在地は色だけでなく線でも示す（色覚に依存させない） */
+  nav button.nv.on::after{content:"";position:absolute;left:22px;right:22px;bottom:4px;height:2px;background:var(--orange)}
+  nav .cnt{font-family:var(--font-display);font-size:.58rem;font-weight:700;background:var(--ink);color:var(--paper);
+    border-radius:999px;padding:1px 8px;flex:none}
+  nav .cnt.zero{background:transparent;color:var(--muted);border:1px solid var(--line)}
+
+  main{flex:1;min-width:0;padding:34px clamp(24px,4vw,56px) 120px;max-width:940px}
+
+  /* topbar */
+  #top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:26px}
+  #top input.q{flex:1;min-width:190px;background:var(--paper);border:1px solid var(--line);border-radius:999px;
+    padding:8px 16px;color:var(--ink);font-family:inherit;font-size:.8rem}
+  #top input.q::placeholder{color:var(--muted)}
+  #top input.q:focus{outline:none;border-color:var(--ink)}
+
+  /* ボタンはポートフォリオのピル型リンクと同じ挙動 */
+  .btn{background:var(--paper);border:1px solid rgba(21,26,23,.28);border-radius:999px;
+    box-shadow:0 2px 0 rgba(21,26,23,.16);cursor:pointer;font-family:var(--font-jp);font-size:.7rem;font-weight:700;
+    min-height:32px;padding:6px 14px;white-space:nowrap;color:var(--ink);
+    transition:background 160ms ease,box-shadow 160ms ease,color 160ms ease,transform 160ms ease}
+  .btn:hover,.btn:focus-visible{background:var(--ink);color:var(--paper);box-shadow:0 4px 0 rgba(240,107,69,.8);
+    outline:none;transform:translateY(-2px)}
+  .btn.pri{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .btn.pri:hover{background:var(--orange);color:var(--ink);border-color:var(--orange);box-shadow:0 4px 0 rgba(21,26,23,.3)}
+  .btn.pri.dim{background:transparent;color:var(--muted);border-color:var(--line);box-shadow:none}
+  .btn.pri.dim:hover{background:transparent;color:var(--muted);transform:none;box-shadow:none}
+
+  .mode{font-family:var(--font-display);font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    padding:5px 12px;border-radius:999px;white-space:nowrap;border:1px solid}
+  .mode.on{background:var(--green);border-color:var(--green);color:var(--ink)}
+  .mode.off{background:transparent;border-color:var(--line);color:var(--muted-strong)}
+  .mode.ro{background:var(--blue);border-color:var(--blue);color:var(--ink)}
+
+  /* page header */
+  .phead{margin-bottom:22px;border-bottom:1px solid var(--line);padding-bottom:16px}
+  .phead .eyebrow{color:var(--orange);margin-bottom:8px}
+  .phead h2{font-size:clamp(1.7rem,3.4vw,2.5rem);font-weight:550;letter-spacing:-.05em;line-height:1.2}
+  .phead p{color:var(--muted-strong);font-size:.76rem;line-height:1.9;margin-top:8px;max-width:640px}
+  .sep{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px 0;margin:30px 0 14px;
+    color:var(--muted-strong)}
+
+  /* 前提の固定ボックス。ポートフォリオの .tint と同じ淡い青 */
+  .fixed{background:var(--blue);border-radius:16px;padding:18px 22px;margin-bottom:22px}
+  .fixed .t{color:var(--ink);opacity:.66;margin-bottom:8px}
+  .fixed ul{margin:0;padding:0;list-style:none}
+  .fixed li{font-size:.86rem;line-height:1.8;padding-left:14px;position:relative}
+  .fixed li+li{margin-top:4px}
+  .fixed li::before{content:"";position:absolute;left:0;top:.75em;width:5px;height:5px;border-radius:50%;background:var(--ink)}
+
+  /* 入力 */
+  .newbox{border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:26px;background:var(--paper)}
+  .newbox textarea,.memo textarea{width:100%;min-height:84px;border:1px solid var(--line);border-radius:12px;
+    padding:12px 14px;font-family:inherit;font-size:.88rem;line-height:1.9;resize:vertical;background:var(--paper);color:var(--ink)}
+  .newbox textarea::placeholder{color:var(--muted)}
+  .newbox textarea:focus,.memo textarea:focus{outline:none;border-color:var(--ink)}
+  .newbox .row{display:flex;align-items:center;gap:12px;margin-top:12px}
+  .newbox .hint{font-size:.62rem;color:var(--muted);margin-left:auto;text-align:right}
+
+  /* メモ */
+  .memo{background:var(--card);border-radius:16px;padding:16px 20px;margin-bottom:12px}
+  .memo.pend{box-shadow:inset 3px 0 0 var(--orange)}
+  .memo .mhead{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+  .memo h3{font-size:1rem;font-weight:600;letter-spacing:-.02em;line-height:1.6;flex:1;min-width:0;word-break:break-word}
+  .memo .ts{font-family:var(--font-display);font-size:.56rem;letter-spacing:.06em;color:var(--muted);white-space:nowrap}
+  .memo .body{font-size:.82rem;line-height:1.95;white-space:pre-wrap;word-break:break-word;color:var(--muted-strong)}
+  .memo .body a{border-bottom:1px solid var(--orange)}
+  .memo .acts{display:flex;gap:14px;margin-top:12px}
+  .memo .acts button{border:none;background:none;color:var(--muted);font-family:var(--font-display);font-size:.58rem;
+    font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:0;transition:color .16s ease}
+  .memo .acts button:hover{color:var(--ink)}
+  .memo .acts button.del:hover{color:var(--orange)}
+  .memo .unsent{font-family:var(--font-display);font-size:.54rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    background:var(--orange);color:var(--paper);border-radius:999px;padding:2px 9px;white-space:nowrap}
+
+  .empty{color:var(--muted);text-align:center;padding:64px 0;font-size:.78rem;line-height:2}
+  mark{background:var(--green);color:var(--ink);border-radius:3px;padding:0 2px}
+
+  @media (max-width:760px){
+    #app{display:block}
+    nav{width:auto;height:auto;position:static;border-right:none;border-bottom:1px solid var(--line);padding:20px 0 10px}
+    nav .brand{padding:0 22px 14px}
+    nav .grp{padding:14px 22px 4px}
+    main{padding:24px 22px 100px}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <nav id="nav"></nav>
+  <main>
+    <div id="top"></div>
+    <div id="page"></div>
+  </main>
+</div>
+
+<script>
+/* =========================================================
+   MINERTIA プロモーションメモ
+   前提 / X運用 / イベント / スケジュール の4ページに、
+   自由にメモを積んでいくだけのメモ帳。中身は空から始める。
+
+   保存先は3通り。データの形は他のノートサイトと同じ feedback.json。
+     - start_site.bat 起動中 … feedback.json へ自動保存
+     - GitHub Pages(静的)   … 読み取り専用 + 提案モード(Issue で送る)
+     - どちらでもない        … このブラウザの localStorage だけ
+
+   メモ1件 = comments[ページID] の1要素 {text, ts}。1行目が見出しになる。
+   マージ規則(和集合・後勝ち)は scripts/notes-merge.mjs と共通なので、
+   ページ側に新しいデータ形式を持ち込まずに済んでいる。
+   ========================================================= */
+
+const PAGES = [
+  {id:'premise',  nav:'前提',        title:'前提',        label:'Premise',
+   desc:'前に進む条件と、動かせない事実。ここが変わると他の3ページが全部変わる。'},
+  {id:'x',        nav:'X 運用',      title:'X 運用',      label:'X Operation',
+   desc:'投稿のネタ、伸びた／伸びなかった記録、運用ルール。'},
+  {id:'events',   nav:'イベント',    title:'イベント',    label:'Events',
+   desc:'出展・参加の候補、日程、締切、やること。'},
+  {id:'schedule', nav:'スケジュール', title:'スケジュール', label:'Schedule',
+   desc:'いつ何をやるか。逆算と、その週の実績。'},
+];
+
+/* ---------- 保存 ---------- */
+const LS_KEY='minertia_promotion_memo_v1';
+const PEND_KEY='minertia_promotion_pending_v1';
+const SITE='promotion';
+const GH_ISSUE='https://github.com/yooyooy724/yooyooy724.github.io/issues/new';
+const API=(location.protocol==='http:'||location.protocol==='https:')?'':'http://localhost:8139';
+let SERVER=false;      // サーバー接続中なら feedback.json へ自動永続化
+let PROPOSE=false;     // 静的配信(GitHub Pages)。変更は手元に溜め、Issue で送る
+function emptyFb(){return {comments:{},reactions:{},choices:{}};}
+let STORE=emptyFb();   // 表示用(公開分 + 未送信分)
+let BASE=emptyFb();    // 公開されている分
+let PENDING=emptyFb(); // まだ送っていない分
+try{const s=localStorage.getItem(LS_KEY); if(s) STORE=Object.assign(emptyFb(),JSON.parse(s));}catch(e){}
+
+function pendCount(){return Object.values(PENDING.comments).reduce((n,a)=>n+a.length,0);}
+function savePending(){try{localStorage.setItem(PEND_KEY,JSON.stringify(PENDING));}catch(e){}}
+
+let postTimer=null;
+function save(){
+  if(PROPOSE){savePending();return;}
+  try{localStorage.setItem(LS_KEY,JSON.stringify(STORE));}catch(e){}
+  if(SERVER){
+    clearTimeout(postTimer);
+    postTimer=setTimeout(()=>{
+      fetch(API+'/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(STORE)})
+        .catch(()=>{SERVER=false;renderTop();});
+    },250);
+  }
+}
+// 和集合・後勝ち。scripts/notes-merge.mjs と同じ規則。
+function mergeFb(base,patch){
+  const out=emptyFb();
+  const ids=new Set(Object.keys(base.comments||{}).concat(Object.keys(patch.comments||{})));
+  for(const id of ids){
+    const seen=new Set();const arr=[];
+    for(const c of ((base.comments||{})[id]||[]).concat((patch.comments||{})[id]||[])){
+      if(!c||typeof c.text!=='string')continue;
+      const k=c.ts+'|'+c.text;
+      if(seen.has(k))continue;
+      seen.add(k);arr.push(c);
+    }
+    arr.sort((a,b)=>String(a.ts).localeCompare(String(b.ts)));
+    if(arr.length)out.comments[id]=arr;
+  }
+  out.reactions=Object.assign({},base.reactions,patch.reactions);
+  out.choices=Object.assign({},base.choices,patch.choices);
+  return out;
+}
+async function connectServer(){
+  try{
+    const r=await fetch(API+'/api/feedback',{cache:'no-store'});
+    if(!r.ok)throw 0;
+    const remote=await r.json();
+    STORE=mergeFb(STORE,remote);   // 過去分(ファイル)とこのブラウザ分を統合
+    SERVER=true;
+    save();                        // 統合結果をファイルへ書き戻し
+    return;
+  }catch(e){SERVER=false;}
+  // サーバーが無い場合、同じ場所の feedback.json を静的に読む(GitHub Pages 配信)。
+  try{
+    const r=await fetch('feedback.json',{cache:'no-store'});
+    if(!r.ok)throw 0;
+    const remote=await r.json();
+    if(!remote||typeof remote!=='object')throw 0;
+    BASE={comments:remote.comments||{},reactions:remote.reactions||{},choices:remote.choices||{}};
+    PROPOSE=true;
+    try{const p=localStorage.getItem(PEND_KEY); if(p)PENDING=Object.assign(emptyFb(),JSON.parse(p));}catch(e){}
+    reconcile();                   // 公開側に載った分を未送信リストから外す
+    STORE=mergeFb(BASE,PENDING);
+  }catch(e){}
+}
+// 公開データに既に反映されたメモを PENDING から取り除く。申告ではなく実データで判定する。
+function reconcile(){
+  for(const id of Object.keys(PENDING.comments)){
+    const seen=new Set((BASE.comments[id]||[]).map(c=>c.ts+'|'+c.text));
+    const rest=PENDING.comments[id].filter(c=>!seen.has(c.ts+'|'+c.text));
+    if(rest.length)PENDING.comments[id]=rest; else delete PENDING.comments[id];
+  }
+  savePending();
+}
+// 未送信分を Issue の本文に載せて GitHub を開く。ページ側に認証情報は持たない。
+function submitToGitHub(){
+  const n=pendCount();
+  if(!n){alert('未送信のメモはありません。');return;}
+  const payload=Object.assign({site:SITE,at:new Date().toISOString()},PENDING);
+  const body='### notes-inbox\n\nこの Issue は自動処理されます。内容を編集しないでください。\n\n```json\n'
+    +JSON.stringify(payload)+'\n```\n';
+  const title='[notes-inbox] '+SITE+' '+n+'件';
+  const url=GH_ISSUE+'?title='+encodeURIComponent(title)+'&body='+encodeURIComponent(body);
+  if(url.length>7500){
+    // URL が長すぎるとブラウザ/GitHub 側で切られる。手貼りに切り替える。
+    navigator.clipboard.writeText(body).then(
+      ()=>{alert('メモが多いため本文をクリップボードにコピーしました。\n開いた画面のタイトルを「'+title+'」にして、本文に貼り付けてください。');
+           window.open(GH_ISSUE,'_blank');},
+      ()=>prompt('この本文をコピーして、新規 Issue に貼り付けてください（タイトル: '+title+'）',body));
+    return;
+  }
+  window.open(url,'_blank');
+  alert('GitHub の画面が開きます。内容を確認して「Submit new issue」を押してください。\n\n反映されるとこのページに載ります（1分ほど）。未送信の表示は、反映を検知したときに自動で消えます。');
+}
+
+/* ---------- 状態 ---------- */
+const PAGE_IDS=PAGES.map(p=>p.id);
+let curPage=(PAGE_IDS.concat('all')).includes(location.hash.slice(1))?location.hash.slice(1):'premise';
+let query='';
+let newest=true;   // 並び順。既定は新しい順
+let editing=null;  // 編集中のメモ '<pageId>#<ts>|<text>'
+
+function memosOf(id){
+  const arr=(STORE.comments[id]||[]).slice();
+  arr.sort((a,b)=>String(a.ts).localeCompare(String(b.ts)));
+  return newest?arr.reverse():arr;
+}
+function countOf(id){return (STORE.comments[id]||[]).length;}
+function totalCount(){return PAGE_IDS.reduce((n,id)=>n+countOf(id),0);}
+function isPending(id,c){return (PENDING.comments[id]||[]).some(x=>x.ts===c.ts&&x.text===c.text);}
+function keyOf(id,c){return id+'#'+c.ts+'|'+c.text;}
+function hit(c){return !query||c.text.toLowerCase().includes(query.toLowerCase());}
+function stamp(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')
+    +' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+}
+
+/* ---------- 描画 ---------- */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function linkify(s){return s.replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');}
+function hilite(s){
+  if(!query)return s;
+  const q=query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return s.replace(new RegExp('('+q+')','gi'),'<mark>$1</mark>');
+}
+function fmt(s){return hilite(linkify(esc(s)));}
+
+function renderNav(){
+  let html='<div class="brand"><h1>MINERTIA</h1><small>Promotion Memo</small></div>';
+  html+='<div class="grp label">ページ</div>';
+  for(const p of PAGES){
+    const n=countOf(p.id);
+    html+='<button class="nv'+(p.id===curPage?' on':'')+'" onclick="go(\''+p.id+'\')">'
+      +'<span>'+p.nav+'</span><span class="cnt'+(n?'':' zero')+'">'+n+'</span></button>';
+  }
+  html+='<div class="grp label">まとめ</div>';
+  html+='<button class="nv'+(curPage==='all'?' on':'')+'" onclick="go(\'all\')"><span>全部まとめて見る</span>'
+    +'<span class="cnt'+(totalCount()?'':' zero')+'">'+totalCount()+'</span></button>';
+  document.getElementById('nav').innerHTML=html;
+}
+function go(id){curPage=id;location.hash=id;editing=null;render();window.scrollTo(0,0);}
+
+function renderTop(){
+  const n=PROPOSE?pendCount():0;
+  const mode=PROPOSE
+    ?'<span class="mode ro" title="このページは公開版です。書いたメモは端末に溜まり、「GitHubへ送信」で反映されます">提案モード'+(n?'（未送信 '+n+'）':'')+'</span>'
+    :SERVER
+    ?'<span class="mode on" title="メモは feedback.json へ自動保存されています">自動保存 ON</span>'
+    :'<span class="mode off" title="start_site.bat を起動すると、メモがファイルへ自動保存されます(現在はこのブラウザ内のみ)">自動保存 OFF</span>';
+  document.getElementById('top').innerHTML=
+     '<input class="q" id="q" type="search" placeholder="メモを検索" value="'+esc(query)+'" oninput="setQuery(this.value)">'
+    +'<button class="btn" onclick="toggleSort()">'+(newest?'新しい順':'古い順')+'</button>'
+    +'<button class="btn" onclick="exportMD()">書き出し</button>'
+    +(PROPOSE?'<button class="btn pri'+(n?'':' dim')+'" onclick="submitToGitHub()">GitHubへ送信'+(n?'（'+n+'）':'')+'</button>':'')
+    +mode;
+}
+function setQuery(v){
+  query=v;
+  renderNav();renderPage();
+  const q=document.getElementById('q');
+  if(q){q.focus();q.setSelectionRange(q.value.length,q.value.length);}
+}
+function toggleSort(){newest=!newest;render();}
+
+function memoHtml(pid,c){
+  const k=keyOf(pid,c);
+  const lines=c.text.split('\n');
+  const head=lines[0];
+  const rest=lines.slice(1).join('\n').replace(/^\n+/,'');
+  const pend=PROPOSE&&isPending(pid,c);
+  if(editing===k){
+    return '<div class="memo'+(pend?' pend':'')+'">'
+      +'<textarea id="ed">'+esc(c.text)+'</textarea>'
+      +'<div class="acts"><button onclick="saveEdit(\''+pid+'\')">保存</button>'
+      +'<button onclick="cancelEdit()">取消</button></div></div>';
+  }
+  return '<div class="memo'+(pend?' pend':'')+'">'
+    +'<div class="mhead"><h3>'+fmt(head)+'</h3>'
+    +(pend?'<span class="unsent">未送信</span>':'')
+    +'<span class="ts">'+esc(c.ts)+'</span></div>'
+    +(rest?'<div class="body">'+fmt(rest)+'</div>':'')
+    +'<div class="acts">'
+    +'<button onclick="startEdit(\''+encodeURIComponent(k)+'\')">編集</button>'
+    +'<button class="del" onclick="delMemo(\''+pid+'\',\''+encodeURIComponent(c.ts+'|'+c.text)+'\')">削除</button>'
+    +'</div></div>';
+}
+
+function renderPage(){
+  const el=document.getElementById('page');
+
+  if(curPage==='all'){
+    let html='<div class="phead"><p class="eyebrow label">All</p><h2>全部まとめて見る</h2>'
+      +'<p>4ページのメモを一覧します。追加は各ページから。</p></div>';
+    let any=false;
+    for(const p of PAGES){
+      const list=memosOf(p.id).filter(hit);
+      if(!list.length)continue;
+      any=true;
+      html+='<div class="sep label">'+esc(p.title)+' — '+list.length+'</div>';
+      for(const c of list)html+=memoHtml(p.id,c);
+    }
+    if(!any)html+='<div class="empty">'+(query?'見つかりませんでした。':'まだメモがありません。')+'</div>';
+    el.innerHTML=html;
+    return;
+  }
+
+  const p=PAGES.find(x=>x.id===curPage)||PAGES[0];
+  let html='<div class="phead"><p class="eyebrow label">'+esc(p.label)+'</p><h2>'+esc(p.title)+'</h2>'
+    +'<p>'+esc(p.desc)+'</p></div>';
+
+  if(p.id==='premise'){
+    html+='<div class="fixed"><div class="t label">動かせない前提</div><ul>'
+      +'<li><b>モバイル版はリリース済み</b>（iOS / Android・実ユーザーがプレイ中）</li>'
+      +'<li><b>Steam 版は 2026年9月末リリース予定</b></li>'
+      +'</ul></div>';
+  }
+
+  html+='<div class="newbox">'
+    +'<textarea id="ta" placeholder="メモを書く（1行目が見出しになります）&#10;Ctrl+Enter で追加"></textarea>'
+    +'<div class="row"><button class="btn pri" onclick="addMemo(\''+p.id+'\')">追加</button>'
+    +'<span class="hint">'+(PROPOSE?'書いたメモは端末に溜まります。「GitHubへ送信」で反映。'
+        :'保存先: '+(SERVER?'feedback.json':'このブラウザのみ'))+'</span></div></div>';
+
+  const list=memosOf(p.id).filter(hit);
+  if(!list.length){
+    html+='<div class="empty">'+(query?'見つかりませんでした。':'まだメモがありません。上の欄に書いて「追加」。')+'</div>';
+  }else{
+    for(const c of list)html+=memoHtml(p.id,c);
+  }
+  el.innerHTML=html;
+
+  const ta=document.getElementById('ta');
+  if(ta)ta.addEventListener('keydown',(e)=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')addMemo(p.id);});
+  const ed=document.getElementById('ed');
+  if(ed){ed.focus();ed.setSelectionRange(ed.value.length,ed.value.length);}
+}
+
+/* ---------- 操作 ---------- */
+function addMemo(pid){
+  const ta=document.getElementById('ta');
+  if(!ta)return;
+  const txt=ta.value.trim();
+  if(!txt)return;
+  const ts=stamp(new Date());
+  if(!STORE.comments[pid])STORE.comments[pid]=[];
+  STORE.comments[pid].push({text:txt,ts});
+  if(PROPOSE){
+    if(!PENDING.comments[pid])PENDING.comments[pid]=[];
+    PENDING.comments[pid].push({text:txt,ts});
+  }
+  ta.value='';
+  save();render();
+  if(SERVER){
+    fetch(API+'/api/log',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sec:pid,text:txt,ts})}).catch(()=>{});
+  }
+}
+function startEdit(k){editing=decodeURIComponent(k);render();}
+function cancelEdit(){editing=null;render();}
+function saveEdit(pid){
+  const ed=document.getElementById('ed');
+  if(!ed)return;
+  const txt=ed.value.trim();
+  const rest=editing.slice(pid.length+1);        // '<ts>|<text>'
+  const ts=rest.slice(0,rest.indexOf('|'));
+  const text=rest.slice(rest.indexOf('|')+1);
+  editing=null;
+  if(!txt||txt===text){render();return;}
+  if(!removeMemo(pid,ts,text))return;
+  // 編集は「消して入れ直す」。マージ規則が ts+text を鍵にしているため、
+  // 書き換えた本文には新しい時刻を振らないと同一物として扱われる。
+  const nts=stamp(new Date());
+  if(!STORE.comments[pid])STORE.comments[pid]=[];
+  STORE.comments[pid].push({text:txt,ts:nts});
+  if(PROPOSE){
+    if(!PENDING.comments[pid])PENDING.comments[pid]=[];
+    PENDING.comments[pid].push({text:txt,ts:nts});
+  }
+  save();render();
+}
+function delMemo(pid,k){
+  const s=decodeURIComponent(k);
+  const ts=s.slice(0,s.indexOf('|'));
+  const text=s.slice(s.indexOf('|')+1);
+  if(!confirm('このメモを削除します。よろしいですか?'))return;
+  if(removeMemo(pid,ts,text)){save();render();}
+}
+// 公開済みのメモは提案モードからは消せない(消すならローカル版で)
+function removeMemo(pid,ts,text){
+  if(PROPOSE){
+    const p=PENDING.comments[pid]||[];
+    const at=p.findIndex(x=>x.ts===ts&&x.text===text);
+    if(at<0){
+      alert('公開済みのメモは、この画面からは編集・削除できません。\nローカル版(start_site.bat)から行ってください。');
+      render();return false;
+    }
+    p.splice(at,1);
+    if(!p.length)delete PENDING.comments[pid];
+  }
+  const a=STORE.comments[pid]||[];
+  const i=a.findIndex(x=>x.ts===ts&&x.text===text);
+  if(i>=0)a.splice(i,1);
+  if(!(STORE.comments[pid]||[]).length)delete STORE.comments[pid];
+  return true;
+}
+
+/* ---------- 書き出し ---------- */
+function buildMD(){
+  let md='# MINERTIA プロモーションメモ ('+stamp(new Date())+')\n\n';
+  let any=false;
+  for(const p of PAGES){
+    const list=(STORE.comments[p.id]||[]).slice().sort((a,b)=>String(a.ts).localeCompare(String(b.ts)));
+    if(!list.length)continue;
+    any=true;
+    md+='## '+p.title+'\n\n';
+    for(const c of list){
+      const lines=c.text.split('\n');
+      md+='### '+lines[0]+'\n_'+c.ts+'_\n\n';
+      const rest=lines.slice(1).join('\n').trim();
+      if(rest)md+=rest+'\n\n';
+    }
+  }
+  return any?md:null;
+}
+function exportMD(){
+  const md=buildMD();
+  if(!md){alert('まだメモがありません。');return;}
+  navigator.clipboard.writeText(md).then(
+    ()=>alert('Markdownをコピーしました。Claude に貼り付けてください。'),
+    ()=>prompt('コピーできない場合は手動で選択してください:',md));
+}
+
+/* ---------- 起動 ---------- */
+function render(){renderNav();renderTop();renderPage();}
+window.addEventListener('hashchange',()=>{
+  const h=location.hash.slice(1);
+  if(h&&h!==curPage){curPage=h;editing=null;render();}
+});
+(async function boot(){render();await connectServer();render();})();
+</script>
+</body>
+</html>

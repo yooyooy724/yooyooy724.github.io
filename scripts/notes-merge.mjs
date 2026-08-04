@@ -87,6 +87,6 @@ export function parsePayload(body) {
     return null;
   }
   if (!data || typeof data !== "object" || Array.isArray(data)) return null;
-  if (!["story", "steam", "idea"].includes(data.site)) return null;
+  if (!["story", "steam", "idea", "promotion"].includes(data.site)) return null;
   return data;
 }
