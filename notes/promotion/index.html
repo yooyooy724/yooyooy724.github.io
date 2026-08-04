@@ -117,12 +117,39 @@
   .empty{color:var(--muted);text-align:center;padding:64px 0;font-size:.78rem;line-height:2}
   mark{background:var(--green);color:var(--ink);border-radius:3px;padding:0 2px}
 
+  /* ---------- スマホ ----------
+     ページが4枚しかないので引き出しにはせず、横スクロールのタブ1行に畳む。
+     常に見えているぶん、1タップで行き来できる。 */
   @media (max-width:760px){
+    body{font-size:14.5px;line-height:1.85}
     #app{display:block}
-    nav{width:auto;height:auto;position:static;border-right:none;border-bottom:1px solid var(--line);padding:20px 0 10px}
-    nav .brand{padding:0 22px 14px}
-    nav .grp{padding:14px 22px 4px}
-    main{padding:24px 22px 100px}
+    nav{width:auto;height:auto;position:sticky;top:0;z-index:20;background:var(--paper);
+      border-right:none;border-bottom:1px solid var(--line);padding:16px 0 0}
+    nav .brand{padding:0 20px 10px;border-bottom:none;margin-bottom:0;
+      display:flex;align-items:baseline;gap:10px}
+    nav .brand h1{font-size:1rem}
+    nav .brand small{font-size:.54rem}
+    nav .grp{display:none}
+    .nvrow{display:flex;gap:2px;overflow-x:auto;padding:0 12px;scrollbar-width:none}
+    .nvrow::-webkit-scrollbar{display:none}
+    nav button.nv{width:auto;flex:none;padding:8px 12px 10px;font-size:.82rem;gap:6px}
+    nav button.nv.on::after{left:12px;right:12px;bottom:2px}
+
+    main{padding:20px 18px 90px}
+    #top{gap:8px;margin-bottom:20px}
+    #top input.q{flex:1 1 100%}
+    .btn{font-size:.68rem;padding:6px 12px}
+
+    .phead h2{font-size:1.5rem}
+    .phead p{font-size:.74rem}
+    .fixed{padding:14px 16px;border-radius:14px}
+    .newbox{padding:14px;border-radius:14px}
+    .newbox .row{flex-wrap:wrap}
+    .newbox .hint{margin-left:0;text-align:left;flex:1 1 100%}
+    .memo{padding:14px 16px;border-radius:14px}
+    /* 日時に押されてタイトルが潰れないよう、狭いときは折り返す */
+    .memo .mhead{flex-wrap:wrap;gap:4px 10px}
+    .memo h3{flex:1 1 100%;font-size:.95rem}
   }
 </style>
 </head>
@@ -296,7 +323,8 @@ function hilite(s){
 function fmt(s){return hilite(linkify(esc(s)));}
 
 function renderNav(){
-  let html='<div class="brand"><h1>MINERTIA</h1><small>Promotion Memo</small></div>';
+  // .nvrow でくくるのは、スマホで横スクロールの1行に畳むため
+  let html='<div class="brand"><h1>MINERTIA</h1><small>Promotion Memo</small></div><div class="nvrow">';
   html+='<div class="grp label">ページ</div>';
   for(const p of PAGES){
     const n=countOf(p.id);
@@ -306,7 +334,7 @@ function renderNav(){
   html+='<div class="grp label">まとめ</div>';
   html+='<button class="nv'+(curPage==='all'?' on':'')+'" onclick="go(\'all\')"><span>全部まとめて見る</span>'
     +'<span class="cnt'+(totalCount()?'':' zero')+'">'+totalCount()+'</span></button>';
-  document.getElementById('nav').innerHTML=html;
+  document.getElementById('nav').innerHTML=html+'</div>';
 }
 function go(id){curPage=id;location.hash=id;editing=null;render();window.scrollTo(0,0);}
 
