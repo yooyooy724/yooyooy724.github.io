@@ -228,6 +228,7 @@
     </div>
 
     <dl class="current">
+      <dt>資料の構成</dt><dd><b>本書</b>（結論と実行順）／ <a href="spec.html">詳細仕様</a>（項目別の根拠と経緯）／ <a href="#phase2">指示書</a>（実装手順）の3層</dd>
       <dt>現在地</dt><dd>フェーズ2。<a href="#phase2">指示書8本</a>のうち01・02を公開、残り6本は作成中</dd>
       <dt>次工程</dt><dd>01・02のレビューと、Standalone検証ビルドの着手</dd>
       <dt>クラウドセーブ</dt><dd>Firestoreを正本とし、Steam Cloudへ自動複製</dd>
@@ -245,6 +246,12 @@
       <li><a href="#roadmap">実装順序</a></li>
       <li><a href="#actions">直近のチーム作業</a></li>
     </ol>
+    <p style="margin:12px 0 0;padding-top:10px;border-top:1px solid var(--line);font-size:13px">
+      別ページ:
+      <a href="spec.html"><b>詳細仕様（項目別）</b></a> ── 02 プラットフォーム抽象化 ／ 03 マネタイズ ／ 04 セーブとクラウド ／
+      05 横長レイアウトと PC 操作 ／ 06 Steam 機能 ／ 覚書 ／ 決定ボード。
+      各項目から対応する<a href="#phase2">指示書</a>へ辿れる。
+    </p>
   </nav>
 
   <aside class="comment-guide">
@@ -390,16 +397,16 @@
       </p>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>順番</th><th>状態</th><th>指示書</th><th>目的</th></tr></thead>
+          <thead><tr><th>順番</th><th>状態</th><th>指示書</th><th>対応する詳細仕様</th><th>目的</th></tr></thead>
           <tbody>
-            <tr><td>1</td><td class="status done">公開中</td><td><a href="instructions/01-platform.html">01 プラットフォーム抽象化</a></td><td>6境界と注入位置を確定する。</td></tr>
-            <tr><td>2</td><td class="status done">公開中</td><td><a href="instructions/02-steamworks.html">02 Steamworks.NETの整理と初期化</a></td><td>SDK、Define、起動失敗時の挙動を固定する。Standalone検証ビルドを含む。</td></tr>
-            <tr><td>3</td><td class="status pending">作成中</td><td>03 セーブの暗号化・移行とクラウドセーブ</td><td>既存ユーザーを壊さずAESへ移行し、Steam Cloudへ複製する。</td></tr>
-            <tr><td>4</td><td class="status pending">作成中</td><td>05 横長レイアウト</td><td>V/H分離と部品共有の成立性を1画面で確認する。</td></tr>
-            <tr><td>5</td><td class="status pending">作成中</td><td>04 マネタイズ</td><td>DLC所有権、付与履歴、二重付与防止、プランB切替値を定める。</td></tr>
-            <tr><td>6</td><td class="status pending">作成中</td><td>06 PC操作</td><td>入力競合を整理し、連続マージAPIをDomainへ置く。</td></tr>
-            <tr><td>7</td><td class="status pending">作成中</td><td>07 Steam機能</td><td>実績ID、翻訳キー、同期タイミングを定義する。</td></tr>
-            <tr><td>8</td><td class="status pending">作成中</td><td>08 ビルド・配信とQA</td><td>Depot、公証、多言語、チェックリストを固定する。</td></tr>
+            <tr><td>1</td><td class="status done">公開中</td><td><a href="instructions/01-platform.html">01 プラットフォーム抽象化</a></td><td><a href="spec.html#platform">02 プラットフォーム抽象化</a></td><td>6境界と注入位置を確定する。</td></tr>
+            <tr><td>2</td><td class="status done">公開中</td><td><a href="instructions/02-steamworks.html">02 Steamworks.NETの整理と初期化</a></td><td><a href="spec.html#platform">02 プラットフォーム抽象化</a> ／ <a href="spec.html#steamworks">Steamworks 管理画面</a></td><td>SDK、Define、起動失敗時の挙動を固定する。Standalone検証ビルドを含む。</td></tr>
+            <tr><td>3</td><td class="status pending">作成中</td><td>03 セーブの暗号化・移行とクラウドセーブ</td><td><a href="spec.html#save">04 セーブとクラウド</a></td><td>既存ユーザーを壊さずAESへ移行し、Steam Cloudへ複製する。</td></tr>
+            <tr><td>4</td><td class="status pending">作成中</td><td>05 横長レイアウト</td><td><a href="spec.html#display">05 横長レイアウトと PC 操作</a></td><td>V/H分離と部品共有の成立性を1画面で確認する。</td></tr>
+            <tr><td>5</td><td class="status pending">作成中</td><td>04 マネタイズ</td><td><a href="spec.html#money">03 マネタイズ</a></td><td>DLC所有権、付与履歴、二重付与防止、プランB切替値を定める。</td></tr>
+            <tr><td>6</td><td class="status pending">作成中</td><td>06 PC操作</td><td><a href="spec.html#display">05 横長レイアウトと PC 操作</a></td><td>入力競合を整理し、連続マージAPIをDomainへ置く。</td></tr>
+            <tr><td>7</td><td class="status pending">作成中</td><td>07 Steam機能</td><td><a href="spec.html#features">06 Steam 機能</a></td><td>実績ID、翻訳キー、同期タイミングを定義する。</td></tr>
+            <tr><td>8</td><td class="status pending">作成中</td><td>08 ビルド・配信とQA</td><td><a href="spec.html#build">ビルドと配信</a> ／ <a href="spec.html#qa">QA と法務</a> ／ <a href="spec.html#steamworks">Steamworks 管理画面</a></td><td>Depot、公証、多言語、チェックリストを固定する。</td></tr>
           </tbody>
         </table>
       </div>
@@ -446,9 +453,9 @@
       <a href="https://github.com/appopiss/UpgradeDomain/tree/minertia_area3/docs/steam-release">UpgradeDomain / docs / steam-release</a>
     </p>
     <p>
-      議論の経緯を確認する場合のみ、
-      <a class="archive" href="archive.html">フェーズ1の議論・コメント・選択肢のアーカイブ</a>
-      を参照する。
+      項目ごとの根拠・比較検討・選択肢は
+      <a href="spec.html">詳細仕様（項目別）</a>
+      に残してある。本書の決定に疑問が出たら、まずそちらを読む。
     </p>
   </footer>
 </article>

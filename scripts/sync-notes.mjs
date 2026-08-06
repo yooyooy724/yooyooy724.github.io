@@ -42,7 +42,9 @@ const SITES = [
     title: "Steam リリース企画",
     desc: "決定事項と、これから行う作業の実行計画。",
     can: "章ごとにコメントできます。実装向けの指示書をサブページに追加中です。",
-    files: ["index.html", "archive.html", "feedback.json"],
+    // spec.html = 項目別の詳細仕様（旧 archive.html）。
+    // archive.html は旧URLからの転送用スタブとして残してある。
+    files: ["index.html", "spec.html", "archive.html", "feedback.json"],
     // instructions/ はフェーズ2の指示書サブページ。index.html から辿る。
     // コメントは親と同じ feedback.json（../feedback.json）を読む。
     dirs: ["instructions"],
