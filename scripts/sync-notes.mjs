@@ -41,9 +41,11 @@ const SITES = [
     label: "Steam",
     title: "Steam リリース企画",
     desc: "決定事項と、これから行う作業の実行計画。",
-    can: "各ブロックに OK / 要変更・コメント。要決定は選択肢から選べます。",
+    can: "章ごとにコメントできます。実装向けの指示書をサブページに追加中です。",
     files: ["index.html", "archive.html", "feedback.json"],
-    dirs: [],
+    // instructions/ はフェーズ2の指示書サブページ。index.html から辿る。
+    // コメントは親と同じ feedback.json（../feedback.json）を読む。
+    dirs: ["instructions"],
   },
   {
     dir: "idea",
@@ -75,6 +77,22 @@ async function injectNoindex(file) {
   const html = await readFile(file, "utf8");
   if (html.includes('name="robots"')) return;
   await writeFile(file, html.replace(/<head>/i, `<head>\n${NOINDEX}`), "utf8");
+}
+
+// dirs で丸ごとコピーしたフォルダにも HTML が入ることがある（steam の instructions/ 等）。
+// files 側だけに noindex を入れていると、サブページだけ検索に載ってしまう。
+async function injectNoindexDeep(dir) {
+  let entries = [];
+  try {
+    entries = await readdir(dir, { withFileTypes: true });
+  } catch {
+    return;
+  }
+  for (const e of entries) {
+    const p = join(dir, e.name);
+    if (e.isDirectory()) await injectNoindexDeep(p);
+    else if (e.name.endsWith(".html")) await injectNoindex(p);
+  }
 }
 
 // data/events 配下の .jsonl を1本の配列に畳む
@@ -136,7 +154,9 @@ for (const site of SITES) {
   for (const d of site.dirs) {
     const src = join(fromDir, d);
     if (!existsSync(src)) continue;
-    await cp(src, join(toDir, d), { recursive: true });
+    const destDir = join(toDir, d);
+    await cp(src, destDir, { recursive: true });
+    await injectNoindexDeep(destDir);
   }
   let note = "";
   if (site.dir === "idea") {

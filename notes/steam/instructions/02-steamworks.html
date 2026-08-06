@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Steamworks.NET の整理と初期化 — Idle Minertia Steam移植 指示書</title>
+<link rel="stylesheet" href="guide.css">
+</head>
+<body>
+<article>
+  <header>
+    <p class="crumb"><a href="../index.html">Steam移植の決定事項と実行計画</a> ／ 指示書 02</p>
+    <p class="eyebrow">IDLE MINERTIA / STEAM RELEASE / PHASE 2 / INSTRUCTION 02</p>
+    <h1>Steamworks.NET の整理と初期化</h1>
+    <p class="lead">
+      Steamworks.NET の二重導入を解消し、Scripting Define を整理し、<code>SteamManager</code> を新規作成する。
+      そのうえで <strong>Standalone 検証ビルドを通し、既存の <code>IdleSystem.*.dll</code> 群が Windows / macOS で動くかを確定させる</strong>。
+      設計の再議論はしない。変更範囲・依存・完了条件を固定するのがこの指示書の役割である。
+    </p>
+    <p class="meta">最終更新: 2026-08-06　／　担当: Unity View（Unityプロジェクト側のみ。ドメインは1行も変更しない）</p>
+
+    <div class="summary">
+      <strong>この指示書の完了条件</strong>
+      Steamworks.NET の参照が <code>Packages/manifest.json</code> 1箇所に一本化され、<code>STEAMWORKS_NET</code> が Standalone 限定になり、
+      <code>SteamAPI.Init()</code> の成否によらず起動する <code>SteamManager</code> が動作したうえで、
+      Windows / macOS の Standalone 検証ビルドが起動し、ドメイン DLL のロード結果が画面とログに出ている。
+    </div>
+
+    <dl class="current">
+      <dt>根拠</dt><dd>親ページ <a href="../index.html#roadmap">5. 実装順序</a> の 1〜3（Standalone検証ビルド／AppID取得の並行開始／Steamworks.NETとDefineの整理）、および <a href="../index.html#decisions">1. 決定事項一覧</a> の AppID 行</dd>
+      <dt>前提</dt><dd><strong>なし。</strong>指示書01（プラットフォーム抽象化）より先に着手してよい。むしろ本書の検証ビルド結果が出るまで、指示書01以降の見積りは確定できない</dd>
+      <dt>DLL反映</dt><dd><strong>不要。</strong>ドメインのソースは変更しない。ただし<strong>検証ビルドを取る直前に一度 <code>go run Go/buildblazor/main.go</code> を実行し、DLL を最新へ揃える</strong>（古い DLL で検証すると結果の意味がなくなる）</dd>
+      <dt>規模の目安</dt><dd>PR 4本（① 検証ビルド一式 ② Steamworks.NET 一本化 ③ Scripting Define 整理 ④ <code>SteamManager</code> と <code>ISteamRuntime</code>）</dd>
+    </dl>
+  </header>
+
+  <nav class="toc" aria-label="目次">
+    <h2>目次</h2>
+    <ol>
+      <li><a href="#purpose">目的と根拠</a></li>
+      <li><a href="#scope">変更範囲</a></li>
+      <li><a href="#design">実装（スクリプト）</a></li>
+      <li><a href="#steps">作業手順</a></li>
+      <li><a href="#accept">受け入れ条件とテスト</a></li>
+      <li><a href="#rollback">ロールバック</a></li>
+    </ol>
+  </nav>
+
+  <aside class="comment-guide">
+    <p>各章の末尾からコメントを追加・編集できます。</p>
+    <span id="comment-mode" class="mode-badge">読み込み中</span>
+    <span id="pending-summary">未送信 0件</span>
+    <button id="submit-comments" type="button" disabled>GitHubへ送信</button>
+  </aside>
+
+  <main>
+    <section id="purpose" data-comment-id="guide-steamworks-purpose" data-comment-title="目的と根拠">
+      <h2>1. 目的と根拠</h2>
+      <p>
+        この指示書の主目的は <strong>Standalone 検証ビルドを通すこと</strong>である。
+        Steamworks.NET の整理と <code>SteamManager</code> の作成は、その検証を意味あるものにするための前準備として同じ指示書に入れている。
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>親ページの決定</th><th>この指示書での扱い</th></tr></thead>
+          <tbody>
+            <tr><td>Standalone検証ビルドを最初に通す</td><td><strong>本書の主目的。</strong>最小シーン + 反射によるアセンブリロード確認で、DLL の可否を最速で判定する。</td></tr>
+            <tr><td>Steamworks.NETとDefineを整理する</td><td>Assets 側の残骸2つを削除し <code>Packages/manifest.json</code> へ一本化。<code>STEAMWORKS_NET</code> を Standalone 限定にする。</td></tr>
+            <tr><td>初期化、失敗時のフォールバックを確定する</td><td><code>SteamManager</code> を新規作成。<code>SteamAPI.Init()</code> が false でも起動を止めない。</td></tr>
+            <tr><td><code>#if</code> は起動・構成・ネイティブSDK境界に限定する</td><td><code>#if</code> を書く場所を Installer ／ Steam 固有実装クラス内部 ／ Editor スクリプト の3箇所に限定する。ViewModel・Domain には書かない。</td></tr>
+            <tr><td>モバイル版を壊さない</td><td>既存の <code>.cs</code> は1ファイルも編集しない。追加のみ。Define も Android / iPhone から <code>STEAMWORKS_NET</code> を<strong>抜くだけ</strong>で、モバイルの挙動は変わらない。</td></tr>
+            <tr><td>AppID <code>3217600</code> は旧作用。新規取得</td><td>本書では AppID を確定させない。検証は Spacewar（<code>480</code>）で行い、実 AppID は取得後に差し替える。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>なぜ検証ビルドを最優先に置くか</h3>
+      <p>
+        本プロジェクトのゲームロジックは <code>Assets/Plugins/*.dll</code> としてビルド済みで持ち込まれており、
+        <strong>これが Standalone で動くかは一度も検証されていない。</strong>
+        ここが動かない場合、影響は指示書02の範囲では収まらず、移植計画そのものの見直しになる。
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>確認できた事実</th><th>出典</th><th>評価</th></tr></thead>
+          <tbody>
+            <tr><td>ドメイン各プロジェクトの <code>TargetFramework</code> は <code>netstandard2.1</code></td><td><code>NewCubeUpgradeDomain/*/*.csproj</code></td><td>Android（既に動作中）と同じ出力を使う</td></tr>
+            <tr><td>Standalone の <code>scriptingBackend: 0</code>（Mono）、Android は <code>1</code>（IL2CPP）</td><td><code>ProjectSettings/ProjectSettings.asset:1060-1063</code></td><td>Mono の方が制約は緩い。有利側</td></tr>
+            <tr><td>Standalone の <code>apiCompatibilityLevelPerPlatform: 3</code>、Android は <code>6</code></td><td>同 <code>1081-1083</code></td><td>Standalone のみ API プロファイルが違う。<strong>最大の不確定要素</strong></td></tr>
+            <tr><td><code>IdleSystem.*.dll</code> / <code>UpgradeDomain.dll</code> の <code>.meta</code> に <code>PluginImporter</code> ブロックが無い（2行のみ）</td><td><code>Assets/Plugins/IdleSystem.Core.dll.meta</code> ほか</td><td>Unity 既定（Any Platform 有効）で取り込まれる想定。<strong>要目視確認</strong></td></tr>
+            <tr><td><code>System.Windows.Forms.dll</code> が Standalone の Win / OSX / Linux すべてで <code>enabled: 1</code>、かつ自作 <code>.cs</code> からの参照ゼロ</td><td><code>Assets/Plugins/System.Windows.Forms.dll.meta</code></td><td>macOS ビルドで問題化しうる。検証項目に含める</td></tr>
+            <tr><td><code>Microsoft.Bcl.AsyncInterfaces.dll</code> が同梱されている</td><td><code>Assets/Plugins/</code></td><td>Standalone の API プロファイル次第で型の重複定義になりうる。検証項目に含める</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <strong>未確認:</strong>
+        <code>apiCompatibilityLevelPerPlatform</code> の <code>3</code> / <code>6</code> がそれぞれ Unity のどの列挙値に対応するかは、
+        Editor の Player Settings 画面で目視確認すること。数値だけから断定しない。
+        いずれにせよ <strong>Standalone と Android でプロファイルが異なる</strong>という事実は変わらず、検証が必要な理由もそこにある。
+      </div>
+    </section>
+
+    <section id="scope" data-comment-id="guide-steamworks-scope" data-comment-title="変更範囲">
+      <h2>2. 変更範囲</h2>
+
+      <h3>触ってよいファイル</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>パス</th><th>操作</th><th>内容</th></tr></thead>
+          <tbody>
+            <tr><td><code>Packages/manifest.json</code></td><td>編集</td><td><code>com.rlabrecque.steamworks.net</code> の Git URL にバージョンを固定する。</td></tr>
+            <tr><td><code>Assets/Steamworks.NET_15.0.1/</code></td><td><strong>削除</strong></td><td>GUID 名ディレクトリ 941 ファイルのみのインポート残骸。<code>.cs</code> も <code>.dll</code> も無い。</td></tr>
+            <tr><td><code>Assets/com.rlabrecque.steamworks.net/</code></td><td><strong>削除</strong></td><td><code>Plugins/</code> と <code>Runtime/</code> の<strong>空ディレクトリ2つ</strong>のみ（実ファイルは <code>.meta</code> 2件だけ）。</td></tr>
+            <tr><td><code>ProjectSettings/ProjectSettings.asset</code></td><td>編集</td><td><code>scriptingDefineSymbols</code> のみ。他の行は触らない。</td></tr>
+            <tr><td><code>Assets/1.Games/IdleGem/Platform/Steam/SteamManager.cs</code></td><td>新規</td><td>Steamworks 初期化。</td></tr>
+            <tr><td><code>Assets/1.Games/IdleGem/Platform/ISteamRuntime.cs</code></td><td>新規</td><td>初期化結果だけを外へ渡す契約。</td></tr>
+            <tr><td><code>Assets/1.Games/IdleGem/Platform/Null/NullSteamRuntime.cs</code></td><td>新規</td><td>常に未初期化を返す No-Op。</td></tr>
+            <tr><td><code>Assets/1.Games/IdleGem/Platform/Steam/SteamRuntime.cs</code></td><td>新規</td><td><code>SteamManager</code> の状態を <code>ISteamRuntime</code> として公開する。</td></tr>
+            <tr><td><code>Assets/1.Games/IdleGem/Platform/PlatformInstaller.cs</code></td><td>新規</td><td><code>#if</code> による bind の分岐。<strong>本書で唯一の Installer 分岐</strong>。</td></tr>
+            <tr><td><code>Assets/1.Games/IdleGem/Platform/Verify/StandaloneSmokeTest.cs</code></td><td>新規</td><td>検証ビルド専用。アセンブリロード結果を画面とログへ出す。</td></tr>
+            <tr><td><code>Assets/1.Games/IdleGem/Platform/Verify/StandaloneVerify.unity</code></td><td>新規</td><td>検証専用の最小シーン。<strong>Build Settings のシーンリストには追加しない</strong>（ビルドスクリプトが直接指定する）。</td></tr>
+            <tr><td><code>Assets/Editor/StandaloneVerifyBuild.cs</code></td><td>新規</td><td>検証ビルド用メニュー。Win64 / OSXUniversal。</td></tr>
+            <tr><td><code>steam_appid.txt</code></td><td>編集</td><td>検証中のみ <code>480</code>（Spacewar）へ。<strong>リリースビルドには同梱しない。</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>触ってはいけないファイル</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>パス</th><th>理由</th></tr></thead>
+          <tbody>
+            <tr><td><code>NewCubeUpgradeDomain/</code> 配下すべて</td><td>本書ではドメインを1行も変更しない。DLL の再ビルドは「最新へ揃える」目的のみ。</td></tr>
+            <tr><td><code>Assets/Plugins/*.dll</code> と <code>*.dll.meta</code></td><td><strong>検証で問題が出るまで手を入れない。</strong>先に <code>.meta</code> をいじると、何が原因で動いた／動かなかったのか判定できなくなる。</td></tr>
+            <tr><td><code>Assets/1.Games/IdleGem/Ads/AdRoot.cs</code>、<code>Ads/AdsClient.cs</code></td><td>広告の抽象化は指示書01の範囲。本書は Define に触れるだけ。</td></tr>
+            <tr><td><code>Assets/1.Games/IdleGem/Shop/IAP/</code> 配下</td><td>同上。<code>USE_UNITY_IAP</code> は Define へ追加するだけで、参照コードは書かない。</td></tr>
+            <tr><td><code>Assets/1.Games/IdleGem/Main/RootInstaller.cs</code></td><td>本書では <code>PlatformInstaller.Install()</code> の1行追加すら行わない。既存の起動経路を変えないまま検証を終わらせる。</td></tr>
+            <tr><td><code>Assets/Editor/DeploySteam.cs</code></td><td>旧作 <em>Idle Sphere</em> 向けで、参照シーン <code>Assets/1.Games/IdleSphere/IdleSphere.unity</code> は存在しない。作り直しは配信系の別指示書で扱う。</td></tr>
+            <tr><td><code>Assets/Editor/AndroidBuildScript.cs</code>、<code>iOSBuildScript.cs</code>、<code>PostBuildStep.cs</code></td><td>モバイルのリリース経路。壊すと出荷が止まる。</td></tr>
+            <tr><td><code>ProjectSettings/EditorBuildSettings.asset</code></td><td>検証シーンをシーンリストへ足さない。既存18シーンの順序は起動順に直結する。</td></tr>
+            <tr><td><code>ProjectSettings/ProjectSettings.asset</code> の <code>scriptingDefineSymbols</code> 以外の行</td><td><code>applicationIdentifier.Standalone</code> が <code>com.idlesystem.IdleSphere</code>、<code>projectName</code> が <code>Idle Sphere</code> のままだが、<strong>AppID 取得後に別PRで直す</strong>。検証ビルドには影響しない。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="warn">
+        <strong>Unity Editor を開いたまま <code>ProjectSettings.asset</code> をテキスト編集すると、変更が巻き戻る。</strong>
+        Editor が終了時に自身のメモリ上の値を書き戻すため。Define を変更するときは次のどちらかにすること。
+        <ul>
+          <li><strong>Unity Editor を完全に終了してから</strong>テキスト編集し、その後に Editor を起動する。</li>
+          <li>Editor の Player Settings 画面から入力する（プラットフォームごとにタブを切り替える必要がある）。</li>
+        </ul>
+        編集後は必ず <code>git diff ProjectSettings/ProjectSettings.asset</code> で意図した差分だけが残っていることを確認する。
+      </div>
+    </section>
+
+    <section id="design" data-comment-id="guide-steamworks-design" data-comment-title="実装（スクリプト）">
+      <h2>3. 実装（スクリプト）</h2>
+
+      <h3>3.1 Steamworks.NET を manifest.json へ一本化する</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>場所</th><th>今どうなっているか</th><th>どう変えるか</th></tr></thead>
+          <tbody>
+            <tr><td><code>Packages/manifest.json:15</code></td><td>Git URL 参照。<strong>バージョン指定なし</strong>（既定ブランチの HEAD を引く）</td><td><strong>これを正とする。</strong>タグを付けてバージョンを固定する</td></tr>
+            <tr><td><code>Assets/Steamworks.NET_15.0.1/</code></td><td>GUID 名ディレクトリ 941 ファイル。中身は <code>pathname</code> / <code>asset</code> / <code>metaData</code> のみ。<code>.cs</code> も <code>.dll</code> も無い</td><td><strong>ディレクトリごと削除</strong>（<code>.meta</code> も）</td></tr>
+            <tr><td><code>Assets/com.rlabrecque.steamworks.net/</code></td><td><code>Plugins/</code> と <code>Runtime/</code> が<strong>空</strong>。実ファイルは <code>Plugins.meta</code> / <code>Runtime.meta</code> の2件だけ</td><td><strong>ディレクトリごと削除</strong></td></tr>
+            <tr><td>自作 <code>.cs</code> からの <code>Steamworks</code> 参照</td><td><strong>0件</strong>（<code>Assets/**/*.cs</code> を全文検索して該当なし）</td><td>削除しても壊れるコードは無い</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        バージョンを固定する理由は、<strong>Steamworks.NET は 15.x 系と 20.x 系で初期化 API が変わっている</strong>ため。
+        本書のコードは <code>SteamAPI.Init()</code> が <code>bool</code> を返す前提で書いてあり、固定しないと更新のたびにコンパイルが通らなくなる可能性がある。
+      </p>
+
+      <figure class="code">
+        <figcaption><span class="keep">既存を編集</span> <b>Packages/manifest.json</b>（15行目付近）</figcaption>
+        <pre class="code"><code>// 現状 — バージョン指定なし。取得するたびに内容が変わりうる
+"com.rlabrecque.steamworks.net": "https://github.com/rlabrecque/Steamworks.NET.git?path=/com.rlabrecque.steamworks.net",
+
+// 変更後 — タグで固定する。#以降のタグ名は実際のリポジトリのタグ一覧から選ぶこと
+"com.rlabrecque.steamworks.net": "https://github.com/rlabrecque/Steamworks.NET.git?path=/com.rlabrecque.steamworks.net#20.2.0",</code></pre>
+      </figure>
+
+      <div class="note">
+        <strong>未確認:</strong> 固定すべきタグ名（上の <code>20.2.0</code> はプレースホルダ）。
+        <code>Packages/packages-lock.json</code> に現在解決されているコミットハッシュが記録されているので、
+        <strong>まずそれを読んで「今どのバージョンが入っているか」を確定させてからタグを決める</strong>こと。
+        現在動いているものと違うバージョンへ不用意に上げない。
+      </div>
+
+      <h3>3.2 Scripting Define を整理する</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Define</th><th>Android（現状）</th><th>iPhone（現状）</th><th>Standalone（現状）</th><th>変更後</th></tr></thead>
+          <tbody>
+            <tr><td><code>STEAMWORKS_NET</code></td><td>付いている</td><td>付いている</td><td>付いている</td><td>Android / iPhone / WebGL から<strong>削除</strong>。Standalone のみ残す</td></tr>
+            <tr><td><code>USE_ADMOB</code></td><td>付いている</td><td>無い</td><td>無い</td><td><strong>現状維持</strong>（下の注記参照）</td></tr>
+            <tr><td><code>USE_ADMOB_PATCH</code></td><td>付いている</td><td>付いている</td><td>無い</td><td><strong>現状維持</strong></td></tr>
+            <tr><td><code>USE_UNITY_IAP</code></td><td>無い</td><td>無い</td><td>無い</td><td>Android / iPhone へ<strong>追加</strong>。Standalone には付けない</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <strong>未確認:</strong> <code>USE_ADMOB</code> / <code>USE_ADMOB_PATCH</code> は <code>Assets/**/*.cs</code> を全文検索しても<strong>参照が1件も無い</strong>。
+        GoogleMobileAds パッケージまたは External Dependency Manager 側が参照している可能性があるため、<strong>本書では削除も移動もしない。</strong>
+        Standalone に付いていない現状は Steam 移植にとって都合が良く、変更する理由が無い。
+      </div>
+
+      <p>
+        <code>USE_UNITY_IAP</code> は現状どこからも参照されていないため、<strong>追加してもビルド結果は変わらない</strong>。
+        参照コードを書くのは指示書01（<code>IStoreService</code> 導入）の範囲であり、本書では枠だけ用意する。
+      </p>
+
+      <figure class="code">
+        <figcaption><span class="keep">既存を編集</span> <b>ProjectSettings/ProjectSettings.asset</b>（1035行目付近 <code>scriptingDefineSymbols</code>）</figcaption>
+        <pre class="code"><code># --- 現状 ---
+scriptingDefineSymbols:
+  Android: TextMeshPro;ODIN_INSPECTOR;ODIN_INSPECTOR_3;USE_ADMOB;USE_ADMOB_PATCH;CUBE;STEAMWORKS_NET;UNITY_POST_PROCESSING_STACK_V2;URP_COMPATIBILITY_MODE
+  Standalone: ODIN_INSPECTOR;ODIN_INSPECTOR_3;TextMeshPro;STEAMWORKS_NET;UNITY_POST_PROCESSING_STACK_V2
+  WebGL: ODIN_INSPECTOR;ODIN_INSPECTOR_3;TextMeshPro;STEAMWORKS_NET;UNITY_POST_PROCESSING_STACK_V2;HOT_RELOAD_DISABLED
+  iPhone: TextMeshPro;USE_ADMOB_PATCH;ODIN_INSPECTOR;ODIN_INSPECTOR_3;STEAMWORKS_NET;URP_COMPATIBILITY_MODE
+
+# --- 変更後（差分は STEAMWORKS_NET の除去 と USE_UNITY_IAP の追加のみ）---
+scriptingDefineSymbols:
+  Android: TextMeshPro;ODIN_INSPECTOR;ODIN_INSPECTOR_3;USE_ADMOB;USE_ADMOB_PATCH;USE_UNITY_IAP;CUBE;UNITY_POST_PROCESSING_STACK_V2;URP_COMPATIBILITY_MODE
+  Standalone: ODIN_INSPECTOR;ODIN_INSPECTOR_3;TextMeshPro;STEAMWORKS_NET;UNITY_POST_PROCESSING_STACK_V2
+  WebGL: ODIN_INSPECTOR;ODIN_INSPECTOR_3;TextMeshPro;UNITY_POST_PROCESSING_STACK_V2;HOT_RELOAD_DISABLED
+  iPhone: TextMeshPro;USE_ADMOB_PATCH;USE_UNITY_IAP;ODIN_INSPECTOR;ODIN_INSPECTOR_3;URP_COMPATIBILITY_MODE
+
+# 他の行（CloudRendering / PS5 / tvOS など）は一切触らない。</code></pre>
+      </figure>
+
+      <h3>3.3 <code>SteamManager</code> を新規作成する</h3>
+      <p>
+        <code>SteamManager</code> は<strong>本リポジトリに存在しない</strong>。Steamworks.NET が同梱しているサンプル実装も、
+        パッケージ参照では <code>Assets/</code> 下に展開されないため、自前で持つ。
+      </p>
+      <p>
+        このクラスは「プラットフォーム固有 SDK を直接触る実装クラス」であり、<strong><code>#if</code> を書いてよい3箇所のうちの1つ</strong>にあたる。
+        <code>Steamworks</code> 名前空間がこのファイルの外へ漏れないことが設計上の要件である。
+      </p>
+
+      <figure class="code">
+        <figcaption><span class="new">新規</span> <b>Assets/1.Games/IdleGem/Platform/Steam/SteamManager.cs</b></figcaption>
+        <pre class="code"><code>// Steamworks の初期化・コールバック処理・終了処理を1箇所へ閉じ込める MonoBehaviour。
+// 契約: Init() の成否にかかわらず、このクラスがゲームの起動を止めることは無い。
+//       失敗時は IsInitialized が false のまま生き残り、Steam 依存機能だけが No-Op になる。
+// #if を書いてよい「プラットフォーム固有 SDK を直接触る実装クラスの内部」に該当する。
+// Steamworks 名前空間をこのファイルの外へ漏らさないこと。
+
+#if STEAMWORKS_NET &amp;&amp; UNITY_STANDALONE
+using Steamworks;
+#endif
+using UnityEngine;
+
+namespace IdleGem.Platform.Steam
+{
+    // Installer より先に Awake させる。負の値ほど早く実行される。
+    [DefaultExecutionOrder(-10000)]
+    public sealed class SteamManager : MonoBehaviour
+    {
+        // TODO: 新規 AppID 取得後に差し替える。480 は Spacewar（Steam 公式のテスト用 AppID）。
+        // 旧作 Idle Sphere の 3217600 は使わない。
+        public const uint AppId = 480u;
+
+        private static SteamManager _instance;
+
+        // 他クラスはこの2つだけを見る。Steamworks の型は一切公開しない。
+        public static bool IsInitialized =&gt; _instance != null &amp;&amp; _instance._initialized;
+        public static string Diagnostics =&gt; _instance == null ? "SteamManager not present" : _instance._diagnostics;
+
+        private bool _initialized;
+        private string _diagnostics = "not initialized";
+
+        // 起動シーンに置き忘れても必ず1つだけ生成されるようにする。
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void Bootstrap()
+        {
+            if (_instance != null) return;
+            var go = new GameObject("[SteamManager]");
+            go.AddComponent&lt;SteamManager&gt;();
+        }
+
+        private void Awake()
+        {
+            if (_instance != null &amp;&amp; _instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+#if STEAMWORKS_NET &amp;&amp; UNITY_STANDALONE &amp;&amp; !UNITY_EDITOR
+            // 要件5: Steam クライアント経由で起動し直させる。
+            // 失敗ではなく「正常な再起動」なので、ここでは静かに終了する。
+            try
+            {
+                if (SteamAPI.RestartAppIfNecessary(new AppId_t(AppId)))
+                {
+                    Application.Quit();
+                    return;
+                }
+            }
+            catch (System.Exception e)
+            {
+                // steam_api.dll が読めない等。ここで落とさない。
+                _diagnostics = "RestartAppIfNecessary threw: " + e.Message;
+                _initialized = false;
+                Debug.LogWarning("[Steam] " + _diagnostics);
+                return;
+            }
+#endif
+
+#if STEAMWORKS_NET &amp;&amp; UNITY_STANDALONE
+            // 要件2: Init() は「クライアント未起動」「オフライン」「AppID 不一致」で普通に false を返す。
+            // 例外も投げうる（ネイティブ DLL の読み込み失敗）ため、両方を受ける。
+            try
+            {
+                _initialized = SteamAPI.Init();
+                _diagnostics = _initialized
+                    ? "SteamAPI.Init() succeeded"
+                    : "SteamAPI.Init() returned false (client not running / offline / appid mismatch)";
+            }
+            catch (System.Exception e)
+            {
+                _initialized = false;
+                _diagnostics = "SteamAPI.Init() threw: " + e.Message;
+            }
+#else
+            _initialized = false;
+            _diagnostics = "STEAMWORKS_NET is not defined for this platform";
+#endif
+            // 成否にかかわらず必ずログへ残す。検証ビルドではこれが唯一の手がかりになる。
+            Debug.Log("[Steam] " + _diagnostics);
+        }
+
+#if STEAMWORKS_NET &amp;&amp; UNITY_STANDALONE
+        // 要件3: 毎フレーム。Update に置く。FixedUpdate ではない。
+        private void Update()
+        {
+            if (!_initialized) return;
+            SteamAPI.RunCallbacks();
+        }
+#endif
+
+        // 要件4: 終了時に必ず Shutdown。OnDestroy は OnApplicationQuit より後に来るので
+        // DontDestroyOnLoad なオブジェクトではここ1箇所で足りる。
+        private void OnDestroy()
+        {
+            if (_instance != this) return;
+            _instance = null;
+#if STEAMWORKS_NET &amp;&amp; UNITY_STANDALONE
+            if (!_initialized) return;
+            _initialized = false;
+            try { SteamAPI.Shutdown(); }
+            catch (System.Exception e) { Debug.LogWarning("[Steam] Shutdown threw: " + e.Message); }
+#endif
+        }
+    }
+}</code></pre>
+      </figure>
+
+      <div class="note">
+        <strong>Editor での扱い:</strong> <code>UNITY_EDITOR</code> でも <code>UNITY_STANDALONE</code> は真になるため、
+        Editor 実行時も <code>SteamAPI.Init()</code> が呼ばれる。<code>steam_appid.txt</code> がプロジェクトルートにあり
+        Steam クライアントが起動していれば成功し、無ければ false になって No-Op へ落ちる。
+        <strong>どちらでも Editor で遊べる状態は壊れない。</strong>
+        <code>RestartAppIfNecessary</code> だけは <code>!UNITY_EDITOR</code> で囲ってあり、Editor が勝手に終了することはない。
+      </div>
+
+      <h3>3.4 <code>IsInitialized</code> を他クラスへ渡す</h3>
+      <p>
+        <code>SteamManager.IsInitialized</code> を各所から直接 static 参照させない。
+        参照が増えるほど「Steamworks が無い環境ではコンパイルが通らないクラス」が増えていくためである。
+        <strong>インターフェース1枚を挟み、bind 時に1回だけ分岐する。</strong>
+      </p>
+
+      <figure class="code">
+        <figcaption><span class="new">新規</span> <b>Assets/1.Games/IdleGem/Platform/ISteamRuntime.cs</b> ／ <b>Null/NullSteamRuntime.cs</b> ／ <b>Steam/SteamRuntime.cs</b></figcaption>
+        <pre class="code"><code>// ISteamRuntime.cs
+// Steam の初期化結果だけを表す最小の契約。Steamworks の型は一切現れない。
+// このファイルは全プラットフォームでコンパイルされる。#if を書かない。
+namespace IdleGem.Platform
+{
+    public interface ISteamRuntime
+    {
+        // Steam API が使える状態か。false のとき実績・Cloud・Overlay はすべて No-Op になる。
+        bool IsInitialized { get; }
+
+        // 失敗理由。UI には出さず、ログとデバッグ表示にのみ使う。
+        string Diagnostics { get; }
+    }
+}
+
+// Null/NullSteamRuntime.cs
+// モバイル・Editor・Steam 初期化失敗時のフォールバック。常に「使えない」を返す。
+namespace IdleGem.Platform.Null
+{
+    public sealed class NullSteamRuntime : ISteamRuntime
+    {
+        public bool IsInitialized =&gt; false;
+        public string Diagnostics =&gt; "steam disabled (null implementation)";
+    }
+}
+
+// Steam/SteamRuntime.cs
+// SteamManager の static 状態を ISteamRuntime として公開するだけの薄いアダプタ。
+// SteamManager 自体を DI に載せない（MonoBehaviour の生存期間に依存させないため）。
+namespace IdleGem.Platform.Steam
+{
+    public sealed class SteamRuntime : ISteamRuntime
+    {
+        public bool IsInitialized =&gt; SteamManager.IsInitialized;
+        public string Diagnostics =&gt; SteamManager.Diagnostics;
+    }
+}</code></pre>
+      </figure>
+
+      <figure class="code">
+        <figcaption><span class="new">新規</span> <b>Assets/1.Games/IdleGem/Platform/PlatformInstaller.cs</b></figcaption>
+        <pre class="code"><code>// プラットフォーム分岐はこの1ファイルに集約する。
+// #if を書いてよい3箇所のうち「Installer」に該当する。
+// 本書では ISteamRuntime だけを bind する。他の5インターフェースは指示書01で追加する。
+using IdleGem.Platform.Null;
+using Zenject;
+
+namespace IdleGem.Platform
+{
+    public static class PlatformInstaller
+    {
+        public static void Install(DiContainer c)
+        {
+#if STEAMWORKS_NET &amp;&amp; UNITY_STANDALONE
+            c.Bind&lt;ISteamRuntime&gt;().To&lt;Steam.SteamRuntime&gt;().AsSingle();
+#else
+            c.Bind&lt;ISteamRuntime&gt;().To&lt;NullSteamRuntime&gt;().AsSingle();
+#endif
+        }
+    }
+}</code></pre>
+      </figure>
+
+      <div class="warn">
+        <strong><code>RootInstaller.cs</code> からの呼び出しは本書では行わない。</strong>
+        <code>PlatformInstaller.Install(Container)</code> の1行追加は指示書01の受け入れ条件に含める。
+        本書のゴールは「検証ビルドが通ること」であり、既存の起動経路に手を入れると
+        <strong>失敗したときの原因が Steam なのか DI なのか切り分けられなくなる。</strong>
+      </div>
+
+      <h3>3.5 検証ビルド用の最小シーンスクリプト</h3>
+      <p>
+        <strong>これがこの指示書の核心。</strong>ゲーム本体を起動せず、
+        <code>Assets/Plugins/</code> の各アセンブリを反射でロードして結果を画面とログに出す。
+        ゲームロジックを一切呼ばないことで、<strong>「DLL がロードできない」と「ゲームのバグ」を確実に切り分ける。</strong>
+      </p>
+
+      <figure class="code">
+        <figcaption><span class="new">新規</span> <b>Assets/1.Games/IdleGem/Platform/Verify/StandaloneSmokeTest.cs</b></figcaption>
+        <pre class="code"><code>// Standalone 検証ビルド専用。ゲームロジックは呼ばない。
+// 目的: Assets/Plugins/*.dll が Windows / macOS Standalone でロードでき、
+//       全型のメタデータを解決できるか（= 依存アセンブリが揃っているか）だけを判定する。
+// GetTypes() は依存が欠けていると ReflectionTypeLoadException を投げるので、
+// 「ロードできた」ではなく「型を全部解決できた」まで踏み込める。
+using System;
+using System.Reflection;
+using System.Text;
+using UnityEngine;
+
+namespace IdleGem.Platform.Verify
+{
+    public sealed class StandaloneSmokeTest : MonoBehaviour
+    {
+        // Assets/Plugins/ に実在する DLL のアセンブリ名。ファイル名から拡張子を除いたもの。
+        private static readonly string[] Targets =
+        {
+            "UpgradeDomain",
+            "IdleSystem.Core",
+            "IdleSystem.LanguageExt",
+            "IdleSystem.Backend.Client",
+            "IdleSystem.Ads",
+            "VirtualUI",
+            "StructLinq",
+            "BigDouble",
+            "Microsoft.Bcl.AsyncInterfaces",
+        };
+
+        private string _report = "";
+        private Vector2 _scroll;
+
+        private void Start()
+        {
+            var sb = new StringBuilder();
+            sb.Append("platform : ").Append(Application.platform).Append('\n');
+            sb.Append("unity    : ").Append(Application.unityVersion).Append('\n');
+            sb.Append("steam    : ").Append(Steam.SteamManager.Diagnostics).Append('\n');
+            sb.Append("----\n");
+
+            var failed = 0;
+            for (var i = 0; i &lt; Targets.Length; i++)
+            {
+                sb.Append(Check(Targets[i], ref failed)).Append('\n');
+            }
+
+            sb.Append("----\n");
+            sb.Append(failed == 0 ? "RESULT: OK" : "RESULT: NG (" + failed + " failed)");
+
+            _report = sb.ToString();
+
+            // ログにも必ず落とす。macOS では Player.log をこの出力で確認する。
+            if (failed == 0) Debug.Log("[SmokeTest]\n" + _report);
+            else Debug.LogError("[SmokeTest]\n" + _report);
+        }
+
+        private static string Check(string assemblyName, ref int failed)
+        {
+            try
+            {
+                var asm = Assembly.Load(assemblyName);
+                // 型を全部触る。依存欠落はここで初めて露見する。
+                var count = asm.GetTypes().Length;
+                return "  OK   " + assemblyName + "  (" + count + " types)";
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                failed++;
+                var first = e.LoaderExceptions != null &amp;&amp; e.LoaderExceptions.Length &gt; 0
+                    ? e.LoaderExceptions[0].Message
+                    : e.Message;
+                return "  NG   " + assemblyName + "  types: " + first;
+            }
+            catch (Exception e)
+            {
+                failed++;
+                return "  NG   " + assemblyName + "  load: " + e.GetType().Name + " " + e.Message;
+            }
+        }
+
+        // UI Toolkit も uGUI も使わない。依存を増やすと切り分けが濁るため IMGUI で出す。
+        private void OnGUI()
+        {
+            GUI.skin.label.fontSize = 16;
+            _scroll = GUI.BeginScrollView(
+                new Rect(12, 12, Screen.width - 24, Screen.height - 24),
+                _scroll,
+                new Rect(0, 0, Screen.width - 48, 24 * (Targets.Length + 8)));
+            GUI.Label(new Rect(0, 0, Screen.width - 48, 24 * (Targets.Length + 8)), _report);
+            GUI.EndScrollView();
+        }
+    }
+}</code></pre>
+      </figure>
+
+      <p>
+        シーン <code>Assets/1.Games/IdleGem/Platform/Verify/StandaloneVerify.unity</code> は、
+        <strong>空の GameObject 1つに <code>StandaloneSmokeTest</code> を付けただけ</strong>にする。
+        カメラも Light も Zenject の SceneContext も置かない。
+      </p>
+
+      <figure class="code">
+        <figcaption><span class="new">新規</span> <b>Assets/Editor/StandaloneVerifyBuild.cs</b></figcaption>
+        <pre class="code"><code>// 検証ビルド専用。既存の DeploySteam.cs / AndroidBuildScript.cs には手を触れない。
+// #if を書いてよい3箇所のうち「Editor スクリプト」に該当する（本ファイルは #if 不要）。
+using System.IO;
+using UnityEditor;
+using UnityEditor.Build.Reporting;
+using UnityEngine;
+
+public static class StandaloneVerifyBuild
+{
+    private const string VerifyScene =
+        "Assets/1.Games/IdleGem/Platform/Verify/StandaloneVerify.unity";
+
+    [MenuItem("Build/Verify/Windows (x64)")]
+    public static void BuildWindows()
+    {
+        Build(BuildTarget.StandaloneWindows64, "Build/Verify/Windows/IdleMinertiaVerify.exe");
+    }
+
+    [MenuItem("Build/Verify/macOS")]
+    public static void BuildMac()
+    {
+        Build(BuildTarget.StandaloneOSX, "Build/Verify/macOS/IdleMinertiaVerify.app");
+    }
+
+    private static void Build(BuildTarget target, string relativePath)
+    {
+        var root = Path.GetDirectoryName(Application.dataPath);
+        var output = Path.Combine(root, relativePath);
+        Directory.CreateDirectory(Path.GetDirectoryName(output));
+
+        var options = new BuildPlayerOptions
+        {
+            // Build Settings のシーンリストは使わない。検証シーンだけを直接指定する。
+            scenes = new[] { VerifyScene },
+            locationPathName = output,
+            target = target,
+            options = BuildOptions.Development, // ログとスタックトレースを残す
+        };
+
+        var report = BuildPipeline.BuildPlayer(options);
+        var summary = report.summary;
+        if (summary.result == BuildResult.Succeeded)
+            Debug.Log($"[VerifyBuild] {target} succeeded: {output} ({summary.totalSize} bytes)");
+        else
+            Debug.LogError($"[VerifyBuild] {target} {summary.result}: errors={summary.totalErrors}");
+    }
+}</code></pre>
+      </figure>
+
+      <div class="note">
+        <strong>ログの場所（検証時に必ず見る）:</strong>
+        Windows は <code>%USERPROFILE%\AppData\LocalLow\IdleSystem\&lt;productName&gt;\Player.log</code>、
+        macOS は <code>~/Library/Logs/IdleSystem/&lt;productName&gt;/Player.log</code>。
+        <code>&lt;productName&gt;</code> は <code>ProjectSettings.asset</code> の <code>productName</code> に一致する。
+        画面表示（IMGUI）が出ない場合でも、ログ側に <code>[SmokeTest]</code> が残っていれば起動自体は成功している。
+      </div>
+    </section>
+
+    <section id="steps" data-comment-id="guide-steamworks-steps" data-comment-title="作業手順">
+      <h2>4. 作業手順</h2>
+      <p>
+        依存順に並べる。<strong>1〜4（検証ビルド）を最優先に置くのは、ここで DLL が動かなければ 5 以降の作業がすべて無駄になるため。</strong>
+        Steamworks の整理を先にやると、失敗したときに「Steam のせいか DLL のせいか」が分からなくなる。
+        <strong>まず Steam を一切絡めない状態で Standalone ビルドを通す。</strong>
+      </p>
+      <ol class="steps">
+        <li><div><b>ドメイン DLL を最新へ揃える</b><code>go run Go/buildblazor/main.go</code> を実行し、<code>Assets/Plugins/</code> の <code>UpgradeDomain.dll</code> ほか6件を最新にする。古い DLL で検証しても結論にならない。</div></li>
+        <li><div><b>検証シーンとスモークテストを追加する</b><code>StandaloneSmokeTest.cs</code> と <code>StandaloneVerify.unity</code> を作る。既存シーンリストには追加しない。</div></li>
+        <li><div><b>Windows 検証ビルドを取る</b><code>Build/Verify/Windows (x64)</code> を実行し、起動して <code>RESULT: OK</code> を確認する。<strong>この時点ではまだ Steam に触れていない。</strong></div></li>
+        <li><div><b>macOS 検証ビルドを取る</b>同じ手順で <code>StandaloneOSX</code>。<code>System.Windows.Forms.dll</code> が同梱されるため、Windows が通っても macOS で落ちる可能性がある。ここが独立した関門である。</div></li>
+        <li><div><b>結果を記録し、NG なら止まる</b>NG のアセンブリ名と例外メッセージをそのまま記録する。<strong>ここで NG が出た場合、以降の手順へ進まず 6章のロールバック判断へ移る。</strong></div></li>
+        <li><div><b>Steamworks.NET を一本化する</b><code>Assets/Steamworks.NET_15.0.1/</code> と <code>Assets/com.rlabrecque.steamworks.net/</code> を <code>.meta</code> ごと削除する。<code>packages-lock.json</code> で現行バージョンを確認してから <code>manifest.json</code> にタグを固定する。</div></li>
+        <li><div><b>Unity を再起動しコンパイルを確認する</b>削除の反映には再インポートが要る。<code>Steamworks</code> 名前空間が Standalone で解決できることをコンソールで確認する。</div></li>
+        <li><div><b>Scripting Define を整理する</b><strong>Unity Editor を完全に終了してから</strong> <code>ProjectSettings.asset</code> を編集する。または Player Settings 画面から入力する。<code>git diff</code> で <code>scriptingDefineSymbols</code> 以外に差分が無いことを確認する。</div></li>
+        <li><div><b>Android / iOS ビルドが通ることを確認する</b>Define を抜いた影響がモバイルへ及んでいないことを、この時点で必ず確かめる。<strong>後回しにしない。</strong></div></li>
+        <li><div><b><code>SteamManager</code> と <code>ISteamRuntime</code> 一式を追加する</b><code>Platform/</code> 配下に5ファイル。<code>RootInstaller.cs</code> は編集しない。</div></li>
+        <li><div><b><code>steam_appid.txt</code> を <code>480</code> にして初期化を確認する</b>Steam クライアントを起動した状態で Editor 実行し、<code>[Steam] SteamAPI.Init() succeeded</code> をログで確認する。次に Steam クライアントを終了して、<strong>false でもゲームが起動する</strong>ことを確認する。</div></li>
+        <li><div><b>検証シーンに <code>SteamManager</code> を通した状態で再度ビルドする</b><code>Steam.SteamManager.Diagnostics</code> の行が検証画面に出ることを Windows / macOS 両方で確認する。</div></li>
+        <li><div><b><code>steam_appid.txt</code> を元に戻す／除外を確認する</b>リリースビルドの成果物に <code>steam_appid.txt</code> が含まれないことを確認する。開発時のみ実行ファイルの隣に置く運用とする。</div></li>
+      </ol>
+
+      <div class="note">
+        <strong>AppID 取得は並行して進める。</strong>
+        親ページの実装順序 2 に該当し、本書の作業をブロックしない。
+        検証は Spacewar（<code>480</code>）で完結するため、<strong>AppID 待ちを理由に手を止めない。</strong>
+        取得後は <code>SteamManager.AppId</code>、<code>steam_appid.txt</code>、
+        <code>applicationIdentifier.Standalone</code>（現在 <code>com.idlesystem.IdleSphere</code>）を別PRでまとめて差し替える。
+      </div>
+    </section>
+
+    <section id="accept" data-comment-id="guide-steamworks-accept" data-comment-title="受け入れ条件とテスト">
+      <h2>5. 受け入れ条件とテスト</h2>
+
+      <h3>A. Standalone 検証ビルド（最重要）</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>条件</th><th>確認方法</th></tr></thead>
+          <tbody>
+            <tr><td>A1</td><td>Windows x64 の検証ビルドがエラー0で完了する</td><td>Unity Console に <code>[VerifyBuild] StandaloneWindows64 succeeded</code></td></tr>
+            <tr><td>A2</td><td>生成された <code>.exe</code> が起動し、画面に <code>RESULT: OK</code> が表示される</td><td>手動。実行して目視</td></tr>
+            <tr><td>A3</td><td>macOS の検証ビルドがエラー0で完了し、<code>.app</code> が起動して <code>RESULT: OK</code> を表示する</td><td>手動。macOS 実機で実行</td></tr>
+            <tr><td>A4</td><td><code>UpgradeDomain</code> / <code>IdleSystem.Core</code> / <code>IdleSystem.LanguageExt</code> / <code>IdleSystem.Backend.Client</code> の4つが Windows・macOS 双方で <code>OK</code> と表示される</td><td>手動。検証画面の各行</td></tr>
+            <tr><td>A5</td><td><code>Player.log</code> に <code>[SmokeTest]</code> が <code>LogError</code> ではなく <code>Log</code> として出ている</td><td>ログファイルを開く</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>B. Steamworks.NET の一本化</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>条件</th><th>確認方法</th></tr></thead>
+          <tbody>
+            <tr><td>B1</td><td><code>Assets/Steamworks.NET_15.0.1/</code> が存在しない</td><td><code>git status</code> に削除として現れる</td></tr>
+            <tr><td>B2</td><td><code>Assets/com.rlabrecque.steamworks.net/</code> が存在しない</td><td>同上</td></tr>
+            <tr><td>B3</td><td><code>Packages/manifest.json</code> の <code>com.rlabrecque.steamworks.net</code> の URL に <code>#</code> 以降のバージョン指定がある</td><td>ファイルを読む</td></tr>
+            <tr><td>B4</td><td>Unity 再起動後、Console に Steamworks 関連のエラーと警告が0件である</td><td>Console を Clear してから再インポート</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>C. Scripting Define</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>条件</th><th>確認方法</th></tr></thead>
+          <tbody>
+            <tr><td>C1</td><td><code>scriptingDefineSymbols</code> の <code>Android</code> / <code>iPhone</code> / <code>WebGL</code> に <code>STEAMWORKS_NET</code> が含まれない</td><td><code>ProjectSettings.asset</code> を読む</td></tr>
+            <tr><td>C2</td><td><code>Standalone</code> には <code>STEAMWORKS_NET</code> が残っている</td><td>同上</td></tr>
+            <tr><td>C3</td><td><code>Android</code> / <code>iPhone</code> に <code>USE_UNITY_IAP</code> が追加されている</td><td>同上</td></tr>
+            <tr><td>C4</td><td><strong>Android ビルドがエラー0で完了する</strong></td><td><code>Build/Android</code> 相当を実行。既存の <code>AndroidBuildScript.cs</code> の経路で確認する</td></tr>
+            <tr><td>C5</td><td><strong>iOS ビルド（Xcode プロジェクト出力）がエラー0で完了する</strong></td><td>既存の <code>iOSBuildScript.cs</code> の経路で確認する。<code>PostBuildStep.cs</code> まで通ること</td></tr>
+            <tr><td>C6</td><td><code>git diff ProjectSettings/ProjectSettings.asset</code> の差分が <code>scriptingDefineSymbols</code> の4行のみである</td><td>差分を目視</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="warn">
+        <strong>C4 / C5 を省略しない。</strong>
+        モバイル版はリリース済みで実ユーザーがプレイ中である。
+        <code>STEAMWORKS_NET</code> の除去自体は無害なはずだが、
+        <strong>「はずだ」で出荷経路を触ってはいけない。</strong>両方のビルドを実際に通すまでこの指示書は完了しない。
+      </div>
+
+      <h3>D. <code>SteamManager</code></h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>条件</th><th>確認方法</th></tr></thead>
+          <tbody>
+            <tr><td>D1</td><td>Steam クライアント起動中に <code>[Steam] SteamAPI.Init() succeeded</code> がログに出る</td><td>Editor 実行。<code>steam_appid.txt</code> に <code>480</code></td></tr>
+            <tr><td>D2</td><td><strong>Steam クライアント未起動でもゲームが起動し、例外で停止しない</strong></td><td>Steam を終了してから Editor 実行。<code>returned false</code> のログが出てシーンは進む</td></tr>
+            <tr><td>D3</td><td><code>steam_appid.txt</code> を消した状態でも起動が止まらない</td><td>同上。<code>Init() returned false</code> または例外メッセージがログに出るだけ</td></tr>
+            <tr><td>D4</td><td>アプリ終了時に <code>SteamAPI.Shutdown()</code> が1回だけ呼ばれる</td><td><code>OnDestroy</code> に一時ログを入れて確認し、確認後に消す</td></tr>
+            <tr><td>D5</td><td><code>Steamworks</code> 名前空間の <code>using</code> が <code>SteamManager.cs</code> 以外に存在しない</td><td><code>Assets/**/*.cs</code> を全文検索して1ファイルのみ</td></tr>
+            <tr><td>D6</td><td><code>#if</code> の追加箇所が <code>SteamManager.cs</code> と <code>PlatformInstaller.cs</code> の2ファイルに限られる</td><td>PR の差分を目視</td></tr>
+            <tr><td>D7</td><td>Android ビルドで <code>SteamManager.cs</code> がコンパイルエラーを出さない</td><td>C4 と同時に確認。<code>STEAMWORKS_NET</code> 未定義側の分岐が正しく閉じている</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>E. リリース同梱物</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>条件</th><th>確認方法</th></tr></thead>
+          <tbody>
+            <tr><td>E1</td><td>ビルド成果物ディレクトリに <code>steam_appid.txt</code> が含まれない</td><td>出力先を <code>ls</code> して確認</td></tr>
+            <tr><td>E2</td><td><code>steam_appid.txt</code> がリポジトリに残っている場合、<strong>開発用である旨のコメントか運用メモが添えられている</strong></td><td>ファイルまたは近傍のドキュメントを確認</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="rollback" data-comment-id="guide-steamworks-rollback" data-comment-title="ロールバック">
+      <h2>6. ロールバック</h2>
+
+      <h3>差し戻す条件</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>事象</th><th>判断</th><th>戻し方</th></tr></thead>
+          <tbody>
+            <tr><td>Android または iOS のビルドが通らなくなった</td><td><strong>即時差し戻し。</strong>調査より先に戻す</td><td><code>ProjectSettings.asset</code> の <code>scriptingDefineSymbols</code> のみ <code>git checkout</code> で復元。Define 変更は独立PRにしてあるので単独で revert できる</td></tr>
+            <tr><td>Steamworks 削除後に Standalone のコンパイルが壊れた</td><td>削除PRを revert</td><td><code>Assets/</code> 側の2ディレクトリは<strong>実質空</strong>なので、復元しても効果は無いはず。原因は <code>manifest.json</code> 側にある。<code>packages-lock.json</code> を元コミットへ戻す</td></tr>
+            <tr><td><code>SteamAPI.Init()</code> の失敗でゲームが起動しない</td><td>設計違反。<code>SteamManager</code> を修正する（差し戻しではない）</td><td>例外を <code>catch</code> し切れていない箇所を特定する。<strong>「Init が成功する前提」のコードを1行も書かない</strong>という契約に戻す</td></tr>
+            <tr><td><code>SteamManager</code> がモバイルビルドを壊した</td><td><code>Platform/</code> 追加PRを revert</td><td>追加のみのPRなのでファイル削除で戻る。既存ファイルは編集していない</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>ドメイン DLL が Standalone で動かなかった場合</h3>
+      <p>
+        受け入れ条件 A4 が満たせなかったときは、<strong>この指示書を中断し、次の順に切り分ける。</strong>
+        原因の切り分けが終わるまで、指示書01以降には着手しない。
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>順</th><th>見直す対象</th><th>具体的に見るもの</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><code>Assets/Plugins/*.dll.meta</code> のインポート設定</td>
+              <td><code>IdleSystem.*.dll</code> と <code>UpgradeDomain.dll</code> の <code>.meta</code> には <code>PluginImporter</code> ブロックが無い（2行のみ）。Editor の Inspector で Any Platform が有効になっているか、Standalone が除外されていないかを目視する。除外されていたら <code>.meta</code> を <code>BigDouble.dll.meta</code> と同じ形へ揃える</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Standalone の API 互換レベル</td>
+              <td><code>ProjectSettings.asset:1081-1083</code> の <code>apiCompatibilityLevelPerPlatform</code>。Standalone が <code>3</code>、Android が <code>6</code> で<strong>不一致</strong>。Android と同じ値へ揃えて再ビルドし、結果が変わるか見る</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>重複する BCL アセンブリ</td>
+              <td><code>Microsoft.Bcl.AsyncInterfaces.dll</code> を Standalone から除外して再ビルドする。API プロファイル側が同じ型を持っている場合、型の重複でロードが失敗しうる</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>macOS 固有の同梱物</td>
+              <td>macOS のみ NG の場合、<code>System.Windows.Forms.dll</code>（Standalone 全 OS で <code>enabled: 1</code>、自作コードからの参照ゼロ）を除外して再ビルドする。<code>discord-rpc.dll</code> / <code>libdiscord-rpc.dylib</code> も同様に切り離して試す</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>ドメイン側の <code>TargetFramework</code></td>
+              <td>1〜4 で解決しない場合のみ。<code>NewCubeUpgradeDomain/*/*.csproj</code> の <code>netstandard2.1</code> を <code>netstandard2.0</code> へ落として再ビルドし、DLL を差し替えて検証する。<strong>ここまで来た場合はドメイン側の変更になるため、指示書02の範囲を超える。</strong>移植計画そのものを再検討すること</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="warn">
+        <strong>5 に到達した場合は作業を止めて共有する。</strong>
+        ドメインのターゲットフレームワークを下げると、モバイル版が使っている DLL も同時に変わる。
+        <strong>リリース済みモバイル版への影響評価なしに実施してはいけない。</strong>
+      </div>
+
+      <h3>戻さないもの</h3>
+      <ul>
+        <li><strong>検証ビルド一式（<code>Platform/Verify/</code> と <code>Assets/Editor/StandaloneVerifyBuild.cs</code>）は残す。</strong>DLL を更新するたびに再実行できる形にしておく価値がある。</li>
+        <li>AppID の新規取得手続き。実装の成否と独立して進める。</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>親ページ: <a href="../index.html">Steam移植の決定事項と実行計画</a>　／　原典: <a href="https://github.com/appopiss/UpgradeDomain/tree/minertia_area3/docs/steam-release">docs/steam-release</a></p>
+  </footer>
+</article>
+<script src="guide.js"></script>
+</body>
+</html>
