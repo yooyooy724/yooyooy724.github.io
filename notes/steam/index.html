@@ -375,20 +375,33 @@
     <section id="phase2" data-comment-id="spec-phase2" data-comment-title="フェーズ2で作る指示書">
       <h2>4. フェーズ2で作る指示書</h2>
       <p>
-        フェーズ2では、決定事項を実装担当者または実装AIが迷わず着手できる単位へ変換する。
-        指示書は設計の再議論ではなく、変更範囲・依存関係・完了条件を固定するために作る。
+        指示書は<b>実装担当者・実装AIへ渡すプロンプト</b>である。手順書ではない。
+        何をするかを細かく書き下すのではなく、<b>何のためにやるのか</b>と<b>どこを優先して判断するのか</b>を渡し、
+        具体はコードを読んだ側に委ねる。
       </p>
+      <div class="note">
+        <strong>細かく書きすぎない:</strong>
+        手順を厳密に固定すると、実態に合わない変更を強いることになる。
+        資料は書かれた時点のスナップショットであり、<b>実コードと食い違ったら実コードが正しい</b>。
+        指示書はその前提で読まれる。
+      </div>
 
       <h3>すべての指示書に含める項目</h3>
-      <ul>
-        <li>目的と根拠となる決定事項</li>
-        <li>触ってよいファイル、触ってはいけないファイル</li>
-        <li>Model / ViewModel / Viewそれぞれの責務</li>
-        <li>前提作業と依存関係</li>
-        <li>受け入れ条件とテスト方法</li>
-        <li>UpgradeDomainのビルドとDLL反映のタイミング</li>
-        <li>失敗時のロールバック条件</li>
-      </ul>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>項目</th><th>書くこと</th></tr></thead>
+          <tbody>
+            <tr><td>目的</td><td>なぜこの作業が要るのか。何が達成されれば成功か。</td></tr>
+            <tr><td>方針</td><td>優先順位、慎重さの配分、迷ったときにどちらへ倒すか。</td></tr>
+            <tr><td>譲れない前提と契約</td><td>固定されているものだけ。書いていないことは決めてよい、と明示する。</td></tr>
+            <tr><td>委ねること</td><td>あえて指定しない範囲。実装側が判断してよいと明言する。</td></tr>
+            <tr><td>完了の判断と、止まる条件</td><td>成果の状態で書く。作業量では書かない。手を止めて相談すべき事象を含める。</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        コードは<b>譲れない契約を示す最小限</b>に留める。実装そのものは書かない。
+      </p>
 
       <h3>指示書一覧</h3>
       <p>
@@ -400,7 +413,7 @@
           <thead><tr><th>順番</th><th>状態</th><th>指示書</th><th>対応する詳細仕様</th><th>目的</th></tr></thead>
           <tbody>
             <tr><td>1</td><td class="status done">公開中</td><td><a href="instructions/01-platform.html">01 プラットフォーム抽象化</a></td><td><a href="spec.html#platform">02 プラットフォーム抽象化</a></td><td>6境界と注入位置を確定する。</td></tr>
-            <tr><td>2</td><td class="status done">公開中</td><td><a href="instructions/02-steamworks.html">02 Steamworks.NETの整理と初期化</a></td><td><a href="spec.html#platform">02 プラットフォーム抽象化</a> ／ <a href="spec.html#steamworks">Steamworks 管理画面</a></td><td>SDK、Define、起動失敗時の挙動を固定する。Standalone検証ビルドを含む。</td></tr>
+            <tr><td>2</td><td class="status done">公開中</td><td><a href="instructions/02-steamworks.html">02 Standalone検証とSteamworks初期化</a></td><td><a href="spec.html#platform">02 プラットフォーム抽象化</a> ／ <a href="spec.html#steamworks">Steamworks 管理画面</a></td><td>SDK、Define、起動失敗時の挙動を固定する。Standalone検証ビルドを含む。</td></tr>
             <tr><td>3</td><td class="status pending">作成中</td><td>03 セーブの暗号化・移行とクラウドセーブ</td><td><a href="spec.html#save">04 セーブとクラウド</a></td><td>既存ユーザーを壊さずAESへ移行し、Steam Cloudへ複製する。</td></tr>
             <tr><td>4</td><td class="status pending">作成中</td><td>05 横長レイアウト</td><td><a href="spec.html#display">05 横長レイアウトと PC 操作</a></td><td>V/H分離と部品共有の成立性を1画面で確認する。</td></tr>
             <tr><td>5</td><td class="status pending">作成中</td><td>04 マネタイズ</td><td><a href="spec.html#money">03 マネタイズ</a></td><td>DLC所有権、付与履歴、二重付与防止、プランB切替値を定める。</td></tr>

@@ -14,35 +14,33 @@
     <p class="eyebrow">IDLE MINERTIA / STEAM RELEASE / PHASE 2 / INSTRUCTION 01</p>
     <h1>プラットフォーム抽象化</h1>
     <p class="lead">
-      モバイルとSteamの差分を6つのインターフェースへ閉じ込め、注入位置を1箇所に固定する。
-      既存のAd / IAP / Firebaseの実装は1行も変更しない。インターフェースを新規ファイルとして被せ、
-      モバイル実装は既存クラスへ委譲するだけの薄いラッパーとして追加する。
+      モバイルと Steam の差分を、View / ViewModel / Domain が意識しなくて済む形へ閉じ込める。
+      本書は手順書ではない。<b>何のためにやるのか</b>と<b>どこを優先して判断するのか</b>を渡すものであり、
+      設計と実装は実コードを読んだ上で判断してよい。
     </p>
-    <p class="meta">最終更新: 2026-08-06　／　担当: Unity View（Assets/1.Games/IdleGem/ 配下のみ）</p>
+    <p class="meta">最終更新: 2026-08-06　／　担当: Unity View（Unityプロジェクト側。ドメインは変更しない）</p>
 
     <div class="summary">
-      <strong>この指示書の完了条件</strong>
-      6インターフェースが <code>Assets/1.Games/IdleGem/Platform/</code> に存在し、モバイル実装・No-Op実装・Installerが揃っている。
-      プラットフォーム分岐の <code>#if</code> が <code>PlatformInstaller.cs</code> の1箇所に集約され、モバイルビルドの挙動は変わっていない。
+      <strong>成否の基準</strong>
+      Steam 実装を書き始めても、モバイル版のコードとビルドが揺れない状態になっていること。
     </div>
 
     <dl class="current">
-      <dt>根拠</dt><dd><a href="../index.html#architecture">アーキテクチャ方針</a> の6インターフェース表、および<a href="../index.html#roadmap">実装順序</a> 4番</dd>
-      <dt>前提</dt><dd>なし。最初に着手する指示書</dd>
-      <dt>DLL反映</dt><dd>不要。変更は全てUnity側の <code>Assets/1.Games/IdleGem/</code> 配下で完結する</dd>
-      <dt>規模の目安</dt><dd>PR 8本</dd>
+      <dt>根拠</dt><dd><a href="../index.html#architecture">2. アーキテクチャ方針</a>（6境界）／ 詳細仕様 <a href="../spec.html#platform">02 プラットフォーム抽象化</a></dd>
+      <dt>前提</dt><dd>なし。<a href="02-steamworks.html">指示書02</a> と並行してよい</dd>
+      <dt>DLL反映</dt><dd>不要。Unity 側のみで完結する</dd>
+      <dt>慎重さ</dt><dd><b>高。</b>リリース済みモバイル版に実ユーザーがいる</dd>
     </dl>
   </header>
 
   <nav class="toc" aria-label="目次">
     <h2>目次</h2>
     <ol>
-      <li><a href="#purpose">目的と根拠</a></li>
-      <li><a href="#scope">変更範囲</a></li>
-      <li><a href="#design">実装（スクリプト）</a></li>
-      <li><a href="#steps">作業手順</a></li>
-      <li><a href="#accept">受け入れ条件とテスト</a></li>
-      <li><a href="#rollback">ロールバック</a></li>
+      <li><a href="#purpose">目的</a></li>
+      <li><a href="#policy">方針</a></li>
+      <li><a href="#contract">譲れない前提と契約</a></li>
+      <li><a href="#judgment">委ねること</a></li>
+      <li><a href="#done">完了の判断と、止まる条件</a></li>
     </ol>
   </nav>
 
@@ -54,814 +52,170 @@
   </aside>
 
   <main>
-    <section id="purpose" data-comment-id="guide-platform-purpose" data-comment-title="目的と根拠">
-      <h2>1. 目的と根拠</h2>
+    <section id="purpose" data-comment-id="guide-platform-purpose" data-comment-title="目的">
+      <h2>1. 目的</h2>
       <p>
-        Steam版はモバイル版と同一コードベースで並行運用する。
-        呼び出し側に <code>#if</code> を足していくと、以降の全作業がプラットフォーム分岐の管理コストに飲まれる。
-        差分をインターフェースの裏へ隠し、DI登録時に1箇所だけ分岐させる。
+        Steam 版で置き換わるのは、広告・課金・クラウドセーブ・ログイン・実績・レビュー誘導の6つだけである。
+        それ以外はモバイルとまったく同じコードで動く。
       </p>
-
-      <h3>親ページの決定と、この指示書での扱い</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>境界</th><th>モバイル実装</th><th>Steam実装</th><th>この指示書での扱い</th></tr></thead>
-          <tbody>
-            <tr><td><code>IRewardService</code></td><td>既存 <code>AdRoot</code> へ委譲</td><td>導線ごとの即時付与</td><td>インターフェース＋モバイル実装＋呼び出し側差し替えまで完了させる</td></tr>
-            <tr><td><code>IStoreService</code></td><td>既存 <code>AndroidIAPManagerMono</code> へ委譲</td><td>Steam DLC / 所有権</td><td>インターフェース＋モバイル実装まで。DLC設計は別指示書</td></tr>
-            <tr><td><code>ICloudSaveBackend</code></td><td>Firestore REST（既存）</td><td>Firestore REST + Steam Cloud複製</td><td>インターフェース定義のみ。実装は指示書03（セーブ）</td></tr>
-            <tr><td><code>IAuthService</code></td><td>既存 <code>GoogleLogin</code> / <code>AppleLogin</code> へ委譲</td><td>Google / Apple / Steam</td><td>インターフェース＋モバイル実装＋ログインUIの出し分けまで</td></tr>
-            <tr><td><code>IAchievementService</code></td><td>No-Op</td><td>Steamworks実績</td><td>インターフェース＋No-Op実装まで。実績IDは別指示書</td></tr>
-            <tr><td><code>IReviewPrompt</code></td><td>既存レビュー導線へ委譲</td><td>No-Op</td><td>インターフェース＋モバイル実装＋No-Opまで</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h3><code>#if</code> を書いてよい3箇所</h3>
-      <ul>
-        <li>Installer（どの実装をbindするかの分岐）</li>
-        <li>プラットフォーム固有SDKを直接触る実装クラスの内部</li>
-        <li>Editorスクリプト</li>
-      </ul>
-      <p>View / ViewModel / Domain には一切書かない。既存の <code>#if</code> は本指示書では削除しない（無改修ファイルに含まれるため）。</p>
-
-      <div class="warn">
-        <strong>既存クラスは1行も変更しない。</strong>
-        モバイル版はリリース済みで実ユーザーがプレイ中である。既存の動作を壊すコストはSteam版が遅れるコストより高い。
-        <code>AdRoot</code> / <code>Shop/IAP/</code> / <code>Firebase/</code> は無改修とし、それらへ委譲するだけの実装クラスを新規追加する。
-        同じ既存メソッドを通るため、モバイル版の挙動は変わらない。
-      </div>
+      <p>
+        にもかかわらず、この6つは呼び出し側に散らばっている。このまま Steam 実装を書き始めると、
+        <b>プラットフォーム分岐が呼び出し側へ伝染し、そのたびにモバイル版のビルドが壊れる余地が増える。</b>
+        それを起こさないための土台を先に置くのが、この指示書の目的である。
+      </p>
+      <p>
+        <b>抽象化そのものが目的ではない。</b>「Steam の実装を足してもモバイルが揺れない」状態が目的であり、
+        そこへ最も安く到達する形を選んでよい。
+      </p>
     </section>
 
-    <section id="scope" data-comment-id="guide-platform-scope" data-comment-title="変更範囲">
-      <h2>2. 変更範囲</h2>
-
-      <h3>触ってよいファイル</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>パス</th><th>区分</th><th>変更内容</th></tr></thead>
-          <tbody>
-            <tr><td><code>Assets/1.Games/IdleGem/Platform/</code> 配下すべて</td><td>新規</td><td>インターフェース、Mobile / Steam / Null 実装、Installer</td></tr>
-            <tr><td><code>Assets/1.Games/IdleGem/Main/RootInstaller.cs</code></td><td>追加のみ</td><td>331-333行の <code>#region IAP</code> 付近へ <code>PlatformInstaller.Install(Container)</code> を1行追加する。既存のbindは削除・変更しない</td></tr>
-            <tr><td><code>Assets/1.Games/IdleGem/Equipment/View/ReactiveUIElementExtensions.cs</code></td><td>型置換</td><td>332行 <code>SyncOnClickAsRewardButton</code> / 363行 <code>SyncOnClickAsRewardButtonOrFree</code> / 403行 <code>SyncAsCallBackOnClickAsRewardButton</code> の第1引数を <code>AdRoot</code> から <code>IRewardService</code> へ変える</td></tr>
-            <tr><td><code>Assets/1.Games/IdleGem/Shop/ShopView.cs</code></td><td>置換</td><td>459-464行の <code>#if UNITY_IOS || UNITY_ANDROID</code> による Restore ボタン出し分けを <code>IStoreService.SupportsRestore</code> に置き換える</td></tr>
-            <tr><td><code>Assets/1.Games/IdleGem/Settings/SettingsLoginHandler.cs</code></td><td>置換</td><td>ログインボタンの表示可否を <code>IAuthService.AvailableProviders</code> で判定する。<code>GoogleLogin</code> / <code>AppleLogin</code> への直接依存を外す</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <p>
-        報酬ボタンの呼び出し側8ファイル11箇所（<code>OfflineBonusView.cs:98</code>、<code>SoilGainMulPrestigeView.cs:59</code>、
-        <code>TearGainMulPrestigeView.cs:53</code>、<code>PresentBoosterView.cs:57</code>、<code>BattleLootView.cs:148</code>、
-        <code>FixedBoosterView.cs:43</code>、<code>FixedBoosterRootView.cs:52,61,70,91</code>、<code>ShopDomainUnity.cs:138-142,153</code>）は
-        <b>Zenjectの注入型が変わるだけで、コード本文は無改修で通る</b>。注入宣言の型名のみ機械的に置換する。
-      </p>
-
-      <h3>触ってはいけないファイル</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>パス</th><th>理由</th></tr></thead>
-          <tbody>
-            <tr><td><code>Assets/1.Games/IdleGem/Ads/AdRoot.cs</code></td><td>全報酬導線の入口（41-47行 <code>ShowRewardedAd</code>）。<code>GoogleMobileAds.Api</code> の唯一の直接依存。ここを触ると全11導線が回帰対象になる</td></tr>
-            <tr><td><code>Assets/1.Games/IdleGem/Ads/AdsClient.cs</code></td><td>課金フラグのPlayerPrefsキャッシュと <code>AdRoot</code> の初期化を担う。Steam版での扱いは別指示書</td></tr>
-            <tr><td><code>Assets/1.Games/IdleGem/Shop/IAP/</code> 配下すべて</td><td>レシート検証・復元・購入確定の本体。課金事故に直結する</td></tr>
-            <tr><td><code>Assets/1.Games/IdleGem/Firebase/</code> 配下すべて</td><td>認証とクラウドセーブの本体。<code>AppleLogin</code> / <code>GoogleLogin</code> はラッパーから呼ぶだけにする</td></tr>
-            <tr><td><code>Assets/1.Games/IdleGem/Settings/CloudSaveController.cs</code></td><td>競合解決を含む860行超。指示書03の対象</td></tr>
-            <tr><td><code>Assets/1.Games/IdleGem/ReviewEncouragement/ReviewEncouragementViewModel.cs</code></td><td>92-108行の <code>#if</code> はモバイル固有処理として残す。<code>IReviewPrompt</code> から静的メソッドを呼ぶだけにする</td></tr>
-            <tr><td><code>NewCubeUpgradeDomain/</code> 配下すべて</td><td>本指示書ではDomain / ViewModelを変更しない。したがってDLL再ビルドも発生しない</td></tr>
-            <tr><td><code>ProjectSettings/ProjectSettings.asset</code></td><td>Scripting Defineの整理は指示書02の担当。ここで触ると衝突する</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="note">
-        <strong>DLL反映:</strong> 不要。本指示書の変更はすべてUnity側の <code>.cs</code> であり、Unityが直接コンパイルする。
-        <code>go run Go/buildblazor/main.go</code> を実行する必要はない。
-      </div>
-    </section>
-
-    <section id="design" data-comment-id="guide-platform-design" data-comment-title="実装（スクリプト）">
-      <h2>3. 実装（スクリプト）</h2>
-
-      <h3>3.1 配置</h3>
-      <p>
-        <code>Assets/1.Games/IdleGem/Platform/</code> を新規作成する。
-        <code>Assets/1.Games/IdleGem/</code> 配下にasmdefは存在せず、すべて <code>Assembly-CSharp</code> に属する。
-        アセンブリ境界を新設せず、既存の名前空間（<code>IdleSystem_IAP</code> の <code>AdId</code> など）をそのまま参照してよい。
-      </p>
-
-      <figure class="code">
-        <figcaption><span class="new">新規</span> <b>Assets/1.Games/IdleGem/Platform/</b> ディレクトリ構成</figcaption>
-        <pre class="code"><code>Platform/
-├── IRewardService.cs          インターフェース定義（プラットフォーム非依存）
-├── IStoreService.cs
-├── IAuthService.cs
-├── IAchievementService.cs
-├── IReviewPrompt.cs
-├── ICloudSaveBackend.cs
-├── PlatformTypes.cs           StoreProduct / PurchaseResult / AuthProvider 等
-├── PlatformInstaller.cs       ★ プロジェクト唯一のプラットフォーム分岐
-├── Mobile/                    既存クラスへ委譲するだけの薄いラッパー
-│   ├── MobileRewardService.cs
-│   ├── MobileStoreService.cs
-│   ├── MobileAuthService.cs
-│   ├── MobileReviewPrompt.cs
-│   └── MobilePlatformInstaller.cs
-├── Steam/                     クラス内部を #if UNITY_STANDALONE で囲む
-│   ├── SteamRewardService.cs
-│   ├── SteamAchievementService.cs
-│   └── SteamPlatformInstaller.cs
-└── Null/                      Editor / フォールバック用の No-Op
-    ├── NullRewardService.cs
-    ├── NullStoreService.cs
-    ├── NullAuthService.cs
-    ├── NullAchievementService.cs
-    ├── NullReviewPrompt.cs
-    └── EditorPlatformInstaller.cs</code></pre>
-      </figure>
-
-      <h3>3.2 インターフェース定義</h3>
-      <p>
-        既存メソッドのシグネチャに合わせる。新しい戻り値型を発明しない。
-        <code>Fin&lt;T&gt;</code> / <code>Unit</code> は <code>IdleSystem.LanguageExt</code>（DLL提供）のもので、<code>AdRoot.cs</code> と同一である。
-      </p>
-
-      <figure class="code">
-        <figcaption><span class="new">新規</span> <b>Assets/1.Games/IdleGem/Platform/IRewardService.cs</b></figcaption>
-        <pre class="code"><code>using System;
-using IdleSystem.LanguageExt;
-using IdleSystem_IAP;   // AdId（既存の enum をそのまま使う。新しい ID 型は作らない）
-
-namespace Gem.Platform
-{
-    /// &lt;summary&gt;
-    /// 「導線ごとに報酬を要求する」契約。広告を出すか即時付与するかは実装側の都合であり、
-    /// 呼び出し側は結果（成功／失敗）と onGranted の発火だけを知る。
-    /// &lt;/summary&gt;
-    public interface IRewardService
-    {
-        // AdRoot.ShowRewardedAd(AdId, Action) と同一シグネチャ。呼び出し側の書き換えを最小にする。
-        Fin&lt;Unit&gt; RequestReward(AdId id, Action onGranted);
-
-        // false のとき、ボタン文言を「動画を見る」から「受け取る」へ変える。
-        bool RequiresAdView { get; }
-    }
-}</code></pre>
-      </figure>
-
-      <figure class="code">
-        <figcaption><span class="new">新規</span> <b>Assets/1.Games/IdleGem/Platform/IStoreService.cs</b> ／ <b>PlatformTypes.cs</b></figcaption>
-        <pre class="code"><code>using System;
-using System.Collections.Generic;
-using IdleSystem.LanguageExt;
-
-namespace Gem.Platform
-{
-    // ストアの1商品。Unity IAP の Product と Steam の DLC を同じ形で見せる。
-    public readonly struct StoreProduct
-    {
-        public string ProductId { get; }
-        public string LocalizedPrice { get; }   // AndroidIAPManagerMono.GetLocalizedPrice の戻り値をそのまま入れる
-        public bool IsOwned { get; }
-
-        public StoreProduct(string productId, string localizedPrice, bool isOwned)
-        {
-            ProductId = productId;
-            LocalizedPrice = localizedPrice;
-            IsOwned = isOwned;
-        }
-    }
-
-    public interface IStoreService
-    {
-        IReadOnlyList&lt;StoreProduct&gt; Products { get; }
-        bool IsInitialized { get; }
-
-        // 購入の「開始」だけを返す。確定は既存の ProcessPurchase / OnIapPurchased 経路で通知される。
-        // 既存 AndroidIAPManagerMono.OnPurchaseClicked(string, Action?) と同じ形に合わせている。
-        Fin&lt;string&gt; BeginPurchase(string productId, Action onSucceeded);
-
-        bool IsOwned(string productId);          // 非消費型の所有判定
-        string GetLocalizedPrice(string productId);
-
-        bool SupportsRestore { get; }            // ShopView の #if を置き換える
-        void Restore(Action&lt;IReadOnlyDictionary&lt;string, int&gt;&gt; onComplete, Action&lt;string&gt; onFailure);
-    }
-}</code></pre>
-      </figure>
-
-      <div class="note">
-        <strong>未確定:</strong> Steam版の商品は「デイリーダイヤ付与型DLC」であり、Unity IAP の消費型／非消費型と1対1に対応しない。
-        <code>StoreProduct</code> に付与量や周期を持たせるかは<b>本指示書では決めない</b>。
-        ここではモバイルの既存APIを損なわない最小形に留め、DLC固有の情報はマネタイズの指示書で追加する。
-      </div>
-
-      <figure class="code">
-        <figcaption><span class="new">新規</span> <b>IAuthService.cs</b> ／ <b>IAchievementService.cs</b> ／ <b>IReviewPrompt.cs</b> ／ <b>ICloudSaveBackend.cs</b></figcaption>
-        <pre class="code"><code>using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using IdleSystem.LanguageExt;
-
-namespace Gem.Platform
-{
-    public enum AuthProvider { Google, Apple, Steam }
-
-    /// &lt;summary&gt;
-    /// ログイン導線の契約。AvailableProviders により、UI 側は #if なしでボタンを出し分ける。
-    /// 各プロバイダの認証は独立しており、アカウント連携・セーブ統合は行わない（親ページの決定）。
-    /// &lt;/summary&gt;
-    public interface IAuthService
-    {
-        bool IsSignedIn { get; }
-        Fin&lt;string&gt; UserId { get; }
-        IReadOnlyList&lt;AuthProvider&gt; AvailableProviders { get; }
-
-        bool IsSignedInWith(AuthProvider provider);
-        void SignIn(AuthProvider provider);       // 既存 GoogleLogin.SignIn() が void のため合わせる
-        Task&lt;Unit&gt; SignOutAsync();                // 既存 GoogleLogin.SignOut() の戻り値に合わせる
-    }
-
-    /// &lt;summary&gt;実績。モバイルは No-Op。Steam は Store() で明示的に commit する。&lt;/summary&gt;
-    public interface IAchievementService
-    {
-        void Unlock(string achievementId);
-        void SetStat(string statId, float value);
-        void Store();
-    }
-
-    /// &lt;summary&gt;レビュー誘導。Steam では No-Op。&lt;/summary&gt;
-    public interface IReviewPrompt
-    {
-        bool CanPrompt { get; }
-        void OpenReviewPage();
-    }
-
-    /// &lt;summary&gt;
-    /// クラウドセーブの「取得／送信」だけを担う。競合解決はプラットフォーム非依存なので
-    /// CloudSaveController に残す。本指示書では定義のみで、実装は指示書03。
-    /// &lt;/summary&gt;
-    public interface ICloudSaveBackend
-    {
-        string BackendName { get; }
-        Task&lt;Fin&lt;string&gt;&gt; DownloadAsync();
-        Task&lt;Fin&lt;Unit&gt;&gt; UploadAsync(string payload);
-    }
-}</code></pre>
-      </figure>
-
-      <h3>3.3 モバイル実装（既存クラスへ委譲するだけ）</h3>
-      <p>
-        既存クラスをコンストラクタで受け取り、同じメソッドを呼ぶだけにする。分岐も状態も持たせない。
-        これにより、モバイル版は従来と同じ <code>AdRoot</code> の同じメソッドを通る。
-      </p>
-
-      <figure class="code">
-        <figcaption><span class="new">新規</span> <b>Platform/Mobile/MobileRewardService.cs</b>　（<b>Ads/AdRoot.cs</b> は <span class="keep">無改修</span>）</figcaption>
-        <pre class="code"><code>using System;
-using IdleSystem.LanguageExt;
-using IdleSystem_IAP;
-using Zenject;
-
-namespace Gem.Platform.Mobile
-{
-    /// &lt;summary&gt;
-    /// AdRoot への委譲のみ。ロジックを持たないことが、モバイル版の挙動を変えない保証になる。
-    /// &lt;/summary&gt;
-    public sealed class MobileRewardService : IRewardService
-    {
-        private readonly AdRoot _adRoot;
-
-        [Inject]
-        public MobileRewardService(AdRoot adRoot) =&gt; _adRoot = adRoot;
-
-        public bool RequiresAdView =&gt; true;
-
-        public Fin&lt;Unit&gt; RequestReward(AdId id, Action onGranted)
-            =&gt; _adRoot.ShowRewardedAd(id, onGranted);
-    }
-}</code></pre>
-      </figure>
-
-      <figure class="code">
-        <figcaption><span class="new">新規</span> <b>Platform/Mobile/MobileStoreService.cs</b>　（<b>Shop/IAP/AndroidIAPManagerMono.cs</b> は <span class="keep">無改修</span>）</figcaption>
-        <pre class="code"><code>using System;
-using System.Collections.Generic;
-using IdleSystem.LanguageExt;
-using IdleSystem_IAP.IAP;
-using Zenject;
-
-namespace Gem.Platform.Mobile
-{
-    public sealed class MobileStoreService : IStoreService
-    {
-        private readonly AndroidIAPManagerMono _iapManager;   // 名前は Android だが iOS も担当する
-        private readonly IAPRoot _iapRoot;
-
-        [Inject]
-        public MobileStoreService(AndroidIAPManagerMono iapManager, IAPRoot iapRoot)
-        {
-            _iapManager = iapManager;
-            _iapRoot = iapRoot;
-        }
-
-        public bool IsInitialized =&gt; _iapManager.IsInitialized;
-
-        public IReadOnlyList&lt;StoreProduct&gt; Products
-        {
-            get
-            {
-                var list = new List&lt;StoreProduct&gt;(_iapRoot.IAPList.Count);
-                for (var i = 0; i &lt; _iapRoot.IAPList.Count; i++)
-                {
-                    var id = _iapRoot.IAPList[i].Id.ID;
-                    list.Add(new StoreProduct(id, _iapManager.GetLocalizedPrice(id), _iapManager.IsPurchased(id)));
-                }
-                return list;
-            }
-        }
-
-        public Fin&lt;string&gt; BeginPurchase(string productId, Action onSucceeded)
-            =&gt; _iapManager.OnPurchaseClicked(productId, onSucceeded);
-
-        public bool IsOwned(string productId) =&gt; _iapManager.IsPurchased(productId);
-
-        public string GetLocalizedPrice(string productId) =&gt; _iapManager.GetLocalizedPrice(productId);
-
-        // 現状の ShopView は #if UNITY_IOS || UNITY_ANDROID で Restore ボタンを出しており、
-        // モバイルでは常に表示されている。その挙動をそのまま true として写す。
-        public bool SupportsRestore =&gt; true;
-
-        public void Restore(Action&lt;IReadOnlyDictionary&lt;string, int&gt;&gt; onComplete, Action&lt;string&gt; onFailure)
-            =&gt; _iapManager.RestorePurchases(counts =&gt; onComplete(counts), onFailure);
-    }
-}</code></pre>
-      </figure>
-
-      <figure class="code">
-        <figcaption><span class="new">新規</span> <b>Platform/Mobile/MobileAuthService.cs</b> ／ <b>MobileReviewPrompt.cs</b>　（<b>Firebase/</b> と <b>ReviewEncouragement/</b> は <span class="keep">無改修</span>）</figcaption>
-        <pre class="code"><code>using System.Collections.Generic;
-using System.Threading.Tasks;
-using Gem.UI;
-using IdleLibrary.BackEnd;
-using IdleSystem.LanguageExt;
-using Zenject;
-
-namespace Gem.Platform.Mobile
-{
-    public sealed class MobileAuthService : IAuthService
-    {
-        private readonly GoogleLogin _google;
-        private readonly AppleLogin _apple;
-        private readonly FirebaseRoot _firebaseRoot;
-
-        // Apple のサインインは iOS / tvOS / macOS でのみ成立する。
-        // 「実装クラス内部」なので #if を書いてよい 3 箇所に該当する。
-        private static readonly AuthProvider[] Providers =
-#if UNITY_IOS || UNITY_TVOS || UNITY_STANDALONE_OSX
-            { AuthProvider.Google, AuthProvider.Apple };
-#else
-            { AuthProvider.Google };
-#endif
-
-        [Inject]
-        public MobileAuthService(GoogleLogin google, AppleLogin apple, FirebaseRoot firebaseRoot)
-        {
-            _google = google;
-            _apple = apple;
-            _firebaseRoot = firebaseRoot;
-        }
-
-        public IReadOnlyList&lt;AuthProvider&gt; AvailableProviders =&gt; Providers;
-
-        public bool IsSignedIn =&gt; _google.IsSignedIn || _apple.IsSignedIn || _firebaseRoot.LoginResults.IsSucc;
-
-        public bool IsSignedInWith(AuthProvider provider) =&gt; provider switch
-        {
-            AuthProvider.Google =&gt; _google.IsSignedIn,
-            AuthProvider.Apple =&gt; _apple.IsSignedIn,
-            _ =&gt; false,
-        };
-
-        public Fin&lt;string&gt; UserId =&gt; _firebaseRoot.LoginResults.Map(r =&gt; r.DisplayName ?? "");
-
-        public void SignIn(AuthProvider provider)
-        {
-            if (provider == AuthProvider.Google) _google.SignIn();
-            else if (provider == AuthProvider.Apple) _apple.SignIn();
-        }
-
-        public async Task&lt;Unit&gt; SignOutAsync()
-        {
-            if (_google.IsSignedIn) return await _google.SignOut();
-            if (_apple.IsSignedIn) return await _apple.SignOut();
-            await _firebaseRoot.ClearLoginData("Sign out without provider");
-            return Unit.Default;
-        }
-    }
-
-    public sealed class MobileReviewPrompt : IReviewPrompt
-    {
-        public bool CanPrompt =&gt; true;
-
-        // 既存の静的メソッドを呼ぶだけ。ReviewEncouragementViewModel は無改修のまま。
-        public void OpenReviewPage() =&gt; ReviewEncouragementViewModel.OpenReviewPage();
-    }
-}</code></pre>
-      </figure>
-
-      <div class="note">
-        <strong>調査で判明した訂正:</strong>
-        <code>Memo/Current_State_Audit.md</code> は「<code>AppleLogin</code> は Windows でクラスごと消える」と記載しているが、
-        実際の <code>Firebase/AppleLogin.cs</code> は <code>#if</code> が using ブロック・フィールド・メソッド本体の内側にあり、
-        <b>クラス自体はWindowsでもコンパイルされる</b>（22行 <code>public class AppleLogin</code> は <code>#if</code> の外）。
-        したがって <code>MobileAuthService</code> が <code>AppleLogin</code> を参照してもStandaloneでコンパイルは通り、
-        Windowsでは <code>SignIn()</code> が何もしないだけになる。<code>AvailableProviders</code> はコンパイル対策ではなく
-        <b>UI出し分けのために必要</b>である。
-      </div>
-
-      <h3>3.4 Steam実装の骨</h3>
-      <p>
-        本指示書ではSteam実装の中身を書かない。クラスの器と <code>#if</code> の位置だけを固定する。
-        <code>SteamAPI.*</code> の初期化と失敗時フォールバックは指示書02の担当。
-      </p>
-
-      <figure class="code">
-        <figcaption><span class="new">新規</span> <b>Platform/Steam/SteamAchievementService.cs</b>（中身は指示書02以降）</figcaption>
-        <pre class="code"><code>#if UNITY_STANDALONE
-using Steamworks;
-using UnityEngine;
-
-namespace Gem.Platform.Steam
-{
-    /// &lt;summary&gt;
-    /// Steamworks 実績。クラス全体を #if で囲むのが「プラットフォーム固有実装クラスの内部」の作法。
-    /// SteamAPI.Init() が失敗している状態でも例外を投げず、黙って無視すること
-    /// （クライアント未起動・オフラインで普通に失敗する。ゲームは起動させる）。
-    /// &lt;/summary&gt;
-    public sealed class SteamAchievementService : IAchievementService
-    {
-        private bool IsReady =&gt; SteamManager.Initialized;   // SteamManager は指示書02で新規作成する
-
-        public void Unlock(string achievementId)
-        {
-            if (!IsReady) return;
-            SteamUserStats.SetAchievement(achievementId);
-        }
-
-        public void SetStat(string statId, float value)
-        {
-            if (!IsReady) return;
-            SteamUserStats.SetStat(statId, value);
-        }
-
-        public void Store()
-        {
-            if (!IsReady) return;
-            SteamUserStats.StoreStats();   // Steam は明示的な commit が要る
-        }
-    }
-}
-#endif</code></pre>
-      </figure>
-
-      <div class="warn">
-        <strong>Scripting Define の順序に注意。</strong>
-        現状 <code>STEAMWORKS_NET</code> は Android / iPhone にも付いている（<code>ProjectSettings.asset:1051</code>）。
-        <code>using Steamworks;</code> を書いたファイルを追加した瞬間にモバイルビルドが壊れる可能性がある。
-        <b>上記の <code>Steam/</code> 配下のファイルは、指示書02でDefine整理が終わるまでコミットしない。</b>
-        本指示書のPR範囲では <code>Steam/</code> ディレクトリは空でよい。
-      </div>
-
-      <h3>3.5 No-Op（Null）実装</h3>
-      <p>
-        Editorでは Steam クライアントも AdMob も動かない。No-Opをbindしておかないと、Editorで全く遊べなくなる。
-        報酬は即時付与、購入は成功を返すフェイク、実績は <code>Debug.Log</code> にする。
-      </p>
-
-      <figure class="code">
-        <figcaption><span class="new">新規</span> <b>Platform/Null/NullRewardService.cs</b> ほか No-Op 一式</figcaption>
-        <pre class="code"><code>using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using IdleSystem.LanguageExt;
-using IdleSystem_IAP;
-using UnityEngine;
-
-namespace Gem.Platform.Null
-{
-    /// &lt;summary&gt;広告を出さず即座に報酬を渡す。Editor と、Steam 実装未完成時のフォールバック。&lt;/summary&gt;
-    public sealed class NullRewardService : IRewardService
-    {
-        public bool RequiresAdView =&gt; false;
-
-        public Fin&lt;Unit&gt; RequestReward(AdId id, Action onGranted)
-        {
-            Debug.Log($"[NullReward] grant immediately: {id}");
-            onGranted?.Invoke();
-            return Fin&lt;Unit&gt;.Succ(Unit.Default);
-        }
-    }
-
-    /// &lt;summary&gt;常に「購入成功」を返すフェイク。実課金は一切発生しない。&lt;/summary&gt;
-    public sealed class NullStoreService : IStoreService
-    {
-        public IReadOnlyList&lt;StoreProduct&gt; Products =&gt; Array.Empty&lt;StoreProduct&gt;();
-        public bool IsInitialized =&gt; true;
-        public bool SupportsRestore =&gt; false;
-
-        public Fin&lt;string&gt; BeginPurchase(string productId, Action onSucceeded)
-        {
-            Debug.Log($"[NullStore] fake purchase: {productId}");
-            onSucceeded?.Invoke();
-            return Fin&lt;string&gt;.Succ(productId);
-        }
-
-        public bool IsOwned(string productId) =&gt; false;
-        public string GetLocalizedPrice(string productId) =&gt; "--";
-        public void Restore(Action&lt;IReadOnlyDictionary&lt;string, int&gt;&gt; onComplete, Action&lt;string&gt; onFailure)
-            =&gt; onFailure?.Invoke("Restore is not supported on this platform.");
-    }
-
-    public sealed class NullAchievementService : IAchievementService
-    {
-        public void Unlock(string achievementId) =&gt; Debug.Log($"[NullAchievement] unlock: {achievementId}");
-        public void SetStat(string statId, float value) =&gt; Debug.Log($"[NullAchievement] stat: {statId}={value}");
-        public void Store() { }
-    }
-
-    public sealed class NullAuthService : IAuthService
-    {
-        public bool IsSignedIn =&gt; false;
-        public Fin&lt;string&gt; UserId =&gt; Fin&lt;string&gt;.Fail("Not signed in");
-        public IReadOnlyList&lt;AuthProvider&gt; AvailableProviders =&gt; Array.Empty&lt;AuthProvider&gt;();
-        public bool IsSignedInWith(AuthProvider provider) =&gt; false;
-        public void SignIn(AuthProvider provider) =&gt; Debug.Log($"[NullAuth] signIn: {provider}");
-        public Task&lt;Unit&gt; SignOutAsync() =&gt; Task.FromResult(Unit.Default);
-    }
-
-    public sealed class NullReviewPrompt : IReviewPrompt
-    {
-        public bool CanPrompt =&gt; false;
-        public void OpenReviewPage() { }
-    }
-}</code></pre>
-      </figure>
-
-      <h3>3.6 DI登録（唯一の分岐）</h3>
-      <p>
-        <code>PlatformInstaller</code> がプロジェクト全体で唯一のプラットフォーム分岐になる。
-        <code>RootInstaller.cs</code> は既存のbindを保ったまま、この呼び出しを1行追加するだけにする。
-      </p>
-
-      <figure class="code">
-        <figcaption><span class="new">新規</span> <b>Platform/PlatformInstaller.cs</b> ／ <b>Mobile/MobilePlatformInstaller.cs</b> ／ <b>Null/EditorPlatformInstaller.cs</b></figcaption>
-        <pre class="code"><code>using Gem.Platform.Mobile;
-using Gem.Platform.Null;
-using Zenject;
-
-namespace Gem.Platform
-{
-    /// &lt;summary&gt;
-    /// プロジェクト唯一のプラットフォーム分岐。ここ以外に #if UNITY_ANDROID / UNITY_STANDALONE を書かない。
-    /// &lt;/summary&gt;
-    public static class PlatformInstaller
-    {
-        public static void Install(DiContainer c)
-        {
-#if UNITY_STANDALONE &amp;&amp; !UNITY_EDITOR
-            SteamPlatformInstaller.Install(c);
-#elif (UNITY_ANDROID || UNITY_IOS) &amp;&amp; !UNITY_EDITOR
-            MobilePlatformInstaller.Install(c);
-#else
-            EditorPlatformInstaller.Install(c);
-#endif
-        }
-    }
-}
-
-namespace Gem.Platform.Mobile
-{
-    public static class MobilePlatformInstaller
-    {
-        public static void Install(DiContainer c)
-        {
-            // AdRoot / AndroidIAPManagerMono / GoogleLogin / AppleLogin は
-            // RootInstaller の既存 bind をそのまま解決して使う（既存 bind は削除しない）。
-            c.Bind&lt;IRewardService&gt;().To&lt;MobileRewardService&gt;().AsSingle();
-            c.Bind&lt;IStoreService&gt;().To&lt;MobileStoreService&gt;().AsSingle();
-            c.Bind&lt;IAuthService&gt;().To&lt;MobileAuthService&gt;().AsSingle();
-            c.Bind&lt;IReviewPrompt&gt;().To&lt;MobileReviewPrompt&gt;().AsSingle();
-            c.Bind&lt;IAchievementService&gt;().To&lt;NullAchievementService&gt;().AsSingle();   // モバイルに実績は無い
-        }
-    }
-}
-
-namespace Gem.Platform.Null
-{
-    /// &lt;summary&gt;Editor で開発を続けられるようにするための束。実 SDK を一切呼ばない。&lt;/summary&gt;
-    public static class EditorPlatformInstaller
-    {
-        public static void Install(DiContainer c)
-        {
-            c.Bind&lt;IRewardService&gt;().To&lt;NullRewardService&gt;().AsSingle();
-            c.Bind&lt;IStoreService&gt;().To&lt;NullStoreService&gt;().AsSingle();
-            c.Bind&lt;IAuthService&gt;().To&lt;NullAuthService&gt;().AsSingle();
-            c.Bind&lt;IReviewPrompt&gt;().To&lt;NullReviewPrompt&gt;().AsSingle();
-            c.Bind&lt;IAchievementService&gt;().To&lt;NullAchievementService&gt;().AsSingle();
-        }
-    }
-}</code></pre>
-      </figure>
-
-      <div class="note">
-        <strong>Editorでモバイル実装を確認したい場合。</strong>
-        上の分岐は Editor を常に No-Op にする。<code>AdRoot</code> は Editor でテスト用AdUnitIdを持つ（<code>AdRoot.cs:51-52</code>）ため、
-        Editorで実広告経路を試したい要求は残る。切り替えは <code>#if</code> ではなく
-        <code>EditorPlatformInstaller</code> 内の <code>EditorPrefs</code> フラグで行い、<b>分岐を1ファイルに閉じたまま</b>にすること。
-      </div>
-
-      <figure class="code">
-        <figcaption>既存改修（追加のみ） <b>Assets/1.Games/IdleGem/Main/RootInstaller.cs</b>　331-333行付近</figcaption>
-        <pre class="code"><code>            #region  IAP
-            Container.Bind&lt;IAPRoot&gt;().AsCached();
-            Container.Bind&lt;AdRoot&gt;().AsCached();                       // 既存 bind は削除しない
-            Container.BindInterfacesAndSelfTo&lt;AdsClient&gt;().AsCached().NonLazy();
-            #endregion
-
-+           // プラットフォーム境界。分岐は PlatformInstaller の内部に閉じている。
-+           Gem.Platform.PlatformInstaller.Install(Container);</code></pre>
-      </figure>
-
-      <h3>3.7 呼び出し側の before / after</h3>
-      <p>
-        報酬ボタンは <code>ReactiveUIElementExtensions.cs</code> の3メソッドを通る。ここの引数型を変えれば、
-        呼び出し側8ファイル11箇所は本文無改修で済む。
-      </p>
-
-      <figure class="code">
-        <figcaption>既存改修 <b>Assets/1.Games/IdleGem/Equipment/View/ReactiveUIElementExtensions.cs</b>　332 / 363 / 403行</figcaption>
-        <pre class="code"><code>// ---- before（332行）--------------------------------------------------
-public static Fin&lt;IDisposable&gt; SyncOnClickAsRewardButton(
-    this ReactiveButton button, AdRoot adRoot, AdId adId, VisualElement root,
-    string? name = null, bool playSound = true, Action additionalAction = null)
-{
-    // ...
-    adRoot.ShowRewardedAd(adId, () =&gt; { ... })
-    // ...
-}
-
-// ---- after -----------------------------------------------------------
-public static Fin&lt;IDisposable&gt; SyncOnClickAsRewardButton(
-    this ReactiveButton button, IRewardService reward, AdId adId, VisualElement root,
-    string? name = null, bool playSound = true, Action additionalAction = null)
-{
-    // ...
-    reward.RequestReward(adId, () =&gt; { ... })
-    // ...
-}
-
-// SyncOnClickAsRewardButtonOrFree(363行) / SyncAsCallBackOnClickAsRewardButton(403行) も同じ置換。
-// メソッド本体のロジック（canSkipAd 分岐、SoundPlayer.PlayButton、Disposable.Create）は一切変えない。</code></pre>
-      </figure>
-
-      <figure class="code">
-        <figcaption>既存改修 <b>Shop/ShopView.cs</b> 459-464行 ／ <b>Settings/SettingsLoginHandler.cs</b> 168-169行</figcaption>
-        <pre class="code"><code>// ---- ShopView.cs before（459-464行）----------------------------------
-#if UNITY_IOS || UNITY_ANDROID
-    Debug.Log("Restore button is not hidden.");
-#else
-    Debug.Log("Restore button is hidden on non-iOS platforms.");
-    _restoreButton.Do(button =&gt; button.style.display = DisplayStyle.None).UnityDebugFin();
-#endif
-
-// ---- ShopView.cs after ------------------------------------------------
-if (!_storeService.SupportsRestore)
-    _restoreButton.Do(button =&gt; button.style.display = DisplayStyle.None).UnityDebugFin();
-
-
-// ---- SettingsLoginHandler.cs before（168-169行）-----------------------
-_googleLoginButton.Do(b =&gt; b.SetEnabled(!isGoogleLoggedIn &amp;&amp; !isFirebaseLoginResultSucceeded)).UnityDebugFin();
-_appleLoginButton.Do(b =&gt; b.SetEnabled(!isAppleLoggedIn &amp;&amp; !isFirebaseLoginResultSucceeded)).UnityDebugFin();
-
-// ---- SettingsLoginHandler.cs after -------------------------------------
-// 使えないプロバイダのボタンは「無効化」ではなく非表示にする。
-SyncProviderButton(_googleLoginButton, AuthProvider.Google);
-SyncProviderButton(_appleLoginButton, AuthProvider.Apple);
-
-void SyncProviderButton(Fin&lt;Button&gt; button, AuthProvider provider) =&gt; button.Do(b =&gt;
-{
-    var available = _auth.AvailableProviders.Contains(provider);
-    b.style.display = available ? DisplayStyle.Flex : DisplayStyle.None;
-    b.SetEnabled(available &amp;&amp; !_auth.IsSignedInWith(provider) &amp;&amp; !_auth.IsSignedIn);
-}).UnityDebugFin();</code></pre>
-      </figure>
-
-      <div class="note">
-        <strong>未確定:</strong> <code>SettingsLoginHandler</code> のログアウト・アカウント削除は
-        <code>CloudSaveController.DeleteCloudSave()</code> に直接依存している（283行）。
-        この依存は <code>ICloudSaveBackend</code> の対象ではなく、指示書03で扱う。本指示書では触らない。
-      </div>
-    </section>
-
-    <section id="steps" data-comment-id="guide-platform-steps" data-comment-title="作業手順">
-      <h2>4. 作業手順</h2>
-      <p>1項目=1PR。依存順に並べてある。各PRの単位で、モバイル向けビルドが通ることを確認してから次へ進む。</p>
-      <ol class="steps">
-        <li><div><b>インターフェースと型だけを追加する</b><code>Platform/I*.cs</code> と <code>PlatformTypes.cs</code> を新規作成する。この時点でどのクラスからも参照されないため、既存の挙動は一切変わらない。</div></li>
-        <li><div><b>No-Op実装とEditor用Installerを追加する</b><code>Platform/Null/</code> 一式と <code>EditorPlatformInstaller</code> / <code>PlatformInstaller</code> を作り、<code>RootInstaller.cs</code> へ <code>PlatformInstaller.Install(Container)</code> を1行追加する。Editorで起動して例外が出ないことを確認する。</div></li>
-        <li><div><b>MobileRewardServiceを追加し、モバイル分岐をbindする</b><code>MobilePlatformInstaller</code> を追加する。既存の <code>AdRoot</code> bindは残したまま、<code>IRewardService</code> のbindを増やすだけにする。</div></li>
-        <li><div><b>報酬ボタン3メソッドの引数型を差し替える</b><code>ReactiveUIElementExtensions.cs</code> の3メソッドを <code>IRewardService</code> 受け取りに変え、呼び出し側8ファイルの注入型名を機械的に置換する。実機で報酬導線11箇所を通す。</div></li>
-        <li><div><b>MobileStoreServiceを追加し、ShopViewの<code>#if</code>を外す</b>Restoreボタンの表示判定を <code>SupportsRestore</code> に置き換える。購入経路そのものは <code>AndroidIAPManagerMono</code> のまま変えない。</div></li>
-        <li><div><b>MobileAuthServiceを追加し、ログインUIを出し分ける</b><code>SettingsLoginHandler</code> の <code>GoogleLogin</code> / <code>AppleLogin</code> 直接依存を <code>IAuthService</code> へ寄せる。iOS実機でAppleログインが従来通り動くことを確認する。</div></li>
-        <li><div><b>IReviewPromptとIAchievementServiceを配線する</b>レビュー導線をラッパー経由に変え、実績はNo-Opをbindしたままにする。ゲームロジックから分岐なしで <code>Unlock()</code> を呼べる状態にする。</div></li>
-        <li><div><b>Steam実装の器だけを用意する</b><code>SteamPlatformInstaller</code> の空実装を置く。<code>Steam/</code> 配下の <code>using Steamworks;</code> を含むファイルは、指示書02でScripting Defineの整理が終わるまでコミットしない。</div></li>
-      </ol>
-    </section>
-
-    <section id="accept" data-comment-id="guide-platform-accept" data-comment-title="受け入れ条件とテスト">
-      <h2>5. 受け入れ条件とテスト</h2>
-
-      <h3>構造</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>#</th><th>条件</th><th>確認方法</th></tr></thead>
-          <tbody>
-            <tr><td>1</td><td>6インターフェースが <code>Assets/1.Games/IdleGem/Platform/</code> に存在し、いずれも <code>UnityEngine.Purchasing</code> / <code>GoogleMobileAds</code> / <code>Steamworks</code> を using していない</td><td><code>Platform/I*.cs</code> のusingを目視</td></tr>
-            <tr><td>2</td><td><code>Ads/AdRoot.cs</code>、<code>Shop/IAP/</code> 配下、<code>Firebase/</code> 配下の差分が0行である</td><td><code>git diff --stat</code> に該当パスが1件も現れない</td></tr>
-            <tr><td>3</td><td>プラットフォーム分岐の <code>#if</code> が新規追加されたのは <code>PlatformInstaller.cs</code> と <code>Mobile/MobileAuthService.cs</code>、および <code>Steam/</code> 配下のみである</td><td>追加行に対する <code>git diff</code> の <code>#if UNITY_</code> 検索</td></tr>
-            <tr><td>4</td><td>View / ViewModel / Domain に <code>#if UNITY_ANDROID</code> / <code>UNITY_IOS</code> / <code>UNITY_STANDALONE</code> が<b>増えていない</b></td><td>作業前後で <code>#if UNITY_</code> の総ヒット数を数え、増分が3の許可箇所のみであることを確認</td></tr>
-            <tr><td>5</td><td><code>ShopView.cs</code> と <code>SettingsLoginHandler.cs</code> にプラットフォーム <code>#if</code> が1つも残っていない</td><td>該当2ファイルを全文検索</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h3>Editor</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>#</th><th>条件</th><th>確認方法</th></tr></thead>
-          <tbody>
-            <tr><td>6</td><td>Editorで起動すると <code>NullRewardService</code> がbindされ、報酬ボタン押下で広告なしに報酬が付与される</td><td>Cave画面の固定ブースター受取ボタンを押し、コンソールに <code>[NullReward] grant immediately</code> が出て報酬が入る</td></tr>
-            <tr><td>7</td><td>EditorでShop画面が例外なく開き、Restoreボタンが非表示になっている</td><td><code>NullStoreService.SupportsRestore == false</code> の反映を目視</td></tr>
-            <tr><td>8</td><td>Editorで設定画面のGoogle / Appleログインボタンが非表示になり、例外が出ない</td><td><code>NullAuthService.AvailableProviders</code> が空のため。コンソールにエラーなし</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h3>モバイルビルドが壊れていないことの確認（必須）</h3>
-      <p>この確認を通さずにマージしない。実ユーザーがプレイ中のモバイル版を守るための唯一の関門である。</p>
+    <section id="policy" data-comment-id="guide-platform-policy" data-comment-title="方針">
+      <h2>2. 方針</h2>
+
+      <h3>優先順位</h3>
+      <p>判断に迷ったときは、上から順に優先する。</p>
       <ol>
-        <li><b>Android実機ビルドが成功する。</b> <code>Assets/Editor/AndroidBuildScript.cs</code> の経路でビルドし、エラー0で完了する。</li>
-        <li><b>iOS実機ビルドが成功する。</b> Xcodeプロジェクト出力まで通り、<code>PostBuildStep.cs</code> がエラーを出さない。</li>
-        <li><b>報酬導線11箇所すべてで、従来どおり動画広告が再生され報酬が入る。</b> オフラインボーナス×2 / プレステージSoil / プレステージTear / ランダムタイムブースト / バトル戦利品×2 / 固定ブースター受取 / CaveATK / BattleATK / TimeATK / デイリーダイヤ / デイリー箱。</li>
-        <li><b>広告削除購入済みアカウントで、従来どおり広告なしの即時付与になる。</b> <code>AdRoot.IsRemoveAdsPurchased</code> 経路が生きていること（<code>AdsClient</code> は無改修なので値の供給元は変わらない）。</li>
-        <li><b>Shop画面で購入が完走する。</b> ダイヤ商品1件をサンドボックスで購入し、付与とレシート処理が従来どおり行われる。</li>
-        <li><b>iOSでRestoreボタンが表示され、復元が成功する。</b> <code>MobileStoreService.SupportsRestore == true</code> による表示であること。</li>
-        <li><b>Google / Appleログインが従来どおり成功し、クラウドセーブ画面が開く。</b> ログイン後にユーザー名ラベルが表示される。</li>
-        <li><b>Androidでレビュー誘導が従来どおりPlayストアを開く。</b> <code>MobileReviewPrompt</code> 経由で <code>OpenReviewPage()</code> が呼ばれる。</li>
+        <li><b>モバイル版の挙動を変えないこと。</b>ここだけは譲らない。バイトレベルで同じ経路を通るなら、それが最善</li>
+        <li><b>Editor で開発を続けられること。</b>途中の状態でゲームが起動しなくなる作り方をしない</li>
+        <li><b>設計の綺麗さ。</b>最後。境界が多少不格好でも、1・2を満たすなら通す</li>
       </ol>
 
       <div class="note">
-        <strong>Standaloneビルドは本指示書の受け入れ条件に含めない。</strong>
-        <code>IdleSystem.*.dll</code> 群がStandaloneで動作するかは未検証であり、その検証は指示書02が担当する。
-        本指示書では「Steam実装の器が用意されている」ことまでを条件とする。
+        <strong>速度より安全を取る。</strong>
+        この指示書に締切は設定しない。Steam 版が遅れるコストより、
+        既存プレイヤーの動作を壊すコストの方がはるかに高い。
       </div>
+
+      <h3>やり方の方針</h3>
+      <ul>
+        <li><b>既存のクラスを書き換えず、被せる。</b>モバイル実装は既存へ委譲するだけの薄い層でよい。
+          「既存を整理してから抽象化する」という順序は取らない</li>
+        <li><b>迷ったら抽象度を上げない。</b>将来使うかもしれないメソッドを足さない。
+          いま呼ばれている操作だけを写す</li>
+        <li><b>Steam 実装は書かなくてよい。</b>本書の完了時点で中身は空でよい。
+          器と No-Op があって、モバイルが今までどおり動けば成功である</li>
+        <li><b>一度に全部やらない。</b>影響範囲の狭い境界から1つずつ入れ、そのたびにモバイルビルドを通す</li>
+      </ul>
+
+      <h3><code>#if</code> の扱い</h3>
+      <p>
+        書いてよいのは <b>Installer</b> ／ <b>プラットフォーム固有 SDK を直接触る実装クラスの内部</b> ／ <b>Editor スクリプト</b> の3箇所のみ。
+        View / ViewModel / Domain には書かない。
+      </p>
+      <p>
+        これは美観の話ではない。<b><code>#if</code> が増えた箇所は、そのプラットフォームでビルドするまで壊れたことに気づけない</b>ため、
+        モバイルの出荷経路にとって危険が増える、という理由である。
+      </p>
     </section>
 
-    <section id="rollback" data-comment-id="guide-platform-rollback" data-comment-title="ロールバック">
-      <h2>6. ロールバック</h2>
-      <p>
-        本指示書の作業は、モバイル版の報酬・課金・ログインという収益と進行の中枢に触れる。
-        少しでも既存挙動の差異が疑われたら、原因究明より先に戻す。
-      </p>
+    <section id="contract" data-comment-id="guide-platform-contract" data-comment-title="譲れない前提と契約">
+      <h2>3. 譲れない前提と契約</h2>
+      <p>ここに書いたものだけが固定である。書いていないことは決めてよい。</p>
 
-      <h3>差し戻す条件</h3>
+      <h3>触ってはいけないもの</h3>
+      <ul>
+        <li><code>Ads/AdRoot.cs</code>、<code>Shop/IAP/</code> 配下、<code>Firebase/</code> 配下 ── <b>1行も変更しない</b></li>
+        <li>モバイル版のビルド設定・出荷スクリプト</li>
+      </ul>
+
+      <h3>6つの境界</h3>
+      <p>何を境界にするかは決まっている。<b>型の形・命名・置き場は決まっていない。</b></p>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>状態</th><th>判断</th></tr></thead>
+          <thead><tr><th>境界</th><th>モバイル</th><th>Steam</th></tr></thead>
           <tbody>
-            <tr><td class="ng">即時</td><td>Android / iOSのビルドが通らない</td></tr>
-            <tr><td class="ng">即時</td><td>報酬導線11箇所のいずれかで、広告が再生されない・報酬が入らない・二重に入る</td></tr>
-            <tr><td class="ng">即時</td><td>課金が完走しない、または購入済み権利（<code>remove_ads</code> / <code>idle_gem_booster_plus</code> / <code>idle_gem_nether_plus</code>）が失われる</td></tr>
-            <tr><td class="ng">即時</td><td>iOSのRestoreが失敗する、またはRestoreボタンが消える</td></tr>
-            <tr><td class="ng">即時</td><td>ログイン状態が保持されない、クラウドセーブが読めない</td></tr>
-            <tr><td class="pending">要判断</td><td>Editorで No-Op が効かず開発が止まる（実害はEditorのみ。修正で対応するか戻すかを判断する）</td></tr>
+            <tr><td>広告・報酬</td><td>既存の広告処理へ委譲</td><td>導線ごとの報酬・解禁条件（→ <a href="../index.html#phase2">指示書04</a>）</td></tr>
+            <tr><td>課金</td><td>Unity IAP</td><td>Steam DLC / 所有権</td></tr>
+            <tr><td>クラウドセーブ</td><td>Firestore REST</td><td>Firestore REST + Steam Cloud 複製（→ <a href="../index.html#phase2">指示書03</a>）</td></tr>
+            <tr><td>ログイン</td><td>Google / Apple</td><td>Google / Apple / Steam（各認証は独立）</td></tr>
+            <tr><td>実績</td><td>No-Op</td><td>Steamworks 実績（→ <a href="../index.html#phase2">指示書07</a>）</td></tr>
+            <tr><td>レビュー誘導</td><td>既存のレビュー導線</td><td>No-Op</td></tr>
           </tbody>
         </table>
       </div>
+
+      <h3>守るべき契約</h3>
+      <p>
+        次の3点は、守らないと<b>呼び出し側の改修が発生する</b>。それを避けるためだけの制約であり、
+        形を変えて同じ効果が出せるなら、その形でよい。
+      </p>
+
+      <figure class="code">
+        <figcaption>報酬 ── <b>既存の広告呼び出しと同じ形に合わせる</b></figcaption>
+        <pre class="code"><code>// 目的: 報酬導線の呼び出し側（複数ファイルに散在）を無改修のまま差し替えられるようにする。
+// RequiresAdView が false のとき、UI 側はボタン文言を「受け取る」に変えられること。
+Fin&lt;Unit&gt; RequestReward(AdId id, Action onGranted);
+bool RequiresAdView { get; }</code></pre>
+      </figure>
+
+      <figure class="code">
+        <figcaption>購入の復元 ── <b>プラットフォーム判定を値として持つ</b></figcaption>
+        <pre class="code"><code>// 目的: ShopView にある「復元ボタンを出すかどうか」の #if を、この値の参照へ置き換える。
+// Steam には復元の概念が無いので false を返す。
+bool SupportsRestore { get; }</code></pre>
+      </figure>
+
+      <figure class="code">
+        <figcaption>ログイン ── <b>使えるプロバイダを問い合わせられる</b></figcaption>
+        <pre class="code"><code>// 目的: Google / Apple ボタンの出し分けを #if なしで書けるようにする。
+// Apple 実装が存在しないプラットフォームでも、呼び出し側がコンパイルできることが要件。
+IReadOnlyList&lt;AuthProvider&gt; AvailableProviders { get; }</code></pre>
+      </figure>
+
+      <p class="note">
+        <strong>実装は示さない。</strong>
+        委譲先の実際のメソッド名・戻り値・例外の扱いは、既存コードを読んで合わせること。
+        上のシグネチャも、実コードと食い違うなら<b>実コード側が正しい</b>。
+      </p>
+    </section>
+
+    <section id="judgment" data-comment-id="guide-platform-judgment" data-comment-title="委ねること">
+      <h2>4. 委ねること</h2>
+      <p>
+        以下は<b>指定しない</b>。実コードを読み、この抽象化にとって自然な形を選ぶこと。
+        ここを先回りして細かく決めると、実態に合わない設計を強いることになる。
+      </p>
+      <ul>
+        <li>ファイルの置き場、名前空間、型名、メソッド名</li>
+        <li>インターフェースの粒度（本書のシグネチャに足す・削る・分割するのは自由）</li>
+        <li>No-Op 実装の作り方と、Editor でどれを注入するか</li>
+        <li>DI への登録の書き方と、既存の登録処理のどこに差し込むか</li>
+        <li>6境界のうちどれから着手するか（影響の狭いものから、という方針だけ守る）</li>
+      </ul>
+
+      <div class="note">
+        <strong>資料と実コードが食い違ったら、実コードを正とする。</strong>
+        <a href="../spec.html#platform">詳細仕様</a> と <code>docs/steam-release/02_Platform_Abstraction.md</code> には
+        現状調査の記述があるが、書かれた時点のスナップショットである。
+        食い違いを見つけたら、それ自体をコメントに残すこと。
+      </div>
+    </section>
+
+    <section id="done" data-comment-id="guide-platform-done" data-comment-title="完了の判断と、止まる条件">
+      <h2>5. 完了の判断と、止まる条件</h2>
+
+      <h3>完了したと言える状態</h3>
+      <ul>
+        <li><b>Android と iOS のビルドが通る。</b>これは推測で省略しない。実際に通す</li>
+        <li>既存の報酬導線・課金・ログイン・レビュー誘導が、今までと同じように動く</li>
+        <li>Steam 実装を1つも書いていない状態で、Editor でゲームが遊べる</li>
+        <li>View / ViewModel / Domain に <code>#if</code> が1つも増えていない</li>
+        <li><code>AdRoot.cs</code> / <code>Shop/IAP/</code> / <code>Firebase/</code> の差分がゼロである</li>
+      </ul>
+
+      <h3>手を止めて相談すること</h3>
+      <p>次に当たったら、回避策を考えるより先に共有する。<b>ここで無理に進めた結果がモバイル版の事故になる。</b></p>
+      <ul>
+        <li>既存クラスを変更しないと成立しない、と判断したとき</li>
+        <li>あるプラットフォームで<b>型そのものが消える</b>ために、呼び出し側へ <code>#if</code> が伝染するとき</li>
+        <li>境界を1つ入れただけでモバイルビルドが壊れたとき（原因が分かっていても、まず共有する）</li>
+      </ul>
 
       <h3>戻し方</h3>
-      <ol class="steps">
-        <li><div><b>PR単位でrevertする</b>作業手順1〜8は依存順に並べてあるため、後ろのPRから順にrevertすれば中間状態でも整合する。</div></li>
-        <li><div><b>最後に戻すのは <code>RootInstaller.cs</code> の1行</b><code>PlatformInstaller.Install(Container)</code> を消せば、既存のbindだけが残り、抽象化導入前と同じ構成に戻る。</div></li>
-        <li><div><b>DLL再ビルドは不要</b>本指示書はUnity側のみを変更しているため、<code>Assets/Plugins/*.dll</code> は元のままでよい。</div></li>
-      </ol>
-
-      <div class="warn">
-        <strong>退避条件:</strong>
-        モバイル版のストア申請・アップデート提出が予定されている期間は、手順4以降（呼び出し側の型置換）をマージしない。
-        インターフェース定義とNo-Op（手順1〜2）までは既存挙動に影響しないため、いつでもマージしてよい。
-      </div>
+      <p>
+        本書の作業は<b>原則すべて新規ファイルの追加</b>であり、既存ファイルへの変更は呼び出し側の型の差し替えに限られる。
+        境界ごとに分けて入れておけば、問題が出た境界だけを戻せる。<b>まとめて1回で入れないこと。</b>
+      </p>
     </section>
   </main>
 
