@@ -14,22 +14,20 @@
     <p class="eyebrow">IDLE MINERTIA / STEAM RELEASE / PHASE 2 / INSTRUCTION 02</p>
     <h1>Standalone 検証と Steamworks 初期化</h1>
     <p class="lead">
-      移植計画で最も大きい未知数を、最短で潰す。
-      本書は手順書ではない。<b>何を確かめたいのか</b>と<b>どこで慎重になるべきか</b>を渡すものであり、
-      確認の方法は実プロジェクトを見て決めてよい。
+      ビルド済みドメイン DLL が Windows / macOS で動くかを実測する。Steamworks の整理と初期化はその足場。
     </p>
-    <p class="meta">最終更新: 2026-08-06　／　担当: Unity View（Unityプロジェクト側。ドメインは変更しない）</p>
+    <p class="meta">最終更新: 2026-08-06　／　担当: Unity View（ドメインは変更しない）</p>
 
     <div class="summary">
       <strong>成否の基準</strong>
-      「ビルド済みドメイン DLL が Windows / macOS の Standalone で動くのか」に、推測ではなく実測で答えが出ていること。
+      「ドメイン DLL が Standalone で動くのか」に、推測ではなく実測で答えが出ている。
     </div>
 
     <dl class="current">
       <dt>根拠</dt><dd><a href="../index.html#roadmap">5. 実装順序</a> の 1〜3 ／ 詳細仕様 <a href="../spec.html#platform">02 プラットフォーム抽象化</a>・<a href="../spec.html#steamworks">Steamworks 管理画面</a></dd>
       <dt>前提</dt><dd>なし。<b>他のどの指示書よりも先に着手してよい</b></dd>
-      <dt>DLL反映</dt><dd>検証ビルドを取る直前に一度だけ最新へ揃える。古い DLL で測ると結論にならない</dd>
-      <dt>慎重さ</dt><dd><b>検証は雑でよい。Define とモバイル出荷経路に触る瞬間だけ高。</b></dd>
+      <dt>DLL反映</dt><dd>検証ビルドの直前に一度だけ最新へ揃える。古い DLL で測ると結論にならない</dd>
+      <dt>慎重さ</dt><dd><b>検証は雑でよい。Define に触る瞬間だけ高。</b></dd>
     </dl>
   </header>
 
@@ -55,18 +53,16 @@
     <section id="purpose" data-comment-id="guide-steamworks-purpose" data-comment-title="目的">
       <h2>1. 目的</h2>
       <p>
-        本作のゲームロジックは、ビルド済みの DLL として Unity に持ち込まれている。
-        これがモバイルで動いていることは分かっているが、<b>Standalone で動くかは一度も確かめていない。</b>
-        Standalone はスクリプトバックエンドも API プロファイルもモバイルと違う。
+        ゲームロジックはビルド済み DLL として Unity に持ち込まれている。モバイルで動くことは分かっているが、
+        <b>Standalone で動くかは一度も確かめていない。</b>Standalone はスクリプトバックエンドも API プロファイルもモバイルと違う。
       </p>
       <p>
-        ここが動かない場合、影響は本書の範囲では収まらない。<b>移植計画そのものの見直しになる。</b>
-        だからこの確認は、仕様が固まるのを待たずに、最初に済ませる。
+        ここが動かない場合、<b>移植計画そのものの見直しになる。</b>
+        仕様が固まるのを待たず、最初に確かめる。
       </p>
       <p>
-        Steamworks SDK の整理と初期化も本書に含めるが、これは<b>従属的な作業</b>である。
-        Steam を絡めた状態で失敗すると「DLL のせいか Steam のせいか」が分からなくなるため、
-        先に足場を綺麗にしておく、という位置づけでしかない。
+        Steamworks SDK の整理と初期化は従属的な作業である。
+        Steam を絡めた状態で失敗すると<b>「DLL のせいか Steam のせいか」が分からなくなる</b>ため、先に足場を綺麗にする。
       </p>
     </section>
 
@@ -74,130 +70,119 @@
       <h2>2. 方針</h2>
 
       <h3>切り分けられる順に進める</h3>
-      <p>
-        本書で最も大事なのは<b>順序</b>である。まとめて進めると、失敗したときに原因が特定できず、
-        「最短で答えを出す」という目的そのものを失う。
-      </p>
+      <p>まとめて進めると、失敗したときに原因を特定できない。</p>
       <ol>
         <li><b>Steam を一切絡めない状態で Standalone ビルドを通す。</b>ここで DLL の可否が分かる</li>
         <li>Steamworks SDK の重複を解消する</li>
         <li>Scripting Define を整理する</li>
         <li>初期化処理を入れ、Steam を絡めた状態でもう一度確かめる</li>
       </ol>
-      <p>1 で結論が出たら、それだけで本書の主目的は達成されている。</p>
+      <p>1 で結論が出た時点で、主目的は達成である。</p>
 
       <h3>慎重さの配分</h3>
       <div class="table-wrap">
         <table>
           <thead><tr><th>対象</th><th>慎重さ</th><th>理由</th></tr></thead>
           <tbody>
-            <tr><td>検証用のシーン・スクリプト・ビルド設定</td><td class="status done">低い</td><td>使い捨てでよい。汚くても、速く答えが出る方が価値がある</td></tr>
-            <tr><td>Steamworks SDK の重複解消</td><td class="status pending">中</td><td>現状どれが効いているか不明なまま消すと、原因が分からなくなる</td></tr>
-            <tr><td><b>Scripting Define の変更</b></td><td class="status pending">高い</td><td><b>モバイルの出荷経路に直結する。</b>ここだけは推測で進めない</td></tr>
+            <tr><td>検証用のシーン・スクリプト・ビルド設定</td><td class="status done">低い</td><td>使い捨てでよい。汚くても速く答えが出る方が価値がある</td></tr>
+            <tr><td>Steamworks SDK の重複解消</td><td class="status pending">中</td><td>どれが効いているか不明なまま消すと、原因が分からなくなる</td></tr>
+            <tr><td><b>Scripting Define の変更</b></td><td class="status pending">高い</td><td><b>モバイルの出荷経路に直結する</b></td></tr>
           </tbody>
         </table>
       </div>
-      <p>
-        <b>検証コードの品質を上げることに時間を使わない。</b>
-        本書の産物のうち残す価値があるのは検証の仕組みだけで、それも「DLL を更新するたび再実行できる」程度でよい。
-      </p>
+      <p>検証コードの品質を上げることに時間を使わない。残す価値があるのは<b>再実行できる仕組み</b>だけである。</p>
 
       <div class="warn">
         <strong>Define を変えたら、その場で Android と iOS のビルドを通す。</strong>
-        後でまとめて確認しない。ここを飛ばすと、壊れたことに気づくのが出荷直前になる。
+        後でまとめて確認しない。壊れたことに気づくのが出荷直前になる。
       </div>
 
       <h3>Steam が無い環境を壊さない</h3>
       <p>
-        Steam クライアントが起動していない、オフライン、開発中の Editor ── これらは<b>異常ではなく通常の状態</b>である。
-        初期化が失敗しても、ゲームは何事もなく起動しなければならない。
+        Steam クライアント未起動・オフライン・Editor 実行は<b>通常の状態</b>である。
+        初期化が失敗しても、ゲームは何事もなく起動する。
       </p>
     </section>
 
     <section id="contract" data-comment-id="guide-steamworks-contract" data-comment-title="譲れない前提と契約">
       <h2>3. 譲れない前提と契約</h2>
-      <p>ここに書いたものだけが固定である。書いていないことは決めてよい。</p>
+      <p>固定はここだけ。書いていないことは決めてよい。</p>
 
       <h3>前提</h3>
       <ul>
-        <li>既存の <code>.cs</code> は編集しない。本書の追加物はすべて新規ファイルでよい</li>
+        <li>既存の <code>.cs</code> は編集しない。追加物はすべて新規ファイルでよい</li>
         <li>既存のシーン構成・起動経路を変えない。<b>検証は本編の起動経路の外で行う</b></li>
-        <li>AppID <code>3217600</code> は旧作用。<b>本書では実 AppID を確定させない</b>。検証は Steam 公式のテスト用 AppID で足りる</li>
+        <li>AppID <code>3217600</code> は旧作用。<b>本作の AppID はここでは確定させない。</b>検証は Steam 公式のテスト用 AppID で足りる</li>
         <li>ドメイン（<code>NewCubeUpgradeDomain/</code>）は変更しない</li>
       </ul>
 
-      <h3>守るべき契約</h3>
-      <p>次の3点は、破ると後続の全指示書に波及する。</p>
+      <h3>守る契約</h3>
+      <p>破ると後続の全指示書に波及する。</p>
 
       <figure class="code">
-        <figcaption>初期化 ── <b>失敗してもゲームを止めない</b></figcaption>
-        <pre class="code"><code>// Init は「クライアント未起動」「オフライン」で普通に失敗する。例外を投げることもある。
+        <figcaption>初期化 ── 失敗してもゲームを止めない</figcaption>
+        <pre class="code"><code>// Init は「クライアント未起動」「オフライン」で普通に失敗し、例外を投げることもある。
 // 失敗を異常として扱わず、Steam 依存機能だけが無効な状態で起動を続けること。
 bool IsInitialized { get; }   // false でも遊べる
 string Diagnostics { get; }   // 失敗理由。UI ではなくログとデバッグ表示用</code></pre>
       </figure>
 
       <p>
-        <b><code>Steamworks</code> 名前空間を、SDK を直接触る1ファイルの外へ出さないこと。</b>
-        外へ漏れた分だけ「Steamworks が無い環境でコンパイルできないクラス」が増える。
-        他のクラスには上のような最小の契約だけを見せる。
+        <b><code>Steamworks</code> 名前空間を、SDK を直接触る1ファイルの外へ出さない。</b>
+        漏れた分だけ「Steamworks が無い環境でコンパイルできないクラス」が増える。
+        他のクラスには上の契約だけを見せる。
       </p>
 
-      <p>
-        <b><code>steam_appid.txt</code> をリリースビルドの成果物に含めないこと。</b>
-        開発時のみ実行ファイルの隣に置く。
-      </p>
+      <p><b><code>steam_appid.txt</code> をリリースビルドの成果物に含めない。</b>開発時のみ実行ファイルの隣に置く。</p>
     </section>
 
     <section id="judgment" data-comment-id="guide-steamworks-judgment" data-comment-title="委ねること">
       <h2>4. 委ねること</h2>
-      <p>以下は<b>指定しない</b>。目的（DLL が動くかを最短で確かめる）に対して有効な形を選ぶこと。</p>
+      <p>以下は指定しない。DLL が動くかを最短で確かめる、という目的に対して有効な形を選ぶ。</p>
       <ul>
-        <li>検証の方法そのもの。シーンを作る、テストランナーを使う、既存シーンを削るなど、確かめられれば何でもよい</li>
-        <li>結果の見せ方（画面表示／ログ／ファイル出力）。<b>macOS では手元で見られる形にすること</b>だけが要件</li>
+        <li>検証の方法。シーンを作る、テストランナーを使うなど、確かめられれば何でもよい</li>
+        <li>結果の見せ方（画面表示／ログ／ファイル出力）。<b>macOS で手元から見られること</b>だけが要件</li>
         <li>初期化処理をどのクラスに持たせるか、どこで生成するか、コールバックをどこで回すか</li>
         <li>AppID の持ち方と、後で差し替えるための置き場</li>
-        <li>SDK のバージョンを固定するかどうか。固定する場合、どのバージョンにするか</li>
+        <li>SDK のバージョンを固定するかどうか、するならどのバージョンか</li>
       </ul>
 
       <div class="note">
-        <strong>現状調査は自分で取り直す。</strong>
-        <a href="../spec.html#platform">詳細仕様</a> と <code>docs/steam-release/Memo/</code> に、
-        SDK の重複や Define の状態についての記述があるが、書かれた時点のものである。
-        <b>削除・変更の前に、必ず現物を確認すること。</b>食い違いを見つけたらコメントに残す。
+        <a href="../spec.html#platform">詳細仕様</a> と <code>docs/steam-release/Memo/</code> にある
+        SDK の重複や Define の記述は、書かれた時点のスナップショットである。
+        <b>削除・変更の前に現物を確認する。</b>食い違いを見つけたらコメントに残す。
       </div>
     </section>
 
     <section id="done" data-comment-id="guide-steamworks-done" data-comment-title="完了の判断と、止まる条件">
       <h2>5. 完了の判断と、止まる条件</h2>
 
-      <h3>完了したと言える状態</h3>
+      <h3>完了</h3>
       <ul>
-        <li><b>Windows と macOS の両方で、ドメイン DLL がロードできるかどうかの答えが出ている。</b>
-          動く／動かないのどちらでも、答えが出ていれば本書の主目的は達成である</li>
-        <li>Steam クライアントを起動していない状態でも、ゲームが普通に起動する</li>
-        <li><b>Android と iOS のビルドが通る。</b>Define を触ったなら必ず実測する</li>
+        <li><b>Windows と macOS の両方で、ドメイン DLL がロードできるかの答えが出ている。</b>
+          動く／動かないのどちらでも、答えが出ていれば主目的は達成</li>
+        <li>Steam クライアント未起動でもゲームが普通に起動する</li>
+        <li><b>Android と iOS のビルドが通る。</b>Define を触ったなら実測する</li>
         <li>Steamworks SDK の参照が1系統に絞られている</li>
         <li>DLL を更新したあと、同じ検証をもう一度回せる</li>
       </ul>
 
       <div class="note">
         <strong>macOS を「たぶん同じ」で済ませない。</strong>
-        Windows で通っても macOS で落ちることがある。ここは独立した関門として扱う。
+        Windows で通っても macOS で落ちることがある。独立した関門として扱う。
       </div>
 
-      <h3>手を止めて共有すること</h3>
+      <h3>手を止めて共有する</h3>
       <ul>
-        <li><b>DLL がロードできなかったとき。</b>回避策を試す前に、まず結果をそのまま共有する。
-          この事実は移植計画全体の前提を変える</li>
-        <li>原因の切り分けがドメイン側の変更（ターゲットフレームワークの変更など）に及ぶと分かったとき。
-          <b>モバイル版が使う DLL も同時に変わるため、単独で判断してよい範囲を超える</b></li>
+        <li><b>DLL がロードできなかったとき。</b>回避策を試す前に、結果をそのまま共有する</li>
+        <li>切り分けがドメイン側の変更（ターゲットフレームワークの変更など）に及ぶと分かったとき。
+          <b>モバイル版が使う DLL も同時に変わる</b></li>
         <li>Define を戻してもモバイルビルドが直らないとき</li>
       </ul>
 
       <h3>戻し方</h3>
       <p>
-        Define の変更は<b>単独で戻せる形にしておく</b>こと。モバイルが壊れたときは、調査より先に戻す。
+        Define の変更は<b>単独で戻せる形にしておく</b>。モバイルが壊れたときは、調査より先に戻す。
         検証用の追加物は、問題が出なければ残してよい。
       </p>
     </section>
