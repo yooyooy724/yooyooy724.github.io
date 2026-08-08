@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>横長レイアウト — Idle Minertia Steam移植 指示書</title>
+<link rel="stylesheet" href="guide.css">
+</head>
+<body>
+<article>
+  <header>
+    <p class="crumb"><a href="../index.html">Steam移植の決定事項と実行計画</a> ／ 指示書 05</p>
+    <p class="eyebrow">IDLE MINERTIA / STEAM RELEASE / PHASE 2 / INSTRUCTION 05</p>
+    <h1>横長レイアウト</h1>
+    <p class="lead">
+      縦画面 UI を横長で成立させる。器を Vertical / Horizontal で分け、表示部品を共有する。
+    </p>
+    <p class="meta">最終更新: 2026-08-06　／　担当: Unity View（UXML / USS / View）</p>
+
+    <div class="summary">
+      <strong>成否の基準</strong>
+      代表画面1つが横長で成立し、同じ作り方を残りの画面へ機械的に適用できると確認できている。
+    </div>
+
+    <dl class="current">
+      <dt>根拠</dt><dd><a href="../index.html#workstreams">3. 領域別の方針</a> の「横長UI」 ／ 詳細仕様 <a href="../spec.html#display">05 横長レイアウトと PC 操作</a></dd>
+      <dt>前提</dt><dd><a href="02-steamworks.html">指示書02</a> の検証ビルド（横長で実際にどう崩れるかが分かる）。無くても Editor の Game ビューで着手はできる</dd>
+      <dt>DLL反映</dt><dd>不要。Unity 側で完結する</dd>
+      <dt>慎重さ</dt><dd>中。<b>モバイルの縦画面を1ピクセルも変えない</b>ことだけが絶対条件</dd>
+    </dl>
+  </header>
+
+  <aside class="comment-guide">
+    <p>各章の末尾からコメントを追加・編集できます。</p>
+    <span id="comment-mode" class="mode-badge">読み込み中</span>
+    <span id="pending-summary">未送信 0件</span>
+    <button id="submit-comments" type="button" disabled>GitHubへ送信</button>
+  </aside>
+
+  <main>
+    <section id="purpose" data-comment-id="guide-layout-purpose" data-comment-title="目的">
+      <h2>1. 目的</h2>
+      <p>
+        全 UI が縦画面前提で作られており、横長対応は移植の中で<b>最大工数</b>の領域になる。
+        だから最初にやるのは全画面の変換ではなく、<b>作り方を1画面で確立すること</b>である。
+        ここで確立した型がそのまま残りの画面の仕様になる。
+      </p>
+      <p>
+        方針は「縦のUIを横に並べ直す」ではなく<b>「展開する」</b>。
+        縦画面で階層に隠れていたもの（タブの奥、スクロールの先）を、横幅を使って同時に見せる。
+      </p>
+    </section>
+
+    <section id="policy" data-comment-id="guide-layout-policy" data-comment-title="方針">
+      <h2>2. 方針</h2>
+
+      <h3>優先順位</h3>
+      <ol>
+        <li><b>モバイルの縦画面を変えない。</b>縦向けの UXML・USS への変更はゼロが原則</li>
+        <li><b>型の再現性。</b>2画面目以降が「同じ手順の繰り返し」になること。画面ごとの一点物にしない</li>
+        <li>横長での見栄え。成立が先、磨きは後</li>
+      </ol>
+
+      <h3>器と部品</h3>
+      <ul>
+        <li><b>器（画面の骨格）だけを Vertical / Horizontal の2枚に分ける。</b>表示部品は1つを共有する</li>
+        <li>View（C#）は1つのまま。<b>器がどちらでも同じ <code>name</code> で部品を引けること</b>が共有の条件</li>
+        <li><b>V/H の <code>name</code> 集合の一致は自動検証する。</b>片方に無い <code>name</code> は実行時まで発覚しないため、
+          Editor テストで先に落とす。これが型の安全装置であり、省略しない</li>
+        <li>V/H の判定は<b>アスペクト比</b>。プラットフォームでは判定しない（<code>#if</code> を書かない）</li>
+        <li><b>リサイズ追従まで対応する。</b>PC はウィンドウ幅が動的に変わる。起動時判定だけで済ませない</li>
+      </ul>
+
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li>横長では下タブバーをやめ、<b>右レール</b>へ移す</li>
+        <li>画面ごとの展開のしかた（何を同時に見せるか）は、縦版の階層を読んで決めてよい。
+          決めたことは型として記録し、後続画面の判断材料にする</li>
+      </ul>
+
+      <h3>進め方</h3>
+      <ul>
+        <li><b>代表画面を1つ選び、型が通しで成立してから広げる。</b>全画面を並行で始めない</li>
+        <li>代表画面は「タブ・リスト・詳細の階層が深く、他の画面の代表になれるもの」から選ぶ。選定理由を残す</li>
+        <li>1.0 でどこまで磨くかの線引きは、代表画面が成立した後にあなたへ相談する</li>
+      </ul>
+    </section>
+
+    <section id="done" data-comment-id="guide-layout-done" data-comment-title="完了の判断と、止まる条件">
+      <h2>3. 完了の判断と、止まる条件</h2>
+
+      <h3>完了</h3>
+      <ul>
+        <li>代表画面が横長（16:9 前後）で成立し、<b>ウィンドウをドラッグでリサイズしても崩れず V/H が切り替わる</b></li>
+        <li>V/H の <code>name</code> 集合検証が Editor テストとして存在し、意図的に <code>name</code> を消すと落ちる</li>
+        <li>縦画面の表示がビフォーアフターで一致している（モバイル解像度で目視）</li>
+        <li>2画面目の作業手順が「Vertical をコピーして展開を決め、検証を通す」だけになっている</li>
+      </ul>
+
+      <h3>手を止めて相談する</h3>
+      <ul>
+        <li>部品共有のために<b>縦版の UXML に手を入れる必要が出たとき</b>（原則違反。やる前に相談）</li>
+        <li>代表画面で型が成立せず、画面ごとの一点物になりそうなとき</li>
+        <li>リサイズ追従の負荷（再構築コスト）が目に見えて重いとき</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>親ページ: <a href="../index.html">Steam移植の決定事項と実行計画</a>　／　詳細仕様: <a href="../spec.html#display">05 横長レイアウトと PC 操作</a>　／　原典: <a href="https://github.com/appopiss/UpgradeDomain/tree/minertia_area3/docs/steam-release">docs/steam-release</a></p>
+  </footer>
+</article>
+<script src="guide.js"></script>
+</body>
+</html>

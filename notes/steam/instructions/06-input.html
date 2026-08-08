@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PC 操作 — Idle Minertia Steam移植 指示書</title>
+<link rel="stylesheet" href="guide.css">
+</head>
+<body>
+<article>
+  <header>
+    <p class="crumb"><a href="../index.html">Steam移植の決定事項と実行計画</a> ／ 指示書 06</p>
+    <p class="eyebrow">IDLE MINERTIA / STEAM RELEASE / PHASE 2 / INSTRUCTION 06</p>
+    <h1>PC 操作</h1>
+    <p class="lead">
+      マウスの修飾キー操作とキーボードショートカットを足す。連続マージの本体はドメインに置く。
+    </p>
+    <p class="meta">最終更新: 2026-08-06　／　担当: Model（連続マージ API）+ Unity View（入力）</p>
+
+    <div class="summary">
+      <strong>成否の基準</strong>
+      マウスなら速く操作できる。タッチの挙動は何も変わっていない。
+    </div>
+
+    <dl class="current">
+      <dt>根拠</dt><dd><a href="../index.html#workstreams">3. 領域別の方針</a> の「PC操作」 ／ 詳細仕様 <a href="../spec.html#display">05 横長レイアウトと PC 操作</a></dd>
+      <dt>前提</dt><dd>なし。<a href="05-layout.html">指示書05</a> と独立に進められる</dd>
+      <dt>DLL反映</dt><dd><b>必要。</b>連続マージ API はドメイン側</dd>
+      <dt>慎重さ</dt><dd>中。Equipment のマージは資産に直結するため、<b>誤操作で一括実行される事故だけは防ぐ</b></dd>
+    </dl>
+  </header>
+
+  <aside class="comment-guide">
+    <p>各章の末尾からコメントを追加・編集できます。</p>
+    <span id="comment-mode" class="mode-badge">読み込み中</span>
+    <span id="pending-summary">未送信 0件</span>
+    <button id="submit-comments" type="button" disabled>GitHubへ送信</button>
+  </aside>
+
+  <main>
+    <section id="purpose" data-comment-id="guide-input-purpose" data-comment-title="目的">
+      <h2>1. 目的</h2>
+      <p>
+        タッチ前提の操作（タップ・長押し・ドラッグ）は PC でもそのまま動くが、
+        マウスとキーボードにしかない入力（修飾キー・右クリック・ダブルクリック・ホバー）が遊んでいる。
+        PC で速く快適に操作できることが目的であり、<b>新しい操作を覚えないと遊べない状態にはしない</b>。
+        既存操作だけでも今までどおり遊べることを保つ。
+      </p>
+    </section>
+
+    <section id="policy" data-comment-id="guide-input-policy" data-comment-title="方針">
+      <h2>2. 方針</h2>
+
+      <h3>優先順位</h3>
+      <ol>
+        <li><b>タッチの挙動を変えない。</b>追加はすべて「マウス・キーボードがあるときだけ増える操作」</li>
+        <li><b>誤操作で資産が動かないこと。</b>特に一括系（連続マージ）は、意図しない発火が実害になる</li>
+        <li>操作の速さ・快適さ</li>
+      </ol>
+
+      <h3>追加する操作</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>入力</th><th>効果</th></tr></thead>
+          <tbody>
+            <tr><td>Shift + クリック</td><td>即時移動（ドラッグの省略）</td></tr>
+            <tr><td>ダブルクリック</td><td>連続マージ</td></tr>
+            <tr><td>右クリック</td><td>詳細表示</td></tr>
+            <tr><td>Ctrl + クリック</td><td>複数選択</td></tr>
+            <tr><td>数字キー</td><td>画面切り替え</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>各操作について、<b>競合しうる既存操作（長押し・ドラッグ・シングルタップ）との切り分け</b>を先に決めてから実装する</li>
+        <li>入力の有無は<b>ランタイム判定</b>。<code>#if</code> で分岐しない（既存の入力処理がすでにこの形）</li>
+        <li>QWERT へのショートカット割当は 1.0 では見送り。ただし数字キーのディスパッチャは
+          <b>後からキーを足せる形</b>にしておく</li>
+      </ul>
+
+      <h3>連続マージはドメインに置く</h3>
+      <ul>
+        <li><b>「打ち止めまでマージする」という操作はゲームのルールであり、View の都合ではない。</b>
+          1回の呼び出しで完結する API をドメインに置き、View はそれを1回呼ぶだけにする</li>
+        <li>View 側でマージを繰り返すループを書かない。<b>途中で画面が閉じられたときに中途半端に終わる実装を禁じる</b></li>
+        <li>ドメイン API は単体テストで検証できる。何がどこまでマージされるかのルールはテストで固定する</li>
+        <li><b>ドメイン API を先に作り、テストを通してから View の入力を繋ぐ</b></li>
+      </ul>
+
+      <p class="note">
+        既存の入力処理・Equipment の操作実装は実コードから拾う。資料と食い違ったら実コードが正。
+        食い違いはコメントに残す。
+      </p>
+    </section>
+
+    <section id="done" data-comment-id="guide-input-done" data-comment-title="完了の判断と、止まる条件">
+      <h2>3. 完了の判断と、止まる条件</h2>
+
+      <h3>完了</h3>
+      <ul>
+        <li>連続マージのドメイン API に単体テストがあり、<b>マージ順・打ち止め条件・結果の内容</b>が固定されている</li>
+        <li>追加した5操作が PC（Editor または Standalone）で動く</li>
+        <li>マウスを使わずタッチ相当の操作だけでも、今までどおりすべて操作できる</li>
+        <li>モバイル実機でタッチ操作の回帰確認が済んでいる（長押し・ドラッグ・タップ）</li>
+        <li>View / ViewModel / Domain に <code>#if</code> が増えていない</li>
+      </ul>
+
+      <h3>手を止めて相談する</h3>
+      <ul>
+        <li>追加操作と既存のタッチ操作の競合が、切り分けでは解消できないと分かったとき</li>
+        <li>連続マージの「打ち止め」ルールに複数の解釈があり得るとき（<b>仕様の決定なのでこちらで決めない</b>）</li>
+        <li>既存の入力処理の構造が、修飾キーの追加に耐えない形だったとき</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>親ページ: <a href="../index.html">Steam移植の決定事項と実行計画</a>　／　詳細仕様: <a href="../spec.html#display">05 横長レイアウトと PC 操作</a>　／　原典: <a href="https://github.com/appopiss/UpgradeDomain/tree/minertia_area3/docs/steam-release">docs/steam-release</a></p>
+  </footer>
+</article>
+<script src="guide.js"></script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Steam 機能 — Idle Minertia Steam移植 指示書</title>
+<link rel="stylesheet" href="guide.css">
+</head>
+<body>
+<article>
+  <header>
+    <p class="crumb"><a href="../index.html">Steam移植の決定事項と実行計画</a> ／ 指示書 07</p>
+    <p class="eyebrow">IDLE MINERTIA / STEAM RELEASE / PHASE 2 / INSTRUCTION 07</p>
+    <h1>Steam 機能</h1>
+    <p class="lead">
+      実績・統計・リッチプレゼンスを実装する。実績一覧の確定にはあなたの承認が要る。
+    </p>
+    <p class="meta">最終更新: 2026-08-06　／　担当: Model（判定）+ Unity View（Steam連携）+ <b>あなた（実績一覧の承認と Steamworks 登録）</b></p>
+
+    <div class="summary">
+      <strong>成否の基準</strong>
+      実績が正しく解除され、フレンドリストに現在の遊び場所が出る。実績一覧は承認済みで、後悔の余地がない。
+    </div>
+
+    <dl class="current">
+      <dt>根拠</dt><dd><a href="../index.html#workstreams">3. 領域別の方針</a> の「Steam機能」 ／ 詳細仕様 <a href="../spec.html#features">06 Steam 機能</a></dd>
+      <dt>前提</dt><dd><a href="01-platform.html">指示書01</a>（実績の境界）と <a href="02-steamworks.html">指示書02</a>（初期化）。Steamworks 登録には実 AppID が要る</dd>
+      <dt>DLL反映</dt><dd><b>必要。</b>実績の判定はドメイン側</dd>
+      <dt>慎重さ</dt><dd>実装は中。<b>実績の定義だけ高</b>（公開後に削除できない）</dd>
+    </dl>
+  </header>
+
+  <aside class="comment-guide">
+    <p>各章の末尾からコメントを追加・編集できます。</p>
+    <span id="comment-mode" class="mode-badge">読み込み中</span>
+    <span id="pending-summary">未送信 0件</span>
+    <button id="submit-comments" type="button" disabled>GitHubへ送信</button>
+  </aside>
+
+  <main>
+    <section id="purpose" data-comment-id="guide-features-purpose" data-comment-title="目的">
+      <h2>1. 目的</h2>
+      <p>
+        Steam のストアページと実績・プレゼンスは、モバイルに無かった<b>見られ方</b>を作る。
+        採用するのは 実績・統計・Steam Cloud（<a href="03-save.html">指示書03</a>）・オーバーレイ・スクリーンショット・リッチプレゼンス。
+        リーダーボードは初回リリースから外し、トレーディングカード・ワークショップ・Steam Input は見送りで確定している。
+      </p>
+    </section>
+
+    <section id="policy" data-comment-id="guide-features-policy" data-comment-title="方針">
+      <h2>2. 方針</h2>
+
+      <h3>実績</h3>
+      <ul>
+        <li><b>公開した実績は削除できない。</b>だから実装より先に ID 体系と一覧を確定し、あなたの承認を取る。
+          承認前に Steamworks へ登録しない</li>
+        <li>件数は 30〜60。進行・プレステージ・収集・戦闘など、<b>ドメインの状態から機械的に判定できる条件</b>だけで構成する。
+          計測できない条件（「〜を楽しむ」類）を入れない</li>
+        <li><b>判定はドメインに置く。</b>解除の通知は実績の境界（<a href="01-platform.html">指示書01</a>）越しに投げ、
+          モバイルでは No-Op に落ちる。View に判定ロジックを書かない</li>
+        <li>Steam への確定（Store）は毎フレーム呼ばず、<b>まとめてコミット</b>する</li>
+        <li><b>既に条件を満たしているプレイヤーの遡り解除</b>を最初から設計に入れる。
+          既存セーブで起動した瞬間に、該当実績がまとめて解除されるのが正しい挙動</li>
+        <li>オフライン解除は Steam クライアントがキューするので、特別な処理を作らない</li>
+      </ul>
+
+      <h3>統計（Stats）</h3>
+      <ul>
+        <li>実績の進捗表示の土台としてだけ使う。実績に使わない統計を増やさない</li>
+      </ul>
+
+      <h3>リッチプレゼンス</h3>
+      <ul>
+        <li>表示は <b>Cave 名 + 到達深度</b>。ドメインの現在状態から組み立てる</li>
+        <li>更新は状態が変わったときだけ。毎フレーム送らない</li>
+        <li>表示文言は多言語の翻訳キーとして Steamworks 側に登録する（ゲーム内ローカライズとは別系統）</li>
+      </ul>
+
+      <h3>オーバーレイ</h3>
+      <ul>
+        <li>Shift+Tab のオーバーレイ中も<b>ゲームの進行を止めない</b>（アイドルゲームの期待どおり）</li>
+        <li>特別な実装は原則不要。入力が奪われた状態で誤動作しないことだけ確認する</li>
+      </ul>
+    </section>
+
+    <section id="ask" data-comment-id="guide-features-ask" data-comment-title="あなたにお願いすること">
+      <h2>3. あなたにお願いすること</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>内容</th><th>タイミング</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><b>実績一覧（ID・表示名・条件）の承認。</b>エージェントがドメインから判定可能な候補を一覧にして出すので、
+                採用・却下・差し替えを判断してほしい。<b>ここで承認したものが恒久になる</b></td>
+              <td>実装前。最初に行う</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><b>Steamworks 管理画面での登録。</b>実績の登録・アイコン画像・リッチプレゼンスの翻訳キー。
+                管理画面の操作は代行できない。必要な入力値は一覧で渡す</td>
+              <td>実 AppID 取得後</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><b>実機での解除確認。</b>Steam 起動中にプレイして実績が解除されること、
+                既存セーブでの遡り解除、オフライン解除→オンライン反映。結果をそのまま貼ってほしい</td>
+              <td>実装後</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="warn">
+        <strong>1 を飛ばして実装を進めない。</strong>
+        実績はストアの顔になり、公開後は削除も改名も実質できない。
+        承認前にできるのは判定基盤の実装までとする。
+      </div>
+    </section>
+
+    <section id="done" data-comment-id="guide-features-done" data-comment-title="完了の判断と、止まる条件">
+      <h2>4. 完了の判断と、止まる条件</h2>
+
+      <h3>完了</h3>
+      <ul>
+        <li>実績一覧が承認済みで、Steamworks に登録されている</li>
+        <li>実績判定に単体テストがあり、全実績の条件がドメインの状態だけで判定できている</li>
+        <li>実機で 新規解除／遡り解除／オフライン解除 が確認できている</li>
+        <li>フレンドリストに Cave 名 + 深度が表示される</li>
+        <li>オーバーレイを開いたまま放置しても進行が止まらない</li>
+        <li>モバイルビルドが通り、挙動が変わっていない（No-Op 経路）</li>
+      </ul>
+
+      <h3>手を止めて相談する</h3>
+      <ul>
+        <li>承認済みの実績で、ドメインから判定できない条件が実装中に見つかったとき（<b>勝手に条件を変えない</b>）</li>
+        <li>遡り解除が既存セーブの読み込み速度に響くとき</li>
+        <li>統計と実績の進捗が食い違う設計になりそうなとき</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>親ページ: <a href="../index.html">Steam移植の決定事項と実行計画</a>　／　詳細仕様: <a href="../spec.html#features">06 Steam 機能</a>　／　原典: <a href="https://github.com/appopiss/UpgradeDomain/tree/minertia_area3/docs/steam-release">docs/steam-release</a></p>
+  </footer>
+</article>
+<script src="guide.js"></script>
+</body>
+</html>

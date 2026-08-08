@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ビルド・配信とQA — Idle Minertia Steam移植 指示書</title>
+<link rel="stylesheet" href="guide.css">
+</head>
+<body>
+<article>
+  <header>
+    <p class="crumb"><a href="../index.html">Steam移植の決定事項と実行計画</a> ／ 指示書 08</p>
+    <p class="eyebrow">IDLE MINERTIA / STEAM RELEASE / PHASE 2 / INSTRUCTION 08</p>
+    <h1>ビルド・配信とQA</h1>
+    <p class="lead">
+      Windows / macOS のビルドを Steam へ届け、リリース品質を確かめる。
+    </p>
+    <p class="meta">最終更新: 2026-08-06　／　担当: <b>あなたとエージェントの共同作業</b></p>
+
+    <div class="summary">
+      <strong>成否の基準</strong>
+      再現可能な手順で両 OS のビルドが Steam に上がり、QA チェックリストが全件消化されている。
+    </div>
+
+    <div class="warn">
+      <strong>この指示書はエージェント単独では完了しない。</strong>
+      Steamworks の管理画面、支払い、証明書と公証、実機での QA は
+      <b>あなたの手とアカウントを通さないと進まない</b>。往復しながら進める。
+    </div>
+
+    <dl class="current">
+      <dt>根拠</dt><dd><a href="../index.html#workstreams">3. 領域別の方針</a> の「配信とQA」 ／ 詳細仕様 <a href="../spec.html#build">ビルドと配信</a>・<a href="../spec.html#qa">QA と法務</a>・<a href="../spec.html#steamworks">Steamworks 管理画面</a></dd>
+      <dt>前提</dt><dd>他の指示書の成果すべて。ただし <b>AppID 取得と Steamworks 設定は待たずに始められる</b></dd>
+      <dt>DLL反映</dt><dd>ビルドのたびに最新へ揃える</dd>
+      <dt>慎重さ</dt><dd><b>高。</b>ここの誤りはそのままストアに出る</dd>
+    </dl>
+  </header>
+
+  <nav class="toc" aria-label="目次">
+    <h2>目次</h2>
+    <ol>
+      <li><a href="#purpose">目的</a></li>
+      <li><a href="#policy">方針</a></li>
+      <li><a href="#ask">あなたにお願いすること</a></li>
+      <li><a href="#done">完了の判断と、止まる条件</a></li>
+    </ol>
+  </nav>
+
+  <aside class="comment-guide">
+    <p>各章の末尾からコメントを追加・編集できます。</p>
+    <span id="comment-mode" class="mode-badge">読み込み中</span>
+    <span id="pending-summary">未送信 0件</span>
+    <button id="submit-comments" type="button" disabled>GitHubへ送信</button>
+  </aside>
+
+  <main>
+    <section id="purpose" data-comment-id="guide-release-purpose" data-comment-title="目的">
+      <h2>1. 目的</h2>
+      <p>
+        実装がどれだけ進んでも、ビルドが Steam に上がらなければリリースは存在しない。
+        しかも既存のデプロイ資産は旧作（Idle Sphere）向けのまま陳腐化しており、
+        プロジェクト設定にも旧作の識別子が残っている。<b>配信経路は実質ゼロから作り直しになる。</b>
+      </p>
+      <p>
+        AppID の新規取得には支払いと審査の待ち時間があり、<b>スケジュール全体の起点</b>になる。
+        実装の完成を待たずに手続きだけ先行させる。
+      </p>
+    </section>
+
+    <section id="policy" data-comment-id="guide-release-policy" data-comment-title="方針">
+      <h2>2. 方針</h2>
+
+      <h3>優先順位</h3>
+      <ol>
+        <li><b>再現性。</b>誰がやっても同じビルドが出る手順になっていること。属人化した1回きりの成功は成果ではない</li>
+        <li><b>モバイルの出荷経路を壊さない。</b>既存のビルドスクリプト・fastlane に手を入れない</li>
+        <li>速さ。<b>アップロードは手動で確定</b>。CI 化はしない</li>
+      </ol>
+
+      <h3>ビルド</h3>
+      <ul>
+        <li>Standalone 用のビルドスクリプトは新規に作る。旧作向けの既存デプロイスクリプトは<b>直さず、使わない</b></li>
+        <li>プロジェクト設定に残る旧作の識別子（bundle ID・プロダクト名等）は、<b>実 AppID 取得後に1回でまとめて</b>直す</li>
+        <li><code>steam_appid.txt</code> をリリース成果物に含めない（<a href="02-steamworks.html">指示書02</a> の契約）</li>
+        <li>macOS は Universal Binary とし、<b>署名と公証を通す</b>。手順は必ず記録し、2回目から迷わない形にする</li>
+        <li>OS 別に Depot を分ける</li>
+      </ul>
+
+      <h3>ローカライズ</h3>
+      <ul>
+        <li>ゲーム内の対応言語（13言語）を維持する。Steam 対応で言語を減らさない</li>
+        <li>ストアページは7言語で用意する。文言はあなたの確認を通してから登録する</li>
+      </ul>
+
+      <h3>QA</h3>
+      <ul>
+        <li>チェックリストを先に作り、<b>consuming しながら進める</b>。終盤にまとめて消化しない</li>
+        <li>PC 固有の観点を落とさない: 解像度・DPI スケール・ウィンドウリサイズ・オフライン起動・
+          長時間放置・二重起動・セーブ移行・オーバーレイ</li>
+        <li><b>Windows と macOS を同時に確認する。</b>片方だけ通して「たぶん同じ」で済ませない</li>
+      </ul>
+    </section>
+
+    <section id="ask" data-comment-id="guide-release-ask" data-comment-title="あなたにお願いすること">
+      <h2>3. あなたにお願いすること</h2>
+
+      <h3>A. 手続き（代行できないもの）</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>内容</th><th>補足</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><b>Steam Direct で新規 AppID を取得する</b>（$100 の支払いを含む）</td><td>スケジュールの起点。<b>着手日だけ先に決めてほしい</b></td></tr>
+            <tr><td>2</td><td>Apple Developer の証明書を用意する（macOS の署名・公証用）</td><td>既存のモバイル用アカウントが使えるかの確認から</td></tr>
+            <tr><td>3</td><td>Steamworks 管理画面の設定（Depot・ストアページ・価格・審査提出）</td><td>入力する値の一覧はエージェントが用意する</td></tr>
+            <tr><td>4</td><td>ストア素材の用意（スクリーンショット・カプセル画像・説明文の確定）</td><td>文案・下書きはエージェントが出せる。最終確定はあなた</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>B. 実行して、結果を貼ってほしいもの</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>やること</th><th>貼ってほしいもの</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>ビルドスクリプトで Windows / macOS のビルドを作る</td><td>成否と、成果物のファイル構成</td></tr>
+            <tr><td>2</td><td>macOS の署名・公証を通す</td><td>コマンドの出力全文。失敗したらエラー全文</td></tr>
+            <tr><td>3</td><td>steamcmd でアップロードする</td><td>出力全文</td></tr>
+            <tr><td>4</td><td>Steam クライアントからインストールして起動する（両OS）</td><td>起動の成否と気づいたこと</td></tr>
+            <tr><td>5</td><td>QA チェックリストを消化する</td><td>各項目の結果。NG は再現手順つきで</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <strong>1回で通ることを期待しない。</strong>
+        特に macOS の公証と steamcmd は初回で必ず何か起きる。
+        エラー全文を貼ってもらえれば、次の一手をこちらで出す。
+      </div>
+    </section>
+
+    <section id="done" data-comment-id="guide-release-done" data-comment-title="完了の判断と、止まる条件">
+      <h2>4. 完了の判断と、止まる条件</h2>
+
+      <h3>完了</h3>
+      <ul>
+        <li>Windows / macOS のビルドが Steam に上がり、Steam クライアント経由で起動できる</li>
+        <li>ビルドからアップロードまでの手順が記録されており、<b>2回目を別の人が再現できる</b></li>
+        <li>QA チェックリストが全件消化され、NG が残っていない（残す場合はあなたが明示的に容認したものだけ）</li>
+        <li>ストアページが7言語で埋まり、審査に提出できる状態になっている</li>
+        <li>モバイルのビルド経路に差分がない</li>
+      </ul>
+
+      <h3>手を止めて相談する</h3>
+      <ul>
+        <li>審査で差し戻しが来たとき（対応方針はあなたの判断）</li>
+        <li>公証・署名がどうしても通らず、macOS の 1.0 同時リリースが危ぶまれるとき</li>
+        <li>QA で見つかった NG が他の指示書の範囲（セーブ・レイアウト等）に波及するとき</li>
+      </ul>
+
+      <h3>リリース後の戻し方</h3>
+      <p>
+        Steam はビルドをブランチで切り替えられる。<b>公開前の1つ前のビルドを常に残しておき、
+        重大な問題が出たら差し戻す</b>。差し戻しの操作はあなたの管理画面から行うため、手順を渡しておく。
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>親ページ: <a href="../index.html">Steam移植の決定事項と実行計画</a>　／　詳細仕様: <a href="../spec.html#build">ビルドと配信</a>・<a href="../spec.html#qa">QA と法務</a>・<a href="../spec.html#steamworks">Steamworks 管理画面</a>　／　原典: <a href="https://github.com/appopiss/UpgradeDomain/tree/minertia_area3/docs/steam-release">docs/steam-release</a></p>
+  </footer>
+</article>
+<script src="guide.js"></script>
+</body>
+</html>

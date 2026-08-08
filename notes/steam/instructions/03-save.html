@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>セーブの暗号化・移行とクラウドセーブ — Idle Minertia Steam移植 指示書</title>
+<link rel="stylesheet" href="guide.css">
+</head>
+<body>
+<article>
+  <header>
+    <p class="crumb"><a href="../index.html">Steam移植の決定事項と実行計画</a> ／ 指示書 03</p>
+    <p class="eyebrow">IDLE MINERTIA / STEAM RELEASE / PHASE 2 / INSTRUCTION 03</p>
+    <h1>セーブの暗号化・移行とクラウドセーブ</h1>
+    <p class="lead">
+      平文セーブを AES へ移行し、Firestore を正本としたまま Steam Cloud へ複製する。
+    </p>
+    <p class="meta">最終更新: 2026-08-06　／　担当: Model + Unity View（手動テストのみあなたの参加が必要）</p>
+
+    <div class="summary">
+      <strong>成否の基準</strong>
+      既存プレイヤーのセーブが1件も壊れず、Steam 版で PC をまたいだ復元ができる。
+    </div>
+
+    <dl class="current">
+      <dt>根拠</dt><dd><a href="../index.html#workstreams">3. 領域別の方針</a> の「セーブとサーバー」 ／ 詳細仕様 <a href="../spec.html#save">04 セーブとクラウド</a></dd>
+      <dt>前提</dt><dd><a href="01-platform.html">指示書01</a>（クラウドセーブの境界）。二重起動対策と暗号化移行はそれを待たず着手できる</dd>
+      <dt>DLL反映</dt><dd><b>必要。</b>ドメイン側を変更するたびに反映してから Unity で確認する</dd>
+      <dt>慎重さ</dt><dd><b>全指示書で最高。</b>アイドルゲームにとってセーブ喪失は致命傷</dd>
+    </dl>
+  </header>
+
+  <aside class="comment-guide">
+    <p>各章の末尾からコメントを追加・編集できます。</p>
+    <span id="comment-mode" class="mode-badge">読み込み中</span>
+    <span id="pending-summary">未送信 0件</span>
+    <button id="submit-comments" type="button" disabled>GitHubへ送信</button>
+  </aside>
+
+  <main>
+    <section id="purpose" data-comment-id="guide-save-purpose" data-comment-title="目的">
+      <h2>1. 目的</h2>
+      <p>
+        Steam 版で必要になるのは、<b>PC をまたいだ復元</b>と<b>ローカルファイルの改ざん耐性</b>の2つ。
+        モバイル版は平文セーブのまま実ユーザーが遊んでおり、Steam 版だけの都合で形式を割ると
+        両版の互換が切れる。だから移行は両版共通の作業になる。
+      </p>
+      <p>
+        クラウドの正本は Firestore のまま変えない。Steam Cloud は<b>複製先</b>であり、
+        Steam の流儀（別 PC で自動復元）を成立させるためだけに使う。
+      </p>
+    </section>
+
+    <section id="policy" data-comment-id="guide-save-policy" data-comment-title="方針">
+      <h2>2. 方針</h2>
+
+      <h3>優先順位</h3>
+      <ol>
+        <li><b>既存プレイヤーのセーブを壊さない。</b>絶対条件。疑わしい変更は入れない</li>
+        <li><b>復旧できること。</b>失敗したときに元へ戻せない処理を作らない</li>
+        <li><b>改ざん対策の強さ。</b>最後。AES で防げない攻撃（メモリ改変・時計改ざん）は
+          <b>受け入れた残存リスク</b>であり、対策をこれ以上広げない</li>
+      </ol>
+
+      <h3>着手順</h3>
+      <ol>
+        <li><b>二重起動の防止。</b>PC では同じセーブを2プロセスが書ける。破損原因の筆頭を先に塞ぐ</li>
+        <li>平文 → AES の移行</li>
+        <li>Steam Cloud への複製と競合処理</li>
+      </ol>
+
+      <h3>移行の原則</h3>
+      <ul>
+        <li><b>読みは両対応、書きは暗号化。</b>平文が読めなくなる瞬間を作らない</li>
+        <li><b>移行前のデータを消さない。</b>移行に失敗しても元の平文から再開できること</li>
+        <li>移行は起動時に自動で行い、プレイヤーに操作を求めない</li>
+      </ul>
+
+      <h3>クラウドの構成</h3>
+      <ul>
+        <li><b>Firestore が正本。</b>Steam 版もモバイル版と同じ経路で Firestore へ保存する</li>
+        <li>Steam Cloud へは<b>確定したセーブを複製するだけ</b>。復元の第一候補は常に Firestore</li>
+        <li>Apple / Google / Steam の認証は独立させ、<b>アカウント連携・セーブ統合を作らない</b></li>
+        <li>Firestore と Steam Cloud が食い違ったら、<b>どちらを採るかはプレイヤーに選ばせる</b>。
+          自動でどちらかを捨てない</li>
+        <li>NetherCompanion は Firestore REST のまま変えない</li>
+      </ul>
+
+      <p class="note">
+        クラウドセーブの境界（<a href="01-platform.html">指示書01</a>）越しに実装する。
+        既存の CloudSave 実装は流用し、Steam 向けの複製と競合処理だけを足す。
+        資料と実コードが食い違ったら実コードが正。食い違いはコメントに残す。
+      </p>
+    </section>
+
+    <section id="ask" data-comment-id="guide-save-ask" data-comment-title="あなたにお願いすること">
+      <h2>3. あなたにお願いすること</h2>
+      <p>次の確認は自動テストで代替できない。<b>実施した結果をそのまま貼ってほしい。</b></p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>やること</th><th>確かめること</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><b>実際の平文セーブ</b>（あなたの手元のプレイデータのコピー）で移行を走らせる</td><td>進行が1項目も欠けずに引き継がれる</td></tr>
+            <tr><td>2</td><td>PC を2台（または2環境）用意し、片方で進めてもう片方で起動する</td><td>Steam Cloud 経由で復元される</td></tr>
+            <tr><td>3</td><td>両方をオフラインで進めてから接続し、競合を起こす</td><td>選択画面が出て、選んだ側が残る</td></tr>
+            <tr><td>4</td><td>オフラインのまま起動 → プレイ → 終了 → 再起動する</td><td>ローカルだけで完結し、何も失われない</td></tr>
+            <tr><td>5</td><td>ゲームを二重起動する</td><td>2つ目が書き込めない（または起動しない）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="warn">
+        <strong>1 は必ずコピーで行い、原本を残してください。</strong>
+        移行テストに使ったデータは、失敗した場合そのまま破損サンプルとして貼ってもらいます。
+      </div>
+    </section>
+
+    <section id="done" data-comment-id="guide-save-done" data-comment-title="完了の判断と、止まる条件">
+      <h2>4. 完了の判断と、止まる条件</h2>
+
+      <h3>完了</h3>
+      <ul>
+        <li>上の手動テスト5件がすべて通っている</li>
+        <li>平文セーブの端末を更新しても、今までどおり遊べる（モバイル両OSで確認）</li>
+        <li>移行後のファイルが平文で読めない</li>
+        <li>ドメインの変更分に単体テストがあり、通っている</li>
+      </ul>
+
+      <h3>手を止めて相談する</h3>
+      <ul>
+        <li>移行ロジックが<b>1件でも</b>データを落とすケースを見つけたとき</li>
+        <li>セーブデータの形式・スキーマ自体を変えないと成立しない、と判断したとき</li>
+        <li>Steam Cloud の容量・ファイル数制限に既存セーブが収まらないとき</li>
+        <li>競合の選択画面で「どちらを選んでも何かが失われる」ケースが出たとき</li>
+      </ul>
+
+      <h3>戻し方</h3>
+      <p>
+        暗号化の書き込みはフラグで無効化できる形にしておき、問題が出たら<b>書き込みだけを平文に戻す</b>。
+        読みの両対応は残っているので、どの時点のセーブも読める状態が保たれる。
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>親ページ: <a href="../index.html">Steam移植の決定事項と実行計画</a>　／　詳細仕様: <a href="../spec.html#save">04 セーブとクラウド</a>　／　原典: <a href="https://github.com/appopiss/UpgradeDomain/tree/minertia_area3/docs/steam-release">docs/steam-release</a></p>
+  </footer>
+</article>
+<script src="guide.js"></script>
+</body>
+</html>

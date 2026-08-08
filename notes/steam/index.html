@@ -229,8 +229,8 @@
 
     <dl class="current">
       <dt>資料の構成</dt><dd><b>本書</b>（結論と実行順）／ <a href="spec.html">詳細仕様</a>（項目別の根拠と経緯）／ <a href="#phase2">指示書</a>（実装手順）の3層</dd>
-      <dt>現在地</dt><dd>フェーズ2。<a href="#phase2">指示書8本</a>のうち01・02を公開、残り6本は作成中</dd>
-      <dt>次工程</dt><dd>01・02のレビューと、Standalone検証ビルドの着手</dd>
+      <dt>現在地</dt><dd>フェーズ2。<a href="#phase2">指示書8本</a>をすべて公開。レビュー待ち</dd>
+      <dt>次工程</dt><dd>指示書のレビューと、Standalone検証ビルド（<a href="instructions/02-steamworks.html">指示書02</a>）の着手</dd>
       <dt>クラウドセーブ</dt><dd>Firestoreを正本とし、Steam Cloudへ自動複製</dd>
       <dt>最初の実装</dt><dd>Standalone検証ビルドとプラットフォーム抽象化</dd>
     </dl>
@@ -414,19 +414,19 @@
           <tbody>
             <tr><td>1</td><td class="status done">公開中</td><td><a href="instructions/01-platform.html">01 プラットフォーム抽象化</a></td><td><a href="spec.html#platform">02 プラットフォーム抽象化</a></td><td>6境界と注入位置を確定する。</td></tr>
             <tr><td>2</td><td class="status done">公開中</td><td><a href="instructions/02-steamworks.html">02 Standalone検証とSteamworks初期化</a></td><td><a href="spec.html#platform">02 プラットフォーム抽象化</a> ／ <a href="spec.html#steamworks">Steamworks 管理画面</a></td><td>SDK、Define、起動失敗時の挙動を固定する。Standalone検証ビルドを含む。</td></tr>
-            <tr><td>3</td><td class="status pending">作成中</td><td>03 セーブの暗号化・移行とクラウドセーブ</td><td><a href="spec.html#save">04 セーブとクラウド</a></td><td>既存ユーザーを壊さずAESへ移行し、Steam Cloudへ複製する。</td></tr>
-            <tr><td>4</td><td class="status pending">作成中</td><td>05 横長レイアウト</td><td><a href="spec.html#display">05 横長レイアウトと PC 操作</a></td><td>V/H分離と部品共有の成立性を1画面で確認する。</td></tr>
-            <tr><td>5</td><td class="status pending">作成中</td><td>04 マネタイズ</td><td><a href="spec.html#money">03 マネタイズ</a></td><td>DLC所有権、付与履歴、二重付与防止、プランB切替値を定める。</td></tr>
-            <tr><td>6</td><td class="status pending">作成中</td><td>06 PC操作</td><td><a href="spec.html#display">05 横長レイアウトと PC 操作</a></td><td>入力競合を整理し、連続マージAPIをDomainへ置く。</td></tr>
-            <tr><td>7</td><td class="status pending">作成中</td><td>07 Steam機能</td><td><a href="spec.html#features">06 Steam 機能</a></td><td>実績ID、翻訳キー、同期タイミングを定義する。</td></tr>
-            <tr><td>8</td><td class="status pending">作成中</td><td>08 ビルド・配信とQA</td><td><a href="spec.html#build">ビルドと配信</a> ／ <a href="spec.html#qa">QA と法務</a> ／ <a href="spec.html#steamworks">Steamworks 管理画面</a></td><td>Depot、公証、多言語、チェックリストを固定する。</td></tr>
+            <tr><td>3</td><td class="status done">公開中</td><td><a href="instructions/03-save.html">03 セーブの暗号化・移行とクラウドセーブ</a></td><td><a href="spec.html#save">04 セーブとクラウド</a></td><td>既存ユーザーを壊さずAESへ移行し、Steam Cloudへ複製する。</td></tr>
+            <tr><td>4</td><td class="status done">公開中</td><td><a href="instructions/05-layout.html">05 横長レイアウト</a></td><td><a href="spec.html#display">05 横長レイアウトと PC 操作</a></td><td>V/H分離と部品共有の成立性を1画面で確認する。</td></tr>
+            <tr><td>5</td><td class="status done">公開中</td><td><a href="instructions/04-monetize.html">04 マネタイズ</a></td><td><a href="spec.html#money">03 マネタイズ</a></td><td>DLC所有権、付与履歴、二重付与防止、プランB切替を定める。</td></tr>
+            <tr><td>6</td><td class="status done">公開中</td><td><a href="instructions/06-input.html">06 PC操作</a></td><td><a href="spec.html#display">05 横長レイアウトと PC 操作</a></td><td>入力競合を整理し、連続マージAPIをDomainへ置く。</td></tr>
+            <tr><td>7</td><td class="status done">公開中</td><td><a href="instructions/07-features.html">07 Steam機能</a></td><td><a href="spec.html#features">06 Steam 機能</a></td><td>実績ID、翻訳キー、同期タイミングを定義する。</td></tr>
+            <tr><td>8</td><td class="status done">公開中</td><td><a href="instructions/08-release.html">08 ビルド・配信とQA</a></td><td><a href="spec.html#build">ビルドと配信</a> ／ <a href="spec.html#qa">QA と法務</a> ／ <a href="spec.html#steamworks">Steamworks 管理画面</a></td><td>Depot、公証、多言語、チェックリストを固定する。</td></tr>
           </tbody>
         </table>
       </div>
       <p class="note">
         <strong>順番について:</strong>
-        01〜03 と 05 を先に着手する。04・06〜08 は、それらの境界が固まってからでないと手戻りする。
-        <strong>いま読めるのは 01・02 の2本。</strong>この2本は他の指示書を待たずに着手できる。
+        まず 02（Standalone検証）と 01 から着手する。03〜08 は、01の境界と02の検証結果が出てからが本番になる。
+        02・03・07・08 は<b>あなたの参加が必須</b>（実機確認・実績承認・Steamworks手続き）。
       </p>
     </section>
 
@@ -451,7 +451,7 @@
         <table>
           <thead><tr><th>状態</th><th>作業</th><th>完了条件</th></tr></thead>
           <tbody>
-            <tr><td class="status pending">レビュー待ち</td><td><a href="#phase2">指示書01・02</a>をレビューする</td><td>両ページのコメントが解消され、着手順が確定している。</td></tr>
+            <tr><td class="status pending">レビュー待ち</td><td><a href="#phase2">指示書8本</a>をレビューする</td><td>各ページのコメントが解消され、着手順が確定している。</td></tr>
             <tr><td class="status done">着手可能</td><td>外部調査の担当を置く</td><td>AppID、macOS公証、Steamworks設定、ストア審査の担当と記録先が決まっている。</td></tr>
             <tr><td class="status done">着手可能</td><td><a href="instructions/02-steamworks.html">Standalone検証ビルド</a>を通す</td><td>既存DLLがWindows / macOSビルドで動くか判明している。</td></tr>
           </tbody>

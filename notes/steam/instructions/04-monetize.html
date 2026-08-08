@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>マネタイズ — Idle Minertia Steam移植 指示書</title>
+<link rel="stylesheet" href="guide.css">
+</head>
+<body>
+<article>
+  <header>
+    <p class="crumb"><a href="../index.html">Steam移植の決定事項と実行計画</a> ／ 指示書 04</p>
+    <p class="eyebrow">IDLE MINERTIA / STEAM RELEASE / PHASE 2 / INSTRUCTION 04</p>
+    <h1>マネタイズ</h1>
+    <p class="lead">
+      デイリーダイヤ付与型 DLC を本線として、広告に依存しない商品構成を作る。
+    </p>
+    <p class="meta">最終更新: 2026-08-06　／　担当: Model 中心（商品定義・付与ロジック）</p>
+
+    <div class="summary">
+      <strong>成否の基準</strong>
+      DLC の所有権に応じてダイヤが毎日付与され、取り逃しも二重取りも起きない。
+      審査で通らなかった場合に買い切りへ安く切り替えられる。
+    </div>
+
+    <dl class="current">
+      <dt>根拠</dt><dd><a href="../index.html#workstreams">3. 領域別の方針</a> の「マネタイズ」 ／ 詳細仕様 <a href="../spec.html#money">03 マネタイズ</a></dd>
+      <dt>前提</dt><dd><a href="01-platform.html">指示書01</a>（報酬と課金の境界）</dd>
+      <dt>DLL反映</dt><dd><b>必要。</b>付与ロジックはドメインに置く</dd>
+      <dt>慎重さ</dt><dd>中。新規機能なので既存を壊しにくいが、<b>通貨に関わるバグは信用を壊す</b></dd>
+    </dl>
+  </header>
+
+  <aside class="comment-guide">
+    <p>各章の末尾からコメントを追加・編集できます。</p>
+    <span id="comment-mode" class="mode-badge">読み込み中</span>
+    <span id="pending-summary">未送信 0件</span>
+    <button id="submit-comments" type="button" disabled>GitHubへ送信</button>
+  </aside>
+
+  <main>
+    <section id="purpose" data-comment-id="guide-monetize-purpose" data-comment-title="目的">
+      <h2>1. 目的</h2>
+      <p>
+        Steam 版には広告が無い。モバイルの収益と報酬の両方が広告に載っているため、
+        そのまま移すと<b>収益源と、広告視聴で得ていた報酬の蛇口が同時に消える</b>。
+      </p>
+      <p>
+        置き換えの本線は<b>デイリーダイヤ付与型 DLC</b>（所有している間、毎日ダイヤが入る買い切り商品）。
+        ただしゲーム内通貨の販売が Steam の審査で通るかは外部リスクであり、
+        <b>通らなかった場合に買い切り型へ切り替えられる形</b>で作る。
+      </p>
+    </section>
+
+    <section id="policy" data-comment-id="guide-monetize-policy" data-comment-title="方針">
+      <h2>2. 方針</h2>
+
+      <h3>優先順位</h3>
+      <ol>
+        <li><b>付与の正確さ。</b>取り逃しも二重取りも起きない。時計を戻しても増えない</li>
+        <li><b>プランBへの切替の安さ。</b>審査結果はこちらで制御できない。構成変更が実装し直しにならないこと</li>
+        <li>商品構成の魅力。数値・見せ方は後から調整できる形にして、いま作り込まない</li>
+      </ol>
+
+      <h3>デイリー付与の設計</h3>
+      <ul>
+        <li><b>未受領分は失効させない。</b>起動しなかった日数分は、次の起動時にまとめて受け取れる</li>
+        <li>付与履歴を持ち、<b>同じ日への付与を2回行わない</b>。判定は最終受領日からの経過日数で行う</li>
+        <li>時刻の扱いは既存の日次処理（デイリーミッション等）の判定と揃える。独自の時刻基準を作らない</li>
+        <li>DLC の所有権は課金の境界（<a href="01-platform.html">指示書01</a>）越しに問い合わせる。
+          <b>ドメインは Steam を知らない</b></li>
+      </ul>
+
+      <h3>広告に紐づいていた導線の置き換え</h3>
+      <ul>
+        <li>Steam 版の違いは「広告を見るか見ないか」の二値ではなく、
+          <b>導線ごとに報酬量・頻度・解禁条件が変わる</b>。分岐ではなく<b>設定値の差し替え</b>で表現する</li>
+        <li>導線ごとの数値は Config（マスタデータ）に置き、コードに埋めない</li>
+        <li>既存の RemoveAds が持つ効果は<b>役割ごとに分解してから</b> Steam の商品へ写像する。
+          「広告除去」という商品名のまま移さない（除去すべき広告が無い）</li>
+        <li>プレイ由来のダイヤの蛇口（コレクション達成・FlyingPresent 等）は<b>そのまま生かす</b>。
+          広告視聴が条件だったものだけを置き換える</li>
+      </ul>
+
+      <h3>決めないこと</h3>
+      <ul>
+        <li><b>価格。</b>事例調査と決定は別途。Config で差し替えられる形にだけしておく</li>
+        <li>商品の点数と組み合わせの最終形。まず本線1本を通す</li>
+      </ul>
+
+      <p class="note">
+        既存のダイヤ経済（蛇口と流し）の実態は、資料ではなくドメインの実コードから拾う。
+        食い違いはコメントに残す。
+      </p>
+    </section>
+
+    <section id="done" data-comment-id="guide-monetize-done" data-comment-title="完了の判断と、止まる条件">
+      <h2>3. 完了の判断と、止まる条件</h2>
+
+      <h3>完了</h3>
+      <ul>
+        <li>付与ロジックに単体テストがあり、次のケースが通っている:
+          日付をまたぐ付与／長期未起動からの一括受領／同日二重起動／時計を戻した場合／DLC 未所持→所持の遷移</li>
+        <li>導線ごとの報酬・解禁条件が Config の差し替えだけで変わる</li>
+        <li>プランB（買い切り化）への切替が、商品定義と Config の変更だけで済むことを説明できる</li>
+        <li>モバイル版の課金・広告の挙動が変わっていない</li>
+      </ul>
+
+      <h3>手を止めて相談する</h3>
+      <ul>
+        <li>RemoveAds の効果分解で、<b>どの商品にも写像できない効果</b>が出たとき</li>
+        <li>付与の正確さと失効なしの両立が、既存の日次処理と矛盾するとき</li>
+        <li>Steam の審査でゲーム内通貨販売が拒否されたとき（<b>プランB発動はあなたの判断</b>）</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>親ページ: <a href="../index.html">Steam移植の決定事項と実行計画</a>　／　詳細仕様: <a href="../spec.html#money">03 マネタイズ</a>　／　原典: <a href="https://github.com/appopiss/UpgradeDomain/tree/minertia_area3/docs/steam-release">docs/steam-release</a></p>
+  </footer>
+</article>
+<script src="guide.js"></script>
+</body>
+</html>
