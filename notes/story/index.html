@@ -87,6 +87,10 @@
   .cmsg.narr .txt{font-size:13.5px;line-height:2.1}
   .cmsg.sys .txt{font-size:12px;font-style:italic}
   .chat .fixed-note{font-size:10px;color:#6d685c;border:1px solid var(--line);border-radius:8px;padding:0 6px}
+  .chat .fixed-note.gone{color:var(--warn);border-color:var(--warn)}
+  .cmsg.gone .av{opacity:.25;filter:grayscale(1)}
+  .cmsg.gone .bub{opacity:.45}
+  .cmsg.gone .txt{text-decoration:line-through}
   /* 入力バー */
   .compose{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:12px 14px;margin-top:12px}
   .compose .row{display:flex;gap:8px;align-items:flex-end}
@@ -301,7 +305,11 @@ const DLGS=[
    新しいデータ形式を足さないので、feedback.json も Issue 経由の書き込みも既存のまま動く。
      comments['scr-index']   … 追加した脚本の目録。1件 = '<脚本ID>\n<タイトル>'
      comments['scr:<脚本ID>'] … その脚本の発言。1件 = '<話者キー>\n<本文>'
-   ID01〜11(コード内の DLGS)は原稿として読み取り専用。その続きは追記できる。 */
+     comments['scr-hidden']  … 原稿の行を消した印。1件 = '<脚本ID>\n<消した本文>'
+
+   ID01〜11(コード内の DLGS)はコードにあるので書き換えられない。
+   代わりに「消した印」を積んで隠す。行番号ではなく本文を鍵にしているので、
+   原稿が書き換わると印は自然に外れて行が戻る(消し間違いより復活を選ぶ)。 */
 const SCR_SPEAKERS={
  naeka :{name:'なえか',   img:'images/naeka.png', color:'#2e7f8f'},
  kosuke:{name:'コウスケ', img:'images/kosuke.png',color:'#6f7a4e'},
@@ -311,7 +319,28 @@ const SCR_SPEAKERS={
  sys   :{name:'ト書き',       kind:'sys'},
 };
 const SCR_INDEX='scr-index';
+const SCR_HIDDEN='scr-hidden';
 const scrKey=(id)=>'scr:'+id;
+const scrHidKey=(id,t)=>id+'\n'+t;
+
+// この脚本で「消した」印がついている原稿の本文
+function scrHiddenSet(id){
+ const out=new Set();
+ for(const c of (STORE.comments[SCR_HIDDEN]||[])){
+   const at=c.text.indexOf('\n');
+   if(at<0||c.text.slice(0,at).trim()!==id)continue;
+   out.add(c.text.slice(at+1));
+ }
+ return out;
+}
+function scrHiddenIdx(id,t){
+ return (STORE.comments[SCR_HIDDEN]||[]).findIndex(c=>c.text===scrHidKey(id,t));
+}
+// 原稿(DLGS)から、消されていない行だけを返す。モックの再生もこれに従う
+function dlgVisibleLines(d){
+ const hid=scrHiddenSet(d.id);
+ return d.lines.filter(l=>!hid.has(scrFromDlgLine(l).t));
+}
 
 // DLGS の行を、チャットが扱う {sp,t} の形へ寄せる
 function scrFromDlgLine(l){
@@ -332,10 +361,15 @@ function scrUserList(){
 function scrList(){
  return DLGS.map(d=>({id:d.id,title:d.title,builtin:true})).concat(scrUserList());
 }
-// 原稿(あれば) + 追記分。追記分だけ削除できる
+// 原稿(あれば) + 追記分。追記分は消す、原稿は隠す
 function scrLines(id){
  const d=DLGS.find(x=>x.id===id);
- const out=d?d.lines.map(l=>Object.assign(scrFromDlgLine(l),{builtin:true})):[];
+ const hid=d?scrHiddenSet(id):null;
+ const out=d?d.lines.map((l,i)=>{
+   const o=Object.assign(scrFromDlgLine(l),{builtin:true,bidx:i});
+   o.hidden=hid.has(o.t);
+   return o;
+ }):[];
  (STORE.comments[scrKey(id)]||[]).forEach((c,i)=>{
    const at=c.text.indexOf('\n');
    const sp=(at<0?c.text:c.text.slice(0,at)).trim();
@@ -343,32 +377,46 @@ function scrLines(id){
  });
  return out;
 }
+// 行の下に出る小さな行(日時 / 原稿バッジ / 削除ボタン)
+function scrMetaHtml(id,l,canDel){
+ if(!l.builtin){
+   return '<span>'+esc(l.ts||'')+'</span>'
+     +(canDel?'<button onclick="scrDel(\''+id+'\','+l.idx+')">削除</button>':'');
+ }
+ if(l.hidden){
+   return '<span class="fixed-note gone">原稿 / 削除</span>'
+     +(canDel?'<button onclick="scrUnhide(\''+id+'\','+l.bidx+')">元に戻す</button>':'');
+ }
+ return '<span class="fixed-note">原稿</span>'
+   +(canDel?'<button onclick="scrHide(\''+id+'\','+l.bidx+')">削除</button>':'');
+}
 function scrMsgHtml(id,l,canDel){
  const s=SCR_SPEAKERS[l.sp]||SCR_SPEAKERS.sys;
+ const gone=l.hidden?' gone':'';
+ const meta='<div class="meta">'+scrMetaHtml(id,l,canDel)+'</div>';
  if(s.kind==='narr'||s.kind==='sys'){
-   return '<div class="cmsg '+s.kind+'"><div class="bub"><div class="txt">'+esc(l.t)+'</div>'
-     +(l.builtin?'':'<div class="meta"><span>'+esc(l.ts||'')+'</span>'
-       +(canDel?'<button onclick="scrDel(\''+id+'\','+l.idx+')">削除</button>':'')+'</div>')
-     +'</div></div>';
+   return '<div class="cmsg '+s.kind+gone+'"><div class="bub"><div class="txt">'+esc(l.t)+'</div>'
+     +meta+'</div></div>';
  }
  const av=s.img
    ?'<img class="av" src="'+s.img+'" alt="'+s.name+'">'
    :'<div class="av txt" style="color:'+s.color+'">'+(s.mark||'●')+'</div>';
- return '<div class="cmsg'+(s.me?' me':'')+'">'+av
+ return '<div class="cmsg'+(s.me?' me':'')+gone+'">'+av
    +'<div class="bub"><div class="who" style="color:'+s.color+'">'+s.name+'</div>'
    +'<div class="txt">'+esc(l.t)+'</div>'
-   +'<div class="meta">'
-   +(l.builtin?'<span class="fixed-note">原稿</span>':'<span>'+esc(l.ts||'')+'</span>')
-   +(!l.builtin&&canDel?'<button onclick="scrDel(\''+id+'\','+l.idx+')">削除</button>':'')
-   +'</div></div></div>';
+   +meta+'</div></div>';
 }
 function scrChatHtml(id){
  const lines=scrLines(id);
  if(!lines.length)return '<div class="chat"><div class="empty">まだ発言がありません。下の欄から書いてください。</div></div>';
  const pend=PROPOSE?(PENDING.comments[scrKey(id)]||[]):[];
  const store=STORE.comments[scrKey(id)]||[];
- // 公開済みの発言は提案モードからは消せないので、削除ボタンも出さない
- const canDel=(l)=>l.builtin?false:(!PROPOSE||pend.some(p=>{const c=store[l.idx];return c&&p.ts===c.ts&&p.text===c.text;}));
+ const hidPend=PROPOSE?(PENDING.comments[SCR_HIDDEN]||[]):[];
+ // 公開済みのものは提案モードからは取り消せないので、ボタンも出さない。
+ // 原稿を消すのは印を足すだけなので、いつでもできる。
+ const canDel=(l)=>l.builtin
+   ?(!l.hidden||!PROPOSE||hidPend.some(p=>p.text===scrHidKey(id,l.t)))
+   :(!PROPOSE||pend.some(p=>{const c=store[l.idx];return c&&p.ts===c.ts&&p.text===c.text;}));
  return '<div class="chat">'+lines.map(l=>scrMsgHtml(id,l,canDel(l))).join('')+'</div>';
 }
 function dlgScriptHtml(d){
@@ -1113,7 +1161,7 @@ function submitToGitHub(){
 let curPage=location.hash?location.hash.slice(1):'home';
 let filter='all';
 function secTitle(id){for(const p of DB){for(const s of p.secs){if(s.id===id)return {page:p,sec:s};}}return null;}
-function isScrKey(k){return k===SCR_INDEX||k.indexOf('scr:')===0;}
+function isScrKey(k){return k===SCR_INDEX||k===SCR_HIDDEN||k.indexOf('scr:')===0;}
 function scrLineCount(){let n=0;for(const k in STORE.comments)if(k.indexOf('scr:')===0)n+=STORE.comments[k].length;return n;}
 function pageCommentCount(p){
   if(p.chat)return scrLineCount();   // 脚本ページはコメントではなく発言数を出す
@@ -1282,7 +1330,7 @@ function buildMD(){
     md+='\n';
   }}
   // 脚本は、追記のあったものだけ本文ごと書き出す
-  const scripts=scrList().filter(s=>(STORE.comments[scrKey(s.id)]||[]).length);
+  const scripts=scrList().filter(s=>(STORE.comments[scrKey(s.id)]||[]).length||scrHiddenSet(s.id).size);
   if(scripts.length){
     any=true;
     md+='# 脚本\n\n';
@@ -1291,6 +1339,7 @@ function buildMD(){
       for(const l of scrLines(s.id)){
         const sp=SCR_SPEAKERS[l.sp]||SCR_SPEAKERS.sys;
         const body=l.t.replace(/\n/g,' / ');
+        if(l.hidden){md+='~~'+body+'~~ `原稿から削除`\n\n';continue;}
         md+=(sp.kind?'*'+body+'*':'**'+sp.name+'**「'+body+'」')+(l.builtin?'':' `'+l.ts+'`')+'\n\n';
       }
     }
@@ -1322,7 +1371,7 @@ function renderChat(el,p){
   let html='<div class="phead"><h2>'+p.title+'</h2><p>'+p.desc+'</p></div>';
   html+='<div class="scr-tabs">'
     +list.map(s=>'<button class="'+(s.id===SCR_CUR?'on':'')+'" onclick="scrSelect(\''+s.id+'\')">'
-        +esc(s.title)+'<span class="n">'+scrLines(s.id).length+'</span></button>').join('')
+        +esc(s.title)+'<span class="n">'+scrLines(s.id).filter(l=>!l.hidden).length+'</span></button>').join('')
     +'<button class="add" onclick="scrNew()">＋ 新しい脚本</button></div>';
 
   if(!SCR_CUR){
@@ -1341,7 +1390,7 @@ function renderChat(el,p){
     +'<textarea id="scr-t" placeholder="発言を入力…（Ctrl+Enter で送信）"></textarea>'
     +'<button class="send" onclick="scrSend()">送信</button>'
     +'</div><div class="hint">'
-    +(cur.builtin?'この脚本の原稿部分はコードにあるので消せません。追記した発言だけ削除できます。'
+    +(cur.builtin?'原稿の行も削除できます。原稿自体はコードにあるので、消したという印を残す形です(「元に戻す」で戻せます)。'
                  :'書いた発言は他のコメントと同じ場所に保存されます。')
     +'</div></div>';
   el.innerHTML=html;
@@ -1390,6 +1439,37 @@ function scrPush(key,text){
       body:JSON.stringify({sec:key,text,ts})}).catch(()=>{});
   }
 }
+// 原稿の行を隠す/戻す。実体は comments['scr-hidden'] への出し入れ
+function scrBuiltinText(id,bidx){
+  const d=DLGS.find(x=>x.id===id);
+  const l=d&&d.lines[bidx];
+  return l?scrFromDlgLine(l).t:null;
+}
+function scrHide(id,bidx){
+  const t=scrBuiltinText(id,bidx);
+  if(t===null||scrHiddenIdx(id,t)>=0)return;
+  if(!confirm('原稿のこの行を削除します。あとで「元に戻す」で戻せます。よろしいですか?'))return;
+  scrPush(SCR_HIDDEN,scrHidKey(id,t));
+  save();render();
+}
+function scrUnhide(id,bidx){
+  const t=scrBuiltinText(id,bidx);
+  if(t===null)return;
+  const i=scrHiddenIdx(id,t);
+  if(i<0)return;
+  const c=STORE.comments[SCR_HIDDEN][i];
+  if(PROPOSE){
+    // 送信済みの削除はここからは取り消せない(取り消すならローカル版で)
+    const p=PENDING.comments[SCR_HIDDEN]||[];
+    const at=p.findIndex(x=>x.ts===c.ts&&x.text===c.text);
+    if(at<0){alert('送信済みの削除は、ここからは取り消せません。');return;}
+    p.splice(at,1);
+    if(!p.length)delete PENDING.comments[SCR_HIDDEN];
+  }
+  STORE.comments[SCR_HIDDEN].splice(i,1);
+  if(!STORE.comments[SCR_HIDDEN].length)delete STORE.comments[SCR_HIDDEN];
+  save();render();
+}
 function scrDel(id,i){
   const key=scrKey(id);
   const c=(STORE.comments[key]||[])[i];
@@ -1413,25 +1493,27 @@ let DLG_CUR='ID01', DLG_IDX=0;
 function dlgLoad(id){DLG_CUR=id;DLG_IDX=0;dlgDraw();}
 function dlgNext(){
  const d=DLGS.find(x=>x.id===DLG_CUR);if(!d)return;
- const line=d.lines[DLG_IDX];
+ const lines=dlgVisibleLines(d);
+ const line=lines[DLG_IDX];
  if(line&&line.choice)return; // 選択肢中はタップで進めない
  DLG_IDX++;
- if(DLG_IDX>d.lines.length)DLG_IDX=0; // 終了カードの次で最初へ
+ if(DLG_IDX>lines.length)DLG_IDX=0; // 終了カードの次で最初へ
  dlgDraw();
 }
 function dlgChoice(ev){ev.stopPropagation();DLG_IDX++;dlgDraw();}
 function dlgDraw(){
  const ph=document.getElementById('dlg-phone');if(!ph)return;
  const d=DLGS.find(x=>x.id===DLG_CUR);if(!d)return;
+ const lines=dlgVisibleLines(d);   // チャットで消した行は再生からも外れる
  document.querySelectorAll('.dlg-btns button').forEach(b=>b.classList.toggle('on',b.dataset.id===DLG_CUR));
  ph.style.background=d.bg||'';
  let html='<div class="dlg-cap">'+d.title+'</div>';
- if(DLG_IDX>=d.lines.length){
+ if(DLG_IDX>=lines.length){
   ph.innerHTML=html+'<div class="dlg-narr">― おわり ―<br><span style="font-size:11px;color:#9a9385">(タップで最初から)</span></div>';return;
  }
- const line=d.lines[DLG_IDX];
+ const line=lines[DLG_IDX];
  let charKey=null;
- for(let i=DLG_IDX;i>=0;i--){const l=d.lines[i];if(l.c){charKey=l.c;break;}}
+ for(let i=DLG_IDX;i>=0;i--){const l=lines[i];if(l.c){charKey=l.c;break;}}
  const charImg=(k,dim)=>'<img class="dlg-char" src="'+DLG_CHARS[k].img+'"'+(dim?' style="opacity:.3"':'')+'>';
  if(line.narr){
   html+='<div class="dlg-narr">'+line.narr+'</div>';
