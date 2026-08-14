@@ -31,7 +31,7 @@ const SITES = [
     label: "Story",
     title: "ストーリー設定",
     desc: "世界観・表ストーリー・キャラクター・脚本。",
-    can: "脚本はチャット形式。新しい脚本を作って書き足せます。",
+    can: "進行タイムラインでチュートリアルと会話の順番を並べ替えられます。脚本はチャット形式。",
     files: ["index.html", "feedback.json"],
     dirs: ["images"],
   },

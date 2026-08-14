@@ -152,6 +152,59 @@
   .fb-sec{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin-bottom:12px}
   .fb-sec .to{font-size:11px;color:var(--sub)}
   .empty{color:var(--sub);text-align:center;padding:40px 0}
+  /* ---------- 進行タイムライン ----------
+     チュートリアルの step と脚本を1本の並びで見るページ。
+     並べ替えは ▲▼ ボタンでやる。スマホでドラッグは扱いにくいのと、
+     1手ごとに順序スナップショットを積む保存方式と相性がよいため。 */
+  .tl-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+  .tl-bar button{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:16px;padding:4px 13px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .tl-bar button:hover{border-color:var(--accent)}
+  .tl-bar .stat{font-size:12px;color:var(--sub);margin-left:auto}
+  .tl-chap{display:flex;align-items:center;gap:10px;margin:24px 0 8px}
+  .tl-chap:first-child{margin-top:6px}
+  .tl-chap h3{font-size:15.5px;color:var(--accent);letter-spacing:.05em}
+  .tl-chap .rule{flex:1;height:1px;background:var(--line)}
+  .tl-chap button{border:none;background:none;color:var(--sub);font-size:11.5px;cursor:pointer;font-family:inherit;padding:2px 4px}
+  .tl-chap button:hover{color:var(--ink)}
+  .tl-item{display:flex;align-items:flex-start;gap:10px;background:var(--panel);
+    border:1px solid var(--line);border-left:4px solid var(--line);border-radius:8px;padding:9px 12px;margin-bottom:6px}
+  .tl-item.done{border-left-color:var(--k-line)}
+  .tl-item.idea{border-left-color:var(--t-ink)}
+  .tl-item.story{background:#232630}
+  .tl-no{flex:none;min-width:54px;padding-top:2px;font-size:11px;color:var(--sub);font-variant-numeric:tabular-nums}
+  .tl-body{flex:1;min-width:0}
+  .tl-h{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:14px}
+  .tl-tag{font-size:10.5px;padding:1px 8px;border-radius:9px;border:1px solid;white-space:nowrap}
+  .tl-tag.k{background:var(--k-bg);color:var(--k-ink);border-color:var(--k-line)}
+  .tl-tag.t{background:var(--t-bg);color:var(--t-ink);border-color:var(--t-line)}
+  .tl-tag.w{background:#3a2226;color:#f2a0a0;border-color:#6b3a40}
+  .tl-note{font-size:12px;color:var(--sub);margin-top:3px}
+  .tl-ops{flex:none;display:flex;gap:2px;align-items:center}
+  .tl-ops button{border:1px solid var(--line);background:#2a2823;color:var(--sub);border-radius:6px;
+    width:26px;height:26px;font-size:12px;cursor:pointer;font-family:inherit;padding:0;line-height:1}
+  .tl-ops button:hover{color:var(--ink);border-color:var(--accent)}
+  .tl-ops button.wide{width:auto;padding:0 8px}
+  .tl-ops button:disabled{opacity:.25;cursor:default}
+  .tl-prev{margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+  .tl-prev .chat{max-height:340px}
+  .tl-add{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px 64px}
+  .tl-add button{border:1px dashed var(--line);background:none;color:var(--sub);border-radius:14px;
+    padding:3px 12px;font-size:11.5px;cursor:pointer;font-family:inherit}
+  .tl-add button:hover{color:var(--accent);border-color:var(--accent)}
+  .tl-edit{margin-top:8px;border-top:1px dashed var(--line);padding-top:8px;display:grid;gap:6px}
+  .tl-edit label{font-size:11px;color:var(--sub)}
+  .tl-edit input,.tl-edit textarea,.tl-edit select{width:100%;background:#20242b;color:var(--ink);
+    border:1px solid var(--c-line);border-radius:6px;padding:6px 9px;font-family:inherit;font-size:13px}
+  .tl-edit textarea{min-height:52px;resize:vertical}
+  .tl-edit .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .tl-edit .row>*{flex:1;min-width:120px}
+  .tl-edit .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+  .tl-edit .btns button{flex:none;border:none;border-radius:14px;padding:5px 16px;font-size:12px;cursor:pointer;font-family:inherit}
+  .tl-edit .btns .ok{background:var(--accent);color:#1c1b18;font-weight:600}
+  .tl-edit .btns .no{background:#3a372f;color:var(--sub)}
+  .tl-edit .btns .rm{background:none;color:var(--warn);margin-left:auto}
+  .tl-off{margin-top:26px;border-top:1px solid var(--line);padding-top:12px}
+  .tl-off h3{font-size:13.5px;color:var(--sub);margin-bottom:8px}
   /* ハンバーガーと、ナビを覆う幕。スマホでのみ出す */
   #menu,#scrim{display:none}
 
@@ -193,6 +246,13 @@
     .compose select,.compose textarea,.compose .send{width:100%}
     .compose .send{padding:12px}
     .scr-tabs button{font-size:12px;padding:4px 11px}
+    /* 進行タイムライン。横に並べる余裕がないので、操作ボタンは本文の下へ落とす */
+    .tl-item{flex-wrap:wrap;padding:9px 10px}
+    .tl-no{min-width:0}
+    .tl-body{flex-basis:100%;order:3}
+    .tl-ops{margin-left:auto}
+    .tl-ops button{width:32px;height:32px}
+    .tl-add{margin-left:0}
   }
 </style>
 </head>
@@ -429,6 +489,132 @@ function dlgViewerHtml(){
   +'</div><div class="phone" id="dlg-phone" onclick="dlgNext()"></div></div>';
 }
 
+/* ---------- 進行タイムライン ----------
+   チュートリアルの step と脚本を、1本の並びとして扱う。
+
+   ■ 何が正本か
+   並び順と各項目の中身は「このサイトが正本」。コードは実装。
+   コードを読んで自動生成はしない(TutorialDomain.cs の書き方が変わるたび壊れるため)。
+   下の TL は 2026-08-14 時点の実装を一度だけ手で写したもの。
+
+   ■ stepId は振り直さない
+   TutorialSequence の CurrentStepId はセーブデータに載っている。
+   既存の番号を変えると、チュートリアル途中のプレイヤーが別の場所へ飛ぶ。
+   並び順の正本はあくまで配列の順で、番号は「今のコードでの居場所」でしかない。
+   新しく挟むときは前後の中間値を振る。中間が取れないときは警告を出す。
+
+   ■ 保存
+   他ページのコメントと同じ comments/ に相乗りする。新しいデータ形式を足していないので、
+   feedback.json も Issue 経由の書き込みも既存の経路がそのまま動く。
+     comments['tl-order']  … 並び順のスナップショット。1件 = 項目IDの改行区切り。最新が勝つ
+     comments['tl:<項目ID>'] … その項目の中身。1件 = 'key=value' の改行区切り。最新が勝つ
+   TL に無い項目は、コメントだけで存在する(あとから足したもの)。
+   TL にあるのに並び順に載っていない項目は「外した」扱いで、ページ下部から戻せる。 */
+const TL_ORDER='tl-order';
+const tlKey=(id)=>'tl:'+id;
+const TL=[
+ {id:'ch-intro',kind:'chap',title:'第1章 導入 ── 掘りはじめる'},
+ {id:'sc-ID01',kind:'story',scr:'ID01',state:'idea'},
+ {id:'sc-ID02',kind:'story',scr:'ID02',state:'idea'},
+ {id:'st-1000',kind:'step',step:1000,state:'done',title:'最初の道具を手に入れる'},
+
+ {id:'ch-equip',kind:'chap',title:'第2章 装備をおぼえる'},
+ {id:'sc-ID03',kind:'story',scr:'ID03',state:'idea'},
+ {id:'st-2000',kind:'step',step:2000,state:'done',title:'装備画面をひらく'},
+ {id:'st-3000',kind:'step',step:3000,state:'done',title:'「アイテムを装備」の説明を出す'},
+ {id:'st-4000',kind:'step',step:4000,state:'done',title:'最初の道具を装備する'},
+ {id:'st-5000',kind:'step',step:5000,state:'done',title:'坑道へ戻る（道具がひとりでに動きだす）'},
+ {id:'sc-ID04',kind:'story',scr:'ID04',state:'idea'},
+
+ {id:'ch-grow',kind:'chap',title:'第3章 掘って、育てる'},
+ {id:'st-6000',kind:'step',step:6000,state:'done',title:'「アップグレードを購入」の説明を出す'},
+ {id:'st-7000',kind:'step',step:7000,state:'done',title:'アップグレードを買う'},
+ {id:'sc-ID05',kind:'story',scr:'ID05',state:'idea',tent:1,
+  note:'元のメモが「レベル上げの後の会話」としか言っておらず、位置は仮。3-1 を目指させる回なので ID06 の直前まで下げる案もある。'},
+ {id:'st-8000',kind:'step',step:8000,state:'done',title:'装備画面をひらく（2回目）'},
+ {id:'st-9000',kind:'step',step:9000,state:'done',title:'アイテムを作る（1個目）',
+  note:'9000〜13000 は条件が同じ5連続。5個作らせるためだけに分かれている。'},
+ {id:'st-10000',kind:'step',step:10000,state:'done',title:'アイテムを作る（2個目）'},
+ {id:'st-11000',kind:'step',step:11000,state:'done',title:'アイテムを作る（3個目）'},
+ {id:'st-12000',kind:'step',step:12000,state:'done',title:'アイテムを作る（4個目）'},
+ {id:'st-13000',kind:'step',step:13000,state:'done',title:'アイテムを作る（5個目）'},
+ {id:'st-14000',kind:'step',step:14000,state:'done',title:'「アイテムを重ねる」の説明を出す'},
+ {id:'st-15000',kind:'step',step:15000,state:'done',title:'同じアイテムを重ねる'},
+ {id:'st-15500',kind:'step',step:15500,state:'done',title:'もう1個アイテムを作る'},
+ {id:'st-16000',kind:'step',step:16000,state:'done',title:'「エンチャントをつける」の説明を出す'},
+ {id:'st-16200',kind:'step',step:16200,state:'done',title:'エンチャントを重ねる'},
+ {id:'sc-ID06',kind:'story',scr:'ID06',state:'idea',note:'3-1 到達で発火。到達イベント自体がまだ無い。'},
+
+ {id:'ch-battle',kind:'chap',title:'第4章 バトル'},
+ {id:'sc-ID07',kind:'story',scr:'ID07',state:'idea'},
+ {id:'st-16500',kind:'step',step:16500,state:'done',title:'バトル画面をひらく'},
+ {id:'st-17000',kind:'step',step:17000,state:'done',title:'バトルを始める'},
+ {id:'st-18000',kind:'step',step:18000,state:'done',title:'バトルの説明を出す（オニー・缶・ステータス）'},
+ {id:'st-19000',kind:'step',step:19000,state:'done',title:'坑道へ戻る'},
+ {id:'st-20000',kind:'step',step:20000,state:'done',title:'「戦いのための報酬」の説明を出す'},
+ {id:'sc-ID08',kind:'story',scr:'ID08',state:'idea'},
+ {id:'sc-ID09',kind:'story',scr:'ID09',state:'idea',note:'7-1 到達で発火。到達イベント自体がまだ無い。'},
+
+ {id:'ch-prestige',kind:'chap',title:'第5章 プレステージ'},
+ {id:'sc-ID10',kind:'story',scr:'ID10',state:'idea'},
+ {id:'st-20100',kind:'step',step:20100,state:'done',title:'プレステージ画面をひらく'},
+ {id:'st-20200',kind:'step',step:20200,state:'done',title:'プレステージの説明を出す（ジェムパワー・失うもの）'},
+ {id:'st-21000',kind:'step',step:21000,state:'done',title:'初めてのプレステージを実行する'},
+ {id:'sc-ID11',kind:'story',scr:'ID11',state:'idea'},
+ {id:'st-22000',kind:'step',step:22000,state:'idea',title:'タイトルロゴを出す',
+  note:'コードにはあるがコメントアウト中。ID11 とセットで復活させる想定。'},
+
+ {id:'ch-after',kind:'chap',title:'第6章 チュートリアルのあと'},
+ {id:'st-23000',kind:'step',step:23000,state:'done',title:'育てた装備がバトルで使えるようになる'},
+ {id:'st-24000',kind:'step',step:24000,state:'done',title:'「プレステージおめでとう」の説明を出す'},
+];
+const TL_BUILTIN={};for(const t of TL)TL_BUILTIN[t.id]=t;
+
+// comments に積まれた最新の1件。無ければ null
+function tlLatest(key){
+  const a=STORE.comments[key];
+  if(!a||!a.length)return null;
+  let best=a[0];
+  for(const c of a)if(String(c.ts).localeCompare(String(best.ts))>=0)best=c;
+  return best;
+}
+function tlParse(text){
+  const o={};
+  for(const line of String(text).split('\n')){
+    const at=line.indexOf('=');
+    if(at<0)continue;
+    o[line.slice(0,at).trim()]=line.slice(at+1);
+  }
+  return o;
+}
+// 既定(TL) にコメント側の上書きを重ねた、表示用の1項目
+function tlItem(id){
+  const base=TL_BUILTIN[id];
+  const c=tlLatest(tlKey(id));
+  const o=Object.assign({id:id,kind:'step',state:'idea',title:''},base,c?tlParse(c.text):{});
+  o.builtin=!!base;
+  o.step=o.step===''||o.step===undefined?null:Number(o.step);
+  if(!isFinite(o.step))o.step=null;
+  o.tent=!!o.tent&&o.tent!=='0';
+  if(o.kind==='story'&&!o.title){
+    const s=scrList().find(x=>x.id===o.scr);
+    o.title=s?s.title:(o.scr||'(脚本なし)');
+  }
+  return o;
+}
+// 現在の並び。コメントに無ければ TL の既定順
+function tlOrder(){
+  const c=tlLatest(TL_ORDER);
+  if(!c)return TL.map(t=>t.id);
+  const ids=c.text.split('\n').map(s=>s.trim()).filter(Boolean);
+  return ids.length?ids:TL.map(t=>t.id);
+}
+// 並びから外れている既定項目(下部の「外した項目」に出す)
+function tlDropped(){
+  const on=new Set(tlOrder());
+  return TL.filter(t=>!on.has(t.id));
+}
+
 const DB = [
 /* ============================ HOME ============================ */
 {id:'home', nav:'ホーム / 使い方', group:'案内', title:'ホーム', desc:'このサイトの読み方と、物語の全体コンセプト。', secs:[
@@ -440,6 +626,7 @@ const DB = [
     <span class="lg"><span class="dot" style="background:var(--c-bg);border:1px solid var(--c-line)"></span>コメント … あなたが各ブロックに書き込む</span>
   </div>
   <ul>
+    <li><b>まず<a href="#flow" onclick="go('flow')">進行タイムライン</a>を見てください。</b>チュートリアルの各ステップと脚本が1本の並びになっています。順番の入れ替え・会話の差し込みはそこで行います。</li>
     <li>各ブロック下部で <b>OK / 要変更</b> のリアクションと <b>コメント</b> を付けられます。</li>
     <li>右上の<b>「フィードバック書き出し」</b>でコメント一式をMarkdownコピー → Claudeに貼り付けると、設定・サイトに反映されます。</li>
     <li><b>永続化(推奨)</b>: <code>start_site.bat</code> をダブルクリックで起動すると、コメント投稿のたびに <code>StorySite/feedback.json</code> へ<b>自動保存</b>され、過去分もどのブラウザからでも参照できます(履歴は <code>feedback_history.jsonl</code> に追記され、削除しても残る)。右上が「💾 自動保存ON」なら有効。</li>
@@ -458,6 +645,9 @@ const DB = [
   <tr><td>脚本(冒頭会話・フレーバー)</td><td>未保存(このサイトが初出)</td></tr></table>
   <p class="note">当面の正本はMDファイル。サイトは閲覧・レビュー用フロントとし、確定した変更はMDへ反映していく。</p>`},
 ]},
+/* ============================ FLOW ============================ */
+{id:'flow', nav:'進行タイムライン', group:'案内', title:'進行タイムライン',
+ desc:'チュートリアルと脚本を1本の並びで見る。順番の入れ替え・差し込みはここで。', flow:true, secs:[]},
 /* ============================ WORLD ============================ */
 {id:'world', nav:'世界観(裏設定)', group:'設定', title:'世界観 ── ベクトルの物理', desc:'この世界の理。プレイヤーには終盤まで明かされない「裏」。', secs:[
  {id:'w-vector', h:'1. すべてはベクトル', s:'k', b:`
@@ -1141,6 +1331,8 @@ function mergeFb(base,patch){
 function submitToGitHub(){
   const n=pendCount();
   if(!n){alert('未送信の変更はありません。');return;}
+  // 送った分は公開側へ回るので、もう置き換えの対象にしない(次の編集から新しい世代)
+  for(const k in TL_MINE)delete TL_MINE[k];
   const payload=Object.assign({site:SITE,at:new Date().toISOString()},PENDING);
   const body='### notes-inbox\n\nこの Issue は自動処理されます。内容を編集しないでください。\n\n```json\n'
     +JSON.stringify(payload)+'\n```\n';
@@ -1162,13 +1354,15 @@ let curPage=location.hash?location.hash.slice(1):'home';
 let filter='all';
 function secTitle(id){for(const p of DB){for(const s of p.secs){if(s.id===id)return {page:p,sec:s};}}return null;}
 function isScrKey(k){return k===SCR_INDEX||k===SCR_HIDDEN||k.indexOf('scr:')===0;}
+function isTlKey(k){return k===TL_ORDER||k.indexOf('tl:')===0;}
 function scrLineCount(){let n=0;for(const k in STORE.comments)if(k.indexOf('scr:')===0)n+=STORE.comments[k].length;return n;}
 function pageCommentCount(p){
+  if(p.flow)return 0;                // タイムラインにコメント欄は無い
   if(p.chat)return scrLineCount();   // 脚本ページはコメントではなく発言数を出す
   let n=0;for(const s of p.secs){n+=(STORE.comments[s.id]||[]).length;}return n;
 }
-// 脚本の発言は「フィードバック」ではないので数に入れない
-function totalFeedback(){let n=0;for(const k in STORE.comments)if(!isScrKey(k))n+=STORE.comments[k].length;for(const k in STORE.reactions)if(STORE.reactions[k])n++;return n;}
+// 脚本の発言とタイムラインの編集は「フィードバック」ではないので数に入れない
+function totalFeedback(){let n=0;for(const k in STORE.comments)if(!isScrKey(k)&&!isTlKey(k))n+=STORE.comments[k].length;for(const k in STORE.reactions)if(STORE.reactions[k])n++;return n;}
 
 /* ---------- nav ---------- */
 function renderNav(){
@@ -1214,6 +1408,7 @@ function renderPage(){
   const el=document.getElementById('page');
   if(curPage==='feedback'){renderFeedback(el);return;}
   const p=DB.find(x=>x.id===curPage)||DB[0];
+  if(p.flow){renderFlow(el,p);return;}
   if(p.chat){renderChat(el,p);return;}
   let html='<div class="phead"><h2>'+p.title+'</h2><p>'+p.desc+'</p></div>';
   for(const s of p.secs){
@@ -1313,17 +1508,43 @@ function delC(id,i){
 function clearAll(){
   if(PROPOSE){
     if(!confirm('未送信の変更をすべて破棄します。公開済みの内容は消えません。よろしいですか?'))return;
-    PENDING=emptyFb();savePending();STORE=mergeFb(BASE,PENDING);render();return;
+    PENDING=emptyFb();savePending();STORE=mergeFb(BASE,PENDING);
+    for(const k in TL_MINE)delete TL_MINE[k];
+    render();return;
   }
   if(confirm('すべてのコメント・リアクションと、書いた脚本を消去します。よろしいですか?')){STORE={comments:{},reactions:{}};save();render();}
 }
+// 進行タイムライン。流れ1本 + 末尾に「まだ実装されていないもの」の抜き出し
+function tlLabel(it){
+  return it.kind==='step'?(it.step===null?'step未定':'step'+it.step):(it.scr||'会話');
+}
+function buildFlowMD(){
+  let md='## 進行タイムライン\n\n';
+  const items=tlOrder().map(tlItem);
+  for(const it of items){
+    if(it.kind==='chap'){md+='\n### '+it.title+'\n\n';continue;}
+    md+='- `'+tlLabel(it)+'` **'+it.title+'**'+(it.kind==='story'?'（会話）':'')
+      +' 〔'+(it.state==='done'?'実装済み':'構想')+'〕'+(it.tent?'〔位置は仮〕':'')+'\n';
+    if(it.note)md+='  - '+it.note+'\n';
+  }
+  const ideas=items.filter(x=>x.kind!=='chap'&&x.state==='idea');
+  if(ideas.length){
+    md+='\n## まだ実装されていないもの（'+ideas.length+'件）\n\n';
+    for(const it of ideas)
+      md+='- `'+tlLabel(it)+'` '+it.title+(it.kind==='story'?'（会話）':'')+(it.note?' … '+it.note:'')+'\n';
+  }
+  return md+'\n';
+}
 function buildMD(){
   const d=new Date();
-  let md='# MINERTIA ストーリーサイト フィードバック ('+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+')\n\n';
+  let md='# MINERTIA ストーリーサイト 書き出し ('+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+')\n\n';
+  md+=buildFlowMD();
   let any=false;
   for(const p of DB){for(const s of p.secs){
     const cms=STORE.comments[s.id]||[];const rea=STORE.reactions[s.id];
-    if(!cms.length&&!rea)continue;any=true;
+    if(!cms.length&&!rea)continue;
+    if(!any)md+='\n# コメント・リアクション\n\n';
+    any=true;
     md+='## ['+s.id+'] '+p.title+' › '+s.h+'\n';
     if(rea)md+='- 反応: '+(rea==='ok'?'OK(承認)':'要変更')+'\n';
     for(const c of cms)md+='- コメント('+c.ts+'): '+c.text.replace(/\n/g,' / ')+'\n';
@@ -1332,8 +1553,7 @@ function buildMD(){
   // 脚本は、追記のあったものだけ本文ごと書き出す
   const scripts=scrList().filter(s=>(STORE.comments[scrKey(s.id)]||[]).length||scrHiddenSet(s.id).size);
   if(scripts.length){
-    any=true;
-    md+='# 脚本\n\n';
+    md+='\n# 脚本\n\n';
     for(const s of scripts){
       md+='## '+s.title+' ('+s.id+(s.builtin?' / 原稿あり':'')+')\n\n';
       for(const l of scrLines(s.id)){
@@ -1344,11 +1564,11 @@ function buildMD(){
       }
     }
   }
-  return any?md:null;
+  return md;   // タイムラインは常にあるので、書き出しが空になることはない
 }
 function exportMD(){
   const md=buildMD();
-  if(!md){alert('フィードバックがまだありません。');return;}
+  if(!md){alert('書き出すものがありません。');return;}
   navigator.clipboard.writeText(md).then(()=>alert('Markdownをコピーしました。Claudeに貼り付けてください。'),
     ()=>{prompt('コピーできない場合は手動で選択してください:',md);});
 }
@@ -1486,6 +1706,315 @@ function scrDel(id,i){
   STORE.comments[key].splice(i,1);
   if(!STORE.comments[key].length)delete STORE.comments[key];
   save();render();
+}
+
+/* ---------- 進行タイムライン(ページ) ---------- */
+let TL_EDIT=null;        // 編集中の項目
+let TL_ADD=null;         // 「＋」を開いている項目(この直後に足す)
+const TL_OPEN={};        // 会話を開いている項目
+const TL_FOLD={};        // 畳んでいる章
+const TL_MINE={};        // このセッションで積んだスナップショット(キーごとに1件)
+
+function attr(s){return esc(String(s)).replace(/"/g,'&quot;');}
+function tlStamp(){
+  // 並びは1手ごとにスナップショットを積むので、分どまりだと同じ時刻が並んでしまう。
+  // 「最新が勝つ」を成立させるため、ここだけ秒まで持つ(文字列比較の順序は変わらない)。
+  const d=new Date(),p=(n)=>String(n).padStart(2,'0');
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '
+    +p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+}
+function tlNewId(){
+  const d=new Date(),p=(n)=>String(n).padStart(2,'0');
+  return 'T'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds());
+}
+function tlPush(key,text){
+  const ts=tlStamp();
+  if(!STORE.comments[key])STORE.comments[key]=[];
+  STORE.comments[key].push({text,ts});
+  if(PROPOSE){
+    if(!PENDING.comments[key])PENDING.comments[key]=[];
+    PENDING.comments[key].push({text,ts});
+  }
+  if(SERVER){
+    fetch(API+'/api/log',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sec:key,text,ts})}).catch(()=>{});
+  }
+  return {text,ts};
+}
+function tlDropComment(key,c){
+  const a=STORE.comments[key]||[];
+  const at=a.findIndex(x=>x.ts===c.ts&&x.text===c.text);
+  if(at<0)return;
+  a.splice(at,1);
+  if(!a.length)delete STORE.comments[key];
+  if(PROPOSE){
+    const p=PENDING.comments[key]||[];
+    const j=p.findIndex(x=>x.ts===c.ts&&x.text===c.text);
+    if(j>=0){p.splice(j,1);if(!p.length)delete PENDING.comments[key];}
+  }
+}
+// スナップショットを1件積む。▲▼ を連打しても履歴が伸びないよう、
+// このセッションで積んだ直前の1件は置き換える。
+// 前回セッション(または送信済み)の分は残るので「1つ戻す」はそこへ戻れる。
+function tlSnap(key,text){
+  if(TL_MINE[key])tlDropComment(key,TL_MINE[key]);
+  TL_MINE[key]=tlPush(key,text);
+  save();render();
+}
+function tlFields(f){
+  // 空欄も必ず書く。書かないと既定(TL)の値が復活してしまい、消したつもりが消えない
+  return Object.keys(f).map(k=>k+'='+String(f[k]===null||f[k]===undefined?'':f[k]).replace(/\n/g,' ')).join('\n');
+}
+function tlSetOrder(ids){tlSnap(TL_ORDER,ids.join('\n'));}
+
+/* --- 並べ替え ---
+   単品は1つ隣と入れ替える(章の境界をまたげば、その章に移る)。
+   章は見出しだけ動かしても意味がないので、章の中身ごと隣の章と入れ替える。 */
+function tlMove(id,dir){
+  const order=tlOrder();
+  const i=order.indexOf(id);
+  if(i<0)return;
+  let a=i,b=i+1,to;
+  if(tlItem(id).kind!=='chap'){
+    if(dir<0&&i===0)return;
+    if(dir>0&&i===order.length-1)return;
+    to=dir<0?i-1:i+2;
+  }else{
+    while(b<order.length&&tlItem(order[b]).kind!=='chap')b++;
+    if(dir<0){
+      if(a===0)return;
+      let k=a-1;while(k>0&&tlItem(order[k]).kind!=='chap')k--;
+      to=k;
+    }else{
+      if(b>=order.length)return;
+      let c=b+1;while(c<order.length&&tlItem(order[c]).kind!=='chap')c++;
+      to=c;
+    }
+  }
+  const seg=order.slice(a,b);
+  const rest=order.slice(0,a).concat(order.slice(b));
+  rest.splice(to>a?to-seg.length:to,0,...seg);
+  tlSetOrder(rest);
+}
+function tlUndo(){
+  const a=(STORE.comments[TL_ORDER]||[]).slice().sort((x,y)=>String(x.ts).localeCompare(String(y.ts)));
+  if(a.length<2&&!(a.length===1&&TL_MINE[TL_ORDER])){alert('戻せる並びがまだありません。');return;}
+  if(!confirm('並びを1つ前の状態に戻します。よろしいですか?'))return;
+  const cur=a[a.length-1],mine=TL_MINE[TL_ORDER];
+  // 自分が積んだ分なら、消せば1つ前が最新に戻る
+  if(mine&&cur.ts===mine.ts&&cur.text===mine.text){
+    tlDropComment(TL_ORDER,mine);delete TL_MINE[TL_ORDER];save();render();return;
+  }
+  tlSetOrder(a[a.length-2].text.split('\n').map(s=>s.trim()).filter(Boolean));
+}
+
+/* --- 追加・削除 --- */
+const TL_TOP='#top';     // 「先頭に足す」を表す目印。項目IDと衝突しない形にしてある
+function tlAddAt(id){TL_ADD=(TL_ADD===id?null:id);render();}
+function tlInsertAt(afterId){
+  if(afterId===TL_TOP)return 0;
+  const i=tlOrder().indexOf(afterId);
+  return i<0?tlOrder().length:i+1;
+}
+function tlInsert(id,at,fields){
+  tlPush(tlKey(id),tlFields(fields));   // 中身を先に積む(並びに載る時点で読めるように)
+  const order=tlOrder();
+  order.splice(at,0,id);
+  TL_ADD=null;TL_EDIT=null;
+  tlSetOrder(order);
+}
+function tlAddStep(afterId){
+  const t=prompt('新しいステップの見出し（例: 採掘の速さを説明する）');
+  if(t===null)return;
+  const title=t.trim();if(!title)return;
+  const order=tlOrder(),at=tlInsertAt(afterId);
+  // 既存の番号は動かさない決まりなので、前後の中間値を振る
+  let prev=null,next=null;
+  for(let i=at-1;i>=0;i--){const s=tlItem(order[i]);if(s.kind==='step'&&s.step!==null){prev=s.step;break;}}
+  for(let i=at;i<order.length;i++){const s=tlItem(order[i]);if(s.kind==='step'&&s.step!==null){next=s.step;break;}}
+  let step,warn='';
+  if(prev===null&&next===null)step=1000;
+  else if(prev===null)step=Math.floor(next/2);
+  else if(next===null)step=prev+1000;
+  else step=Math.floor((prev+next)/2);
+  if(step<=0||(prev!==null&&step<=prev)||(next!==null&&step>=next)){
+    warn='空き番号がありません（前 '+prev+' / 次 '+next+'）。番号は手で決めてください。';
+    step='';
+  }
+  tlInsert(tlNewId(),at,{kind:'step',title,note:warn,state:'idea',step,tent:'0'});
+  if(warn)alert(warn);
+}
+function tlAddStory(afterId){
+  const t=prompt('新しい会話のタイトル（例: 5-1到達 なえかの反応）');
+  if(t===null)return;
+  const title=t.trim();if(!title)return;
+  const d=new Date(),p=(n)=>String(n).padStart(2,'0');
+  const sid='S'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds());
+  scrPush(SCR_INDEX,sid+'\n'+title);    // 脚本ページ側の目録にも載せる。本文はそちらで書く
+  const id=tlNewId();
+  TL_OPEN[id]=true;                     // 空の会話が開いた状態で出る = 次にどこへ書くか分かる
+  tlInsert(id,tlInsertAt(afterId),{kind:'story',title:'',note:'',state:'idea',scr:sid,tent:'0'});
+}
+function tlAddChap(afterId){
+  const t=prompt('新しい章の見出し（例: 第7章 地下水脈）');
+  if(t===null)return;
+  const title=t.trim();if(!title)return;
+  tlInsert(tlNewId(),tlInsertAt(afterId),{kind:'chap',title,note:''});
+}
+function tlRemove(id){
+  if(!confirm('この項目を並びから外します。ページ下部の「外した項目」から戻せます。'))return;
+  TL_EDIT=null;
+  tlSetOrder(tlOrder().filter(x=>x!==id));
+}
+function tlRestore(id){
+  const order=tlOrder(),def=TL.map(t=>t.id),di=def.indexOf(id);
+  let at=order.length;
+  // 既定の並びで前にいた項目の後ろへ返す。見つからなければ末尾
+  for(let i=di-1;i>=0;i--){const j=order.indexOf(def[i]);if(j>=0){at=j+1;break;}}
+  order.splice(at,0,id);
+  tlSetOrder(order);
+}
+
+/* --- 編集 --- */
+function tlEdit(id){TL_EDIT=(TL_EDIT===id?null:id);render();}
+function tlSave(id){
+  const it=tlItem(id);
+  const g=(k)=>document.getElementById('tle-'+k);
+  const f={kind:it.kind,
+           title:(g('title')?g('title').value:it.title).trim(),
+           note:(g('note')?g('note').value:'').trim()};
+  if(it.kind!=='chap'){
+    f.state=g('state')?g('state').value:it.state;
+    f.tent=(g('tent')&&g('tent').checked)?'1':'0';
+    if(it.kind==='step')f.step=g('step')?g('step').value.trim():'';
+    if(it.kind==='story')f.scr=it.scr||'';
+  }
+  TL_EDIT=null;
+  tlSnap(tlKey(id),tlFields(f));
+}
+function tlEditHtml(it){
+  const opt=(v,t)=>'<option value="'+v+'"'+(it.state===v?' selected':'')+'>'+t+'</option>';
+  let h='<div class="tl-edit">'
+    +'<label>見出し</label><input id="tle-title" value="'+attr(it.kind==='story'?(tlLatest(tlKey(it.id))?tlParse(tlLatest(tlKey(it.id)).text).title||'':''):it.title)+'"'
+    +(it.kind==='story'?' placeholder="'+attr(it.title)+'（空欄なら脚本のタイトル）"':'')+'>'
+    +'<label>一言メモ</label><textarea id="tle-note">'+esc(it.note||'')+'</textarea>';
+  if(it.kind!=='chap'){
+    h+='<div class="row">'
+      +'<select id="tle-state">'+opt('done','実装済み')+opt('idea','構想')+'</select>'
+      +(it.kind==='step'?'<input id="tle-step" placeholder="stepId（例 15750）" value="'+attr(it.step===null?'':it.step)+'">':'')
+      +'<label style="flex:none"><input type="checkbox" id="tle-tent" style="width:auto"'+(it.tent?' checked':'')+'> 位置は仮</label>'
+      +'</div>';
+    if(it.kind==='step')h+='<p class="note">既存の stepId は変えないこと。セーブデータに載っているので、'
+      +'チュートリアル途中のプレイヤーが別の場所へ飛びます。</p>';
+  }
+  return h+'<div class="btns"><button class="ok" onclick="tlSave(\''+it.id+'\')">保存</button>'
+    +'<button class="no" onclick="tlEdit(null)">取り消し</button>'
+    +'<button class="rm" onclick="tlRemove(\''+it.id+'\')">並びから外す</button></div></div>';
+}
+
+/* --- 描画 --- */
+function tlToggle(id){if(TL_OPEN[id])delete TL_OPEN[id];else TL_OPEN[id]=true;render();}
+function tlFoldChap(id){if(TL_FOLD[id])delete TL_FOLD[id];else TL_FOLD[id]=true;render();}
+function tlToggleAll(){
+  const open=Object.keys(TL_OPEN).length>0;
+  for(const k in TL_OPEN)delete TL_OPEN[k];
+  if(!open)for(const id of tlOrder()){if(tlItem(id).kind==='story')TL_OPEN[id]=true;}
+  render();
+}
+// 会話の中身。本文の正本は脚本チャットなので、ここでは読むだけ
+function tlPreview(it){
+  if(!it.scr)return '<div class="tl-prev"><p class="note">脚本が紐づいていません。</p></div>';
+  const lines=scrLines(it.scr);
+  return '<div class="tl-prev">'
+    +(lines.length?'<div class="chat">'+lines.map(l=>scrMsgHtml(it.scr,l,false)).join('')+'</div>'
+                  :'<div class="empty">まだ発言がありません。</div>')
+    +'<p class="note">本文を書く・直すのは <a href="#sc-write" onclick="go(\'sc-write\')">✎ 脚本を書く</a> ページです。</p></div>';
+}
+function tlAddRow(afterId){
+  const a='\''+afterId+'\'';
+  return '<div class="tl-add">'
+    +'<button onclick="tlAddStory('+a+')">＋ 会話</button>'
+    +'<button onclick="tlAddStep('+a+')">＋ ステップ</button>'
+    +'<button onclick="tlAddChap('+a+')">＋ 章</button>'
+    +'<button onclick="tlAddAt('+a+')">やめる</button>'
+    +'</div>';
+}
+function tlItemHtml(it,i,n){
+  const tag=it.state==='done'?'<span class="tl-tag k">実装済み</span>':'<span class="tl-tag t">構想</span>';
+  const tent=it.tent?'<span class="tl-tag w">位置は仮</span>':'';
+  const no=it.kind==='step'?(it.step===null?'—':String(it.step)):(it.scr?esc(it.scr):'会話');
+  const open=!!TL_OPEN[it.id];
+  return '<div class="tl-item '+it.state+' '+it.kind+'">'
+    +'<div class="tl-no">'+no+'</div>'
+    +'<div class="tl-body">'
+      +'<div class="tl-h"><span>'+esc(it.title)+'</span>'+tag+tent+'</div>'
+      +(it.note?'<div class="tl-note">'+esc(it.note)+'</div>':'')
+      +(it.kind==='story'&&open?tlPreview(it):'')
+      +(TL_EDIT===it.id?tlEditHtml(it):'')
+    +'</div>'
+    +'<div class="tl-ops">'
+      +'<button title="上へ" onclick="tlMove(\''+it.id+'\',-1)"'+(i===0?' disabled':'')+'>▲</button>'
+      +'<button title="下へ" onclick="tlMove(\''+it.id+'\',1)"'+(i===n-1?' disabled':'')+'>▼</button>'
+      +(it.kind==='story'?'<button title="会話を読む" onclick="tlToggle(\''+it.id+'\')">'+(open?'▾':'▸')+'</button>':'')
+      +'<button title="編集" onclick="tlEdit(\''+it.id+'\')">✎</button>'
+      +'<button title="この下に足す" onclick="tlAddAt(\''+it.id+'\')">＋</button>'
+    +'</div></div>';
+}
+function renderFlow(el,p){
+  const order=tlOrder();
+  const items=order.map(tlItem);
+  const nStep=items.filter(x=>x.kind==='step').length;
+  const nStory=items.filter(x=>x.kind==='story').length;
+  const nIdea=items.filter(x=>x.kind!=='chap'&&x.state==='idea').length;
+
+  let html='<div class="phead"><h2>'+p.title+'</h2><p>'+p.desc+'</p></div>';
+  html+='<div class="tl-bar">'
+    +'<button onclick="tlUndo()">⟲ 並びを1つ戻す</button>'
+    +'<button onclick="tlToggleAll()">'+(Object.keys(TL_OPEN).length?'会話を閉じる':'会話をすべて開く')+'</button>'
+    +'<button onclick="tlAddAt(\''+TL_TOP+'\')">＋ 先頭に足す</button>'
+    +'<span class="stat">ステップ '+nStep+' / 会話 '+nStory+'　構想 '+nIdea+'</span>'
+    +'</div>';
+  html+='<div class="legend">'
+    +'<span class="lg"><span class="dot" style="background:var(--k-line)"></span>実装済み … 今のゲームに入っている</span>'
+    +'<span class="lg"><span class="dot" style="background:var(--t-ink)"></span>構想 … まだ入っていない</span>'
+    +'<span class="lg"><span class="dot" style="background:#6b3a40"></span>位置は仮 … 根拠が弱く、動かす前提</span>'
+    +'</div>';
+  if(TL_ADD===TL_TOP)html+=tlAddRow(TL_TOP);
+
+  let folded=false;
+  for(let i=0;i<items.length;i++){
+    const it=items[i];
+    if(it.kind==='chap'){
+      folded=!!TL_FOLD[it.id];
+      html+='<div class="tl-chap">'
+        +'<h3>'+esc(it.title)+'</h3><span class="rule"></span>'
+        +'<button onclick="tlFoldChap(\''+it.id+'\')">'+(folded?'▸ ひらく':'▾ たたむ')+'</button>'
+        +'<button onclick="tlMove(\''+it.id+'\',-1)" title="章ごと上へ">▲</button>'
+        +'<button onclick="tlMove(\''+it.id+'\',1)" title="章ごと下へ">▼</button>'
+        +'<button onclick="tlEdit(\''+it.id+'\')">✎</button>'
+        +'<button onclick="tlAddAt(\''+it.id+'\')">＋</button>'
+        +'</div>';
+      if(TL_EDIT===it.id)html+='<div class="tl-item chap"><div class="tl-body">'+tlEditHtml(it)+'</div></div>';
+      if(TL_ADD===it.id)html+=tlAddRow(it.id);
+      continue;
+    }
+    if(folded)continue;
+    html+=tlItemHtml(it,i,items.length);
+    if(TL_ADD===it.id)html+=tlAddRow(it.id);
+  }
+
+  const off=tlDropped();
+  if(off.length){
+    html+='<div class="tl-off"><h3>外した項目（'+off.length+'）</h3>';
+    for(const it of off){
+      const no=it.kind==='step'?(it.step===null?'—':String(it.step)):(it.scr?esc(it.scr):'会話');
+      html+='<div class="tl-item"><div class="tl-no">'+no+'</div>'
+        +'<div class="tl-body"><div class="tl-h"><span>'+esc(it.title)+'</span></div></div>'
+        +'<div class="tl-ops"><button class="wide" onclick="tlRestore(\''+it.id+'\')">戻す</button></div></div>';
+    }
+    html+='</div>';
+  }
+  el.innerHTML=html;
 }
 
 /* ---------- dialogue mock player ---------- */
