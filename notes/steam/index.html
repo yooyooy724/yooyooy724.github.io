@@ -219,7 +219,7 @@
       本文は、フェーズ1で決めたことと、フェーズ2以降にチームが行う作業を共有するための資料である。
       議論の経緯ではなく、現時点の結論と実行順を記載する。
     </p>
-    <p class="meta">最終更新: 2026-07-31　／　対象: 企画・Model・ViewModel・Unity View・リリース作業</p>
+    <p class="meta">最終更新: 2026-08-19　／　対象: 企画・Model・ViewModel・Unity View・リリース作業</p>
 
     <div class="summary">
       <strong>結論</strong>
@@ -229,8 +229,8 @@
 
     <dl class="current">
       <dt>資料の構成</dt><dd><b>本書</b>（結論と実行順）／ <a href="spec.html">詳細仕様</a>（項目別の根拠と経緯）／ <a href="#phase2">指示書</a>（実装手順）の3層</dd>
-      <dt>現在地</dt><dd>フェーズ2。<a href="#phase2">指示書8本</a>をすべて公開。レビュー待ち</dd>
-      <dt>次工程</dt><dd>指示書のレビューと、Standalone検証ビルド（<a href="instructions/02-steamworks.html">指示書02</a>）の着手</dd>
+      <dt>現在地</dt><dd>フェーズ2。<a href="#phase2">指示書8本</a>のレビューが完了し、2026-08-19 に着手順まで確定</dd>
+      <dt>次工程</dt><dd>Standalone検証ビルド（<a href="instructions/02-steamworks.html">指示書02</a>）と二重起動ガードの着手。AppID取得は今週中</dd>
       <dt>クラウドセーブ</dt><dd>Firestoreを正本とし、Steam Cloudへ自動複製</dd>
       <dt>最初の実装</dt><dd>Standalone検証ビルドとプラットフォーム抽象化</dd>
     </dl>
@@ -275,11 +275,18 @@
             <tr><td>対応OS</td><td>Windows / macOS 同時対応</td><td>macOS公証、Universal Binary、OS別Depotと実機確認を含める。</td></tr>
             <tr><td>販売方式</td><td>F2P + Steam向けDLC</td><td>モバイル課金をそのまま移植せず、Steamの商品として設計し直す。</td></tr>
             <tr><td>モバイル版</td><td>継続して並行運用</td><td>Steam対応で既存モバイル版を壊さない。同じドメインを使う。</td></tr>
-            <tr><td>品質と時期</td><td>期限より完成度を優先</td><td>日程だけを理由に設計やQAを削らない。</td></tr>
+            <tr><td>品質と時期</td><td>期限なし。完成度を優先</td><td>日程だけを理由に設計やQAを削らない。「9月末」はストアページ公開とWishlist開始の目標であり、製品リリース日ではない。</td></tr>
             <tr><td>1.0スコープ</td><td>原則すべて対応</td><td>横長・PC操作・実績・リッチプレゼンス・多言語ストアを含める。</td></tr>
             <tr><td>1.0の例外</td><td>QWERTショートカットとフレンド内リーダーボード</td><td>初回リリース後の追加対象として管理する。</td></tr>
             <tr><td>開発単位</td><td>小さなPRへ分解</td><td>1PRで確認できる変更量とし、依存順に統合する。</td></tr>
-            <tr><td>AppID</td><td><code>3217600</code>は旧作用。新規取得</td><td>Steam Directと審査を実装と並行して開始する。</td></tr>
+            <tr><td>AppID</td><td><code>3217600</code>は旧作用。新規取得</td><td>Steam Directと審査を実装と並行して開始する。取得は今週中に着手する。</td></tr>
+            <tr><td>セーブ暗号化</td><td>目的は「カジュアルな改ざんの抑止」まで</td><td>鍵は埋め込みのためファイル改ざん自体は防げない。鍵は全ユーザー共通の固定値とし、ローカル3経路（<code>local_save</code> / <code>manual_backup</code> / <code>cloud_save</code>）だけを暗号化する。</td></tr>
+            <tr><td>クラウドの中身</td><td>復号済みの平文JSONのまま</td><td>既存のクラウド経路・Firestore・NetherCompanionを変更しない。</td></tr>
+            <tr><td>移行後の平文</td><td>永久に残す</td><td>移行済みフラグ以降は平文へフォールバックしない。手動復旧の余地だけを残す。</td></tr>
+            <tr><td>二重起動</td><td>2つ目は起動しない</td><td>Steamに任せず、ゲーム側でガードする。前面化は行わない。</td></tr>
+            <tr><td>プランB</td><td>保険を作らない</td><td>審査で拒否されたときに考える。切替のための作り込みを先行させない。</td></tr>
+            <tr><td>横長の代表画面</td><td>Equipment</td><td>タブ・リスト・詳細が揃い、Nether / Relic / Shopへ同じ型を展開できる。</td></tr>
+            <tr><td>Standalone識別子</td><td><code>com.idlesystem.IdleMinertia</code></td><td>旧作の<code>com.idlesystem.IdleSphere</code>が残っている。実AppID取得後にまとめて変更する。</td></tr>
           </tbody>
         </table>
       </div>
@@ -333,18 +340,18 @@
           <tbody>
             <tr>
               <td>セーブとサーバー</td>
-              <td><ul><li>AES暗号化を有効化</li><li>平文セーブからの移行を必須化</li><li>Firestoreをクラウドセーブの正本とする</li><li>Steam版は確定セーブをSteam Cloud APIへ自動複製する</li><li>Apple / Google / Steam認証は連携・セーブ統合を行わない</li><li>FirestoreとSteam Cloudが食い違った場合はユーザーが選択する</li><li>NetherCompanionはFirestore RESTを継続</li></ul></td>
-              <td>既存CloudSaveを流用し、Steam認証、Steam Cloud複製、競合時の復旧処理を追加する。</td>
+              <td><ul><li>ローカル3経路（<code>local_save</code> / <code>manual_backup</code> / <code>cloud_save</code>）を暗号化</li><li>クラウドへ送る中身は平文JSONのまま</li><li>既存の暗号化実装は使わず作り直す</li><li>平文セーブからの移行を必須化。移行後も平文を永久に残す</li><li>二重起動は2つ目を起動させない</li><li>Firestoreをクラウドセーブの正本とする</li><li>Steam版は確定セーブをSteam Cloud APIへ自動複製する</li><li>Apple / Google / Steam認証は連携・セーブ統合を行わない</li><li>FirestoreとSteam Cloudが食い違った場合はユーザーが選択する</li><li>NetherCompanionはFirestore RESTを継続</li></ul></td>
+              <td>二重起動ガードを先に入れ、次に暗号化移行。既存CloudSaveを流用し、Steam認証、Steam Cloud複製、競合時の復旧処理を追加する。</td>
             </tr>
             <tr>
               <td>マネタイズ</td>
-              <td><ul><li>本線はデイリーダイヤ付与型DLC</li><li>未受領分は失効させない</li><li>RemoveAds効果を4分類</li><li>不成立時は買い切り化</li></ul></td>
-              <td>DLC所有権、付与履歴、二重付与防止、プランB切替値を設計する。</td>
+              <td><ul><li>本線はデイリーダイヤ付与型DLC</li><li>未受領分は失効させない</li><li>RemoveAds効果を4分類</li><li>不成立時に備えた保険は作らない</li></ul></td>
+              <td>DLC所有権、付与履歴、二重付与防止を設計する。</td>
             </tr>
             <tr>
               <td>横長UI</td>
               <td><ul><li>器はVertical / Horizontalで分離</li><li>表示部品は共有</li><li>V/Hの<code>name</code>集合を自動検証</li><li>リサイズ追従まで対応</li></ul></td>
-              <td>代表画面を1つ選び、横長UXMLとリサイズ追従を試作する。</td>
+              <td>代表画面Equipmentで横長UXMLとリサイズ追従を試作する。</td>
             </tr>
             <tr>
               <td>PC操作</td>
@@ -353,7 +360,7 @@
             </tr>
             <tr>
               <td>Steam機能</td>
-              <td><ul><li>実績30〜60件、判定はDomain</li><li>Rich PresenceはCave名 + 深度</li><li>Overlay中も進行を継続</li><li>Leaderboardは初回後</li></ul></td>
+              <td><ul><li>実績30件以上、判定はDomain</li><li>Rich PresenceはCave名 + 深度</li><li>Overlay中も進行を継続</li><li>Leaderboardは初回後</li></ul></td>
               <td>Steamworks.NET初期化、実績ID、翻訳キー、同期タイミングを定義する。</td>
             </tr>
             <tr>
@@ -416,7 +423,7 @@
             <tr><td>2</td><td class="status done">公開中</td><td><a href="instructions/02-steamworks.html">02 Standalone検証とSteamworks初期化</a></td><td><a href="spec.html#platform">02 プラットフォーム抽象化</a> ／ <a href="spec.html#steamworks">Steamworks 管理画面</a></td><td>SDK、Define、起動失敗時の挙動を固定する。Standalone検証ビルドを含む。</td></tr>
             <tr><td>3</td><td class="status done">公開中</td><td><a href="instructions/03-save.html">03 セーブの暗号化・移行とクラウドセーブ</a></td><td><a href="spec.html#save">04 セーブとクラウド</a></td><td>既存ユーザーを壊さずAESへ移行し、Steam Cloudへ複製する。</td></tr>
             <tr><td>4</td><td class="status done">公開中</td><td><a href="instructions/05-layout.html">05 横長レイアウト</a></td><td><a href="spec.html#display">05 横長レイアウトと PC 操作</a></td><td>V/H分離と部品共有の成立性を1画面で確認する。</td></tr>
-            <tr><td>5</td><td class="status done">公開中</td><td><a href="instructions/04-monetize.html">04 マネタイズ</a></td><td><a href="spec.html#money">03 マネタイズ</a></td><td>DLC所有権、付与履歴、二重付与防止、プランB切替を定める。</td></tr>
+            <tr><td>5</td><td class="status done">公開中</td><td><a href="instructions/04-monetize.html">04 マネタイズ</a></td><td><a href="spec.html#money">03 マネタイズ</a></td><td>DLC所有権、付与履歴、二重付与防止を定める。</td></tr>
             <tr><td>6</td><td class="status done">公開中</td><td><a href="instructions/06-input.html">06 PC操作</a></td><td><a href="spec.html#display">05 横長レイアウトと PC 操作</a></td><td>入力競合を整理し、連続マージAPIをDomainへ置く。</td></tr>
             <tr><td>7</td><td class="status done">公開中</td><td><a href="instructions/07-features.html">07 Steam機能</a></td><td><a href="spec.html#features">06 Steam 機能</a></td><td>実績ID、翻訳キー、同期タイミングを定義する。</td></tr>
             <tr><td>8</td><td class="status done">公開中</td><td><a href="instructions/08-release.html">08 ビルド・配信とQA</a></td><td><a href="spec.html#build">ビルドと配信</a> ／ <a href="spec.html#qa">QA と法務</a> ／ <a href="spec.html#steamworks">Steamworks 管理画面</a></td><td>Depot、公証、多言語、チェックリストを固定する。</td></tr>
@@ -425,7 +432,8 @@
       </div>
       <p class="note">
         <strong>順番について:</strong>
-        まず 02（Standalone検証）と 01 から着手する。03〜08 は、01の境界と02の検証結果が出てからが本番になる。
+        2026-08-19 に着手順を確定した。<b>02 → 二重起動ガード → 01 → 暗号化移行 → 05／06 → 04 → 07 → 08</b>。
+        二重起動ガードと暗号化移行はどちらも 03 の中身だが、二重起動ガードは 01 を待たずに着手できる。
         02・03・07・08 は<b>あなたの参加が必須</b>（実機確認・実績承認・Steamworks手続き）。
       </p>
     </section>
@@ -434,13 +442,14 @@
       <h2>5. 実装順序</h2>
       <p>依存関係が強い順に、次の流れで進める。</p>
       <ol class="steps">
-        <li><div><b>Standalone検証ビルドを通す</b>既存DLLと主要機能がWindows / macOS向けビルドで動くか確認する。</div></li>
-        <li><div><b>AppID取得を並行して開始する</b>Steam Direct、審査、ストア準備を実装の待ち時間に進める。</div></li>
-        <li><div><b>Steamworks.NETとDefineを整理する</b>初期化、失敗時のフォールバック、ネイティブSDK境界を確定する。</div></li>
-        <li><div><b>PC基本設定とプラットフォーム境界を作る</b>解像度・終了処理・6インターフェースを先に整える。</div></li>
-        <li><div><b>セーブ、報酬、Steam機能を実装する</b>移行リスクが高い領域から小さなPRで統合する。</div></li>
-        <li><div><b>横長UIとPC操作を段階展開する</b>代表画面で成立性を確認後、全画面へ広げる。</div></li>
-        <li><div><b>商品、macOS、ストア、QAを仕上げる</b>DLC・公証・多言語・長時間動作を含めてリリース品質へ持っていく。</div></li>
+        <li><div><b><a href="instructions/02-steamworks.html">指示書02</a> Standalone検証とSteamworks初期化</b>既存DLLと主要機能がWindows / macOS向けビルドで動くか確認する。AppID取得も今週中に着手する。</div></li>
+        <li><div><b>二重起動ガード（<a href="instructions/03-save.html">指示書03</a> の一部）</b>指示書01を待たずに着手できる。セーブ破損の筆頭原因を先に塞ぐ。</div></li>
+        <li><div><b><a href="instructions/01-platform.html">指示書01</a> プラットフォーム抽象化</b>6つの境界を最初にまとめて作る。</div></li>
+        <li><div><b>暗号化移行（<a href="instructions/03-save.html">指示書03</a> の本体）</b>ローカル3経路を暗号化し、平文からの移行を通す。全工程で最も慎重に進める。</div></li>
+        <li><div><b><a href="instructions/05-layout.html">指示書05</a>／<a href="instructions/06-input.html">06</a> 横長レイアウトとPC操作</b>代表画面 Equipment で型を確立してから全画面へ広げる。</div></li>
+        <li><div><b><a href="instructions/04-monetize.html">指示書04</a> マネタイズ</b>DLC所有権と付与ロジックを実装する。プランBの保険は作らない。</div></li>
+        <li><div><b><a href="instructions/07-features.html">指示書07</a> Steam機能</b>実績30件、リッチプレゼンス、オーバーレイを入れる。</div></li>
+        <li><div><b><a href="instructions/08-release.html">指示書08</a> ビルド・配信とQA</b>Depot、公証、多言語、チェックリストを仕上げてリリース品質へ持っていく。</div></li>
       </ol>
     </section>
 
@@ -451,8 +460,8 @@
         <table>
           <thead><tr><th>状態</th><th>作業</th><th>完了条件</th></tr></thead>
           <tbody>
-            <tr><td class="status pending">レビュー待ち</td><td><a href="#phase2">指示書8本</a>をレビューする</td><td>各ページのコメントが解消され、着手順が確定している。</td></tr>
-            <tr><td class="status done">着手可能</td><td>外部調査の担当を置く</td><td>AppID、macOS公証、Steamworks設定、ストア審査の担当と記録先が決まっている。</td></tr>
+            <tr><td class="status done">完了</td><td><a href="#phase2">指示書8本</a>をレビューする</td><td>2026-08-19 のレビューで着手順まで確定した。</td></tr>
+            <tr><td class="status done">着手可能</td><td>外部調査の担当を置く</td><td>AppID、macOS公証、Steamworks設定、ストア審査の担当と記録先が決まっている。<b>AppID取得は今週中に着手する。</b></td></tr>
             <tr><td class="status done">着手可能</td><td><a href="instructions/02-steamworks.html">Standalone検証ビルド</a>を通す</td><td>既存DLLがWindows / macOSビルドで動くか判明している。</td></tr>
           </tbody>
         </table>

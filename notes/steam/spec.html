@@ -240,6 +240,25 @@ const DB = [
   <tr><td>Steam アップロード</td><td><b>手動でよい</b></td><td>Steam Guard の非対話自動化は今回行わない → <a href="#build" onclick="go('build')">ビルド</a></td></tr>
   <tr><td>ストアページ言語</td><td><b>主要7言語</b></td><td>英・日・中・韓・独・仏・西 → <a href="#qa" onclick="go('qa')">QA</a></td></tr>
   <tr><td>企画サイト</td><td><b>フェーズ2以降も継続</b></td><td>決定だけでなく実装進捗の共有にも使用 → <a href="#roadmap" onclick="go('roadmap')">工程</a></td></tr></table>
+  <h4>2026-08-19 に確定したもの</h4>
+  <p class="note"><b>フェーズ2の指示書レビューで確定したもの。</b>上の表を上書きしている項目が含まれる。食い違ったら<b>この表が新しい</b>。</p>
+  <table><tr><th>論点</th><th>決定</th><th>効いてくる先</th></tr>
+  <tr><td>リリース時期</td><td><b>期限なし・品質優先が正本</b>。「9月末」はストアページ公開・Wishlist 開始の目標に読み替え、製品リリースは未定</td><td>プロモーション側の固定前提と食い違っていたため解消</td></tr>
+  <tr><td>暗号化の目的</td><td><b>「カジュアルな改ざんの抑止」まで</b>。鍵は埋め込みのため、ファイル改ざん自体は防げない</td><td>「一切できないように」は原理的に不可能と確認。HMAC は却下 &rarr; <a href="#save" onclick="go('save')">04</a></td></tr>
+  <tr><td>暗号化の鍵</td><td><b>全ユーザー共通の固定ランダム値</b>。端末ごとは却下</td><td>端末ごとは「鍵を失うと全損」の新経路を作るため &rarr; <a href="#save" onclick="go('save')">04</a></td></tr>
+  <tr><td>クラウドの中身</td><td><b>復号済み平文 JSON のまま</b>。暗号化はローカルのみ</td><td>既存のクラウド経路・Firestore・NetherCompanion を壊さない &rarr; <a href="#save" onclick="go('save')">04</a></td></tr>
+  <tr><td>暗号化の範囲</td><td>ローカル<b>3経路すべて</b>(<code>local_save</code> / <code>manual_backup</code> / <code>cloud_save</code>)</td><td>1つでも平文だと抜け道になる &rarr; <a href="#save" onclick="go('save')">04</a></td></tr>
+  <tr><td>移行後の平文</td><td><b>永久に残す</b>。ただし移行済みフラグ以降は平文へフォールバックしない</td><td>消して落とす抜け道を塞ぎつつ、手動復旧の余地を残す &rarr; <a href="#save" onclick="go('save')">04</a></td></tr>
+  <tr><td>モバイルの切替</td><td><b>1リリースで読み書きとも切り替える</b></td><td>2段階は却下。平文が残るので旧版でも読める &rarr; <a href="#save" onclick="go('save')">04</a></td></tr>
+  <tr><td>既存の暗号化実装</td><td><b>捨てる</b>。ドメイン側にバイト列変換の口を1つ作る</td><td>既存実装はアトミック書き込み・変更検知・復旧を持たない &rarr; <a href="#save" onclick="go('save')">04</a></td></tr>
+  <tr><td>二重起動</td><td><b>2つ目は起動しない</b>。前面化はしない。Steam に任せずゲーム側にガード</td><td>Steam の保護は exe 直起動に効かない &rarr; <a href="#save" onclick="go('save')">04</a></td></tr>
+  <tr><td>6つの境界</td><td><b>最初にまとめて作る</b></td><td>各インターフェースは「いま呼ばれている操作だけ」を写す &rarr; <a href="#platform" onclick="go('platform')">02</a></td></tr>
+  <tr><td>横長の代表画面</td><td><b>Equipment</b></td><td>タブ + リスト + 詳細が揃い、Nether / Relic / Shop へ機械的に展開できる &rarr; <a href="#display" onclick="go('display')">05</a></td></tr>
+  <tr><td>プランB</td><td><b>保険を作らない</b>。拒否されたらそのとき考える</td><td>指示書04 の完了条件から切替の説明が外れる &rarr; <a href="#money" onclick="go('money')">03</a></td></tr>
+  <tr><td>実績</td><td><b>30件</b>(下限) + テンプレート量産</td><td>アイコンは自作 &rarr; <a href="#features" onclick="go('features')">06</a></td></tr>
+  <tr><td>Standalone の識別子</td><td><code>com.idlesystem.IdleSphere</code> &rarr; <b><code>com.idlesystem.IdleMinertia</code></b></td><td>旧作のものが残っていた。実 AppID 取得後にまとめて変更 &rarr; <a href="#steamworks" onclick="go('steamworks')">Steamworks</a></td></tr>
+  <tr><td>AppID 取得</td><td><b>今週中に着手</b></td><td>スケジュールの起点 &rarr; <a href="#steamworks" onclick="go('steamworks')">Steamworks</a></td></tr>
+  <tr><td>着手順</td><td><b>02 &rarr; 二重起動ガード &rarr; 01 &rarr; 暗号化移行 &rarr; 05／06 &rarr; 04 &rarr; 07 &rarr; 08</b></td><td>&rarr; <a href="#roadmap" onclick="go('roadmap')">工程</a></td></tr></table>
   <p class="note"><b>未決のまま残っているもの:</b> クラウドセーブ方式、価格設定(調査待ち)、レールに何を載せるか、Shop / Relic / Nether の横長仕様。<br>
   <span class="ng">確認したいこと:</span> ①「0.1 には含めない」の 0.1 が指すもの(→ <a href="#feature" onclick="go('feature')">06</a>) ②「継続的にダイヤが付与される権利」を Valve が通貨販売とみなすか(→ <a href="#money" onclick="go('money')">03</a>)</p>
   <h4>当初からの前提</h4>
