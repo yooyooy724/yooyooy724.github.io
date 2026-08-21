@@ -51,7 +51,7 @@ const works: Record<string, Work> = {
     id: "minertia",
     logo: "/icon-idle-minertia.webp",
     tone: "dark",
-    chapterLabel: "2025 - 現在",
+    chapterLabel: "2025.01 -",
     eyebrow: "放置ゲーム × ローグライク × 非同期マルチプレイ",
     title: "Idle Minertia",
     description:
@@ -134,7 +134,7 @@ const works: Record<string, Work> = {
     id: "sphere",
     logo: "/icon-idle-sphere.webp",
     tone: "",
-    chapterLabel: "2024 - 2025",
+    chapterLabel: "2024.01 - 2025.01",
     eyebrow: "放置ゲーム × インフレーション",
     title: "Idle Sphere",
     description:
@@ -187,7 +187,7 @@ const works: Record<string, Work> = {
     id: "spiral",
     logo: "/icon-idle-spiral.webp",
     tone: "tint",
-    chapterLabel: "2022 - 2024",
+    chapterLabel: "2022.09 - 2024.01",
     eyebrow: "放置・クリッカーゲーム × 数学",
     title: "Idle Spiral",
     description:
@@ -270,7 +270,7 @@ const careerTimeline = [
   },
   {
     phase: "ゲーム開発 4年目",
-    date: "2026 - 現在",
+    date: "2026.01 -",
     title: "リリース後の継続開発",
     detail: "Steam版への移植を準備しながら、アップデートと改善を継続している。",
     areas: [],
