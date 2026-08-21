@@ -5,15 +5,15 @@ import HeroSketch from "./HeroSketch";
 // public/ の画像はViteのbase（/yayu_portfolio/）配下へ配置される。
 const asset = (path: string) => import.meta.env.BASE_URL + path.replace(/^\//, "");
 
-// 概要は時間軸上の一点ではないので、時系列の章とは分けて扱う。
-const overview = { id: "overview", label: "概要" };
+// 経歴は時間軸上の一点ではないので、時系列の章とは分けて扱う。
+const overview = { id: "overview", label: "経歴" };
 
 // 章は新しい順に並べる。読み進めるほど過去へさかのぼる。
 const chapters = [
   { id: "minertia", label: "Idle Minertia", era: "2025" },
   { id: "sphere", label: "Idle Sphere", era: "2024" },
   { id: "spiral", label: "Idle Spiral", era: "2022" },
-  { id: "profile", label: "プロフィール", era: "— 2022" },
+  { id: "profile", label: "プロフィール", era: "- 2022" },
 ];
 
 const navigation: { id: string; label: string; era?: string }[] = [
@@ -51,11 +51,11 @@ const works: Record<string, Work> = {
     id: "minertia",
     logo: "/icon-idle-minertia.webp",
     tone: "dark",
-    chapterLabel: "2025 — 現在",
+    chapterLabel: "2025 - 現在",
     eyebrow: "放置ゲーム × ローグライク × 非同期マルチプレイ",
     title: "Idle Minertia",
     description:
-      "カジュアルな遊びやすさと、ローグライク要素による選択・ビルド構築の奥行きを組み合わせ、従来作より幅広いユーザー層へ届けることを目指した放置ゲームです。一般的な放置ゲームでは、周回を重ねるにつれて遊びの中心が次のコンテンツへ移っていきます。Idle Minertiaでは、ゲームをシンプルで遊びやすい状態に保つため、周回後もメインコンテンツの価値が失われない仕組みを採用しました。一方で同じ体験の繰り返しにならないよう、ローグライク要素による選択と組み合わせを取り入れ、周回ごとに異なる体験を生み出しています。さらに、非同期のマルチ協力コンテンツを導入し、他のプレイヤーと協力しながら互いの成長を感じられる体験を加えました。",
+      "カジュアルなIdle要素と、ローグライク要素を組み合わせ、従来作より幅広いユーザー層へ届けることを目指したIdleゲームです。一般的なIdleゲームでは、周回を重ねるにつれて遊びの中心が次のコンテンツへ移っていきます。Idle Minertiaでは、ゲームをシンプルで遊びやすい状態に保つため、周回後もメインコンテンツの価値が失われない工夫をこらしています。その工夫の一つにローグライク要素があり、周回ごとに異なるビルドが出来上がり、ゲームの進行と共にビルドの複雑さも増していきます。さらに、非同期でのマルチ協力コンテンツを導入し、他のプレイヤーと協力しながら互いの成長を感じられる体験も特徴です。",
     facts: [
       { term: "リリース", value: "2025年" },
       { term: "公開先", value: "iOS・Android" },
@@ -114,7 +114,7 @@ const works: Record<string, Work> = {
       { number: "02", field: "表現", title: "アート", detail: "UIとグラフィック、アートアセットを制作。" },
       { number: "03", field: "開発", title: "設計と実装", detail: "ドメイン設計からUnity上の実装までを担当。" },
       { number: "04", field: "運営", title: "コミュニティ運営", detail: "プレイヤーとの接点を持ち、リリース後の運営を継続。" },
-      { number: "05", field: "チーム", title: "チームリーダー", detail: "5人規模のチームで、タスク設計、割り振り、進行確認を担当。" },
+      { number: "05", field: "チーム", title: "チームリーダー", detail: "1〜4人規模のチームで、タスク設計、割り振り、進行確認を担当。" },
     ],
   },
 
@@ -122,7 +122,7 @@ const works: Record<string, Work> = {
     id: "sphere",
     logo: "/icon-idle-sphere.webp",
     tone: "",
-    chapterLabel: "2024 — 2025",
+    chapterLabel: "2024 - 2025",
     eyebrow: "放置ゲーム × インフレーション",
     title: "Idle Sphere",
     description:
@@ -187,7 +187,7 @@ const works: Record<string, Work> = {
     id: "spiral",
     logo: "/icon-idle-spiral.webp",
     tone: "tint",
-    chapterLabel: "2022 — 2024",
+    chapterLabel: "2022 - 2024",
     eyebrow: "放置・クリッカーゲーム × 数学",
     title: "Idle Spiral",
     description:
@@ -242,35 +242,35 @@ const works: Record<string, Work> = {
 const careerTimeline = [
   {
     phase: "学生時代",
-    date: "2016 — 2022",
+    date: "2016 - 2022",
     title: "人と空間への関心",
-    detail: "認知科学や教育工学を中心に学ぶ。空間認知を題材にしたボードゲームの開発や、VRデバイスを用いた空間描画について研究。",
+    detail: "認知科学への関心を強め、大学の授業や独学で学ぶ。特に、空間認知や運動主体感について学ぶ。教育工学の研究室に所属し、空間認知を題材にしたボードゲームの開発や、VRデバイスを用いた空間描画について研究する。",
     areas: [],
   },
   {
     phase: "ゲーム開発 1年目",
-    date: "2022.09 —",
-    title: "Idle Spiral",
-    detail: "未経験の状態から、UI・グラフィックを中心にゲーム開発の実務を始める。描画パイプラインや低レベルAPIを独学で習得し、共同開発を通じて、基本的なデザインパターン、ソフトウェアアーキテクチャ、バージョン管理についても学ぶ。",
+    date: "2022.09 -",
+    title: "『Idle Spiral』制作に参加",
+    detail: "実務経験のない状態からゲーム開発の実務を始める。3人という小規模なチームの中で、UI・グラフィックの実装を担当する。この経験から、リーダブルコード、デザインパターン、アーキテクチャ、バージョン管理などの基本的なことやグラフィック技術を学ぶ。",
     areas: ["グラフィック", "UI", "一部ゲームデザイン"],
   },
   {
     phase: "ゲーム開発 2年目",
-    date: "2024.01 —",
-    title: "Idle Sphere",
-    detail: "グラフィックの表現品質を高めるため、独自のパーティクルシステムを開発・採用。技術選定やプロジェクト全体の設計判断にも関わり、モバイルからPC・Macへのマルチプラットフォーム対応を実現。",
+    date: "2024.01 -",
+    title: "『Idle Sphere』制作に参加",
+    detail: "3〜6人チームで開発を行う。UI・Graphicを中心に担当しつつ、積極的にゲームの機能追加や設計判断に関わる。また今作では新しい試みとしてドメイン駆動開発を取り入れる。さらに、データ駆動プログラミングを取り入れた自作のパーティクルシステムを採用する。そのほかにも、モバイルからPC・Macへのマルチプラットフォーム対応を実現する。",
     areas: ["グラフィック", "UI", "一部ゲームデザイン"],
   },
   {
     phase: "ゲーム開発 3年目",
-    date: "2025.01 —",
-    title: "Idle Minertia",
-    detail: "企画、ゲームデザイン、開発、運営を横断して統括。5人規模のチームでリーダーを務める。",
+    date: "2025.01 -",
+    title: "『Idle Minertia』制作を主導",
+    detail: "企画、ゲームデザイン、開発、運営を横断して統括。1〜4人規模のチームでリーダーを務める。技術面としてはStructLinqやFin,Optionなどのモナドといった関数型プログラミング的思想を取り入れる。そのほかに、Firebaseを使ったクラウドセーブ機能や非同期マルチプレイ要素を採用する。",
     areas: ["グラフィック", "UI", "企画・ゲームデザイン", "開発・実装", "チームリーダー", "運営・事業判断"],
   },
   {
     phase: "ゲーム開発 4年目",
-    date: "2026 — 現在",
+    date: "2026 - 現在",
     title: "リリース後の継続開発",
     detail: "リリース後もアップデートと改善を継続し、現在に至る。",
     areas: [],
@@ -281,13 +281,11 @@ const careerTimeline = [
 const participatedWorks: {
   title: string;
   icon: string;
-  summary: string;
   platforms: { label: string; href?: string }[];
 }[] = [
   {
     title: "Idle Minertia",
     icon: "/icon-idle-minertia.webp",
-    summary: "企画・ゲームデザイン・開発・運営を横断して担当。",
     platforms: [
       {
         label: "iOS",
@@ -302,7 +300,6 @@ const participatedWorks: {
   {
     title: "Idle Sphere",
     icon: "/icon-idle-sphere.webp",
-    summary: "UI・グラフィックを担当。コンテンツにも関わる。モバイル版を開発後、Steamへ移植。",
     platforms: [
       { label: "Steam（PC・Mac）", href: "https://store.steampowered.com/app/3217600/Idle_Sphere/" },
       { label: "iOS", href: "https://apps.apple.com/jp/app/idlesphere/id6480509205" },
@@ -311,7 +308,6 @@ const participatedWorks: {
   {
     title: "Idle Spiral",
     icon: "/icon-idle-spiral.webp",
-    summary: "UI・グラフィックを担当。Steam版での開発を経て、モバイル版への移植に参加。",
     platforms: [
       { label: "Steam（PC）", href: "https://store.steampowered.com/app/1827980/Idle_Spiral/" },
       { label: "iOS", href: "https://apps.apple.com/jp/app/idlespiral/id6476647541" },
@@ -593,14 +589,13 @@ export default function Home() {
               <span className="visually-hidden">Ya.Yu.</span>
               <HeroSketch src={asset("/yayu.png")} />
             </h1>
-            <p className="hero-name" lang="en">Yanashima Yusuke</p>
+            <p className="hero-name">梁嶋悠介のポートフォリオ</p>
           </div>
 
           <div className="works-overview">
             <div className="works-overview-heading">
               <div>
-                <p lang="en">OVERVIEW</p>
-                <h2>3つのゲームを通じて、担当領域を広げる。</h2>
+                <p>経歴</p>
               </div>
             </div>
 
@@ -614,9 +609,13 @@ export default function Home() {
                     <strong>{item.title}</strong>
                     <p className="timeline-description">{item.detail}</p>
                     {item.areas.length > 0 ? (
-                      <ul className="timeline-areas" aria-label={`${item.phase}の担当領域`}>
-                        {item.areas.map((area) => <li key={area}>{area}</li>)}
-                      </ul>
+                      <>
+                        {/* 読み上げには下の aria-label が使われるので、見出しは視覚のためだけに置く。 */}
+                        <p className="timeline-areas-label" aria-hidden="true">担当領域</p>
+                        <ul className="timeline-areas" aria-label={`${item.phase}の担当領域`}>
+                          {item.areas.map((area) => <li key={area}>{area}</li>)}
+                        </ul>
+                      </>
                     ) : null}
                   </li>
                 ))}
@@ -629,7 +628,6 @@ export default function Home() {
                   <img src={asset(work.icon)} alt={`${work.title}のアプリアイコン`} width={72} height={72} />
                   <div className="work-summary-copy">
                     <h3>{work.title}</h3>
-                    <p>{work.summary}</p>
                     <ul aria-label={`${work.title}の公開プラットフォーム`}>
                       {work.platforms.map((platform) => (
                         <li key={platform.label}>
@@ -648,6 +646,20 @@ export default function Home() {
                 </article>
               ))}
             </div>
+
+            {/* 3作品とも同じジャンルなので、馴染みのない読み手のために一言だけ補う。 */}
+            <aside className="genre-note">
+              <p className="genre-note-label">ちなみに</p>
+              <h3>Idleゲームとは？</h3>
+              <p>
+                「放置ゲーム」とも呼ばれる、プレイヤーが操作していない間も資源が増え続けるジャンルです。
+                遊びの中心は反射神経や複雑な操作ではなく、増えた資源を何に投資し、どの時点で作り直す（リセットする）かという選択にあります。
+              </p>
+              <p>
+                そのため、数値の成長曲線とテンポの設計が、そのまま体験の質になります。
+                短い起動を何度も繰り返す遊び方と相性がよく、モバイルを中心に広がりました。
+              </p>
+            </aside>
           </div>
 
         </section>
@@ -674,7 +686,7 @@ export default function Home() {
               </p>
               <p>
                 2022年にUI・グラフィックから実務を始め、ゲームデザイン、ドメイン設計、実装、運営へと
-                担当領域を拡大してきました。現在は企画から運営までを横断し、5人規模のチームを率いています。
+                担当領域を拡大してきました。現在は企画から運営までを横断し、1〜4人規模のチームを率いています。
               </p>
               <p>
                 ものづくりの判断基準は、遊び手にどのような体験が届くかということです。

@@ -252,13 +252,6 @@ a {
   color: var(--orange);
   font-size: 0.68rem;
   font-weight: 700;
-  margin: 0 0 10px;
-}
-
-.works-overview-heading h2 {
-  font-size: clamp(1.15rem, 2.2vw, 2.25rem);
-  font-weight: 550;
-  letter-spacing: -0.045em;
   margin: 0;
 }
 
@@ -299,11 +292,33 @@ a {
   margin: 2px 0 7px;
 }
 
-.work-summary-copy > p {
-  color: var(--muted);
+/* 本編ではなく傍注。作品カードと競合しないよう、囲みではなく罫線だけで示す。 */
+.genre-note {
+  border-left: 2px solid var(--orange);
+  margin: 30px 0 0;
+  max-width: 62ch;
+  padding: 2px 0 2px 16px;
+}
+
+.genre-note-label {
+  color: var(--orange);
   font-size: 0.62rem;
-  line-height: 1.65;
+  font-weight: 700;
   margin: 0;
+}
+
+.genre-note h3 {
+  font-size: 0.86rem;
+  font-weight: 700;
+  margin: 4px 0 0;
+}
+
+.genre-note p + p,
+.genre-note h3 + p {
+  color: var(--muted-strong);
+  font-size: 0.66rem;
+  line-height: 1.85;
+  margin: 8px 0 0;
 }
 
 .work-summary-copy ul {
@@ -718,9 +733,17 @@ a {
   margin: 9px 0 0;
 }
 
+.timeline-areas-label {
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 0.56rem;
+  letter-spacing: 0.04em;
+  margin: 16px 0 0;
+}
+
 .timeline-areas {
   list-style: none;
-  margin: 16px 0 0;
+  margin: 6px 0 0;
   padding: 0;
 }
 
