@@ -640,14 +640,7 @@ a {
   max-width: 900px;
 }
 
-/* ラベルとタブを1行に。タブは下線だけで示す控えめな切り替え */
-.tech-heading {
-  align-items: baseline;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 26px;
-}
-
+/* タブは下線だけで示す控えめな切り替え */
 .tech-tabs {
   display: flex;
   flex-wrap: wrap;

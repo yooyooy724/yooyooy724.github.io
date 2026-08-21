@@ -81,12 +81,12 @@ const works: Record<string, Work> = {
         tab: "設計",
         items: [
           { name: "ドメイン駆動設計（DDD）", detail: "ゲームのルールや概念をコードの構造として表す設計手法。仕様書を作らず、コードをチームの共通言語にするために採用。" },
-          { name: "MVVM", detail: "ゲームルールをBlazor、UIとグラフィックをUnityに分けるプロジェクト構成。表現に依存せずロジックを開発・検証するため。" },
-          { name: "VirtualUI（自作）", detail: "画面遷移や操作を純粋なC#のViewModelで表す自作レイヤー。Blazorでのプロトタイプ確認と、Unity実装との共有のため。" },
+          { name: "MVVMパターン", detail: "ゲームルールをBlazor、UIとグラフィックをUnityに分けるプロジェクト構成。表現に依存せずロジックを開発・検証するため。" },
+          { name: "VirtualUI（自作の仮想UI層）", detail: "画面遷移や操作を純粋なC#のViewModelで表す自作レイヤー。Blazorでのプロトタイプ確認と、Unity実装との共有のため。" },
           { name: "モジュール分割", detail: "広告・課金・バックエンドを独立したプロジェクトに分ける構成。ドメインを外部サービスの都合で汚さないため。" },
-          { name: "LanguageExt", detail: "FinやOptionなどのモナドを提供する関数型ライブラリ。失敗を型として表現し、ロジックを堅牢にするため。" },
-          { name: "R3", detail: "状態の変化をObservableとして流すリアクティブライブラリ。状態とUIの同期を宣言的に書くため。" },
-          { name: "Zenject", detail: "依存関係を外から与えるDIコンテナ。実装の差し替えとテストを容易にするため。" },
+          { name: "LanguageExt（関数型ライブラリ）", detail: "FinやOptionなどのモナドを提供する関数型ライブラリ。失敗を型として表現し、ロジックを堅牢にするため。" },
+          { name: "R3（リアクティブプログラミング）", detail: "状態の変化をObservableとして流すライブラリ。状態とUIの同期を宣言的に書くため。" },
+          { name: "Zenject（DIコンテナ）", detail: "依存関係を外から与えるDIコンテナ。実装の差し替えとテストを容易にするため。" },
         ],
       },
       {
@@ -95,31 +95,27 @@ const works: Record<string, Work> = {
           { name: "ECS（自作）", detail: "データを配列で持ち一括処理する自作の仕組み。処理負荷とGCの発生を抑えるため、必要な箇所に限定して導入。" },
           { name: "StructLinq（自作）", detail: "構造体ベースの自作LINQ。ヒープ確保を無くし、GC負荷を避けるため。" },
           { name: "UniTask", detail: "Unity向けの低アロケーション非同期ライブラリ。GCを増やさずに非同期処理を書くため。" },
-          { name: "Addressables", detail: "アセットの非同期ロードと参照管理の仕組み。メモリ使用量を抑えるため。" },
         ],
       },
       {
         tab: "UI・アート",
         items: [
           { name: "UI Toolkit", detail: "UXML・USSで画面を組むUnityのUI基盤。再利用性を高め、コンテンツ追加のたびに増える制作コストを抑えるため。" },
-          { name: "Linearity Curve", detail: "ベクターデザインツール。制作方法を点・線・図形に統一し、少人数でもアートの品質と速度を保つため。" },
-          { name: "URP", detail: "Unityの汎用描画パイプライン。モバイルとPC・Macで同じ描画基盤を使うため。" },
+          { name: "Linearity Curve（ベクターツール）", detail: "ベクターデザインツール。制作方法を点・線・図形に統一し、少人数でもアートの品質と速度を保つため。" },
+          { name: "Shader Graph", detail: "ノードでシェーダーを組むUnityの機能。UIやゲーム画面の演出を制作するため。" },
+          { name: "Fullscreen Effect", detail: "画面全体へかけるURPのポストエフェクト。場面転換や強調の演出のため。" },
         ],
       },
       {
         tab: "バックエンド",
         items: [
-          { name: "Firebase", detail: "Googleのバックエンドサービス群。Authentication・Firestoreで、クラウドセーブと非同期マルチ協力コンテンツを実装。" },
-          { name: "Cloud Functions", detail: "サーバー側の処理をTypeScriptとfp-tsで実装。デイリーボーナスや利用指標の集計を端末の外で行うため。" },
-          { name: "Firestore Security Rules", detail: "Firestoreへのアクセス制御。セーブデータの改ざんや他人のデータへのアクセスを防ぐため。" },
-          { name: "Firebase Hosting", detail: "Blazor版をWebへ配信する仕組み。実機ビルドを待たずにゲームロジックを検証するため。" },
+          { name: "Firebase", detail: "Googleのバックエンドサービス群。Authentication・Firestore・Cloud Functionsで、クラウドセーブと非同期マルチ協力コンテンツをサーバーレスに実装。" },
         ],
       },
       {
-        tab: "品質・運営",
+        tab: "運営",
         items: [
-          { name: "NUnit", detail: "ドメイン層を対象にした90超のテストファイル。アップデートでルールやセーブデータを壊さないため。" },
-          { name: "Anti-Cheat Toolkit", detail: "メモリ改ざんを検出するUnity向けアセット。マルチ協力コンテンツの公平性を守るため。" },
+          { name: "Discord", detail: "プレイヤーコミュニティの拠点。フィードバックの収集や不具合対応を、プレイヤーと直接やり取りするため。" },
           { name: "fastlane", detail: "ストア申請の自動化ツール。スクリーンショットやメタデータ更新の手作業を減らすため。" },
           { name: "Steamworks.NET", detail: "SteamのAPIをC#から扱うライブラリ。準備中のSteam版で実績やクラウドセーブに対応するため。" },
         ],
@@ -323,24 +319,21 @@ function TechHighlights({ work }: { work: Work }) {
 
   return (
     <div className="tech-highlights">
-      <div className="tech-heading">
-        <p className="label">技術</p>
-        {groups.length > 1 && (
-          <div className="tech-tabs" aria-label="技術のカテゴリ">
-            {groups.map((group, index) => (
-              <button
-                key={group.tab}
-                type="button"
-                aria-pressed={index === active}
-                className={index === active ? "active" : ""}
-                onClick={() => setActive(index)}
-              >
-                {group.tab}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      {groups.length > 1 && (
+        <div className="tech-tabs" aria-label="技術のカテゴリ">
+          {groups.map((group, index) => (
+            <button
+              key={group.tab}
+              type="button"
+              aria-pressed={index === active}
+              className={index === active ? "active" : ""}
+              onClick={() => setActive(index)}
+            >
+              {group.tab}
+            </button>
+          ))}
+        </div>
+      )}
       <ul>
         {current.items.map((item) => (
           <li key={item.name}>
