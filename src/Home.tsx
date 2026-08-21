@@ -114,7 +114,6 @@ const works: Record<string, Work> = {
         tab: "サービス・運営",
         items: [
           { name: "Firebase（BaaS）", detail: "Googleのバックエンドサービス群。Authentication・Firestore・Cloud Functionsで、クラウドセーブと非同期マルチ協力コンテンツをサーバーレスに実装。" },
-          { name: "Steamworks.NET（Steam SDK）", detail: "SteamのAPIをC#から扱うライブラリ。準備中のSteam版で実績やクラウドセーブに対応するため。" },
           { name: "fastlane（自動化ツール）", detail: "ストア申請の自動化ツール。スクリーンショットやメタデータ更新の手作業を減らすため。" },
           { name: "Discord", detail: "プレイヤーコミュニティの拠点。フィードバックの収集や不具合対応を、プレイヤーと直接やり取りするため。" },
         ],
