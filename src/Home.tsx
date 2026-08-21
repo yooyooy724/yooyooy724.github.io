@@ -106,8 +106,7 @@ const works: Record<string, Work> = {
       {
         tab: "グラフィック",
         items: [
-          { name: "Shader Graph", detail: "ノードでシェーダーを組むUnityの機能。UIやゲーム画面の演出を制作するため。" },
-          { name: "Fullscreen Effect", detail: "画面全体へかけるURPのポストエフェクト。場面転換や強調の演出のため。" },
+          { name: "Shader Graph", detail: "ノードでシェーダーを組むUnityの機能。画面全体のエフェクトを含め、ゲーム画面の演出を制作するため。" },
           { name: "Linearity Curve（ベクターツール）", detail: "ベクターデザインツール。制作方法を点・線・図形に統一し、少人数でもアートの品質と速度を保つため。" },
         ],
       },
