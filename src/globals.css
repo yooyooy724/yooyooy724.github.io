@@ -699,7 +699,7 @@ a {
 
 .career-timeline > li {
   display: grid;
-  grid-template-rows: 36px 28px auto auto auto 1fr;
+  grid-template-rows: 36px 28px auto auto auto auto 1fr;
   min-width: 200px;
   padding-right: 26px;
   position: relative;
