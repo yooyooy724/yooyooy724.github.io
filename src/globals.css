@@ -714,6 +714,29 @@ a {
   letter-spacing: 0.01em;
 }
 
+/* その作品で初めて導入した技術の印 */
+.tech-new {
+  background: var(--orange);
+  border-radius: 999px;
+  color: var(--paper);
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.5rem;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  margin-left: 8px;
+  padding: 3px 7px;
+  text-transform: uppercase;
+  vertical-align: 2px;
+}
+
+.dark .tech-new {
+  background: var(--green);
+  color: var(--ink);
+}
+
 .tech-highlights li > span {
   color: var(--muted);
   display: block;
