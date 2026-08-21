@@ -427,7 +427,6 @@ a {
 }
 
 .featured-meta dl {
-  border-top: 1px solid var(--line);
   margin: 0;
 }
 
@@ -875,29 +874,6 @@ a {
   font-weight: 550;
   letter-spacing: -0.07em;
   line-height: 1.25;
-  margin: 0;
-}
-
-.fact-list {
-  border-top: 1px solid var(--line);
-  margin: 46px 0 0;
-}
-
-.fact-list div {
-  border-bottom: 1px solid var(--line);
-  display: grid;
-  font-size: 0.76rem;
-  gap: 20px;
-  grid-template-columns: 90px 1fr;
-  padding: 15px 0;
-}
-
-.fact-list dt {
-  color: var(--muted);
-}
-
-.fact-list dd {
-  line-height: 1.6;
   margin: 0;
 }
 
