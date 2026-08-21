@@ -644,7 +644,10 @@ export default function Home() {
               <p>
                 セーブデータを壊さない堅牢さと、アップデートのたびに遊び手を驚かせる変化の両立を重視しています。
               </p>
-              <a href="https://github.com/yooyooy724" target="_blank" rel="noreferrer">GitHub ↗</a>
+              <div className="profile-links">
+                <a href="https://x.com/ynsmysk" target="_blank" rel="noreferrer">X @ynsmysk ↗</a>
+                <a href="https://github.com/yooyooy724" target="_blank" rel="noreferrer">GitHub ↗</a>
+              </div>
             </div>
           </div>
 

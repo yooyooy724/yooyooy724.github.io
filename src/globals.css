@@ -915,6 +915,13 @@ a {
   line-height: 2;
 }
 
+.profile-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 26px;
+  margin-top: 28px;
+}
+
 .profile-copy a {
   border-bottom: 1px solid var(--ink);
   display: inline-block;
@@ -922,7 +929,6 @@ a {
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  margin-top: 28px;
   padding-bottom: 5px;
 }
 
