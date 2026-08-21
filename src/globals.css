@@ -348,6 +348,18 @@ a {
   transition: background 160ms ease, box-shadow 160ms ease, color 160ms ease, transform 160ms ease;
 }
 
+/* リンク先がまだ無いものは、同じ形のまま「押せない」ことが分かる見た目にする。 */
+.platform-pending {
+  align-items: center;
+  border: 1px dashed rgba(21, 26, 23, 0.34);
+  border-radius: 999px;
+  color: var(--muted-strong);
+  display: inline-flex;
+  font-weight: 700;
+  min-height: 30px;
+  padding: 8px 11px;
+}
+
 .work-summary-copy li a:hover,
 .work-summary-copy li a:focus-visible {
   background: var(--ink);

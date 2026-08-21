@@ -58,7 +58,7 @@ const works: Record<string, Work> = {
       "カジュアルなIdle要素と、ローグライク要素を組み合わせ、従来作より幅広いユーザー層へ届けることを目指したIdleゲームです。一般的なIdleゲームでは、周回を重ねるにつれて遊びの中心が次のコンテンツへ移っていきます。Idle Minertiaでは、ゲームをシンプルで遊びやすい状態に保つため、周回後もメインコンテンツの価値が失われない工夫をこらしています。その工夫の一つにローグライク要素があり、周回ごとに異なるビルドが出来上がり、ゲームの進行と共にビルドの複雑さも増していきます。さらに、非同期でのマルチ協力コンテンツを導入し、他のプレイヤーと協力しながら互いの成長を感じられる体験も特徴です。",
     facts: [
       { term: "リリース", value: "2025年" },
-      { term: "公開先", value: "iOS・Android" },
+      { term: "公開先", value: "iOS・Android（Steam版を準備中）" },
       { term: "開発環境", value: "Unity・C#・Blazor" },
       { term: "成績", value: "累計 約3.8万DL／App Store 4.6" },
     ],
@@ -295,6 +295,8 @@ const participatedWorks: {
         label: "Android",
         href: "https://play.google.com/store/apps/details?id=com.idlesystem.IdleCube&hl=ja",
       },
+      // Steam版はまだストアページが無いので、リンクにはしない。
+      { label: "Steam（準備中）" },
     ],
   },
   {
@@ -637,7 +639,7 @@ export default function Home() {
                               <span aria-hidden="true"> ↗</span>
                             </a>
                           ) : (
-                            platform.label
+                            <span className="platform-pending">{platform.label}</span>
                           )}
                         </li>
                       ))}
