@@ -640,6 +640,67 @@ a {
   max-width: 900px;
 }
 
+/* ラベルとタブを1行に。タブは下線だけで示す控えめな切り替え */
+.tech-heading {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+}
+
+.tech-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 18px;
+}
+
+.tech-tabs button {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.66rem;
+  font-weight: 600;
+  padding: 2px 1px 5px;
+}
+
+.tech-tabs button:hover,
+.tech-tabs button:focus-visible {
+  color: var(--ink);
+  outline: none;
+}
+
+.tech-tabs button.active {
+  border-bottom-color: var(--orange);
+  color: var(--ink);
+}
+
+.dark .tech-tabs button {
+  color: rgba(242, 239, 231, 0.55);
+}
+
+.dark .tech-tabs button:hover,
+.dark .tech-tabs button:focus-visible,
+.dark .tech-tabs button.active {
+  color: var(--paper);
+}
+
+.dark .tech-tabs button.active {
+  border-bottom-color: var(--green);
+}
+
+.tint .tech-tabs button {
+  color: rgba(21, 26, 23, 0.55);
+}
+
+.tint .tech-tabs button:hover,
+.tint .tech-tabs button:focus-visible,
+.tint .tech-tabs button.active {
+  color: var(--ink);
+}
+
 .tech-highlights ul {
   border-top: 1px solid var(--line);
   column-gap: 40px;

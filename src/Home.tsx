@@ -39,8 +39,8 @@ type Work = {
     title: string;
     body: string;
   }[];
-  // 技術面は文章ではなく一覧で一気に見せる
-  tech: { name: string; detail: string }[];
+  // 技術面は文章ではなく一覧で一気に見せる。カテゴリごとにタブで切り替える
+  tech: { tab: string; items: { name: string; detail: string }[] }[];
   storeLink?: { label: string; href: string };
 };
 
@@ -77,14 +77,53 @@ const works: Record<string, Work> = {
       },
     ],
     tech: [
-      { name: "ドメイン駆動設計（DDD）", detail: "仕様書の代わりにコードを共通言語とし、コンテンツごとの概念・ルール・制約をコードで表明。" },
-      { name: "ロジックと表現の分離", detail: "ゲームルールと仮想UIをBlazorプロジェクトで、最終的なUIとグラフィックをUnityで実装（MVVM）。" },
-      { name: "独自ECS", detail: "データの配列管理と一括処理に機能を絞り、処理負荷とGCの発生を抑制。" },
-      { name: "StructLinq", detail: "構造体ベースのLINQ実装で、ヒープ確保とGC負荷を回避。" },
-      { name: "関数型プログラミング", detail: "FinやOptionなどのモナドを取り入れ、堅牢なロジックを構成。" },
-      { name: "Firebase", detail: "クラウドセーブと非同期マルチ協力コンテンツを実装。" },
-      { name: "UI Toolkit", detail: "UXML・USS・C#で再利用しやすく画面を実装し、コンテンツ追加のコストを抑制。" },
-      { name: "Linearity Curve", detail: "点・線・図形の組み合わせに統一したベクターアート制作。" },
+      {
+        tab: "設計",
+        items: [
+          { name: "ドメイン駆動設計（DDD）", detail: "ゲームのルールや概念をコードの構造として表す設計手法。仕様書を作らず、コードをチームの共通言語にするために採用。" },
+          { name: "ロジックと表現の分離", detail: "ゲームルールをBlazor、UIとグラフィックをUnityに分けるプロジェクト構成。表現に依存せずロジックを開発・検証するため。" },
+          { name: "自作の仮想UI層", detail: "画面遷移や操作を純粋なC#のViewModelで表す自作レイヤー。Blazorでのプロトタイプ確認と、Unity実装との共有のため。" },
+          { name: "モジュール分割", detail: "広告・課金・バックエンドを独立したプロジェクトに分ける構成。ドメインを外部サービスの都合で汚さないため。" },
+          { name: "関数型プログラミング", detail: "FinやOptionなどのモナドで失敗を型として表す書き方。実行時エラーを減らし、ロジックを堅牢にするため。" },
+          { name: "リアクティブ（R3）", detail: "状態の変化をObservableとして流すライブラリ。状態とUIの同期を宣言的に書くため。" },
+          { name: "依存性注入（Zenject）", detail: "依存関係を外から与えるDIコンテナ。実装の差し替えとテストを容易にするため。" },
+        ],
+      },
+      {
+        tab: "高速化",
+        items: [
+          { name: "独自ECS", detail: "データを配列で持ち一括処理する自作の仕組み。処理負荷とGCの発生を抑えるため、必要な箇所に限定して導入。" },
+          { name: "StructLinq（自作）", detail: "構造体ベースの自作LINQ。ヒープ確保を無くし、GC負荷を避けるため。" },
+          { name: "UniTask", detail: "Unity向けの低アロケーション非同期ライブラリ。GCを増やさずに非同期処理を書くため。" },
+          { name: "Addressables", detail: "アセットの非同期ロードと参照管理の仕組み。メモリ使用量を抑えるため。" },
+        ],
+      },
+      {
+        tab: "UI・アート",
+        items: [
+          { name: "UI Toolkit", detail: "UXML・USSで画面を組むUnityのUI基盤。再利用性を高め、コンテンツ追加のたびに増える制作コストを抑えるため。" },
+          { name: "Linearity Curve", detail: "ベクターデザインツール。制作方法を点・線・図形に統一し、少人数でもアートの品質と速度を保つため。" },
+          { name: "URP", detail: "Unityの汎用描画パイプライン。モバイルとPC・Macで同じ描画基盤を使うため。" },
+        ],
+      },
+      {
+        tab: "バックエンド",
+        items: [
+          { name: "Firebase", detail: "Googleのバックエンドサービス群。Authentication・Firestoreで、クラウドセーブと非同期マルチ協力コンテンツを実装。" },
+          { name: "Cloud Functions", detail: "サーバー側の処理をTypeScriptとfp-tsで実装。デイリーボーナスや利用指標の集計を端末の外で行うため。" },
+          { name: "セキュリティルール", detail: "Firestoreへのアクセス制御。セーブデータの改ざんや他人のデータへのアクセスを防ぐため。" },
+          { name: "Firebase Hosting", detail: "Blazor版をWebへ配信する仕組み。実機ビルドを待たずにゲームロジックを検証するため。" },
+        ],
+      },
+      {
+        tab: "品質・運営",
+        items: [
+          { name: "ドメインテスト", detail: "NUnitによる90超のテストファイル。アップデートでルールやセーブデータを壊さないため。" },
+          { name: "チート対策", detail: "Anti-Cheat Toolkitによるメモリ改ざん検出。マルチ協力コンテンツの公平性を守るため。" },
+          { name: "fastlane", detail: "ストア申請の自動化ツール。スクリーンショットやメタデータ更新の手作業を減らすため。" },
+          { name: "Steamworks.NET", detail: "SteamのAPIをC#から扱うライブラリ。準備中のSteam版で実績やクラウドセーブに対応するため。" },
+        ],
+      },
     ],
   },
 
@@ -123,12 +162,17 @@ const works: Record<string, Work> = {
       },
     ],
     tech: [
-      { name: "自作パーティクルシステム", detail: "Jobs・Burst・NativeContainerで位置・速度・色・状態を並列更新し、最大構成でおよそ13,000要素を同時に扱う。" },
-      { name: "GPUインスタンシング", detail: "RenderMeshInstancedで描画をまとめ、個別の色はGraphicsBufferからHLSLのCustom Functionで読み出す。" },
-      { name: "手続き的な球面配置", detail: "Fibonacci球、螺旋球、Euler角ベースの分布、3Dノイズによる流れで、球体のテーマと成長を表現。" },
-      { name: "URP Renderer Feature", detail: "Colorize・Toon・Pixelationなどを切り替え、見た目をDLCのテーマ展開へ接続。" },
-      { name: "ドメイン駆動設計", detail: "新しい試みとして導入し、ゲームロジックの責務と境界を整理。" },
-      { name: "マルチプラットフォーム", detail: "モバイルからPC・Macへの対応を実現。" },
+      {
+        tab: "技術",
+        items: [
+          { name: "自作パーティクルシステム", detail: "ゲームシステムと連動して大量の粒子を動かす自作基盤。Jobs・Burst・NativeContainerで並列更新し、最大約13,000要素を扱うため。" },
+          { name: "GPUインスタンシング", detail: "同じメッシュを1命令でまとめて描く手法。ドローコールを抑えるため。個別の色はGraphicsBufferからHLSLで読み出す。" },
+          { name: "手続き的な球面配置", detail: "数式から粒子の配置を生成する手法。Fibonacci球や3Dノイズを使い、球体のテーマと成長を同じ視覚言語で表すため。" },
+          { name: "URP Renderer Feature", detail: "描画パイプラインに後処理を差し込む仕組み。Colorize・Toonなどの見た目の切り替えを、DLCのテーマ展開につなげるため。" },
+          { name: "ドメイン駆動設計", detail: "ゲームのルールをコードの構造として表す設計手法。新しい試みとして導入し、責務と境界を整理するため。" },
+          { name: "マルチプラットフォーム", detail: "モバイル版からPC・Mac版への展開。より広いプレイヤー層へ届けるため。" },
+        ],
+      },
     ],
     storeLink: { label: "Steamで作品を見る", href: "https://store.steampowered.com/app/3217600/Idle_Sphere/" },
   },
@@ -170,10 +214,15 @@ const works: Record<string, Work> = {
       },
     ],
     tech: [
-      { name: "Shader Graph", detail: "ガラス・ノイズ・炎・水面や画面全体のエフェクトなど、30本以上のシェーダーを制作。" },
-      { name: "VFX Graph", detail: "パーティクルによる、よりリッチな表現に使用。" },
-      { name: "依存性注入", detail: "MonoBehaviourへの直接依存を抑え、外部ライブラリへの依存度を低減。" },
-      { name: "UIのラッピング", detail: "UnityのUI要素を包む層を設け、差し替えに強い構造に。" },
+      {
+        tab: "技術",
+        items: [
+          { name: "Shader Graph", detail: "ノードでシェーダーを組むUnityの機能。ガラス・炎・水面など30本以上を制作し、螺旋の表現を多彩にするため。" },
+          { name: "VFX Graph", detail: "GPUで大量のパーティクルを扱うUnityの機能。よりリッチな演出のため。" },
+          { name: "依存性注入", detail: "依存関係を外から与える設計。MonoBehaviourへの直接依存を減らし、外部ライブラリに縛られないため。" },
+          { name: "UIのラッピング", detail: "UnityのUI要素を包む自作の層。UI基盤の変更や差し替えに強くするため。" },
+        ],
+      },
     ],
     storeLink: { label: "Steamで作品を見る", href: "https://store.steampowered.com/app/1827980/Idle_Spiral/" },
   },
@@ -266,6 +315,44 @@ const participatedWorks: {
 const toEraAxis = (progress: number) => (1 - progress) * 100;
 
 // 作品ごとに独立したカルーセル。3作それぞれが自分のスクロール状態を持つ。
+// 技術一覧。カテゴリが複数あるときだけタブを出す。
+function TechHighlights({ work }: { work: Work }) {
+  const [active, setActive] = useState(0);
+  const groups = work.tech;
+  const current = groups[Math.min(active, groups.length - 1)];
+
+  return (
+    <div className="tech-highlights">
+      <div className="tech-heading">
+        <p className="label">技術</p>
+        {groups.length > 1 && (
+          <div className="tech-tabs" aria-label="技術のカテゴリ">
+            {groups.map((group, index) => (
+              <button
+                key={group.tab}
+                type="button"
+                aria-pressed={index === active}
+                className={index === active ? "active" : ""}
+                onClick={() => setActive(index)}
+              >
+                {group.tab}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <ul>
+        {current.items.map((item) => (
+          <li key={item.name}>
+            <strong>{item.name}</strong>
+            <span>{item.detail}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function WorkGallery({ work }: { work: Work }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [reach, setReach] = useState({ previous: false, next: true });
@@ -469,17 +556,7 @@ export default function Home() {
           ))}
         </div>
 
-        <div className="tech-highlights">
-          <p className="label">技術</p>
-          <ul>
-            {work.tech.map((item) => (
-              <li key={item.name}>
-                <strong>{item.name}</strong>
-                <span>{item.detail}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <TechHighlights work={work} />
 
         {work.storeLink && (
           <a className="store-link" href={work.storeLink.href} target="_blank" rel="noreferrer">
