@@ -83,24 +83,24 @@ const works: Record<string, Work> = {
           { name: "ドメイン駆動設計（DDD）", detail: "ゲームのルールや概念をコードの構造として表す設計手法。仕様書を作らず、コードをチームの共通言語にするために採用。" },
           { name: "MVVMパターン", detail: "ゲームルールをBlazor、UIとグラフィックをUnityに分けるプロジェクト構成。表現に依存せずロジックを開発・検証するため。" },
           { name: "モジュール分割", detail: "広告・課金・バックエンドを独立したプロジェクトに分ける構成。ドメインを外部サービスの都合で汚さないため。" },
-          { name: "VirtualUI（自作の仮想UI層）", detail: "画面遷移や操作を純粋なC#のViewModelで表す自作レイヤー。Blazorでのプロトタイプ確認と、Unity実装との共有のため。" },
         ],
       },
       {
         tab: "ドメイン実装",
         items: [
           { name: "LanguageExt（関数型ライブラリ）", detail: "FinやOptionなどのモナドを提供するC#ライブラリ。失敗を型として表現し、ロジックを堅牢にするため。" },
-          { name: "StructLinq（自作）", detail: "構造体ベースの自作LINQ。ヒープ確保を無くし、GC負荷を避けるため。" },
+          { name: "StructLinq（自作LINQライブラリ）", detail: "構造体ベースの自作LINQ。ヒープ確保を無くし、GC負荷を避けるため。" },
           { name: "ECS（自作）", detail: "データを配列で持ち一括処理する自作の仕組み。処理負荷とGCの発生を抑えるため、必要な箇所に限定して導入。" },
         ],
       },
       {
-        tab: "Unity実装",
+        tab: "UI実装",
         items: [
+          { name: "VirtualUI（自作の仮想UI層）", detail: "画面遷移や操作を純粋なC#のViewModelで表す自作レイヤー。Blazorでのプロトタイプ確認と、Unity実装との共有のため。" },
+          { name: "UI Toolkit（UIフレームワーク）", detail: "UXML・USSで画面を組むUnityのUI基盤。再利用性を高め、コンテンツ追加のたびに増える制作コストを抑えるため。" },
           { name: "Zenject（DIコンテナ）", detail: "依存関係を外から与える仕組み。実装の差し替えとテストを容易にするため。" },
-          { name: "R3（リアクティブプログラミング）", detail: "状態の変化をObservableとして流すライブラリ。状態とUIの同期を宣言的に書くため。" },
-          { name: "UniTask", detail: "Unity向けの低アロケーション非同期ライブラリ。GCを増やさずに非同期処理を書くため。" },
-          { name: "UI Toolkit", detail: "UXML・USSで画面を組むUnityのUI基盤。再利用性を高め、コンテンツ追加のたびに増える制作コストを抑えるため。" },
+          { name: "R3（Rxライブラリ）", detail: "状態の変化をObservableとして流すライブラリ。状態とUIの同期を宣言的に書くため。" },
+          { name: "UniTask（非同期ライブラリ）", detail: "Unity向けの低アロケーション非同期処理。GCを増やさずに非同期処理を書くため。" },
         ],
       },
       {
@@ -114,9 +114,9 @@ const works: Record<string, Work> = {
       {
         tab: "基盤・運営",
         items: [
-          { name: "Firebase", detail: "Googleのバックエンドサービス群。Authentication・Firestore・Cloud Functionsで、クラウドセーブと非同期マルチ協力コンテンツをサーバーレスに実装。" },
-          { name: "Steamworks.NET", detail: "SteamのAPIをC#から扱うライブラリ。準備中のSteam版で実績やクラウドセーブに対応するため。" },
-          { name: "fastlane", detail: "ストア申請の自動化ツール。スクリーンショットやメタデータ更新の手作業を減らすため。" },
+          { name: "Firebase（BaaS）", detail: "Googleのバックエンドサービス群。Authentication・Firestore・Cloud Functionsで、クラウドセーブと非同期マルチ協力コンテンツをサーバーレスに実装。" },
+          { name: "Steamworks.NET（Steam SDK）", detail: "SteamのAPIをC#から扱うライブラリ。準備中のSteam版で実績やクラウドセーブに対応するため。" },
+          { name: "fastlane（自動化ツール）", detail: "ストア申請の自動化ツール。スクリーンショットやメタデータ更新の手作業を減らすため。" },
           { name: "Discord", detail: "プレイヤーコミュニティの拠点。フィードバックの収集や不具合対応を、プレイヤーと直接やり取りするため。" },
         ],
       },
