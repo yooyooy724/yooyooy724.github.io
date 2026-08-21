@@ -170,14 +170,44 @@ const works: Record<string, Work> = {
     ],
     tech: [
       {
-        tab: "技術",
+        tab: "設計",
+        items: [
+          { name: "ドメイン駆動設計（DDD）", detail: "ゲームのルールをコードの構造として表す設計手法。新しい試みとして導入し、UI層からドメインロジックを排して責務と境界を整理。" },
+          { name: "レイヤードアーキテクチャ", detail: "インフラ・ドメイン・UIを層で分けた構成。各人の得意分野を活かして分業するため。" },
+          { name: "モジュール分割", detail: "通貨・アップグレード・オフラインボーナスなどを機能単位のアセンブリに分ける構成。依存関係を管理しやすくするため。" },
+        ],
+      },
+      {
+        tab: "ドメイン実装",
+        items: [
+          { name: "LanguageExt（関数型ライブラリ）", detail: "FinやOptionなどのモナドを提供するC#ライブラリ。失敗を型として表現し、ロジックを堅牢にするため。" },
+        ],
+      },
+      {
+        tab: "Unity基盤",
+        items: [
+          { name: "Zenject（DIコンテナ）", detail: "依存関係を外から与える仕組み。実装の差し替えとテストを容易にするため。" },
+          { name: "R3（Rxライブラリ）", detail: "状態の変化をObservableとして流すライブラリ。状態とUIの同期を宣言的に書くため。" },
+          { name: "UniTask（非同期ライブラリ）", detail: "Unity向けの低アロケーション非同期処理。GCを増やさずに非同期処理を書くため。" },
+        ],
+      },
+      {
+        tab: "UI・グラフィック",
         items: [
           { name: "Job System・Burst", detail: "Unityの並列処理基盤。自作パーティクルシステムの位置・色・状態を並列更新し、最大約13,000要素を扱うため。" },
           { name: "GPUインスタンシング", detail: "同じメッシュを1命令でまとめて描く手法。ドローコールを抑えるため。個別の色はGraphicsBufferからHLSLで読み出す。" },
           { name: "プロシージャル生成", detail: "数式から粒子の配置を生成する手法。Fibonacci球や3Dノイズを使い、球体のテーマと成長を同じ視覚言語で表すため。" },
           { name: "URP Renderer Feature", detail: "描画パイプラインに後処理を差し込む仕組み。Colorize・Toonなどの見た目の切り替えを、DLCのテーマ展開につなげるため。" },
-          { name: "ドメイン駆動設計（DDD）", detail: "ゲームのルールをコードの構造として表す設計手法。新しい試みとして導入し、責務と境界を整理するため。" },
-          { name: "マルチプラットフォーム", detail: "モバイル版からPC・Mac版への展開。より広いプレイヤー層へ届けるため。" },
+          { name: "VFX Graph", detail: "GPUで大量のパーティクルを扱うUnityの機能。粒子の演出をよりリッチにするため。" },
+        ],
+      },
+      {
+        tab: "その他",
+        items: [
+          { name: "Steamworks.NET（Steam SDK）", detail: "SteamのAPIをC#から扱うライブラリ。実績やDLCに対応するため。" },
+          { name: "Firebase（BaaS）", detail: "Googleのバックエンドサービス群。クラウドセーブに使用。" },
+          { name: "I2 Localization（ローカライズ）", detail: "Unity向けの多言語対応アセット。海外プレイヤーへ届けるため。" },
+          { name: "fastlane（自動化ツール）", detail: "ストア申請の自動化ツール。スクリーンショットやメタデータ更新の手作業を減らすため。" },
         ],
       },
     ],
@@ -226,12 +256,40 @@ const works: Record<string, Work> = {
     ],
     tech: [
       {
-        tab: "技術",
+        tab: "設計",
         items: [
-          { name: "Shader Graph", detail: "ノードでシェーダーを組むUnityの機能。ガラス・炎・水面など30本以上を制作し、螺旋の表現を多彩にするため。" },
-          { name: "VFX Graph", detail: "GPUで大量のパーティクルを扱うUnityの機能。よりリッチな演出のため。" },
           { name: "依存性注入（DI）", detail: "依存関係を外から与える設計。MonoBehaviourへの直接依存を減らし、外部ライブラリに縛られないため。" },
           { name: "ラッパー層（自作）", detail: "UnityのUI要素を包む自作の層。UI基盤の変更や差し替えに強くするため。" },
+        ],
+      },
+      {
+        tab: "ドメイン実装",
+        items: [
+          { name: "IdleFramework（自作）", detail: "放置ゲームの汎用的な処理を集めた自作フレームワーク。テストを備え、以降の開発を速くするため。" },
+          { name: "BreakInfinity（大数値ライブラリ）", detail: "doubleの上限を超える桁を扱うライブラリ。インフレし続ける数値を正確に扱うため。" },
+        ],
+      },
+      {
+        tab: "Unity基盤",
+        items: [
+          { name: "Zenject（DIコンテナ）", detail: "依存関係を外から与える仕組み。DIの実装として使用。" },
+          { name: "UniRx（Rxライブラリ）", detail: "状態の変化をObservableとして流すライブラリ。状態とUIの同期を宣言的に書くため。" },
+          { name: "UniTask（非同期ライブラリ）", detail: "Unity向けの低アロケーション非同期処理。GCを増やさずに非同期処理を書くため。" },
+        ],
+      },
+      {
+        tab: "UI・グラフィック",
+        items: [
+          { name: "Shader Graph", detail: "ノードでシェーダーを組むUnityの機能。ガラス・炎・水面など31本を制作し、螺旋の表現を多彩にするため。" },
+          { name: "VFX Graph", detail: "GPUで大量のパーティクルを扱うUnityの機能。よりリッチな演出のため。" },
+        ],
+      },
+      {
+        tab: "その他",
+        items: [
+          { name: "Steamworks.NET（Steam SDK）", detail: "SteamのAPIをC#から扱うライブラリ。実績などのSteam機能に対応するため。" },
+          { name: "Discord Rich Presence", detail: "プレイ状況をDiscordのプロフィールに表示する連携。コミュニティでの露出を増やすため。" },
+          { name: "I2 Localization（ローカライズ）", detail: "Unity向けの多言語対応アセット。海外プレイヤーへ届けるため。" },
         ],
       },
     ],
