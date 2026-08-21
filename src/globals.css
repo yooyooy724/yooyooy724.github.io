@@ -233,6 +233,13 @@ a {
   text-transform: uppercase;
 }
 
+.hero-art-note {
+  color: var(--muted);
+  font-size: 0.58rem;
+  letter-spacing: 0.04em;
+  margin-top: 10px;
+}
+
 .works-overview {
   position: relative;
   z-index: 3;

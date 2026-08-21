@@ -60,7 +60,7 @@ const works: Record<string, Work> = {
       { term: "公開先", value: "iOS・Android（Steam版を準備中）" },
       { term: "開発環境", value: "Unity・C#・Blazor" },
       { term: "担当", value: "企画から運営まで全域・チームリーダー" },
-      { term: "成績", value: "累計 約3.8万DL／App Store 4.6" },
+      { term: "実績", value: "累計 約3.8万DL／App Store 4.6" },
     ],
     metricsNote: "App Store 3.13万／Google Play 6,919（2026年7月確認）",
     aspect: "portrait",
@@ -77,7 +77,7 @@ const works: Record<string, Work> = {
       },
     ],
     tech: [
-      { name: "DDD", detail: "仕様書の代わりにコードを共通言語とし、コンテンツごとの概念・ルール・制約をコードで表明。" },
+      { name: "ドメイン駆動設計（DDD）", detail: "仕様書の代わりにコードを共通言語とし、コンテンツごとの概念・ルール・制約をコードで表明。" },
       { name: "ロジックと表現の分離", detail: "ゲームルールと仮想UIをBlazorプロジェクトで、最終的なUIとグラフィックをUnityで実装（MVVM）。" },
       { name: "独自ECS", detail: "データの配列管理と一括処理に機能を絞り、処理負荷とGCの発生を抑制。" },
       { name: "StructLinq", detail: "構造体ベースのLINQ実装で、ヒープ確保とGC負荷を回避。" },
@@ -102,7 +102,7 @@ const works: Record<string, Work> = {
       { term: "公開先", value: "Steam（PC・Mac）・iOS" },
       { term: "開発環境", value: "Unity・C#・UGUI" },
       { term: "担当", value: "UI・グラフィック主担当、コンテンツ企画、採用・進行管理" },
-      { term: "成績", value: "Steam 322レビュー（賛否両論）／App Store 3.9" },
+      { term: "実績", value: "Steam 322レビュー（賛否両論）／App Store 3.9" },
     ],
     aspect: "landscape",
     images: [
@@ -141,15 +141,16 @@ const works: Record<string, Work> = {
     eyebrow: "放置・クリッカーゲーム × 数学",
     title: "Idle Spiral",
     description:
-      "螺旋と数学をテーマにした、放置・クリッカーゲームです。進行とともに数式が変化し、その数式に従って螺旋が外側へ伸びていきます。放置ゲームの王道となるシステムを採用しながら、内部の数式をそのままUIでプレイヤーに提示しました。数式が読めればゲームへの理解が深まり、読めなくても攻略は難しくないため十分に楽しめることが特徴です。数式やプレイヤーの操作と螺旋の描画が連携することで、螺旋の美しさに触れ、愛着を感じられる体験を生み出しています。全くの未経験からチームに参加し、Steam版をリリースしました。その後、約1年をかけてモバイル版へ移植しました。Steam版では単価契約の業務委託、モバイル移植ではアルバイトとして従事しました。",
+      "螺旋と数学をテーマにした、放置・クリッカーゲームです。進行とともに数式が変化し、その数式に従って螺旋が外側へ伸びていきます。放置ゲームの王道となるシステムを採用しながら、内部の数式をそのままUIでプレイヤーに提示しました。数式が読めればゲームへの理解が深まり、読めなくても攻略は難しくないため十分に楽しめることが特徴です。数式やプレイヤーの操作と螺旋の描画が連携することで、螺旋の美しさに触れ、愛着を感じられる体験を生み出しています。",
     facts: [
       { term: "リリース", value: "2022年" },
       { term: "公開先", value: "Steam（PC）・iOS・Android" },
       { term: "開発環境", value: "Unity・C#" },
       { term: "担当", value: "UI・グラフィック主担当、ゲームデザイン・実装の一部、モバイル版UI再設計" },
-      { term: "成績", value: "モバイル累計 約8.3万DL／Steam 無料ライセンス 457,768" },
+      { term: "関わり方", value: "Steam版は業務委託、約1年かけたモバイル版への移植はアルバイトとして参加" },
+      { term: "実績", value: "モバイル累計 約8.3万DL／Steam ユニークユーザー 約32.4万" },
     ],
-    metricsNote: "Steam ユニークユーザー 323,670・売上総額 $110,076・DLC 18,502本・非常に好評（1,871件）／App Store 4.08万・Google Play 42,036（2026年7月確認）",
+    metricsNote: "Steam 獲得ライセンス（無料配布含む）457,768・売上総額 $110,076・DLC 18,502本・非常に好評（1,871件）／App Store 4.08万・Google Play 42,036（2026年7月確認）",
     aspect: "landscape",
     images: [
       { src: "/spiral-shot-01.webp", alt: "数式パネルと、複数ラインで描かれた螺旋" },
@@ -184,7 +185,7 @@ const careerTimeline = [
     phase: "学生時代",
     date: "2016 - 2022",
     title: "認知科学とテクノロジーへの関心",
-    detail: "認知科学への関心を強め、大学の授業や独学で学ぶ。特に、空間認知や運動主体感について学ぶ。教育工学の研究室に所属し、空間認知を題材にしたボードゲームの開発や、VRデバイスを用いた空間描画について研究する。",
+    detail: "認知科学への関心から、空間認知や運動主体感を大学の授業と独学で学ぶ。教育工学の研究室に所属し、空間認知を題材にしたボードゲームの開発や、VRデバイスを用いた空間描画について研究する。",
     areas: [],
   },
   {
@@ -198,21 +199,21 @@ const careerTimeline = [
     phase: "ゲーム開発 2年目",
     date: "2024.01 -",
     title: "『Idle Sphere』制作に参加",
-    detail: "3〜6人チームで開発を行う。UI・Graphicを中心に担当しつつ、積極的にゲームの機能追加や設計判断に関わる。また今作では新しい試みとしてドメイン駆動開発を取り入れる。さらに、データ駆動プログラミングを取り入れた自作のパーティクルシステムを採用する。そのほかにも、モバイルからPC・Macへのマルチプラットフォーム対応を実現する。",
+    detail: "3〜6人チームで開発を行う。UI・Graphicを中心に担当しつつ、積極的にゲームの機能追加や設計判断に関わる。また今作では新しい試みとしてドメイン駆動設計を取り入れる。さらに、データ駆動プログラミングを取り入れた自作のパーティクルシステムを採用する。そのほかにも、モバイルからPC・Macへのマルチプラットフォーム対応を実現する。",
     areas: ["グラフィック", "UI", "一部ゲームデザイン"],
   },
   {
     phase: "ゲーム開発 3年目",
     date: "2025.01 -",
     title: "『Idle Minertia』制作を主導",
-    detail: "企画、ゲームデザイン、開発、運営を横断して統括。1〜4人規模のチームでリーダーを務める。技術面としてはStructLinqやFin,Optionなどのモナドといった関数型プログラミング的思想を取り入れる。そのほかに、Firebaseを使ったクラウドセーブ機能や非同期マルチプレイ要素を採用する。",
+    detail: "企画、ゲームデザイン、開発、運営を横断して統括。最大4人のチームでリーダーを務める。技術面としてはStructLinqやFin,Optionなどのモナドといった関数型プログラミング的思想を取り入れる。そのほかに、Firebaseを使ったクラウドセーブ機能や非同期マルチプレイ要素を採用する。",
     areas: ["グラフィック", "UI", "企画・ゲームデザイン", "開発・実装", "チームリーダー", "運営・事業判断"],
   },
   {
     phase: "ゲーム開発 4年目",
     date: "2026 - 現在",
     title: "リリース後の継続開発",
-    detail: "リリース後もアップデートと改善を継続し、現在に至る。",
+    detail: "Steam版への移植を準備しながら、アップデートと改善を継続している。",
     areas: [],
   },
 ];
@@ -518,6 +519,7 @@ export default function Home() {
               <HeroSketch src={asset("/yayu.png")} />
             </h1>
             <p className="hero-name">梁嶋悠介のポートフォリオ</p>
+            <p className="hero-art-note">上のアートは開くたびにコードから生成されます（p5.js）</p>
           </div>
 
           <div className="works-overview">
@@ -583,7 +585,7 @@ export default function Home() {
                 複雑なアクション性を無くし、放置する間に進行することを特徴とするジャンルです。代表作としては<a href="https://orteil.dashnet.org/cookieclicker/" target="_blank" rel="noreferrer">『Cookie Clicker』<span aria-hidden="true">↗</span></a>があり、増えた資源を何に投資し、どの時点でリセットするかを考えながら攻略することが遊び方の中心となります。
               </p>
               <p>
-                主に英語圏のブラウザゲームサイトを中心に広まり、今ではSteamやモバイルアプリでも定着しつつあり、仕事の合間やゲームの合間のゲームとして親しまれています。
+                主に英語圏のブラウザゲームサイトを中心に広まり、今ではSteamやモバイルアプリでも定着しつつあり、スキマ時間のゲームとして親しまれています。
               </p>
             </aside>
           </div>
@@ -603,7 +605,7 @@ export default function Home() {
 
           <div className="profile-grid">
             <div>
-              <h2>梁嶋 悠介 <span>Yayu</span></h2>
+              <h2>梁嶋 悠介 <span>Yanashima Yusuke / Yayu</span></h2>
             </div>
             <div className="profile-copy">
               <p>
