@@ -627,55 +627,66 @@ a {
   color: rgba(21, 26, 23, 0.66);
 }
 
+/* 技術は文章ではなく一覧で。2列で一気に見渡す */
+.tech-highlights {
+  margin-top: clamp(36px, 5vw, 60px);
+  max-width: 900px;
+}
+
+.tech-highlights ul {
+  border-top: 1px solid var(--line);
+  column-gap: 40px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+}
+
+.tech-highlights li {
+  border-bottom: 1px solid var(--line);
+  padding: 13px 0;
+}
+
+.tech-highlights strong {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.tech-highlights li > span {
+  color: var(--muted);
+  display: block;
+  font-size: 0.64rem;
+  line-height: 1.7;
+  margin-top: 4px;
+}
+
+.dark .tech-highlights ul,
+.dark .tech-highlights li {
+  border-color: rgba(242, 239, 231, 0.25);
+}
+
+.dark .tech-highlights li > span {
+  color: rgba(242, 239, 231, 0.68);
+}
+
+.tint .tech-highlights ul,
+.tint .tech-highlights li {
+  border-color: rgba(21, 26, 23, 0.28);
+}
+
+.tint .tech-highlights li > span {
+  color: rgba(21, 26, 23, 0.66);
+}
+
 /* 淡色地の作品章だけ、長文の文字を一段濃くしてコントラストを確保する */
 .featured:not(.dark):not(.tint) .featured-description,
 .featured:not(.dark):not(.tint) .featured-meta dt,
 .featured:not(.dark):not(.tint) .case-study-grid article > p:not(.label),
-.featured:not(.dark):not(.tint) .scope-detail li > span,
-.featured:not(.dark):not(.tint) .scope-detail li > div > p,
-.featured:not(.dark):not(.tint) .scope-detail li > p {
+.featured:not(.dark):not(.tint) .tech-highlights span {
   color: var(--muted-strong);
-}
-
-.responsibilities {
-  padding-top: 48px;
-}
-
-/* 技術スタックの補足 */
-.tech-notes {
-  border-top: 1px solid var(--line);
-  margin: 16px 0 0;
-  padding-top: 14px;
-}
-
-.tech-notes > div + div {
-  margin-top: 12px;
-}
-
-.tech-notes dt {
-  color: var(--orange);
-  font-family: var(--font-display);
-  font-size: 0.64rem;
-  letter-spacing: 0.06em;
-}
-
-.tech-notes dd {
-  color: var(--muted);
-  font-size: 0.66rem;
-  line-height: 1.75;
-  margin: 5px 0 0;
-}
-
-.dark .tech-notes {
-  border-color: rgba(242, 239, 231, 0.22);
-}
-
-.dark .tech-notes dt {
-  color: var(--green);
-}
-
-.dark .tech-notes dd {
-  color: rgba(242, 239, 231, 0.6);
 }
 
 /* 見出しの下・作品カードの上に挟まる。時間軸で全体を掴んでから各作品へ。 */
@@ -840,81 +851,6 @@ a {
 
 .tint {
   background: var(--blue);
-}
-
-/* 担当範囲。1項目を1行に収め、余白を詰める */
-.scope-detail {
-  border-top: 1px solid var(--line);
-  list-style: none;
-  margin: 18px 0 0;
-  padding: 0;
-}
-
-.scope-detail li {
-  align-items: baseline;
-  border-bottom: 1px solid var(--line);
-  display: grid;
-  gap: 6px 20px;
-  grid-template-columns: 26px minmax(210px, 0.5fr) 1fr;
-  padding: 12px 6px;
-}
-
-/* 分野と見出しは横並びにして高さを稼がない */
-.scope-detail li > div {
-  align-items: baseline;
-  display: flex;
-  gap: 10px;
-  min-width: 0;
-}
-
-.scope-detail li > span,
-.scope-detail li > div > p {
-  color: var(--muted);
-  font-family: var(--font-display);
-  font-size: 0.55rem;
-  letter-spacing: 0.1em;
-  margin: 0;
-  white-space: nowrap;
-}
-
-.scope-detail h3 {
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  margin: 0;
-}
-
-.scope-detail li > p {
-  color: var(--muted);
-  font-size: 0.72rem;
-  line-height: 1.7;
-  margin: 0;
-}
-
-/* 暗い章では線と文字色を反転させる */
-.dark .scope-detail,
-.dark .scope-detail li {
-  border-color: rgba(242, 239, 231, 0.25);
-}
-
-.dark .scope-detail li > span,
-.dark .scope-detail li > div > p {
-  color: var(--green);
-}
-
-.dark .scope-detail li > p {
-  color: rgba(242, 239, 231, 0.7);
-}
-
-.tint .scope-detail,
-.tint .scope-detail li {
-  border-color: rgba(21, 26, 23, 0.28);
-}
-
-.tint .scope-detail li > span,
-.tint .scope-detail li > div > p,
-.tint .scope-detail li > p {
-  color: rgba(21, 26, 23, 0.66);
 }
 
 .profile {
@@ -1177,13 +1113,8 @@ footer {
     gap: 32px;
   }
 
-  .scope-detail li {
-    align-items: start;
-    grid-template-columns: 34px 1fr;
-  }
-
-  .scope-detail li > p {
-    grid-column: 2;
+  .tech-highlights ul {
+    grid-template-columns: 1fr;
   }
 }
 

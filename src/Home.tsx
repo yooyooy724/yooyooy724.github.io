@@ -38,10 +38,9 @@ type Work = {
     label: string;
     title: string;
     body: string;
-    stack?: string;
-    notes?: { name: string; detail: string }[];
   }[];
-  scope: { number: string; field: string; title: string; detail: string }[];
+  // 技術面は文章ではなく一覧で一気に見せる
+  tech: { name: string; detail: string }[];
   storeLink?: { label: string; href: string };
 };
 
@@ -60,6 +59,7 @@ const works: Record<string, Work> = {
       { term: "リリース", value: "2025年" },
       { term: "公開先", value: "iOS・Android（Steam版を準備中）" },
       { term: "開発環境", value: "Unity・C#・Blazor" },
+      { term: "担当", value: "企画・ゲームデザイン、アート、設計・実装、運営、チームリーダー" },
       { term: "成績", value: "累計 約3.8万DL／App Store 4.6" },
     ],
     metricsNote: "App Store 3.13万／Google Play 6,919（2026年7月確認）",
@@ -71,50 +71,20 @@ const works: Record<string, Work> = {
     ],
     caseStudies: [
       {
-        label: "開発理念",
+        label: "開発体制",
         title: "遊び手ベースをすべてにおいて。",
         body: "UI担当、ドメイン担当という職能・工程ごとの横割りではなく、コンテンツごとに企画から実装までを担う縦割りの分業体制を採用しました。これにより、チームメンバー全員が遊び手に近い視点を保ちながら開発できる状態を目指しています。企画、ゲームデザイン、UI、実装、運営のどの段階においても、遊び手にどのような体験が届くのかを判断の基準としています。",
       },
-      {
-        label: "設計",
-        title: "コンテンツごとに本質を問うDDD。",
-        body: "チームメンバーが全員プログラマーだったため、仕様共有のためのドキュメントは作成せず、コードそのものをチームの共通言語としました。そこで、コンテンツの概念、ルール、制約をコードによって明確に表明する必要があると考え、DDDを採用しました。ドメインを明確にするプロセスを設けたことで、チームメンバーもそれぞれ、コンテンツを精緻に理解しながら開発を進められたと感じています。また、DDDに基づいて責務と境界を整理したことで、コードの品質も向上しました。",
-        stack: "DDD・C#・.NET Standard 2.1",
-      },
-      {
-        label: "技術",
-        title: "ゲームの中身と表現を分離する。",
-        body: "ゲームのルールや状態を扱う部分はBlazorプロジェクト、プレイヤーが実際に触れる表現部分はUnityプロジェクトで管理しています。Blazorプロジェクトでは、ゲームロジックに加えて、画面遷移や操作を含む仮想的なUIを純粋なC#で表現し、BlazorのUI機構をプロトタイプとしても活用しています。UnityプロジェクトはBlazor側のビルド成果物を参照し、最終的なUIとグラフィックの実装に専念します。",
-        stack: "Blazor・Unity・C#・MVVM",
-      },
-      {
-        label: "技術",
-        title: "効率的な計算と、シンプルなコードを両立する。",
-        body: "放置ゲームでは、内部ロジックの処理負荷やメモリ使用量が課題になりやすくなります。データ指向設計は有効ですが、既存のオブジェクト指向設計へ全面的に導入すると、プロジェクト全体の構造が複雑になる可能性があります。そこで全面的な移行は選ばず、用途を限定した独自ECSとStructLinqを採用しました。必要な箇所だけデータを連続的に扱うことで、コードの見通しを保ちながら、処理負荷とGCの発生を抑えています。",
-        notes: [
-          {
-            name: "独自ECS",
-            detail: "データの配列管理と一括処理に機能を絞り、既存アーキテクチャへの影響を抑えた。並列処理とBurstコンパイルは対象外とした。",
-          },
-          {
-            name: "StructLinq",
-            detail: "構造体ベースのLINQ実装を用い、ヒープ確保とGC負荷を抑えた。",
-          },
-        ],
-      },
-      {
-        label: "アート制作",
-        title: "コンテンツ追加の制作コストを抑える。",
-        body: "本プロジェクトでは、リリース後の継続的なアップデートを前提としています。品質と提供速度を両立するため、1つのコンテンツを追加するたびに制作コストが不用意に増えない仕組みを重視しました。UI制作にはUI Toolkitを採用し、UXML、USS、C#を用いて、再利用・管理しやすい形で画面を実装しています。アートアセットの制作にはベクターデザインツールのLinearity Curveを活用し、点、線、図形を組み合わせる制作方法に統一しました。",
-        stack: "UI Toolkit・UXML・USS・Linearity Curve",
-      },
     ],
-    scope: [
-      { number: "01", field: "企画", title: "ゲームデザイン", detail: "ゲームの企画とルール、周回、コンテンツを設計。" },
-      { number: "02", field: "表現", title: "アート", detail: "UIとグラフィック、アートアセットを制作。" },
-      { number: "03", field: "開発", title: "設計と実装", detail: "ドメイン設計からUnity上の実装までを担当。" },
-      { number: "04", field: "運営", title: "コミュニティ運営", detail: "プレイヤーとの接点を持ち、リリース後の運営を継続。" },
-      { number: "05", field: "チーム", title: "チームリーダー", detail: "1〜4人規模のチームで、タスク設計、割り振り、進行確認を担当。" },
+    tech: [
+      { name: "DDD", detail: "仕様書の代わりにコードを共通言語とし、コンテンツごとの概念・ルール・制約をコードで表明。" },
+      { name: "ロジックと表現の分離", detail: "ゲームルールと仮想UIをBlazorプロジェクトで、最終的なUIとグラフィックをUnityで実装（MVVM）。" },
+      { name: "独自ECS", detail: "データの配列管理と一括処理に機能を絞り、処理負荷とGCの発生を抑制。" },
+      { name: "StructLinq", detail: "構造体ベースのLINQ実装で、ヒープ確保とGC負荷を回避。" },
+      { name: "関数型プログラミング", detail: "FinやOptionなどのモナドを取り入れ、堅牢なロジックを構成。" },
+      { name: "Firebase", detail: "クラウドセーブと非同期マルチ協力コンテンツを実装。" },
+      { name: "UI Toolkit", detail: "UXML・USS・C#で再利用しやすく画面を実装し、コンテンツ追加のコストを抑制。" },
+      { name: "Linearity Curve", detail: "点・線・図形の組み合わせに統一したベクターアート制作。" },
     ],
   },
 
@@ -131,6 +101,7 @@ const works: Record<string, Work> = {
       { term: "リリース", value: "2024年" },
       { term: "公開先", value: "Steam（PC・Mac）・iOS" },
       { term: "開発環境", value: "Unity・C#・UGUI" },
+      { term: "担当", value: "UI・グラフィック主担当、コンテンツ企画、採用・進行管理" },
       { term: "成績", value: "Steam 322レビュー（賛否両論）／App Store 3.9" },
     ],
     aspect: "landscape",
@@ -141,33 +112,9 @@ const works: Record<string, Work> = {
     ],
     caseStudies: [
       {
-        label: "思想",
+        label: "方針",
         title: "イラストレーター不在のチームでGenerative Artを採用する",
         body: "球面上に配置したパーティクルを多様な数学的手法で制御し、幾何学的な美しさを目指しました。Seed値に応じて絵が複雑に変化する仕組みに加え、ポストエフェクトやパーティクル向けのシェーダーを組み合わせ、眺め続けても飽きないグラフィックを目指しました。",
-      },
-      {
-        label: "技術",
-        title: "独自のパーティクルシステム",
-        body: "大量のパーティクルをゲームシステムと連携して変化させるため、パーティクルシステムを自作しました。Unityのデータ指向設計を支えるJobs / Burst / NativeContainerを駆使し、最大構成でおよそ13,000要素を同時に扱います。",
-        stack: "Unity・C#・UGUI",
-        notes: [
-          {
-            name: "Jobs / Burst / NativeContainer",
-            detail: "位置・速度・加速度・色・状態を複数のNativeListへ配置し、回転、球面運動、ノイズ流、追従、消滅演出を並列更新した。",
-          },
-          {
-            name: "GPUインスタンシング",
-            detail: "RenderMeshInstancedで描画をまとめ、個別の色はGraphicsBufferからHLSLのCustom Functionで読み出す。",
-          },
-          {
-            name: "手続き的な球面配置",
-            detail: "Fibonacci球、螺旋球、Euler角ベースの分布、3Dノイズによる流れを用い、球体というテーマと成長を同じ視覚言語へ統合した。",
-          },
-          {
-            name: "URP Renderer Feature",
-            detail: "Colorize、Toon、Pixelation、Chromatic Aberrationなどを切り替え可能にし、見た目そのものをDLCのテーマ展開へ接続した。",
-          },
-        ],
       },
       {
         label: "次への課題",
@@ -175,10 +122,13 @@ const works: Record<string, Work> = {
         body: "UIとゲームロジックを担当者で分けた体制では、ゲーム全体の完成度を一貫して判断しにくい問題が残りました。技術面でも、描画の基盤は作れた一方で実測に基づく判断ができていません。1ドローあたりのインスタンス数は実測ではなく固定値のままで、色バッファは変化のないフレームでも毎回全量を転送し、ジョブは直列に繋いで同じフレーム内で待っていました。次はProfilerとFrame DebuggerでCPUとGPUを分けて計測し、端末ごとの性能予算と品質段階を先に定義するところから始めます。",
       },
     ],
-    scope: [
-      { number: "01", field: "設計", title: "UI・グラフィック", detail: "主担当として画面とビジュアルを設計。" },
-      { number: "02", field: "企画", title: "コンテンツ", detail: "ゲーム内コンテンツの検討にも関わる。" },
-      { number: "03", field: "チーム", title: "採用と進行管理", detail: "アルバイトメンバーの採用、タスクの割り振り、進行確認を担当。" },
+    tech: [
+      { name: "自作パーティクルシステム", detail: "Jobs・Burst・NativeContainerで位置・速度・色・状態を並列更新し、最大構成でおよそ13,000要素を同時に扱う。" },
+      { name: "GPUインスタンシング", detail: "RenderMeshInstancedで描画をまとめ、個別の色はGraphicsBufferからHLSLのCustom Functionで読み出す。" },
+      { name: "手続き的な球面配置", detail: "Fibonacci球、螺旋球、Euler角ベースの分布、3Dノイズによる流れで、球体のテーマと成長を表現。" },
+      { name: "URP Renderer Feature", detail: "Colorize・Toon・Pixelationなどを切り替え、見た目をDLCのテーマ展開へ接続。" },
+      { name: "ドメイン駆動設計", detail: "新しい試みとして導入し、ゲームロジックの責務と境界を整理。" },
+      { name: "マルチプラットフォーム", detail: "モバイルからPC・Macへの対応を実現。" },
     ],
     storeLink: { label: "Steamで作品を見る", href: "https://store.steampowered.com/app/3217600/Idle_Sphere/" },
   },
@@ -196,6 +146,7 @@ const works: Record<string, Work> = {
       { term: "リリース", value: "2022年" },
       { term: "公開先", value: "Steam（PC）・iOS・Android" },
       { term: "開発環境", value: "Unity・C#" },
+      { term: "担当", value: "UI・グラフィック主担当、ゲームデザイン・実装の一部、モバイル版UI再設計" },
       { term: "成績", value: "モバイル累計 約8.3万DL／Steam 無料ライセンス 457,768" },
     ],
     metricsNote: "Steam ユニークユーザー 323,670・売上総額 $110,076・DLC 18,502本・非常に好評（1,871件）／App Store 4.08万・Google Play 42,036（2026年7月確認）",
@@ -207,32 +158,21 @@ const works: Record<string, Work> = {
     ],
     caseStudies: [
       {
-        label: "開発理念",
+        label: "取り組み",
         title: "リファクタリングを繰り返す",
         body: "全くの未経験から参加し、UIとGraphicを担当しました。そのため、勉強と開発を同時並行で進め、設計やコードの可読性について知識を得るたびにリファクタリングを繰り返しました。初期は、リファクタリングを重ねるほど全体のコード行数が減り、開発速度も上がりました。技術が身につくにつれて大規模なリファクタリングを行う機会が増え、コード品質と開発速度のトレードオフについて考えるようになりました。",
       },
       {
-        label: "開発理念",
+        label: "取り組み",
         title: "UI・Graphicの観点からのアイデア",
         body: "Graphicをより華やかにし、ゲームをより直感的にするため、UIやGraphicの観点から提案を続けました。たとえば、螺旋の本数を増やすアップグレードの追加や、バトルシステムにおける状態の定義（準備・バトル・結果確認）などを提案しました。",
       },
-      {
-        label: "技術",
-        title: "螺旋の表現",
-        body: "Shader Graphを使い、螺旋の表面に用いるガラス、ノイズ、炎、水面のシェーダーや、画面全体のエフェクトなど30本以上を制作しました。パーティクルによる、よりリッチな表現にはVFX Graphを使用しました。",
-        stack: "Unity・C#・Shader Graph・VFX Graph",
-      },
-      {
-        label: "技術",
-        title: "外部ライブラリへの依存度を減らす",
-        body: "UnityのUI要素をラッピングする仕組みや、依存性注入によってMonoBehaviourへの直接依存を抑える設計を取り入れ、Unityを含む外部ライブラリへの依存度を減らしました。",
-        stack: "C#・Dependency Injection",
-      },
     ],
-    scope: [
-      { number: "01", field: "設計", title: "UI・グラフィック", detail: "主担当として画面とビジュアルを設計。" },
-      { number: "02", field: "開発", title: "ゲームデザインと実装", detail: "ゲームデザインと内部実装にも部分的に参加。" },
-      { number: "03", field: "移植", title: "モバイル版のUI再設計", detail: "iOS・Android版への移植では、UIを全面的に作り直し。" },
+    tech: [
+      { name: "Shader Graph", detail: "ガラス・ノイズ・炎・水面や画面全体のエフェクトなど、30本以上のシェーダーを制作。" },
+      { name: "VFX Graph", detail: "パーティクルによる、よりリッチな表現に使用。" },
+      { name: "依存性注入", detail: "MonoBehaviourへの直接依存を抑え、外部ライブラリへの依存度を低減。" },
+      { name: "UIのラッピング", detail: "UnityのUI要素を包む層を設け、差し替えに強い構造に。" },
     ],
     storeLink: { label: "Steamで作品を見る", href: "https://store.steampowered.com/app/1827980/Idle_Spiral/" },
   },
@@ -243,7 +183,7 @@ const careerTimeline = [
   {
     phase: "学生時代",
     date: "2016 - 2022",
-    title: "人と空間への関心",
+    title: "認知科学とテクノロジーへの関心",
     detail: "認知科学への関心を強め、大学の授業や独学で学ぶ。特に、空間認知や運動主体感について学ぶ。教育工学の研究室に所属し、空間認知を題材にしたボードゲームの開発や、VRデバイスを用いた空間描画について研究する。",
     areas: [],
   },
@@ -516,49 +456,36 @@ export default function Home() {
           </div>
         </div>
 
-        <WorkGallery work={work} />
-
         <div className="case-study-grid">
           {work.caseStudies.map((study) => (
             <article key={study.title}>
               <p className="label">{study.label}</p>
               <h3>{study.title}</h3>
               <p>{study.body}</p>
-              {study.stack && <small>{study.stack}</small>}
-              {study.notes && (
-                <dl className="tech-notes">
-                  {study.notes.map((note) => (
-                    <div key={note.name}>
-                      <dt>{note.name}</dt>
-                      <dd>{note.detail}</dd>
-                    </div>
-                  ))}
-                </dl>
-              )}
             </article>
           ))}
         </div>
 
-        <div className="responsibilities">
-          <p className="label">担当範囲</p>
-          <ol className="scope-detail">
-            {work.scope.map((item) => (
-              <li key={item.number}>
-                <span>{item.number}</span>
-                <div>
-                  <p>{item.field}</p>
-                  <h3>{item.title}</h3>
-                </div>
-                <p>{item.detail}</p>
+        <div className="tech-highlights">
+          <p className="label">技術</p>
+          <ul>
+            {work.tech.map((item) => (
+              <li key={item.name}>
+                <strong>{item.name}</strong>
+                <span>{item.detail}</span>
               </li>
             ))}
-          </ol>
-          {work.storeLink && (
-            <a className="store-link" href={work.storeLink.href} target="_blank" rel="noreferrer">
-              {work.storeLink.label} ↗
-            </a>
-          )}
+          </ul>
         </div>
+
+        {/* 文章はここまで。スクリーンショットは章の締めに置く */}
+        <WorkGallery work={work} />
+
+        {work.storeLink && (
+          <a className="store-link" href={work.storeLink.href} target="_blank" rel="noreferrer">
+            {work.storeLink.label} ↗
+          </a>
+        )}
       </section>
   );
 
