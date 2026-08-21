@@ -245,66 +245,32 @@ a {
   z-index: 3;
 }
 
-.works-overview-heading {
-  align-items: end;
-  border-bottom: 1px solid var(--line);
-  border-top: 1px solid var(--line);
-  display: grid;
-  gap: 40px;
-  grid-template-columns: 1fr auto;
-  padding: 24px 0;
-}
-
-.works-overview-heading p {
-  color: var(--orange);
-  font-size: 0.68rem;
-  font-weight: 700;
+.works-overview-title {
+  align-items: center;
+  display: flex;
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
+  font-weight: 650;
+  gap: 14px;
+  letter-spacing: -0.04em;
   margin: 0;
 }
 
-.career-summary {
-  display: grid;
-  gap: 1px;
-  grid-template-columns: repeat(3, 1fr);
-  padding-top: 1px;
+/* タイムラインの丸印と呼応させる */
+.works-overview-title::before {
+  background: var(--orange);
+  border-radius: 4px;
+  content: "";
+  height: 0.72em;
+  width: 0.72em;
 }
 
-.career-summary article {
-  background: #e5e2d9;
-  display: grid;
-  gap: 16px;
-  grid-template-columns: 72px 1fr;
-  min-width: 0;
-  padding: 16px;
-}
-
-.career-summary article > img {
-  aspect-ratio: 1;
-  border-radius: 18px;
-  box-shadow: 0 6px 18px rgba(21, 26, 23, 0.12);
-  height: auto;
-  object-fit: cover;
-  width: 72px;
-}
-
-.work-summary-copy {
-  min-width: 0;
-}
-
-.work-summary-copy h3 {
-  font-family: var(--font-display);
-  font-size: clamp(0.98rem, 1.4vw, 1.3rem);
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  margin: 2px 0 7px;
-}
-
-/* 本編ではなく傍注。作品カードと競合しないよう、囲みではなく罫線だけで示す。 */
+/* 本編ではなく傍注。章の合間に置く角丸ボックスで「ちなみに」の重みを示す。 */
 .genre-note {
-  border-left: 2px solid var(--orange);
-  margin: 30px 0 0;
-  max-width: 62ch;
-  padding: 2px 0 2px 16px;
+  background: #e5e2d9;
+  border-radius: 28px;
+  margin: 0 clamp(28px, 6vw, 104px) clamp(72px, 9vw, 128px);
+  max-width: 720px;
+  padding: clamp(26px, 4vw, 44px) clamp(28px, 4.5vw, 52px);
 }
 
 .genre-note-label {
@@ -346,31 +312,62 @@ a {
   padding-left: 2px;
 }
 
-.work-summary-copy ul {
+/* 章の締めに公開先を並べる */
+.work-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 8px;
   list-style: none;
-  margin: 13px 0 0;
+  margin: clamp(36px, 5vw, 56px) 0 0;
   padding: 0;
 }
 
-.work-summary-copy li {
-  font-size: 0.55rem;
+.work-links li {
+  font-size: 0.6rem;
   line-height: 1;
 }
 
-.work-summary-copy li a {
+.work-links a {
   align-items: center;
   background: var(--paper);
   border: 1px solid rgba(21, 26, 23, 0.28);
   border-radius: 999px;
   box-shadow: 0 2px 0 rgba(21, 26, 23, 0.16);
+  color: var(--ink);
   display: inline-flex;
   font-weight: 700;
-  min-height: 30px;
-  padding: 8px 11px;
+  min-height: 32px;
+  padding: 9px 13px;
   transition: background 160ms ease, box-shadow 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.work-links a:hover,
+.work-links a:focus-visible {
+  background: var(--ink);
+  box-shadow: 0 4px 0 rgba(240, 107, 69, 0.8);
+  color: var(--paper);
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.dark .work-links a {
+  border-color: rgba(242, 239, 231, 0.35);
+}
+
+.dark .work-links a:hover,
+.dark .work-links a:focus-visible {
+  background: var(--green);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+  color: var(--ink);
+}
+
+.dark .platform-pending {
+  border-color: rgba(242, 239, 231, 0.45);
+  color: rgba(242, 239, 231, 0.6);
+}
+
+.tint .work-links a {
+  border-color: rgba(21, 26, 23, 0.4);
 }
 
 /* リンク先がまだ無いものは、同じ形のまま「押せない」ことが分かる見た目にする。 */
@@ -383,15 +380,6 @@ a {
   font-weight: 700;
   min-height: 30px;
   padding: 8px 11px;
-}
-
-.work-summary-copy li a:hover,
-.work-summary-copy li a:focus-visible {
-  background: var(--ink);
-  box-shadow: 0 4px 0 rgba(240, 107, 69, 0.8);
-  color: var(--paper);
-  outline: none;
-  transform: translateY(-2px);
 }
 
 .featured-title {
@@ -753,8 +741,7 @@ a {
 
 /* 見出しの下・作品カードの上に挟まる。時間軸で全体を掴んでから各作品へ。 */
 .career-graph {
-  border-bottom: 1px solid var(--line);
-  padding: clamp(28px, 4vw, 52px) 0 clamp(36px, 5vw, 64px);
+  padding: clamp(24px, 3.5vw, 44px) 0 clamp(36px, 5vw, 64px);
   position: relative;
   z-index: 2;
 }
@@ -877,15 +864,6 @@ a {
   letter-spacing: -0.07em;
   line-height: 1.25;
   margin: 0;
-}
-
-.store-link {
-  border-bottom: 1px solid currentColor;
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 600;
-  margin-top: 30px;
-  padding-bottom: 5px;
 }
 
 .fact-list {
@@ -1157,15 +1135,6 @@ footer {
     padding: 36px 0 60px;
   }
 
-  .career-summary {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .works-overview-heading {
-    align-items: start;
-    grid-template-columns: 1fr;
-  }
-
   .featured-title,
   .profile-grid {
     grid-template-columns: 1fr;
@@ -1184,10 +1153,6 @@ footer {
   /* 幅が足りないので、印には年だけを添える */
   .era-readout em {
     display: none;
-  }
-
-  .career-summary {
-    grid-template-columns: 1fr;
   }
 
   .work-gallery {

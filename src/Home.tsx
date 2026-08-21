@@ -41,7 +41,8 @@ type Work = {
   }[];
   // 技術面は文章ではなく一覧で一気に見せる。カテゴリごとにタブで切り替える
   tech: { tab: string; items: { name: string; detail: string }[] }[];
-  storeLink?: { label: string; href: string };
+  // 公開先へのリンク。href の無いものは準備中の表示になる
+  links: { label: string; href?: string }[];
 };
 
 // 3作品は同じ構成で見せる。章ごとの差はこのデータだけに閉じ込める。
@@ -119,6 +120,14 @@ const works: Record<string, Work> = {
         ],
       },
     ],
+    links: [
+      {
+        label: "iOS",
+        href: "https://apps.apple.com/jp/app/idle-minertia-%E6%94%BE%E7%BD%AE%E3%81%A7%E7%A9%B4%E6%8E%98%E3%82%8A/id6748000916",
+      },
+      { label: "Android", href: "https://play.google.com/store/apps/details?id=com.idlesystem.IdleCube&hl=ja" },
+      { label: "Steam（準備中）" },
+    ],
   },
 
   sphere: {
@@ -168,7 +177,10 @@ const works: Record<string, Work> = {
         ],
       },
     ],
-    storeLink: { label: "Steamで作品を見る", href: "https://store.steampowered.com/app/3217600/Idle_Sphere/" },
+    links: [
+      { label: "Steam（PC・Mac）", href: "https://store.steampowered.com/app/3217600/Idle_Sphere/" },
+      { label: "iOS", href: "https://apps.apple.com/jp/app/idlesphere/id6480509205" },
+    ],
   },
 
   spiral: {
@@ -218,7 +230,11 @@ const works: Record<string, Work> = {
         ],
       },
     ],
-    storeLink: { label: "Steamで作品を見る", href: "https://store.steampowered.com/app/1827980/Idle_Spiral/" },
+    links: [
+      { label: "Steam（PC）", href: "https://store.steampowered.com/app/1827980/Idle_Spiral/" },
+      { label: "iOS", href: "https://apps.apple.com/jp/app/idlespiral/id6476647541" },
+      { label: "Android", href: "https://play.google.com/store/apps/details?id=com.idlesystem.IdleSpiral&hl=ja" },
+    ],
   },
 };
 
@@ -262,49 +278,6 @@ const careerTimeline = [
 ];
 
 // 各プラットフォームはストアページへのリンクになる。
-const participatedWorks: {
-  title: string;
-  icon: string;
-  platforms: { label: string; href?: string }[];
-}[] = [
-  {
-    title: "Idle Minertia",
-    icon: "/icon-idle-minertia.webp",
-    platforms: [
-      {
-        label: "iOS",
-        href: "https://apps.apple.com/jp/app/idle-minertia-%E6%94%BE%E7%BD%AE%E3%81%A7%E7%A9%B4%E6%8E%98%E3%82%8A/id6748000916",
-      },
-      {
-        label: "Android",
-        href: "https://play.google.com/store/apps/details?id=com.idlesystem.IdleCube&hl=ja",
-      },
-      // Steam版はまだストアページが無いので、リンクにはしない。
-      { label: "Steam（準備中）" },
-    ],
-  },
-  {
-    title: "Idle Sphere",
-    icon: "/icon-idle-sphere.webp",
-    platforms: [
-      { label: "Steam（PC・Mac）", href: "https://store.steampowered.com/app/3217600/Idle_Sphere/" },
-      { label: "iOS", href: "https://apps.apple.com/jp/app/idlesphere/id6480509205" },
-    ],
-  },
-  {
-    title: "Idle Spiral",
-    icon: "/icon-idle-spiral.webp",
-    platforms: [
-      { label: "Steam（PC）", href: "https://store.steampowered.com/app/1827980/Idle_Spiral/" },
-      { label: "iOS", href: "https://apps.apple.com/jp/app/idlespiral/id6476647541" },
-      {
-        label: "Android",
-        href: "https://play.google.com/store/apps/details?id=com.idlesystem.IdleSpiral&hl=ja",
-      },
-    ],
-  },
-];
-
 // 進捗（0 = 最初の章 = 現在）を、左＝過去・右＝現在の軸上の位置に反転して割り当てる。
 const toEraAxis = (progress: number) => (1 - progress) * 100;
 
@@ -550,11 +523,20 @@ export default function Home() {
 
         <TechHighlights work={work} />
 
-        {work.storeLink && (
-          <a className="store-link" href={work.storeLink.href} target="_blank" rel="noreferrer">
-            {work.storeLink.label} ↗
-          </a>
-        )}
+        <ul className="work-links" aria-label={`${work.title}の公開先`}>
+          {work.links.map((link) => (
+            <li key={link.label}>
+              {link.href ? (
+                <a href={link.href} target="_blank" rel="noreferrer">
+                  {link.label}
+                  <span aria-hidden="true"> ↗</span>
+                </a>
+              ) : (
+                <span className="platform-pending">{link.label}</span>
+              )}
+            </li>
+          ))}
+        </ul>
       </section>
   );
 
@@ -592,11 +574,7 @@ export default function Home() {
           </div>
 
           <div className="works-overview">
-            <div className="works-overview-heading">
-              <div>
-                <p>経歴</p>
-              </div>
-            </div>
+            <h2 className="works-overview-title">経歴</h2>
 
             <div className="career-graph">
               <ol className="career-timeline" aria-label="学生時代から現在までの時系列">
@@ -621,45 +599,22 @@ export default function Home() {
               </ol>
             </div>
 
-            <div className="career-summary" aria-label="これまで携わった作品">
-              {participatedWorks.map((work) => (
-                <article key={work.title}>
-                  <img src={asset(work.icon)} alt={`${work.title}のアプリアイコン`} width={72} height={72} />
-                  <div className="work-summary-copy">
-                    <h3>{work.title}</h3>
-                    <ul aria-label={`${work.title}の公開プラットフォーム`}>
-                      {work.platforms.map((platform) => (
-                        <li key={platform.label}>
-                          {platform.href ? (
-                            <a href={platform.href} target="_blank" rel="noreferrer">
-                              {platform.label}
-                              <span aria-hidden="true"> ↗</span>
-                            </a>
-                          ) : (
-                            <span className="platform-pending">{platform.label}</span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </article>
-              ))}
-            </div>
 
-            {/* 3作品とも同じジャンルなので、馴染みのない読み手のために一言だけ補う。 */}
-            <aside className="genre-note">
-              <p className="genre-note-label">ちなみに</p>
-              <h3>Idleゲームとは？</h3>
-              <p>
-                複雑なアクション性を無くし、放置する間に進行することを特徴とするジャンルです。代表作としては<a href="https://orteil.dashnet.org/cookieclicker/" target="_blank" rel="noreferrer">『Cookie Clicker』<span aria-hidden="true">↗</span></a>があり、増えた資源を何に投資し、どの時点でリセットするかを考えながら攻略することが遊び方の中心となります。
-              </p>
-              <p>
-                主に英語圏のブラウザゲームサイトを中心に広まり、今ではSteamやモバイルアプリでも定着しつつあり、スキマ時間のゲームとして親しまれています。
-              </p>
-            </aside>
           </div>
 
         </section>
+
+        {/* 3作品とも同じジャンルなので、馴染みのない読み手のために一言だけ補う。 */}
+        <aside className="genre-note">
+          <p className="genre-note-label">ちなみに</p>
+          <h3>Idleゲームとは？</h3>
+          <p>
+            複雑なアクション性を無くし、放置する間に進行することを特徴とするジャンルです。代表作としては<a href="https://orteil.dashnet.org/cookieclicker/" target="_blank" rel="noreferrer">『Cookie Clicker』<span aria-hidden="true">↗</span></a>があり、増えた資源を何に投資し、どの時点でリセットするかを考えながら攻略することが遊び方の中心となります。
+          </p>
+          <p>
+            主に英語圏のブラウザゲームサイトを中心に広まり、今ではSteamやモバイルアプリでも定着しつつあり、スキマ時間のゲームとして親しまれています。
+          </p>
+        </aside>
 
         {renderWork(works.minertia)}
 
