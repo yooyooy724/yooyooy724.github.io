@@ -233,7 +233,7 @@ const works: Record<string, Work> = {
       { term: "関わり方", value: "Steam版は業務委託、約1年かけたモバイル版への移植はアルバイトとして参加" },
       { term: "実績", value: "モバイル累計 約8.3万DL／Steam ユニークユーザー 約32.4万" },
     ],
-    metricsNote: "Steam 獲得ライセンス（無料配布含む）457,768・売上総額 $110,076・DLC 18,502本・非常に好評（1,871件）／App Store 4.08万・Google Play 42,036（2026年7月確認）",
+    metricsNote: "Steam 獲得ライセンス（無料配布含む）457,768・DLC 18,502本・非常に好評（1,871件）／App Store 4.08万・Google Play 42,036（2026年7月確認）",
     aspect: "landscape",
     images: [
       { src: "/spiral-shot-01.webp", alt: "数式パネルと、複数ラインで描かれた螺旋" },
