@@ -26,6 +26,8 @@ type Work = {
   logo: string;
   tone: "dark" | "tint" | "";
   chapterLabel: string;
+  // 章の見出し。経歴タイムラインの同じ時期の項目名と揃える
+  chapterTitle: string;
   eyebrow: string;
   title: string;
   description: string;
@@ -52,6 +54,7 @@ const works: Record<string, Work> = {
     logo: "/icon-idle-minertia.webp",
     tone: "dark",
     chapterLabel: "2025.01 -",
+    chapterTitle: "『Idle Minertia』制作を主導",
     eyebrow: "放置ゲーム × ローグライク × 非同期マルチプレイ",
     title: "Idle Minertia",
     description:
@@ -135,6 +138,7 @@ const works: Record<string, Work> = {
     logo: "/icon-idle-sphere.webp",
     tone: "",
     chapterLabel: "2024.01 -",
+    chapterTitle: "『Idle Sphere』制作に参加",
     eyebrow: "放置ゲーム × インフレーション",
     title: "Idle Sphere",
     description:
@@ -188,6 +192,7 @@ const works: Record<string, Work> = {
     logo: "/icon-idle-spiral.webp",
     tone: "tint",
     chapterLabel: "2022.09 -",
+    chapterTitle: "『Idle Spiral』制作に参加",
     eyebrow: "放置・クリッカーゲーム × 数学",
     title: "Idle Spiral",
     description:
@@ -486,14 +491,17 @@ export default function Home() {
         id={work.id}
       >
         <div className="chapter-meta">
+          <h2 className="works-overview-title">{work.chapterTitle}</h2>
           <span>{work.chapterLabel}</span>
-          <img className="chapter-logo" src={asset(work.logo)} alt="" aria-hidden="true" />
         </div>
 
         <div className="featured-title">
           <div>
             <p className="eyebrow">{work.eyebrow}</p>
-            <h2>{work.title}</h2>
+            <div className="featured-name">
+              <img className="chapter-logo" src={asset(work.logo)} alt="" aria-hidden="true" />
+              <h2>{work.title}</h2>
+            </div>
             <p className="featured-description">{work.description}</p>
           </div>
           <div className="featured-meta">

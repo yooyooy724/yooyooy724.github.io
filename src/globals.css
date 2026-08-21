@@ -156,11 +156,16 @@ a {
   box-shadow: 0 18px 50px rgba(21, 26, 23, 0.12);
   flex: none;
   height: clamp(52px, 5vw, 68px);
-  margin-left: 24px;
   object-fit: cover;
   opacity: 1;
   pointer-events: none;
   width: clamp(52px, 5vw, 68px);
+}
+
+.featured-name {
+  align-items: center;
+  display: flex;
+  gap: clamp(18px, 2.4vw, 34px);
 }
 
 .dark .chapter-logo {
@@ -168,14 +173,21 @@ a {
 }
 
 .chapter-meta {
-  align-items: center;
+  align-items: baseline;
   border-bottom: 1px solid var(--line);
   display: flex;
+  gap: 24px;
   justify-content: space-between;
-  min-height: calc(clamp(52px, 5vw, 68px) + 14px);
-  padding-bottom: 14px;
+  padding-bottom: 16px;
   position: relative;
   z-index: 2;
+}
+
+/* 見出し（works-overview-title）は本文書体なので、右の年月は既定の英字書体のまま */
+.chapter-meta .works-overview-title {
+  font-family: var(--font-jp);
+  letter-spacing: -0.02em;
+  text-transform: none;
 }
 
 .dark {
