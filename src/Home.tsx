@@ -134,7 +134,7 @@ const works: Record<string, Work> = {
     id: "sphere",
     logo: "/icon-idle-sphere.webp",
     tone: "",
-    chapterLabel: "2024.01 - 2025.01",
+    chapterLabel: "2024.01 -",
     eyebrow: "放置ゲーム × インフレーション",
     title: "Idle Sphere",
     description:
@@ -187,7 +187,7 @@ const works: Record<string, Work> = {
     id: "spiral",
     logo: "/icon-idle-spiral.webp",
     tone: "tint",
-    chapterLabel: "2022.09 - 2024.01",
+    chapterLabel: "2022.09 -",
     eyebrow: "放置・クリッカーゲーム × 数学",
     title: "Idle Spiral",
     description:
