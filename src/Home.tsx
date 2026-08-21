@@ -480,7 +480,6 @@ export default function Home() {
   // 端でラベルがはみ出さないよう、読み取り表示だけは内側に寄せる。
   const readoutPosition = Math.min(90, Math.max(10, markerPosition));
   const activeChapter = chapters.find((item) => item.id === activeSection);
-  const activeLabel = navigation.find((item) => item.id === activeSection)?.label;
   // 概要は時間軸上の一点ではないため、表示中はインジケータを引っ込める。
   const axisHidden = !activeChapter;
 
@@ -492,7 +491,7 @@ export default function Home() {
       >
         <div className="chapter-meta">
           <h2 className="works-overview-title">{work.chapterTitle}</h2>
-          <span>{work.chapterLabel}</span>
+          <span className="chapter-date">{work.chapterLabel}</span>
         </div>
 
         <div className="featured-title">
@@ -567,7 +566,6 @@ export default function Home() {
             </a>
           ))}
         </nav>
-        <span className="site-header-current">{activeLabel}</span>
       </header>
 
       <div className="page">

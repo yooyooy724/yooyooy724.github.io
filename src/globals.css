@@ -22,9 +22,8 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-bottom: calc(var(--era-axis-height) + 12px);
-  /* 固定ヘッダーの高さぶん、アンカー移動の着地点を下げる */
-  scroll-padding-top: calc(var(--site-header-height) + 16px);
+  /* 上部に固定された時間軸のぶん、アンカー移動の着地点を下げる */
+  scroll-padding-top: calc(var(--era-axis-height) + 16px);
 }
 
 body {
@@ -87,7 +86,7 @@ a {
   justify-content: space-between;
   left: 0;
   padding: 0 clamp(28px, 6vw, 104px);
-  position: fixed;
+  position: absolute;
   top: 0;
   width: 100%;
   z-index: 40;
@@ -136,13 +135,8 @@ a {
   opacity: 1;
 }
 
-/* 現在の章名はモバイルでのみ表示する */
-.site-header-current {
-  display: none;
-}
-
 .page {
-  padding-bottom: var(--era-axis-height);
+  padding-bottom: 0;
 }
 
 .chapter {
@@ -177,10 +171,17 @@ a {
   border-bottom: 1px solid var(--line);
   display: flex;
   gap: 24px;
-  justify-content: space-between;
+  justify-content: center;
   padding-bottom: 16px;
   position: relative;
   z-index: 2;
+}
+
+.chapter-date {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 /* 見出し（works-overview-title）は本文書体なので、右の年月は既定の英字書体のまま */
@@ -260,6 +261,7 @@ a {
 .works-overview-title {
   align-items: center;
   display: flex;
+  justify-content: center;
   font-size: clamp(1.35rem, 2.4vw, 2rem);
   font-weight: 650;
   gap: 14px;
@@ -945,8 +947,8 @@ footer {
   align-items: center;
   backdrop-filter: blur(16px);
   background: rgba(242, 239, 231, 0.92);
-  border-top: 1px solid var(--line);
-  bottom: 0;
+  border-bottom: 1px solid var(--line);
+  top: 0;
   display: flex;
   gap: clamp(14px, 2vw, 26px);
   height: var(--era-axis-height);
@@ -962,7 +964,7 @@ footer {
 .era-axis.is-hidden {
   opacity: 0;
   pointer-events: none;
-  transform: translateY(100%);
+  transform: translateY(-100%);
 }
 
 .era-axis-end {
@@ -1101,11 +1103,6 @@ footer {
 
   .site-logo {
     font-size: 1.2rem;
-  }
-
-  .site-header-current {
-    display: block;
-    font-size: 0.68rem;
   }
 
   .chapter {
