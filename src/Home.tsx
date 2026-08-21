@@ -501,6 +501,20 @@ export default function Home() {
               <img className="chapter-logo" src={asset(work.logo)} alt="" aria-hidden="true" />
               <h2>{work.title}</h2>
             </div>
+            <ul className="work-links" aria-label={`${work.title}の公開先`}>
+              {work.links.map((link) => (
+                <li key={link.label}>
+                  {link.href ? (
+                    <a href={link.href} target="_blank" rel="noreferrer">
+                      {link.label}
+                      <span aria-hidden="true"> ↗</span>
+                    </a>
+                  ) : (
+                    <span className="platform-pending">{link.label}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
             <p className="featured-description">{work.description}</p>
           </div>
           <div className="featured-meta">
@@ -530,20 +544,6 @@ export default function Home() {
 
         <TechHighlights work={work} />
 
-        <ul className="work-links" aria-label={`${work.title}の公開先`}>
-          {work.links.map((link) => (
-            <li key={link.label}>
-              {link.href ? (
-                <a href={link.href} target="_blank" rel="noreferrer">
-                  {link.label}
-                  <span aria-hidden="true"> ↗</span>
-                </a>
-              ) : (
-                <span className="platform-pending">{link.label}</span>
-              )}
-            </li>
-          ))}
-        </ul>
       </section>
   );
 
