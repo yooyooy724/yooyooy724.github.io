@@ -59,7 +59,7 @@ const works: Record<string, Work> = {
       { term: "リリース", value: "2025年" },
       { term: "公開先", value: "iOS・Android（Steam版を準備中）" },
       { term: "開発環境", value: "Unity・C#・Blazor" },
-      { term: "担当", value: "企画・ゲームデザイン、アート、設計・実装、運営、チームリーダー" },
+      { term: "担当", value: "企画から運営まで全域・チームリーダー" },
       { term: "成績", value: "累計 約3.8万DL／App Store 4.6" },
     ],
     metricsNote: "App Store 3.13万／Google Play 6,919（2026年7月確認）",
@@ -456,6 +456,8 @@ export default function Home() {
           </div>
         </div>
 
+        <WorkGallery work={work} />
+
         <div className="case-study-grid">
           {work.caseStudies.map((study) => (
             <article key={study.title}>
@@ -477,9 +479,6 @@ export default function Home() {
             ))}
           </ul>
         </div>
-
-        {/* 文章はここまで。スクリーンショットは章の締めに置く */}
-        <WorkGallery work={work} />
 
         {work.storeLink && (
           <a className="store-link" href={work.storeLink.href} target="_blank" rel="noreferrer">
