@@ -111,7 +111,7 @@ const works: Record<string, Work> = {
         ],
       },
       {
-        tab: "サービス・運営",
+        tab: "その他",
         items: [
           { name: "Firebase（BaaS）", detail: "Googleのバックエンドサービス群。Authentication・Firestore・Cloud Functionsで、クラウドセーブと非同期マルチ協力コンテンツをサーバーレスに実装。" },
           { name: "fastlane（自動化ツール）", detail: "ストア申請の自動化ツール。スクリーンショットやメタデータ更新の手作業を減らすため。" },
@@ -317,6 +317,7 @@ function TechHighlights({ work }: { work: Work }) {
 
   return (
     <div className="tech-highlights">
+      <p className="label">技術スタック</p>
       {groups.length > 1 && (
         <div className="tech-tabs" aria-label="技術のカテゴリ">
           {groups.map((group, index) => (
