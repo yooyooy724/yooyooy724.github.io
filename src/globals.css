@@ -399,7 +399,7 @@ a {
   display: grid;
   gap: 80px;
   grid-template-columns: 1.45fr 1fr;
-  padding: clamp(72px, 9vw, 140px) 0 54px;
+  padding: clamp(36px, 4.5vw, 64px) 0 54px;
   position: relative;
   z-index: 2;
 }
