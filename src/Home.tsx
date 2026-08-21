@@ -203,7 +203,6 @@ const works: Record<string, Work> = {
       {
         tab: "その他",
         items: [
-          { name: "Steamworks.NET（Steam SDK）", detail: "SteamのAPIをC#から扱うライブラリ。実績やDLCに対応するため。" },
           { name: "Firebase（BaaS）", detail: "Googleのバックエンドサービス群。クラウドセーブに使用。" , isNew: true },
           { name: "I2 Localization（ローカライズ）", detail: "Unity向けの多言語対応アセット。海外プレイヤーへ届けるため。" },
           { name: "fastlane（自動化ツール）", detail: "ストア申請の自動化ツール。スクリーンショットやメタデータ更新の手作業を減らすため。" , isNew: true },
@@ -279,7 +278,6 @@ const works: Record<string, Work> = {
       {
         tab: "その他",
         items: [
-          { name: "Steamworks.NET（Steam SDK）", detail: "SteamのAPIをC#から扱うライブラリ。実績などのSteam機能に対応するため。" },
           { name: "Discord Rich Presence", detail: "プレイ状況をDiscordのプロフィールに表示する連携。コミュニティでの露出を増やすため。" },
           { name: "I2 Localization（ローカライズ）", detail: "Unity向けの多言語対応アセット。海外プレイヤーへ届けるため。" },
         ],
@@ -629,7 +627,6 @@ export default function Home() {
               <HeroSketch src={asset("/yayu.png")} />
             </h1>
             <p className="hero-name">梁嶋悠介のポートフォリオ</p>
-            <p className="hero-art-note">上のアートは開くたびにコードから生成されます（p5.js）</p>
           </div>
 
           <div className="works-overview">
@@ -639,8 +636,8 @@ export default function Home() {
               <ol className="career-timeline" aria-label="学生時代から現在までの時系列">
                 {careerTimeline.map((item) => (
                   <li key={item.phase}>
-                    <span className="timeline-phase">{item.phase}</span>
                     <i aria-hidden="true" />
+                    <span className="timeline-phase">{item.phase}</span>
                     <time>{item.date}</time>
                     <strong>{item.title}</strong>
                     <p className="timeline-description">{item.detail}</p>
