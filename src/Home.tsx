@@ -654,8 +654,7 @@ export default function Home() {
               <p className="genre-note-label">ちなみに</p>
               <h3>Idleゲームとは？</h3>
               <p>
-                複雑なアクション性を無くし、放置する間に進行することを特徴とするジャンルです。
-                代表作としては『Cookie Clicker』があり、増えた資源を何に投資し、どの時点でリセットするかを考えながら攻略することが遊び方の中心となります。
+                複雑なアクション性を無くし、放置する間に進行することを特徴とするジャンルです。代表作としては<a href="https://orteil.dashnet.org/cookieclicker/" target="_blank" rel="noreferrer">『Cookie Clicker』<span aria-hidden="true">↗</span></a>があり、増えた資源を何に投資し、どの時点でリセットするかを考えながら攻略することが遊び方の中心となります。
               </p>
               <p>
                 主に英語圏のブラウザゲームサイトを中心に広まり、今ではSteamやモバイルアプリでも定着しつつあり、仕事の合間やゲームの合間のゲームとして親しまれています。

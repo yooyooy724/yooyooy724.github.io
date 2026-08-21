@@ -321,6 +321,24 @@ a {
   margin: 8px 0 0;
 }
 
+.genre-note a {
+  border-bottom: 1px solid rgba(240, 107, 69, 0.55);
+  color: var(--ink);
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+.genre-note a:hover,
+.genre-note a:focus-visible {
+  border-bottom-color: var(--orange);
+  color: var(--orange);
+  outline: none;
+}
+
+.genre-note a span {
+  font-size: 0.9em;
+  padding-left: 2px;
+}
+
 .work-summary-copy ul {
   display: flex;
   flex-wrap: wrap;
