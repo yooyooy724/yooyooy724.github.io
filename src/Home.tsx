@@ -94,24 +94,24 @@ const works: Record<string, Work> = {
         ],
       },
       {
-        tab: "UI実装",
+        tab: "Unity基盤",
         items: [
-          { name: "VirtualUI（自作の仮想UI層）", detail: "画面遷移や操作を純粋なC#のViewModelで表す自作レイヤー。Blazorでのプロトタイプ確認と、Unity実装との共有のため。" },
-          { name: "UI Toolkit（UIフレームワーク）", detail: "UXML・USSで画面を組むUnityのUI基盤。再利用性を高め、コンテンツ追加のたびに増える制作コストを抑えるため。" },
           { name: "Zenject（DIコンテナ）", detail: "依存関係を外から与える仕組み。実装の差し替えとテストを容易にするため。" },
           { name: "R3（Rxライブラリ）", detail: "状態の変化をObservableとして流すライブラリ。状態とUIの同期を宣言的に書くため。" },
           { name: "UniTask（非同期ライブラリ）", detail: "Unity向けの低アロケーション非同期処理。GCを増やさずに非同期処理を書くため。" },
         ],
       },
       {
-        tab: "グラフィック",
+        tab: "UI・グラフィック",
         items: [
+          { name: "VirtualUI（自作の仮想UI層）", detail: "画面遷移や操作を純粋なC#のViewModelで表す自作レイヤー。Blazorでのプロトタイプ確認と、Unity実装との共有のため。" },
+          { name: "UI Toolkit（UIフレームワーク）", detail: "UXML・USSで画面を組むUnityのUI基盤。再利用性を高め、コンテンツ追加のたびに増える制作コストを抑えるため。" },
           { name: "Shader Graph", detail: "ノードでシェーダーを組むUnityの機能。画面全体のエフェクトを含め、ゲーム画面の演出を制作するため。" },
           { name: "Linearity Curve（ベクターツール）", detail: "ベクターデザインツール。制作方法を点・線・図形に統一し、少人数でもアートの品質と速度を保つため。" },
         ],
       },
       {
-        tab: "基盤・運営",
+        tab: "サービス・運営",
         items: [
           { name: "Firebase（BaaS）", detail: "Googleのバックエンドサービス群。Authentication・Firestore・Cloud Functionsで、クラウドセーブと非同期マルチ協力コンテンツをサーバーレスに実装。" },
           { name: "Steamworks.NET（Steam SDK）", detail: "SteamのAPIをC#から扱うライブラリ。準備中のSteam版で実績やクラウドセーブに対応するため。" },
