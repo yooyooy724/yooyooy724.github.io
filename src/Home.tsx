@@ -42,8 +42,8 @@ type Work = {
     body: string;
   }[];
   // 技術面は文章ではなく一覧で一気に見せる。カテゴリごとにタブで切り替える
-  // isNew: その作品で初めて導入した技術（時系列で前の作品には無いもの）
-  tech: { tab: string; items: { name: string; detail: string; isNew?: boolean }[] }[];
+  // carried: 前の作品から継続して使っている技術
+  tech: { tab: string; items: { name: string; detail: string; carried?: boolean }[] }[];
   // 公開先へのリンク。href の無いものは準備中の表示になる
   links: { label: string; href?: string }[];
 };
@@ -85,42 +85,42 @@ const works: Record<string, Work> = {
       {
         tab: "設計",
         items: [
-          { name: "ドメイン駆動設計（DDD）", detail: "ゲームのルールや概念をコードの構造として表す設計手法。仕様書を作らず、コードをチームの共通言語にするために採用。" },
-          { name: "MVVMパターン", detail: "ゲームルールをBlazor、UIとグラフィックをUnityに分けるプロジェクト構成。表現に依存せずロジックを開発・検証するため。" , isNew: true },
-          { name: "モジュール分割", detail: "広告・課金・バックエンドを独立したプロジェクトに分ける構成。ドメインを外部サービスの都合で汚さないため。" , isNew: true },
+          { name: "ドメイン駆動設計（DDD）", detail: "ゲームのルールや概念をコードの構造として表す設計手法。仕様書を作らず、コードをチームの共通言語にするために採用。" , carried: true },
+          { name: "MVVMパターン", detail: "ゲームルールをBlazor、UIとグラフィックをUnityに分けるプロジェクト構成。表現に依存せずロジックを開発・検証するため。"  },
+          { name: "モジュール分割", detail: "広告・課金・バックエンドを独立したプロジェクトに分ける構成。ドメインを外部サービスの都合で汚さないため。"  },
         ],
       },
       {
         tab: "ドメイン実装",
         items: [
-          { name: "LanguageExt（関数型ライブラリ）", detail: "FinやOptionなどのモナドを提供するC#ライブラリ。失敗を型として表現し、ロジックを堅牢にするため。" },
-          { name: "StructLinq（自作LINQライブラリ）", detail: "構造体ベースの自作LINQ。ヒープ確保を無くし、GC負荷を避けるため。" , isNew: true },
-          { name: "ECS（自作）", detail: "データを配列で持ち一括処理する自作の仕組み。処理負荷とGCの発生を抑えるため、必要な箇所に限定して導入。" , isNew: true },
+          { name: "LanguageExt（関数型ライブラリ）", detail: "FinやOptionなどのモナドを提供するC#ライブラリ。失敗を型として表現し、ロジックを堅牢にするため。" , carried: true },
+          { name: "StructLinq（自作LINQライブラリ）", detail: "構造体ベースの自作LINQ。ヒープ確保を無くし、GC負荷を避けるため。"  },
+          { name: "ECS（自作）", detail: "データを配列で持ち一括処理する自作の仕組み。処理負荷とGCの発生を抑えるため、必要な箇所に限定して導入。"  },
         ],
       },
       {
         tab: "Unity基盤",
         items: [
-          { name: "Zenject（DIコンテナ）", detail: "依存関係を外から与える仕組み。実装の差し替えとテストを容易にするため。" },
-          { name: "R3（Rxライブラリ）", detail: "状態の変化をObservableとして流すライブラリ。状態とUIの同期を宣言的に書くため。" },
-          { name: "UniTask（非同期ライブラリ）", detail: "Unity向けの低アロケーション非同期処理。GCを増やさずに非同期処理を書くため。" },
+          { name: "Zenject（DIコンテナ）", detail: "依存関係を外から与える仕組み。実装の差し替えとテストを容易にするため。" , carried: true },
+          { name: "R3（Rxライブラリ）", detail: "状態の変化をObservableとして流すライブラリ。状態とUIの同期を宣言的に書くため。" , carried: true },
+          { name: "UniTask（非同期ライブラリ）", detail: "Unity向けの低アロケーション非同期処理。GCを増やさずに非同期処理を書くため。" , carried: true },
         ],
       },
       {
         tab: "UI・グラフィック",
         items: [
-          { name: "VirtualUI（自作の仮想UI層）", detail: "画面遷移や操作を純粋なC#のViewModelで表す自作レイヤー。Blazorでのプロトタイプ確認と、Unity実装との共有のため。" , isNew: true },
-          { name: "UI Toolkit（UIフレームワーク）", detail: "UXML・USSで画面を組むUnityのUI基盤。再利用性を高め、コンテンツ追加のたびに増える制作コストを抑えるため。" , isNew: true },
-          { name: "Shader Graph", detail: "ノードでシェーダーを組むUnityの機能。画面全体のエフェクトを含め、ゲーム画面の演出を制作するため。" },
-          { name: "Linearity Curve（ベクターツール）", detail: "ベクターデザインツール。制作方法を点・線・図形に統一し、少人数でもアートの品質と速度を保つため。" , isNew: true },
+          { name: "VirtualUI（自作の仮想UI層）", detail: "画面遷移や操作を純粋なC#のViewModelで表す自作レイヤー。Blazorでのプロトタイプ確認と、Unity実装との共有のため。"  },
+          { name: "UI Toolkit（UIフレームワーク）", detail: "UXML・USSで画面を組むUnityのUI基盤。再利用性を高め、コンテンツ追加のたびに増える制作コストを抑えるため。"  },
+          { name: "Shader Graph", detail: "ノードでシェーダーを組むUnityの機能。画面全体のエフェクトを含め、ゲーム画面の演出を制作するため。" , carried: true },
+          { name: "Linearity Curve（ベクターツール）", detail: "ベクターデザインツール。制作方法を点・線・図形に統一し、少人数でもアートの品質と速度を保つため。"  },
         ],
       },
       {
         tab: "その他",
         items: [
-          { name: "Firebase（BaaS）", detail: "Googleのバックエンドサービス群。Authentication・Firestore・Cloud Functionsで、クラウドセーブと非同期マルチ協力コンテンツをサーバーレスに実装。" },
-          { name: "fastlane（自動化ツール）", detail: "ストア申請の自動化ツール。スクリーンショットやメタデータ更新の手作業を減らすため。" },
-          { name: "Discord", detail: "プレイヤーコミュニティの拠点。フィードバックの収集や不具合対応を、プレイヤーと直接やり取りするため。" , isNew: true },
+          { name: "Firebase（BaaS）", detail: "Googleのバックエンドサービス群。Authentication・Firestore・Cloud Functionsで、クラウドセーブと非同期マルチ協力コンテンツをサーバーレスに実装。" , carried: true },
+          { name: "fastlane（自動化ツール）", detail: "ストア申請の自動化ツール。スクリーンショットやメタデータ更新の手作業を減らすため。" , carried: true },
+          { name: "Discord", detail: "プレイヤーコミュニティの拠点。フィードバックの収集や不具合対応を、プレイヤーと直接やり取りするため。"  },
         ],
       },
     ],
@@ -173,39 +173,39 @@ const works: Record<string, Work> = {
       {
         tab: "設計",
         items: [
-          { name: "ドメイン駆動設計（DDD）", detail: "ゲームのルールをコードの構造として表す設計手法。新しい試みとして導入し、UI層からドメインロジックを排して責務と境界を整理。", isNew: true },
+          { name: "ドメイン駆動設計（DDD）", detail: "ゲームのルールをコードの構造として表す設計手法。新しい試みとして導入し、UI層からドメインロジックを排して責務と境界を整理。" },
         ],
       },
       {
         tab: "ドメイン実装",
         items: [
-          { name: "LanguageExt（関数型ライブラリ）", detail: "FinやOptionなどのモナドを提供するC#ライブラリ。失敗を型として表現し、ロジックを堅牢にするため。" , isNew: true },
+          { name: "LanguageExt（関数型ライブラリ）", detail: "FinやOptionなどのモナドを提供するC#ライブラリ。失敗を型として表現し、ロジックを堅牢にするため。"  },
         ],
       },
       {
         tab: "Unity基盤",
         items: [
-          { name: "Zenject（DIコンテナ）", detail: "依存関係を外から与える仕組み。実装の差し替えとテストを容易にするため。" },
-          { name: "R3（Rxライブラリ）", detail: "状態の変化をObservableとして流すライブラリ。状態とUIの同期を宣言的に書くため。" , isNew: true },
-          { name: "UniTask（非同期ライブラリ）", detail: "Unity向けの低アロケーション非同期処理。GCを増やさずに非同期処理を書くため。" },
+          { name: "Zenject（DIコンテナ）", detail: "依存関係を外から与える仕組み。実装の差し替えとテストを容易にするため。" , carried: true },
+          { name: "R3（Rxライブラリ）", detail: "状態の変化をObservableとして流すライブラリ。状態とUIの同期を宣言的に書くため。"  },
+          { name: "UniTask（非同期ライブラリ）", detail: "Unity向けの低アロケーション非同期処理。GCを増やさずに非同期処理を書くため。" , carried: true },
         ],
       },
       {
         tab: "UI・グラフィック",
         items: [
-          { name: "Job System・Burst", detail: "Unityの並列処理基盤。自作パーティクルシステムの位置・色・状態を並列更新し、最大約13,000要素を扱うため。" , isNew: true },
-          { name: "GPUインスタンシング", detail: "同じメッシュを1命令でまとめて描く手法。ドローコールを抑えるため。個別の色はGraphicsBufferからHLSLで読み出す。" , isNew: true },
-          { name: "プロシージャル生成", detail: "数式から粒子の配置を生成する手法。Fibonacci球や3Dノイズを使い、球体のテーマと成長を同じ視覚言語で表すため。" , isNew: true },
-          { name: "URP Renderer Feature", detail: "描画パイプラインに後処理を差し込む仕組み。Colorize・Toonなどの見た目の切り替えを、DLCのテーマ展開につなげるため。" , isNew: true },
-          { name: "VFX Graph", detail: "GPUで大量のパーティクルを扱うUnityの機能。粒子の演出をよりリッチにするため。" },
+          { name: "Job System・Burst", detail: "Unityの並列処理基盤。自作パーティクルシステムの位置・色・状態を並列更新し、最大約13,000要素を扱うため。"  },
+          { name: "GPUインスタンシング", detail: "同じメッシュを1命令でまとめて描く手法。ドローコールを抑えるため。個別の色はGraphicsBufferからHLSLで読み出す。"  },
+          { name: "プロシージャル生成", detail: "数式から粒子の配置を生成する手法。Fibonacci球や3Dノイズを使い、球体のテーマと成長を同じ視覚言語で表すため。"  },
+          { name: "URP Renderer Feature", detail: "描画パイプラインに後処理を差し込む仕組み。Colorize・Toonなどの見た目の切り替えを、DLCのテーマ展開につなげるため。"  },
+          { name: "VFX Graph", detail: "GPUで大量のパーティクルを扱うUnityの機能。粒子の演出をよりリッチにするため。" , carried: true },
         ],
       },
       {
         tab: "その他",
         items: [
-          { name: "Firebase（BaaS）", detail: "Googleのバックエンドサービス群。クラウドセーブに使用。" , isNew: true },
-          { name: "I2 Localization（ローカライズ）", detail: "Unity向けの多言語対応アセット。海外プレイヤーへ届けるため。" },
-          { name: "fastlane（自動化ツール）", detail: "ストア申請の自動化ツール。スクリーンショットやメタデータ更新の手作業を減らすため。" , isNew: true },
+          { name: "Firebase（BaaS）", detail: "Googleのバックエンドサービス群。クラウドセーブに使用。"  },
+          { name: "I2 Localization（ローカライズ）", detail: "Unity向けの多言語対応アセット。海外プレイヤーへ届けるため。" , carried: true },
+          { name: "fastlane（自動化ツール）", detail: "ストア申請の自動化ツール。スクリーンショットやメタデータ更新の手作業を減らすため。"  },
         ],
       },
     ],
@@ -364,7 +364,7 @@ function TechHighlights({ work }: { work: Work }) {
           <li key={item.name}>
             <strong>
               {item.name}
-              {item.isNew && <i className="tech-new">New</i>}
+              {item.carried && <i className="tech-carried">前回から使用</i>}
             </strong>
             <span>{item.detail}</span>
           </li>

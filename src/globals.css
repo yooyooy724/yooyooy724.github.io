@@ -707,27 +707,30 @@ a {
   letter-spacing: 0.01em;
 }
 
-/* その作品で初めて導入した技術の印 */
-.tech-new {
-  background: var(--orange);
+/* 前の作品から継続して使っている技術の印。控えめな枠線だけで示す */
+.tech-carried {
+  border: 1px solid var(--line);
   border-radius: 999px;
-  color: var(--paper);
+  color: var(--muted);
   display: inline-block;
-  font-family: var(--font-display);
-  font-size: 0.5rem;
+  font-size: 0.52rem;
   font-style: normal;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   line-height: 1;
   margin-left: 8px;
   padding: 3px 7px;
-  text-transform: uppercase;
   vertical-align: 2px;
 }
 
-.dark .tech-new {
-  background: var(--green);
-  color: var(--ink);
+.dark .tech-carried {
+  border-color: rgba(242, 239, 231, 0.35);
+  color: rgba(242, 239, 231, 0.6);
+}
+
+.tint .tech-carried {
+  border-color: rgba(21, 26, 23, 0.35);
+  color: rgba(21, 26, 23, 0.6);
 }
 
 .tech-highlights li > span {
