@@ -17,6 +17,11 @@
     --primary-bg:#2b2b2e; --primary-ink:#ffffff;
     --sel:#ecebee; --sel-bar:#1c1c1e;
     --shadow:0 8px 24px rgba(0,0,0,.06);
+    /* 状態色。線=強調用、面=チップ地。色だけに頼らずラベル文字も必ず出す */
+    --st-undecided:#b3760a; --st-undecided-bg:#fdf3e0;
+    --st-adopted:#2c7a45;   --st-adopted-bg:#e7f4ec;
+    --st-implemented:#2a6ba8; --st-implemented-bg:#e6f0fa;
+    --st-rejected:#83838b;  --st-rejected-bg:#f0f0f2;
   }
   :root[data-theme="dark"]{
     color-scheme:dark;
@@ -29,6 +34,10 @@
     --primary-bg:#e9e9ec; --primary-ink:#1a1a1c;
     --sel:#2c2c31; --sel-bar:#e9e9ec;
     --shadow:0 8px 24px rgba(0,0,0,.35);
+    --st-undecided:#e0a63c; --st-undecided-bg:#3a2f1a;
+    --st-adopted:#5cc07d;   --st-adopted-bg:#1d3325;
+    --st-implemented:#66a9e8; --st-implemented-bg:#1b2c3d;
+    --st-rejected:#8d8d95;  --st-rejected-bg:#2a2a2e;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:"Yu Gothic UI","Meiryo",sans-serif;font-size:14px;line-height:1.65}
@@ -140,23 +149,49 @@
   .kind-tabs button.on{background:var(--primary-bg);color:var(--primary-ink)}
   .board-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
   .board-tools input,.board-tools select{border:1px solid var(--line);background:var(--field-bg);color:var(--ink);border-radius:6px;padding:7px 9px}
-  .board-tools input[type=search]{min-width:220px}
+  .board-tools input[type=search]{min-width:260px;flex:1 1 260px;max-width:420px}
   .board-tools .toggle{display:flex;align-items:center;gap:5px;color:var(--sub);font-size:12.5px;border:1px solid var(--line);border-radius:6px;padding:6px 10px;background:var(--panel);cursor:pointer}
   .board-tools .toggle input{margin:0}
   .board-tools .count{color:var(--sub);font-size:12px}
-  .pill.decision-adopted{color:var(--primary-ink);border-color:var(--primary-bg);background:var(--primary-bg)}
-  .pill.decision-rejected{opacity:.65;text-decoration:line-through}
+  /* --- 状態の色分け --- */
+  .decision-undecided{--st:var(--st-undecided);--st-bg:var(--st-undecided-bg)}
+  .decision-adopted{--st:var(--st-adopted);--st-bg:var(--st-adopted-bg)}
+  .decision-implemented{--st:var(--st-implemented);--st-bg:var(--st-implemented-bg)}
+  .decision-rejected{--st:var(--st-rejected);--st-bg:var(--st-rejected-bg)}
+  .status-chips{display:flex;gap:6px;flex-wrap:wrap}
+  .status-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);
+    border-radius:999px;padding:5px 11px;background:var(--panel);color:var(--ink);font-size:12.5px}
+  .status-chip .dot{width:8px;height:8px;border-radius:50%;background:var(--st);flex:0 0 auto}
+  .status-chip b{color:var(--sub);font-weight:700;font-variant-numeric:tabular-nums}
+  .status-chip:hover{border-color:var(--st)}
+  .status-chip.off{opacity:.45;background:var(--soft);text-decoration:line-through}
+  .status-chip.off .dot{background:var(--sub)}
+  .card-status{border:1px solid var(--st);border-radius:999px;padding:2px 6px;font-size:11.5px;
+    color:var(--st);background:var(--st-bg);flex:0 0 auto;max-width:100px;cursor:pointer}
+  .card-status:hover{filter:brightness(.97)}
   .tier-legend{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:11px 14px;margin-bottom:16px}
   .tier-legend summary{cursor:pointer;font-weight:700;font-size:13px}
   .tier-legend ol{margin:9px 0 0 22px;padding:0;color:var(--sub);font-size:13px}
   .tier-legend li{margin:2px 0}
-  .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;align-items:start}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 15px;text-align:left;color:var(--ink);display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow);width:100%}
-  .card:hover{border-color:var(--line-strong)}
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;align-items:start}
+  .card{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--st,var(--line));
+    border-radius:10px;padding:14px 15px;text-align:left;color:var(--ink);display:flex;flex-direction:column;
+    gap:10px;box-shadow:var(--shadow);width:100%;cursor:pointer}
+  .card:hover{border-color:var(--line-strong);border-left-color:var(--st,var(--line-strong))}
+  .card:focus-visible{outline:2px solid var(--st,var(--sel-bar));outline-offset:2px}
+  /* 状態色をカード全体へ配る。実装済みと不採用は「もう見なくてよい」ので落ち着かせる */
+  .card.st-undecided{--st:var(--st-undecided)}
+  .card.st-adopted{--st:var(--st-adopted)}
+  .card.st-implemented{--st:var(--st-implemented)}
+  .card.st-rejected{--st:var(--st-rejected)}
+  .card.st-implemented{opacity:.86}
+  .card.st-rejected{opacity:.55}
+  .card.st-rejected:hover,.card.st-implemented:hover{opacity:1}
+  .card.st-rejected .card-title{text-decoration:line-through}
   .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
   .card-title{font-weight:700;font-size:15px;line-height:1.45}
   .card-rows{display:grid;gap:8px}
-  .card-row{display:grid;grid-template-columns:72px 1fr;gap:8px;font-size:13px;line-height:1.6}
+  .card-row{display:grid;grid-template-columns:5.5em 1fr;gap:8px;font-size:13px;line-height:1.6}
   .card-row .k{color:var(--sub);font-size:11.5px;padding-top:3px}
   .card-row .v{white-space:pre-wrap;word-break:break-word;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
   .card-row .v.none{color:var(--sub)}
@@ -317,8 +352,7 @@
   </div>
   <div class="board-tools">
     <input id="boardSearch" type="search" placeholder="検索">
-    <label class="toggle"><input id="boardShowAdopted" type="checkbox" checked>採用を表示</label>
-    <label class="toggle"><input id="boardShowRejected" type="checkbox" checked>不採用を表示</label>
+    <div class="status-chips" id="statusChips"></div>
     <span class="count" id="boardCount"></span>
   </div>
   <details class="tier-legend" id="tierLegend">
@@ -447,10 +481,11 @@ const KINDS = {
   }
 };
 const CREATE_TYPE_TO_KIND = Object.fromEntries(Object.keys(KINDS).map(k => [`${k}_created`, k]));
-// カードはアイディアと違い、採用 / 不採用を振り分けていくための状態しか持たない。
-// 未定のものを先に見せる(そこが作業対象なので)。
-const DECISIONS = { undecided: '未定', adopted: '採用', rejected: '不採用' };
-const DECISION_RANK = { undecided: 0, adopted: 1, rejected: 2 };
+// カードはアイディアと違い、振り分けと進捗のための状態しか持たない。
+// 未定 → 採用 → 実装済み が進行方向。不採用は終端。
+// 並びは「まだ手を動かす必要があるもの」が先。実装済みは done なので採用の後ろへ置く。
+const DECISIONS = { undecided: '未定', adopted: '採用', implemented: '実装済み', rejected: '不採用' };
+const DECISION_RANK = { undecided: 0, adopted: 1, implemented: 2, rejected: 3 };
 const decisionOf = value => (DECISIONS[value] ? value : 'undecided');
 
 let connected = false;
@@ -466,9 +501,10 @@ let cardDirty = false;
 let view = 'challenge';
 let kind = 'challenge';
 // 検索と絞り込みは種類ごとに独立させる。片方の絞り込みがもう片方に残ると、
-// カードが消えたように見えて混乱するため。未定は常に出す(作業対象なので)。
+// カードが消えたように見えて混乱するため。
+// hidden は「今隠している状態」の集合。既定は空 = 全部出す。
 const boardFilters = Object.fromEntries(
-  Object.keys(KINDS).map(k => [k, { q: '', adopted: true, rejected: true }])
+  Object.keys(KINDS).map(k => [k, { q: '', hidden: new Set() }])
 );
 
 const els = {
@@ -506,8 +542,7 @@ const els = {
   boardReload: document.getElementById('boardReload'),
   toIdea: document.getElementById('toIdea'),
   boardSearch: document.getElementById('boardSearch'),
-  boardShowAdopted: document.getElementById('boardShowAdopted'),
-  boardShowRejected: document.getElementById('boardShowRejected'),
+  statusChips: document.getElementById('statusChips'),
   boardCount: document.getElementById('boardCount'),
   tierLegend: document.getElementById('tierLegend'),
   tierLegendList: document.getElementById('tierLegendList'),
@@ -962,13 +997,10 @@ function kindCards(){
 
 function filteredCards(){
   const q = els.boardSearch.value.trim().toLowerCase();
-  const showAdopted = els.boardShowAdopted.checked;
-  const showRejected = els.boardShowRejected.checked;
+  const hidden = boardFilters[kind].hidden;
   const fields = KINDS[kind].fields;
   return kindCards().filter(card => {
-    // 未定は作業対象なので常に出す。採用 / 不採用だけを隠せる。
-    if (card.status === 'adopted' && !showAdopted) return false;
-    if (card.status === 'rejected' && !showRejected) return false;
+    if (hidden.has(card.status)) return false;
     if (!q) return true;
     const hay = [card.title, ...fields.map(f => card[f.key]), card.memo, card.tags.join(' ')]
       .join('\n').toLowerCase();
@@ -994,18 +1026,21 @@ function renderCardGrid(){
     button.classList.toggle('on', button.dataset.kind === kind);
   }
   const all = kindCards();
-  const undecided = all.filter(c => c.status === 'undecided').length;
-  els.boardCount.textContent = `${filteredCards().length} / ${all.length} 件（未定 ${undecided}）`;
+  renderStatusChips(all);
+  const shown = filteredCards().length;
+  els.boardCount.textContent = shown === all.length
+    ? `${all.length} 件`
+    : `${shown} / ${all.length} 件`;
   const list = orderedCards();
   if (!list.length) {
     els.cardGrid.innerHTML = `<div class="empty">カードなし。「＋ 新規${def.label}」から作成します。</div>`;
     return;
   }
   els.cardGrid.innerHTML = list.map(card => `
-    <button class="card" type="button" data-card-id="${escapeAttr(card.id)}">
+    <div class="card st-${card.status}" role="button" tabindex="0" data-card-id="${escapeAttr(card.id)}">
       <div class="card-head">
         <span class="card-title">${escapeHtml(card.title)}</span>
-        <span class="pill decision-${card.status}">${escapeHtml(DECISIONS[card.status])}</span>
+        ${statusSelect(card, 'card-status')}
       </div>
       <div class="card-rows">
         ${def.fields.map(f => cardRow(f.label, card[f.key])).join('')}
@@ -1015,8 +1050,31 @@ function renderCardGrid(){
         ${card.memo ? '<span>メモ有</span>' : ''}
         ${card.comments.length ? `<span>コメント ${card.comments.length}</span>` : ''}
       </div>
-    </button>
+    </div>
   `).join('');
+}
+
+// 一覧から直接状態を変えられるようにする。詳細を開かずに振り分けるための入口。
+function statusSelect(card, cls){
+  return `<select class="${cls} decision-${card.status}" data-card-status="${escapeAttr(card.id)}"
+      title="状態を変える" aria-label="状態">${
+    Object.entries(DECISIONS).map(([key, label]) =>
+      `<option value="${key}" ${card.status === key ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')
+  }</select>`;
+}
+
+// 状態フィルタ。4状態を件数つきで並べ、押すとその状態を隠す/戻す。
+function renderStatusChips(all){
+  const hidden = boardFilters[kind].hidden;
+  const counts = Object.fromEntries(Object.keys(DECISIONS).map(k => [k, 0]));
+  for (const card of all) counts[card.status] = (counts[card.status] || 0) + 1;
+  els.statusChips.innerHTML = Object.entries(DECISIONS).map(([key, label]) => {
+    const off = hidden.has(key);
+    return `<button type="button" class="status-chip decision-${key}${off ? ' off' : ''}"
+      data-status-chip="${key}" aria-pressed="${off ? 'false' : 'true'}"
+      title="${escapeAttr(label)}を${off ? '表示' : '非表示'}にする"><span class="dot"></span>${
+      escapeHtml(label)}<b>${counts[key]}</b></button>`;
+  }).join('');
 }
 
 function cardRow(label, value){
@@ -1039,18 +1097,12 @@ function setKind(next){
 }
 
 function saveBoardFilter(){
-  return {
-    q: els.boardSearch.value,
-    adopted: els.boardShowAdopted.checked,
-    rejected: els.boardShowRejected.checked
-  };
+  // hidden は種類ごとの Set をそのまま持ち回る(押した時点で書き換わっている)。
+  return { q: els.boardSearch.value, hidden: boardFilters[kind].hidden };
 }
 
 function applyBoardFilter(){
-  const saved = boardFilters[kind];
-  els.boardSearch.value = saved.q;
-  els.boardShowAdopted.checked = saved.adopted;
-  els.boardShowRejected.checked = saved.rejected;
+  els.boardSearch.value = boardFilters[kind].q;
 }
 
 function openCard(id){
@@ -1535,8 +1587,14 @@ els.authorName.addEventListener('change', getAuthor);
 els.toBoard.addEventListener('click', () => setView('challenge'));
 els.toIdea.addEventListener('click', () => setView('idea'));
 els.boardSearch.addEventListener('input', renderCardGrid);
-els.boardShowAdopted.addEventListener('change', renderCardGrid);
-els.boardShowRejected.addEventListener('change', renderCardGrid);
+els.statusChips.addEventListener('click', event => {
+  const chip = event.target.closest('[data-status-chip]');
+  if (!chip) return;
+  const hidden = boardFilters[kind].hidden;
+  const key = chip.dataset.statusChip;
+  if (hidden.has(key)) hidden.delete(key); else hidden.add(key);
+  renderCardGrid();
+});
 els.boardNew.addEventListener('click', createCard);
 els.boardSubmitGh.addEventListener('click', submitToGitHub);
 els.boardReload.addEventListener('click', async () => {
@@ -1545,8 +1603,25 @@ els.boardReload.addEventListener('click', async () => {
   render();
 });
 els.cardGrid.addEventListener('click', event => {
-  const button = event.target.closest('[data-card-id]');
-  if (button) openCard(button.dataset.cardId);
+  // 状態セレクトの操作でカードが開いてしまわないようにする。
+  if (event.target.closest('[data-card-status]')) return;
+  const card = event.target.closest('[data-card-id]');
+  if (card) openCard(card.dataset.cardId);
+});
+els.cardGrid.addEventListener('change', event => {
+  const select = event.target.closest('[data-card-status]');
+  if (!select) return;
+  const card = cards.find(c => c.id === select.dataset.cardStatus);
+  if (card && select.value !== card.status) changeCardStatus(card, select.value);
+});
+// カードを div にしたのでキーボード操作は自前で持つ。
+els.cardGrid.addEventListener('keydown', event => {
+  if (event.key !== 'Enter' && event.key !== ' ') return;
+  if (event.target.closest('[data-card-status]')) return;
+  const card = event.target.closest('[data-card-id]');
+  if (!card) return;
+  event.preventDefault();
+  openCard(card.dataset.cardId);
 });
 els.cardClose.addEventListener('click', closeCard);
 els.cardModal.addEventListener('click', event => {
