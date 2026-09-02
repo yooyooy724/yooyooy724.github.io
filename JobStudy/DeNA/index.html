@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- 就職活動の私的なメモなので、検索エンジンには拾わせない（public/notes と同じ扱い）。 -->
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="icon" href="/yayu_portfolio/yayu-mark.png" type="image/png" />
+    <title>DeNA対策 | Job Study</title>
+    <meta name="description" content="DeNA を第1目標にした就職準備。やることのチェックリストと、宿題を書く場所。" />
+    <script>
+      // 最初の描画から正しい配色になるよう、Reactの前にテーマを当てる。
+      // 値の書き込みは src/JobStudy/DeNA/storage.ts が行う。
+      try {
+        var stored = localStorage.getItem("jobstudy-dena-v1:theme");
+        var theme = stored ? JSON.parse(stored) : null;
+        if (theme !== "light" && theme !== "dark") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = theme;
+      } catch (e) {
+        document.documentElement.dataset.theme = "light";
+      }
+    </script>
+    <script type="module" crossorigin src="/yayu_portfolio/assets/jobStudyDeNA-Ch2qQC82.js"></script>
+    <link rel="modulepreload" crossorigin href="/yayu_portfolio/assets/jsx-runtime-vTekYLuI.js">
+    <link rel="stylesheet" crossorigin href="/yayu_portfolio/assets/jobStudyDeNA-T3-1b-uA.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

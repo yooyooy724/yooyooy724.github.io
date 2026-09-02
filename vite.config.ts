@@ -15,5 +15,17 @@ export default defineConfig({
   build: {
     outDir: "../dist",
     emptyOutDir: true,
+    // ページを増やすときは、src/ 以下のディレクトリ構成をそのままURLにする多ページ構成にする。
+    // 例: src/JobStudy/DeNA/index.html → dist/JobStudy/DeNA/index.html
+    //     → publish.mjs が yayu_portfolio/JobStudy/ へ移し、
+    //       https://yooyooy724.github.io/yayu_portfolio/JobStudy/DeNA/ で開ける。
+    // （SPAのクライアントルーティングは GitHub Pages が404を返すので使えない）
+    // パスは root（src/）からの相対で書く。
+    rollupOptions: {
+      input: {
+        main: "index.html",
+        jobStudyDeNA: "JobStudy/DeNA/index.html",
+      },
+    },
   },
 });

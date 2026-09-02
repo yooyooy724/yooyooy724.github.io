@@ -1,0 +1,1270 @@
+@import "tailwindcss";
+
+/* 配色・字組みはポートフォリオ本体（src/globals.css）に合わせる。
+   このページだけダークモードを持つので、同じ変数名を暗い値で上書きする。 */
+:root {
+  --ink: #151a17;
+  --paper: #f2efe7;
+  --card: #e8e5dc;
+  --card-2: #ddd9cf;
+  --muted: #757a74;
+  --muted-strong: #5f645e;
+  --line: #cbc8bf;
+  --green: #b8de50;
+  --orange: #f06b45;
+  --blue: #a7c6f1;
+  --shadow: 0 1px 0 rgba(21, 26, 23, 0.05);
+  --font-jp: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
+  --font-display: Arial, Helvetica, sans-serif;
+  --topbar-h: 56px;
+}
+
+:root[data-theme="dark"] {
+  --ink: #ece9e1;
+  --paper: #141715;
+  --card: #1d211e;
+  --card-2: #262b27;
+  --muted: #8d938b;
+  --muted-strong: #b0b5ae;
+  --line: #333a34;
+  --green: #b8de50;
+  --orange: #ff8a63;
+  --blue: #8fb4e6;
+  --shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--topbar-h) + 18px);
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-jp);
+  line-height: 1.85;
+  margin: 0;
+}
+
+.label {
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.jp {
+  min-height: 100vh;
+}
+
+/* --- スクロール量 --- */
+.jp-scroll {
+  background: var(--orange);
+  height: 3px;
+  left: 0;
+  position: fixed;
+  top: 0;
+  transform-origin: 0 50%;
+  transition: transform 90ms linear;
+  width: 100%;
+  z-index: 60;
+}
+
+/* --- 上部バー --- */
+.jp-topbar {
+  align-items: center;
+  backdrop-filter: blur(14px);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 16px;
+  height: var(--topbar-h);
+  justify-content: space-between;
+  padding: 0 clamp(14px, 3vw, 28px);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.jp-home {
+  align-items: center;
+  color: inherit;
+  display: flex;
+  flex: none;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  gap: 8px;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+}
+
+.jp-home img {
+  height: 26px;
+  width: 26px;
+}
+
+.jp-topbar-mid {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  gap: clamp(10px, 2vw, 22px);
+  min-width: 0;
+  /* 狭い画面では横に流す。保存表示は常に見えていてほしいので隠さない。 */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.jp-topbar-mid::-webkit-scrollbar {
+  display: none;
+}
+
+.jp-topbar-stat {
+  color: var(--muted-strong);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.jp-save {
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.jp-save.is-failed {
+  color: var(--orange);
+  font-weight: 700;
+}
+
+.jp-topbar-actions {
+  align-items: center;
+  display: flex;
+  flex: none;
+  gap: 6px;
+}
+
+/* --- ボタン --- */
+.jp-mini {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted-strong);
+  cursor: pointer;
+  font-family: var(--font-jp);
+  font-size: 0.7rem;
+  line-height: 1.6;
+  padding: 3px 11px;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+  white-space: nowrap;
+}
+
+.jp-mini:hover,
+.jp-mini:focus-visible {
+  background: var(--card);
+  color: var(--ink);
+}
+
+.jp-mini.is-on {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: #fff;
+}
+
+.jp-btn {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  cursor: pointer;
+  font-family: var(--font-jp);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 9px 20px;
+  transition: background 140ms ease, transform 140ms ease;
+}
+
+.jp-btn:hover,
+.jp-btn:focus-visible {
+  background: var(--card-2);
+}
+
+.jp-btn:active {
+  transform: translateY(1px);
+}
+
+.jp-btn.is-primary {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: #fff;
+}
+
+.jp-btn.is-primary:hover {
+  filter: brightness(1.06);
+}
+
+:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+/* --- レイアウト --- */
+.jp-body {
+  display: grid;
+  gap: clamp(20px, 3vw, 44px);
+  grid-template-columns: 232px minmax(0, 1fr);
+  margin: 0 auto;
+  max-width: 1180px;
+  padding: 0 clamp(14px, 3vw, 28px) 90px;
+}
+
+.jp-main {
+  min-width: 0;
+  padding-top: clamp(26px, 4vw, 48px);
+}
+
+/* --- 目次 --- */
+.jp-toc {
+  align-self: start;
+  border-right: 1px solid var(--line);
+  max-height: calc(100vh - var(--topbar-h));
+  overflow-y: auto;
+  padding: clamp(26px, 4vw, 48px) 14px 40px 0;
+  position: sticky;
+  top: var(--topbar-h);
+}
+
+.jp-toc-title {
+  margin: 0 0 12px;
+}
+
+.jp-toc-group + .jp-toc-group {
+  margin-top: 16px;
+}
+
+.jp-toc-group-label {
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin: 0 0 4px;
+}
+
+.jp-toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.jp-toc a {
+  border-left: 2px solid transparent;
+  color: var(--muted-strong);
+  display: block;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  padding: 4px 8px;
+  text-decoration: none;
+  transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.jp-toc a:hover {
+  background: var(--card);
+  color: var(--ink);
+}
+
+.jp-toc a.is-active {
+  border-left-color: var(--orange);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.jp-toc-keys {
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.64rem;
+  margin: 20px 0 0;
+  padding-top: 10px;
+}
+
+.jp-toc-open {
+  display: none;
+}
+
+.jp-scrim {
+  background: rgba(0, 0, 0, 0.35);
+  border: 0;
+  inset: 0;
+  position: fixed;
+  z-index: 44;
+}
+
+/* --- ヒーロー --- */
+.jp-hero {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: clamp(28px, 4vw, 44px);
+}
+
+.jp-eyebrow {
+  color: var(--orange);
+  margin: 0 0 8px;
+}
+
+.jp-hero h1 {
+  font-size: clamp(2rem, 5.5vw, 3.2rem);
+  font-weight: 550;
+  letter-spacing: -0.05em;
+  line-height: 1.08;
+  margin: 0;
+}
+
+.jp-hero-lead {
+  color: var(--muted-strong);
+  font-size: 0.86rem;
+  margin: 12px 0 0;
+  max-width: 620px;
+}
+
+.jp-hero-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  margin-top: clamp(22px, 3vw, 34px);
+}
+
+.jp-stat {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.jp-stat.is-gate {
+  border-color: var(--orange);
+}
+
+.jp-stat .label {
+  display: block;
+  margin: 0 0 6px;
+}
+
+.jp-stat-note {
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.6;
+  margin: 8px 0 0;
+}
+
+.jp-count {
+  align-items: baseline;
+  display: inline-flex;
+  font-family: var(--font-display);
+  gap: 1px;
+}
+
+.jp-count b {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.jp-count i {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-style: normal;
+}
+
+.jp-count.is-full b {
+  color: var(--orange);
+}
+
+.jp-bar {
+  background: var(--card-2);
+  border-radius: 999px;
+  height: 6px;
+  margin-top: 8px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.jp-bar-fill {
+  background: var(--blue);
+  border-radius: 999px;
+  display: block;
+  height: 100%;
+  transition: width 220ms ease;
+}
+
+.jp-bar-fill.gate {
+  background: var(--orange);
+}
+
+.jp-bar-fill.is-full {
+  background: var(--green);
+}
+
+/* 順序 */
+.jp-order {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--orange);
+  border-radius: 14px;
+  margin-top: 14px;
+  padding: 14px 18px;
+}
+
+.jp-order ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 8px;
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.jp-order li {
+  align-items: baseline;
+  display: flex;
+  flex: 1 1 190px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.jp-order li + li::before {
+  color: var(--muted);
+  content: "→";
+  margin-left: -4px;
+}
+
+.jp-order-no {
+  background: var(--orange);
+  border-radius: 999px;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  width: 18px;
+}
+
+.jp-order li b {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.jp-order li em {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-style: normal;
+  width: 100%;
+}
+
+.jp-order-why {
+  color: var(--muted-strong);
+  font-size: 0.72rem;
+  line-height: 1.75;
+  margin: 12px 0 0;
+}
+
+/* --- 操作 --- */
+.jp-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.jp-actions.is-bottom {
+  border-top: 1px solid var(--line);
+  margin-top: 34px;
+  padding-top: 24px;
+}
+
+.jp-actions-note {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+/* --- セクション --- */
+.jp-part {
+  align-items: baseline;
+  border-bottom: 2px solid var(--ink);
+  display: flex;
+  font-size: clamp(1.3rem, 3vw, 1.8rem);
+  font-weight: 600;
+  gap: 12px;
+  letter-spacing: -0.04em;
+  margin: clamp(44px, 6vw, 76px) 0 0;
+  padding-bottom: 8px;
+}
+
+.jp-part-lead {
+  color: var(--muted-strong);
+  font-size: 0.8rem;
+  margin: 12px 0 0;
+}
+
+.jp-section {
+  border-bottom: 1px solid var(--line);
+  padding: clamp(26px, 3.5vw, 40px) 0;
+  scroll-margin-top: calc(var(--topbar-h) + 14px);
+}
+
+.jp-section.is-gate {
+  background: color-mix(in srgb, var(--orange) 7%, transparent);
+  border-radius: 16px;
+  margin-top: 14px;
+  padding-left: clamp(14px, 2vw, 22px);
+  padding-right: clamp(14px, 2vw, 22px);
+}
+
+.jp-section-head {
+  margin-bottom: 16px;
+}
+
+.jp-section-title {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.jp-section-no {
+  background: var(--ink);
+  border-radius: 8px;
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 700;
+  min-width: 24px;
+  padding: 2px 6px;
+  text-align: center;
+}
+
+.jp-section-title h2 {
+  font-size: clamp(1.1rem, 2.4vw, 1.45rem);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  margin: 0;
+}
+
+.jp-anchor {
+  color: inherit;
+  text-decoration: none;
+}
+
+.jp-anchor:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--orange);
+  text-underline-offset: 4px;
+}
+
+.jp-flag {
+  background: var(--orange);
+  border-radius: 6px;
+  color: #fff;
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  margin: 8px 0 0;
+  padding: 2px 10px;
+}
+
+.jp-flag.order {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.jp-section-lead {
+  color: var(--muted-strong);
+  font-size: 0.78rem;
+  margin: 10px 0 0;
+}
+
+.jp-source {
+  color: var(--muted);
+  font-size: 0.64rem;
+  margin: 8px 0 0;
+}
+
+.jp-source code {
+  font-family: var(--font-display);
+  font-size: 0.64rem;
+  word-break: break-all;
+}
+
+.jp-section-tools {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.jp-h3 {
+  border-top: 1px solid var(--line);
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 22px 0 10px;
+  padding-top: 14px;
+}
+
+.jp-h3-src {
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  margin-left: 8px;
+}
+
+/* --- チェックリスト --- */
+.jp-checks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.jp-check {
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+}
+
+.jp-check:last-child {
+  border-bottom: 0;
+}
+
+.jp-check label {
+  align-items: start;
+  cursor: pointer;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: auto 1fr;
+  padding: 11px 6px;
+  transition: background 140ms ease;
+}
+
+.jp-check label:hover {
+  background: var(--card);
+}
+
+.jp-check input {
+  height: 1px;
+  opacity: 0;
+  position: absolute;
+  width: 1px;
+}
+
+.jp-check-box {
+  background: transparent;
+  border: 1.5px solid var(--muted);
+  border-radius: 6px;
+  height: 20px;
+  margin-top: 3px;
+  position: relative;
+  transition: background 140ms ease, border-color 140ms ease;
+  width: 20px;
+}
+
+.jp-check input:focus-visible + .jp-check-box {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+.jp-check.is-done .jp-check-box {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.jp-check.is-done .jp-check-box::after {
+  border: solid #1c2a06;
+  border-width: 0 2px 2px 0;
+  content: "";
+  height: 9px;
+  left: 6px;
+  position: absolute;
+  top: 3px;
+  transform: rotate(43deg);
+  width: 5px;
+}
+
+.jp-check-text {
+  display: block;
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+.jp-check.is-done .jp-check-text {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--muted);
+}
+
+.jp-check-notes {
+  display: block;
+  margin-top: 4px;
+}
+
+.jp-check-notes span {
+  color: var(--muted);
+  display: block;
+  font-size: 0.73rem;
+  line-height: 1.65;
+  padding-left: 12px;
+  position: relative;
+}
+
+.jp-check-notes span::before {
+  content: "–";
+  left: 0;
+  position: absolute;
+}
+
+.jp-jump {
+  color: var(--orange);
+  display: inline-block;
+  font-size: 0.68rem;
+  margin: 0 0 8px 38px;
+  text-decoration: none;
+}
+
+.jp-jump:hover {
+  text-decoration: underline;
+}
+
+.jp-empty {
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin: 4px 0 0;
+}
+
+/* --- 表 --- */
+.jp-table-wrap {
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+.jp-table {
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  min-width: 100%;
+  width: 100%;
+}
+
+.jp-table th,
+.jp-table td {
+  border-bottom: 1px solid var(--line);
+  line-height: 1.65;
+  padding: 9px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.jp-table thead th {
+  background: var(--card);
+  color: var(--muted-strong);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.jp-table tbody th {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.jp-table tbody tr:last-child th,
+.jp-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.jp-table tr.is-emphasis {
+  background: color-mix(in srgb, var(--orange) 9%, transparent);
+}
+
+.jp-tag {
+  background: var(--card-2);
+  border-radius: 999px;
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 1px 9px;
+  white-space: nowrap;
+}
+
+.jp-tag.is-warn {
+  background: var(--orange);
+  color: #fff;
+}
+
+/* --- 箇条書き --- */
+.jp-bullets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.jp-bullets li {
+  font-size: 0.79rem;
+  line-height: 1.75;
+  padding: 5px 0 5px 18px;
+  position: relative;
+}
+
+.jp-bullets li::before {
+  color: var(--muted);
+  content: "•";
+  left: 4px;
+  position: absolute;
+}
+
+.jp-bullets.is-warn li::before {
+  color: var(--orange);
+}
+
+.jp-bullets.is-good li::before {
+  color: color-mix(in srgb, var(--green) 75%, var(--ink));
+}
+
+.jp-callout {
+  background: var(--card);
+  border-left: 3px solid var(--blue);
+  border-radius: 0 10px 10px 0;
+  font-size: 0.78rem;
+  line-height: 1.8;
+  margin: 12px 0 0;
+  padding: 11px 15px;
+}
+
+/* --- ロードマップ --- */
+.jp-phases {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.jp-phases li {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.jp-phases b {
+  display: block;
+  font-size: 0.92rem;
+  margin-top: 2px;
+}
+
+.jp-phases em {
+  color: var(--orange);
+  font-size: 0.68rem;
+  font-style: normal;
+}
+
+.jp-phase-body {
+  color: var(--muted-strong);
+  display: block;
+  font-size: 0.72rem;
+  line-height: 1.7;
+  margin-top: 6px;
+}
+
+/* --- 宿題 --- */
+.jp-qs {
+  display: grid;
+  gap: 14px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.jp-q {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  scroll-margin-top: calc(var(--topbar-h) + 14px);
+}
+
+.jp-q.is-answered {
+  border-left-color: var(--green);
+}
+
+.jp-q.is-hot {
+  border-left-color: var(--orange);
+}
+
+.jp-q-head {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.jp-q-label {
+  background: var(--ink);
+  border-radius: 6px;
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 2px 7px;
+}
+
+.jp-q-head h3 {
+  flex: 1 1 240px;
+  font-size: 0.93rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.jp-q-state {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.63rem;
+  font-weight: 700;
+  padding: 1px 9px;
+  white-space: nowrap;
+}
+
+.jp-q-state.is-answered {
+  background: var(--green);
+  border-color: var(--green);
+  color: #1c2a06;
+}
+
+.jp-q-hot {
+  color: var(--orange);
+  font-size: 0.68rem;
+  font-weight: 700;
+  margin: 8px 0 0;
+}
+
+.jp-q-aim {
+  color: var(--muted-strong);
+  font-size: 0.72rem;
+  line-height: 1.7;
+  margin: 8px 0 0;
+}
+
+.jp-q-hints {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+}
+
+.jp-q-hints li {
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.65;
+  padding-left: 13px;
+  position: relative;
+}
+
+.jp-q-hints li::before {
+  content: "▸";
+  left: 0;
+  position: absolute;
+}
+
+.jp-q-existing {
+  margin-top: 8px;
+}
+
+.jp-q-existing summary,
+.jp-answered summary,
+.jp-script summary {
+  color: var(--muted-strong);
+  cursor: pointer;
+  font-size: 0.71rem;
+  padding: 3px 0;
+}
+
+.jp-q-existing p {
+  background: var(--paper);
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  font-size: 0.73rem;
+  line-height: 1.75;
+  margin: 6px 0 0;
+  padding: 9px 12px;
+}
+
+.jp-textarea {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+  display: block;
+  font-family: var(--font-jp);
+  font-size: 0.85rem;
+  line-height: 1.8;
+  margin-top: 10px;
+  padding: 10px 12px;
+  resize: vertical;
+  width: 100%;
+}
+
+.jp-textarea::placeholder {
+  color: var(--muted);
+}
+
+.jp-textarea:focus {
+  border-color: var(--orange);
+  outline: none;
+}
+
+.jp-q-foot {
+  align-items: center;
+  color: var(--muted);
+  display: flex;
+  font-size: 0.66rem;
+  gap: 10px;
+  justify-content: space-between;
+  margin-top: 7px;
+}
+
+.jp-note-box {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin-top: 14px;
+  padding: 11px 15px;
+}
+
+.jp-note-box .label {
+  margin: 0 0 4px;
+}
+
+.jp-note-box ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.jp-note-box li {
+  font-size: 0.74rem;
+  line-height: 1.7;
+}
+
+.jp-answered {
+  margin-top: 12px;
+}
+
+.jp-answered ul {
+  color: var(--muted);
+  font-size: 0.72rem;
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.jp-script {
+  margin-top: 14px;
+}
+
+.jp-script blockquote {
+  border-left: 3px solid var(--blue);
+  margin: 8px 0 0;
+  padding: 4px 0 4px 14px;
+}
+
+.jp-script p {
+  font-size: 0.79rem;
+  line-height: 1.85;
+  margin: 0 0 8px;
+}
+
+/* --- フッタ・通知・ヘルプ --- */
+.jp-footer {
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.8;
+  margin-top: 44px;
+  padding-top: 20px;
+}
+
+.jp-footer code {
+  font-family: var(--font-display);
+  word-break: break-all;
+}
+
+.jp-footer-links {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.jp-footer-links a {
+  color: var(--orange);
+  text-decoration: none;
+}
+
+.jp-toast {
+  background: var(--ink);
+  border-radius: 999px;
+  bottom: 22px;
+  color: var(--paper);
+  font-size: 0.78rem;
+  left: 50%;
+  margin: 0;
+  padding: 9px 20px;
+  position: fixed;
+  transform: translateX(-50%);
+  z-index: 70;
+}
+
+.jp-help {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  z-index: 80;
+}
+
+.jp-help-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  max-width: 380px;
+  padding: 20px 24px;
+  width: 100%;
+}
+
+.jp-help-card dl {
+  margin: 12px 0 16px;
+}
+
+.jp-help-card dl > div {
+  align-items: baseline;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 14px;
+  padding: 6px 0;
+}
+
+.jp-help-card dt {
+  flex: none;
+  width: 110px;
+}
+
+.jp-help-card dd {
+  font-size: 0.78rem;
+  margin: 0;
+}
+
+kbd {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  font-family: var(--font-display);
+  font-size: 0.66rem;
+  padding: 2px 6px;
+}
+
+/* --- 画面幅 --- */
+@media (max-width: 900px) {
+  .jp-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .jp-toc-open {
+    display: inline-block;
+  }
+
+  .jp-toc {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 0 0 0 16px;
+    box-shadow: -8px 8px 30px rgba(0, 0, 0, 0.18);
+    display: none;
+    max-height: calc(100vh - var(--topbar-h));
+    padding: 18px 20px 24px;
+    position: fixed;
+    right: 0;
+    top: var(--topbar-h);
+    width: min(300px, 86vw);
+    z-index: 45;
+  }
+
+  .jp-toc.is-open {
+    display: block;
+  }
+
+  .jp-topbar-stat {
+    font-size: 0.68rem;
+  }
+}
+
+@media (max-width: 640px) {
+  /* 進捗もボタンも1行には収まらないので、上下2段に折る。 */
+  :root {
+    --topbar-h: 88px;
+  }
+
+  .jp-topbar {
+    align-content: center;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    padding: 0 12px;
+  }
+
+  .jp-home span {
+    display: none;
+  }
+
+  .jp-topbar-mid {
+    flex-basis: 100%;
+    gap: 14px;
+    order: 3;
+    overflow-x: auto;
+  }
+
+  .jp-topbar-actions {
+    margin-left: auto;
+  }
+
+  .jp-topbar-stat {
+    font-size: 0.72rem;
+  }
+
+  .jp-section.is-gate {
+    margin-left: -8px;
+    margin-right: -8px;
+  }
+
+  .jp-order li + li::before {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
