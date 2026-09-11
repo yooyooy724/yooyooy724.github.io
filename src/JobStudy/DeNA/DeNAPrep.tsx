@@ -25,8 +25,8 @@ import {
   type HomeworkQuestion,
   type HomeworkSection,
 } from "./data";
-import { copyText, downloadMarkdown, fileStamp, fullMarkdown, homeworkMarkdown } from "./markdown";
-import { usePersistentRecord, useTheme } from "./storage";
+import { copyText, downloadMarkdown, downloadText, fileStamp, fullMarkdown, homeworkMarkdown } from "./markdown";
+import { buildBackup, mergeRecords, parseBackup, usePersistentRecord, useTheme } from "./storage";
 
 const asset = (path: string) => import.meta.env.BASE_URL + path.replace(/^\//, "");
 
@@ -494,6 +494,34 @@ export default function DeNAPrep() {
     notify("Markdown を書き出した。");
   }, [answers, checks, notify]);
 
+  /* --- バックアップ（別のブラウザ・別の端末へ持ち運ぶ） --- */
+  const fileInput = useRef<HTMLInputElement | null>(null);
+
+  const handleBackupSave = useCallback(() => {
+    downloadText(buildBackup(answers, checks), `DeNA対策_バックアップ_${fileStamp()}.json`, "application/json");
+    notify("バックアップを保存した。別の端末ではこれを読み込む。");
+  }, [answers, checks, notify]);
+
+  const handleBackupPick = useCallback(() => fileInput.current?.click(), []);
+
+  const handleBackupLoad = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      e.target.value = "";
+      if (!file) return;
+      const data = parseBackup(await file.text());
+      if (!data) {
+        notify("読み込めなかった。このページで保存した .json を選ぶ。");
+        return;
+      }
+      answerStore.replace(mergeRecords(answers, data.answers));
+      checkStore.replace(mergeRecords(checks, data.checks));
+      const n = Object.values(data.answers).filter((v) => v.trim()).length;
+      notify(`読み込んだ。回答 ${n} 件を反映した。`);
+    },
+    [answers, checks, answerStore, checkStore, notify],
+  );
+
   /* --- キーボード --- */
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -709,6 +737,25 @@ export default function DeNAPrep() {
                 Markdown で書き出し
               </button>
               <span className="jp-actions-note">Claude に貼って保管庫へ反映する</span>
+            </div>
+
+            <div className="jp-actions">
+              <button type="button" className="jp-btn" onClick={handleBackupSave}>
+                バックアップを保存（.json）
+              </button>
+              <button type="button" className="jp-btn" onClick={handleBackupPick}>
+                バックアップを読み込む
+              </button>
+              <input
+                ref={fileInput}
+                type="file"
+                accept="application/json,.json"
+                onChange={handleBackupLoad}
+                hidden
+              />
+              <span className="jp-actions-note">
+                入力は<strong>このブラウザの中だけ</strong>に保存される。別のブラウザ・別の端末へは、このファイルで持ち運ぶ
+              </span>
             </div>
           </section>
 

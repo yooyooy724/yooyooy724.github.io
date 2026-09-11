@@ -62,7 +62,76 @@ export function usePersistentRecord<T>(key: string, initial: Record<string, T>) 
     setDirty(true);
   }, []);
 
-  return { value, set, reset, savedAt, failed, dirty };
+  // バックアップの読み込みで中身をまるごと差し替える。
+  const replace = useCallback((next: Record<string, T>) => {
+    setValue(next);
+    setDirty(true);
+  }, []);
+
+  return { value, set, reset, replace, savedAt, failed, dirty };
+}
+
+/* ------------------------------------------------------------------ *
+ * バックアップ
+ *
+ * localStorage はブラウザごと・端末ごとに分かれているため、
+ * 別のブラウザで開いても入力は出てこない（サーバーを持たない静的サイトの制約）。
+ * 持ち運びはファイル経由で行う。
+ *
+ * 公開リポジトリのため、回答をリポジトリ側へ同期する方式は採らない。
+ * 就職活動の本音がそのまま公開されてしまう。
+ * ------------------------------------------------------------------ */
+
+export type Backup = {
+  kind: "jobstudy-dena-backup";
+  version: 1;
+  savedAt: string;
+  answers: Record<string, string>;
+  checks: Record<string, boolean>;
+};
+
+export function buildBackup(answers: Record<string, string>, checks: Record<string, boolean>): string {
+  const data: Backup = {
+    kind: "jobstudy-dena-backup",
+    version: 1,
+    savedAt: new Date().toISOString(),
+    answers,
+    checks,
+  };
+  return JSON.stringify(data, null, 2);
+}
+
+/** 壊れたファイルを読ませても既存の入力を失わないよう、検証してから返す。 */
+export function parseBackup(raw: string): Backup | null {
+  try {
+    const data = JSON.parse(raw) as Partial<Backup>;
+    if (data?.kind !== "jobstudy-dena-backup") return null;
+    const answers = data.answers;
+    const checks = data.checks;
+    if (typeof answers !== "object" || answers === null) return null;
+    if (typeof checks !== "object" || checks === null) return null;
+    const cleanAnswers: Record<string, string> = {};
+    for (const [k, v] of Object.entries(answers)) if (typeof v === "string") cleanAnswers[k] = v;
+    const cleanChecks: Record<string, boolean> = {};
+    for (const [k, v] of Object.entries(checks)) if (typeof v === "boolean") cleanChecks[k] = v;
+    return {
+      kind: "jobstudy-dena-backup",
+      version: 1,
+      savedAt: typeof data.savedAt === "string" ? data.savedAt : "",
+      answers: cleanAnswers,
+      checks: cleanChecks,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * 読み込んだ内容を現在の入力へ重ねる。
+ * 既存の回答は消さず、**書かれている項目だけ**を上書きする（片方の端末で進めた分を失わないため）。
+ */
+export function mergeRecords<T>(current: Record<string, T>, incoming: Record<string, T>): Record<string, T> {
+  return { ...current, ...incoming };
 }
 
 export type Theme = "light" | "dark";

@@ -118,7 +118,11 @@ export async function copyText(text: string): Promise<boolean> {
 }
 
 export function downloadMarkdown(text: string, name: string) {
-  const blob = new Blob([text], { type: "text/markdown;charset=utf-8" });
+  downloadText(text, name, "text/markdown;charset=utf-8");
+}
+
+export function downloadText(text: string, name: string, mime: string) {
+  const blob = new Blob([text], { type: mime });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
