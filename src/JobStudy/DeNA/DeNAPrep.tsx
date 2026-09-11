@@ -26,7 +26,15 @@ import {
   type HomeworkSection,
 } from "./data";
 import { copyText, downloadMarkdown, downloadText, fileStamp, fullMarkdown, homeworkMarkdown } from "./markdown";
-import { buildBackup, mergeRecords, parseBackup, usePersistentRecord, useTheme } from "./storage";
+import {
+  buildBackup,
+  fetchShared,
+  mergeRecords,
+  overlayLocal,
+  parseBackup,
+  usePersistentRecord,
+  useTheme,
+} from "./storage";
 
 const asset = (path: string) => import.meta.env.BASE_URL + path.replace(/^\//, "");
 
@@ -494,6 +502,27 @@ export default function DeNAPrep() {
     notify("Markdown を書き出した。");
   }, [answers, checks, notify]);
 
+  /* --- 共有版の取り込み（どのブラウザで開いても同じ内容から始める） --- */
+  const [sharedAt, setSharedAt] = useState<string | null>(null);
+  const pulled = useRef(false);
+
+  useEffect(() => {
+    if (pulled.current) return;
+    pulled.current = true;
+    let alive = true;
+    void (async () => {
+      const shared = await fetchShared();
+      if (!alive || !shared) return;
+      // 共有版を土台に、この端末で書いた分を上に重ねる（書きかけを消さない）
+      answerStore.replace(overlayLocal(shared.answers, answerStore.value));
+      checkStore.replace({ ...shared.checks, ...checkStore.value });
+      setSharedAt(shared.savedAt);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [answerStore, checkStore]);
+
   /* --- バックアップ（別のブラウザ・別の端末へ持ち運ぶ） --- */
   const fileInput = useRef<HTMLInputElement | null>(null);
 
@@ -754,7 +783,9 @@ export default function DeNAPrep() {
                 hidden
               />
               <span className="jp-actions-note">
-                入力は<strong>このブラウザの中だけ</strong>に保存される。別のブラウザ・別の端末へは、このファイルで持ち運ぶ
+                {sharedAt
+                  ? `共有版を読み込み済み（${sharedAt.slice(0, 10)}）。どの端末で開いてもここから始まる。書いた分を共有版へ反映するには、このファイルを Claude に渡す`
+                  : "入力はこのブラウザの中に保存される。共有版へ反映するには、このファイルを Claude に渡す"}
               </span>
             </div>
           </section>

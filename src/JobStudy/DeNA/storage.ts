@@ -134,6 +134,42 @@ export function mergeRecords<T>(current: Record<string, T>, incoming: Record<str
   return { ...current, ...incoming };
 }
 
+/* ------------------------------------------------------------------ *
+ * 共有版（リポジトリに置いた回答）
+ *
+ * 本人の判断で公開リポジトリに回答を置いている。
+ * これにより、どのブラウザ・どの端末で開いても同じ内容から始められる。
+ *
+ * 書き戻しはブラウザからはできない（トークンを置けないため）。
+ * 更新は「バックアップを保存」または「全部まとめてコピー」で手元へ出し、
+ * public/jobstudy-dena-answers.json を差し替えて push する。
+ * ------------------------------------------------------------------ */
+
+export const SHARED_URL = import.meta.env.BASE_URL + "jobstudy-dena-answers.json";
+
+/**
+ * 共有版を土台にし、**この端末で書いた中身のほうを優先**して重ねる。
+ * 共有版が古くても、手元の書きかけを消さないための順序。
+ */
+export function overlayLocal(
+  shared: Record<string, string>,
+  local: Record<string, string>,
+): Record<string, string> {
+  const out = { ...shared };
+  for (const [k, v] of Object.entries(local)) if (v && v.trim()) out[k] = v;
+  return out;
+}
+
+export async function fetchShared(): Promise<Backup | null> {
+  try {
+    const res = await fetch(SHARED_URL, { cache: "no-store" });
+    if (!res.ok) return null;
+    return parseBackup(await res.text());
+  } catch {
+    return null;
+  }
+}
+
 export type Theme = "light" | "dark";
 
 /** 端末の設定を初期値にし、明示的に切り替えたらそれを覚える。 */
