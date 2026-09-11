@@ -205,6 +205,14 @@
   .tl-edit .btns .rm{background:none;color:var(--warn);margin-left:auto}
   .tl-off{margin-top:26px;border-top:1px solid var(--line);padding-top:12px}
   .tl-off h3{font-size:13.5px;color:var(--sub);margin-bottom:8px}
+  /* ---------- Indexフレーバー ---------- */
+  .fl-name{flex:none;width:160px;padding-top:2px;font-size:12.5px;color:var(--ink);overflow-wrap:break-word}
+  .fl-name small{display:block;font-size:10px;color:var(--sub)}
+  .fl-chip{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;border:1px solid rgba(0,0,0,.35)}
+  .fl-text{font-size:13.5px;line-height:1.8;white-space:pre-wrap}
+  .fl-none{color:var(--sub);font-size:12px}
+  .fl-stat{font-size:11px;color:var(--sub);font-weight:400;margin-left:6px}
+  @media (max-width:640px){.fl-name{width:104px}}
   /* ハンバーガーと、ナビを覆う幕。スマホでのみ出す */
   #menu,#scrim{display:none}
 
@@ -1097,6 +1105,8 @@ const DB = [
   <p><b>蛍光ダイヤモンド</b> ── 暗がりで、ひとりでにぼんやり光っていた。死んでいるはずの石が、エネルギーを返している。"生きた均衡"なんて与太話だと思っていた。昨日までは。</p>
   <p class="note">残りの色変種(イエロー/グリーン/オレンジ各種など約40種)は方向性確定後に量産する。</p>`},
 ]},
+{id:'flavor', nav:'⛏ Indexフレーバー', group:'脚本', title:'Index フレーバーテキスト', flavor:true,
+ desc:'ゲーム内 INDEX（図鑑）の各項目に載せるフレーバーテキストと備考。この一覧が正本。', secs:[]},
 /* ============================ LORE ============================ */
 {id:'lo-onees', nav:'オニース(敵)', group:'システム象徴', title:'オニース ── 敵の象徴', desc:'採掘の反動として生まれる「死んだベクトルの塊」。', secs:[
  {id:'on-core', h:'確定事項', s:'k', b:`
@@ -1355,14 +1365,16 @@ let filter='all';
 function secTitle(id){for(const p of DB){for(const s of p.secs){if(s.id===id)return {page:p,sec:s};}}return null;}
 function isScrKey(k){return k===SCR_INDEX||k===SCR_HIDDEN||k.indexOf('scr:')===0;}
 function isTlKey(k){return k===TL_ORDER||k.indexOf('tl:')===0;}
+function isFlKey(k){return k.indexOf('fl:')===0;}
 function scrLineCount(){let n=0;for(const k in STORE.comments)if(k.indexOf('scr:')===0)n+=STORE.comments[k].length;return n;}
 function pageCommentCount(p){
   if(p.flow)return 0;                // タイムラインにコメント欄は無い
+  if(p.flavor)return 0;              // フレーバー編集はコメントではない
   if(p.chat)return scrLineCount();   // 脚本ページはコメントではなく発言数を出す
   let n=0;for(const s of p.secs){n+=(STORE.comments[s.id]||[]).length;}return n;
 }
-// 脚本の発言とタイムラインの編集は「フィードバック」ではないので数に入れない
-function totalFeedback(){let n=0;for(const k in STORE.comments)if(!isScrKey(k)&&!isTlKey(k))n+=STORE.comments[k].length;for(const k in STORE.reactions)if(STORE.reactions[k])n++;return n;}
+// 脚本の発言・タイムラインの編集・フレーバーの編集は「フィードバック」ではないので数に入れない
+function totalFeedback(){let n=0;for(const k in STORE.comments)if(!isScrKey(k)&&!isTlKey(k)&&!isFlKey(k))n+=STORE.comments[k].length;for(const k in STORE.reactions)if(STORE.reactions[k])n++;return n;}
 
 /* ---------- nav ---------- */
 function renderNav(){
@@ -1410,6 +1422,7 @@ function renderPage(){
   const p=DB.find(x=>x.id===curPage)||DB[0];
   if(p.flow){renderFlow(el,p);return;}
   if(p.chat){renderChat(el,p);return;}
+  if(p.flavor){renderFlavor(el,p);return;}
   let html='<div class="phead"><h2>'+p.title+'</h2><p>'+p.desc+'</p></div>';
   for(const s of p.secs){
     const cms=STORE.comments[s.id]||[];
@@ -1563,6 +1576,21 @@ function buildMD(){
         md+=(sp.kind?'*'+body+'*':'**'+sp.name+'**「'+body+'」')+(l.builtin?'':' `'+l.ts+'`')+'\n\n';
       }
     }
+  }
+  // Indexフレーバー。本文か備考が入っている項目だけ書き出す
+  let flAny=false;
+  for(const s of FL){
+    let sec='';
+    for(const it of s.items){
+      const v=flItem(it);
+      if(!v.text&&!v.note)continue;
+      sec+='- **'+it.n+'**'+(v.text?' … '+v.text.replace(/\n/g,' / '):'（本文なし）')
+        +(v.note?' 〔備考: '+v.note.replace(/\n/g,' / ')+'〕':'')+'\n';
+    }
+    if(!sec)continue;
+    if(!flAny)md+='\n# Index フレーバーテキスト\n\n';
+    flAny=true;
+    md+='## '+s.h+'\n\n'+sec+'\n';
   }
   return md;   // タイムラインは常にあるので、書き出しが空になることはない
 }
@@ -2013,6 +2041,227 @@ function renderFlow(el,p){
         +'<div class="tl-ops"><button class="wide" onclick="tlRestore(\''+it.id+'\')">戻す</button></div></div>';
     }
     html+='</div>';
+  }
+  el.innerHTML=html;
+}
+
+/* ---------- Indexフレーバー(ページ) ----------
+   ゲーム内 INDEX(図鑑)の各項目に載せるフレーバーテキストと備考を管理する。
+   このページの一覧が正本。コード(CollectionIndexViewModel)は掲載構造の実装。
+
+   ■ 掲載構造(2026-09-11 時点)
+   - 通貨5種 / 道具(マトック・ピッケル・ハンマー 各Lv1〜12 + ピコピコハンマー) /
+     エンチャント19種 / 鉱石(6バイオーム × 13種)
+   - ジオード・ブルーボックス・土(各バイオームの index0)は図鑑から外す(2026-09-11 確定)
+   - 道具のLv13以降は図鑑に並ぶが、見た目が12周期なので本文もLv1〜12を使い回す(確定)
+   - 鉱石 index14〜16 は入手経路が無く図鑑に非掲載(MultiBiomeMaster.MaxObtainableGemIndex)
+   - エンチャントの本文はゲーム内の既存説明文を流用する(確定)。直したいものだけ編集する
+
+   ■ 保存
+   他ページと同じ comments/ に相乗りする。新しいデータ形式は足していない。
+     comments['fl:<項目キー>'] … 1件 = 'key=value' の改行区切り(text= / note=)。最新の ts が勝つ
+   既定の本文(FL の t)はこのファイルが持ち、編集はコメント側の上書きで表現する。
+   空欄も必ず書き出す(tlFields と同じ理由)。 */
+const flKey=(k)=>'fl:'+k;
+// 絵本方式: 道具1種 = 1冊。Lv1〜12 が1ページずつ
+function flBook(kind,jn,lines){
+  return lines.map((t,i)=>({k:'tool:'+kind+':'+(i+1),n:jn+' Lv'+(i+1),t}));
+}
+function flOres(list){
+  return list.map(g=>({k:'ore:'+g[0],n:g[1],e:g[0],c:g[2],t:g[3]||''}));
+}
+const FL=[
+ {id:'cur',h:'通貨',
+  note:'ジオード・ブルーボックスは図鑑から外した(2026-09-11 確定)。',
+  items:[
+  {k:'cur:soil',n:'ソイル',e:'Soil',t:'砂くずも石ころもちょっとくらい動力源になるよ。'},
+  {k:'cur:tear',n:'ティア',e:'Tear',t:'雫の形の石。ちょっとひんやりする。'},
+  {k:'cur:diamond',n:'ダイヤモンド',e:'Diamond',t:'カット済み。完璧なつり合い。'},
+  {k:'cur:soul',n:'ソウル',e:'Soul',t:'目まぐるしく動くから、宝石とはまたちがった形でベクトルが密集している。'},
+  {k:'cur:nethercream',n:'ネザークリーム',e:'Nether Cream',t:'やけどに注意！'},
+ ]},
+ {id:'mattock',h:'マトック ── 絵本『コツコツのうた』(働き者の日常)',
+  note:'Lv進行=ページめくり。Lv13以降はLv1〜12の本文を12周期で使い回す。',
+  items:flBook('mattock','マトック',[
+   'コツコツコツ',
+   'きょうも土をおこす。',
+   '土のにおいで、朝がわかる。',
+   '石ころに、こんにちは。',
+   'ミミズを起こしてしまった。ごめん。',
+   '雨の日は、土がやわらかい。',
+   '掘ったあとのうねは、ちょっと誇らしい。',
+   '手にまめができた。勲章という。',
+   '土の下は、あたたかい。',
+   'コツコツは、遠くまで行ける歩き方。',
+   '振り返ると、道ができていた。',
+   'あしたも、コツコツ。',
+  ])},
+ {id:'pickaxe',h:'ピッケル ── 絵本『ほしをほる』(星さがしの冒険)',
+  note:'Lv進行=ページめくり。Lv13以降はLv1〜12の本文を12周期で使い回す。',
+  items:flBook('pickaxe','ピッケル',[
+   'カッカッカッ',
+   '岩のなかに、ひかるものがいる。',
+   '火花は、ちいさな流れ星。',
+   '深くほるほど、空から遠くなる。',
+   'でもふしぎ。深いほうが、星に近い。',
+   '暗闇は、ひかりの隠れ場所。',
+   'カキーン。あたりだ。',
+   '石のなかの星を、そっと取り出す。',
+   'ポケットが、ひかりでいっぱい。',
+   '帰り道は、掘った穴が教えてくれる。',
+   '空にかえす？ それとも、もっと集める？',
+   '今夜も、地面の下で星さがし。',
+  ])},
+ {id:'sledge',h:'ハンマー ── 絵本『おおきなともだち』(力持ちのさみしんぼ民話)',
+  note:'Lv進行=ページめくり。Lv13以降はLv1〜12の本文を12周期で使い回す。',
+  items:flBook('sledgehammer','ハンマー',[
+   'ゴンゴンゴン',
+   'おおきな音は、おおきなあいさつ。',
+   '岩は、たたくとふたつになる。',
+   'ふたつは、たたくとたくさんになる。',
+   '山がゆれた。山のせいにした。',
+   '力もちは、そっと置くのがにがて。',
+   'こわしたあとは、しずかになる。',
+   'しずかなのは、ちょっとさみしい。',
+   'だから、またたたく。ゴン。',
+   '谷のむこうから、こだまが返事する。',
+   'ともだちは、うるさいくらいがいい。',
+   'きょうもどこかで、ゴンゴンゴン。',
+  ])},
+ {id:'special',h:'特殊装備',items:[
+  {k:'tool:pikopiko',n:'ピコピコハンマー',e:'PikoPiko Hammer',t:'頭をたたかれないで。星が飛び交うから。'},
+ ]},
+ {id:'ench',h:'エンチャント',
+  note:'ゲーム内の既存説明文を流用する(確定)。直したいものだけ編集する。数値・倍率はゲーム側で表示するので本文には書かない。',
+  items:[
+  {k:'ench:wave',n:'ウェーブエンチャント',t:'隣接するブロックにもダメージを与える。'},
+  {k:'ench:enhancedwave',n:'強化ウェーブエンチャント',t:'周囲のブロックにもダメージを与える。'},
+  {k:'ench:drain',n:'ドレインエンチャント',t:'攻撃ごとにブロックへ報酬倍率を蓄積し、破壊時に適用する。'},
+  {k:'ench:enhanceddrain',n:'強化ドレインエンチャント',t:'攻撃ごとにブロックへ報酬倍率を蓄積し、破壊時に適用する。ドレインエンチャント装備時はさらに強化される。'},
+  {k:'ench:combo',n:'コンボエンチャント',t:'ブロック破壊でコンボが発動し、採掘力Up。'},
+  {k:'ench:enhancedcombo',n:'強化コンボエンチャント',t:'ブロック破壊でコンボが発動し、採掘力Up。'},
+  {k:'ench:warp',n:'ワープエンチャント',t:'移動時に瞬時に目標位置へテレポートする。'},
+  {k:'ench:lupe',n:'ルーペエンチャント',t:'ブロックを破壊すると追加のボックスが見つかる。'},
+  {k:'ench:leadership',n:'リーダーシップ',t:'レベルが一定以上低い装備中のアイテムの数だけ攻撃力が上がる。'},
+  {k:'ench:superrookie',n:'スーパールーキー',t:'レベルが一定以上高い装備中のアイテムの数だけ攻撃力が上がる。'},
+  {k:'ench:firststrike',n:'ファーストストライク',t:'残りHPが一定以上のブロックに追加ダメージを与える。'},
+  {k:'ench:guillotine',n:'ギロチン',t:'残りHPが一定以下のブロックを一撃で破壊する。'},
+  {k:'ench:sscritical',n:'SSクリティカル',t:'超低確率で大ダメージを与える。'},
+  {k:'ench:bug',n:'バグ',t:'空を叩き、ランダムなブロックを叩く。'},
+  {k:'ench:motamen',n:'モタメン',t:'ランダムな三つのエンチャントの効果が得られる。これを付与すると、他のエンチャントは付与できない。'},
+  {k:'ench:momentum',n:'モーメンタム',t:'同じブロックを叩けば叩くほどダメージUp'},
+  {k:'ench:blindspotunderfoot',n:'足元の盲点',t:'縦横無尽に移動しながら周囲のブロックにダメージを与える。'},
+  {k:'ench:mushroom',n:'きのこ',t:'攻撃時に、範囲内のエージェントを強化するきのこフィールドを発生させる。'},
+  {k:'ench:chargeattack',n:'溜め攻撃',t:'溜め攻撃をするようになる。溜め攻撃は、攻撃力とエンチャントによる攻撃時の効果を増やす。また、移動速度が下がる。'},
+ ]},
+ {id:'ore-1-1',h:'鉱石 1-1 Umecha',items:flOres([
+  ['quartz','石英','F5F5F5'],['amethyst','アメジスト','9966CC'],['morganite','モルガナイト','F4A7B9'],
+  ['amazonite','アマゾナイト','66CCAA'],['padparadschasapphire','パパラチャサファイア','FF7F50'],
+  ['paraibatourmaline','パライバトルマリン','2ED9C3'],['moonstone','月長石','EDEAE0'],
+  ['rubelite','ルベライト','C83060'],['aquamarine','アクアマリン','7FFFD4'],
+  ['catseyequartz','キャッツアイクォーツ','D4AF37'],['tsavorite','ツァボライト','00A550'],
+  ['rosequartz','ローズクォーツ','F7CAC9'],['demantoid','デマントイド','7FFF00'],
+ ])},
+ {id:'ore-1-2',h:'鉱石 1-2 Himejine',items:flOres([
+  ['bluequartz','ブルークォーツ','5B8DB8'],['crystalopal','クリスタルオパール','D0E8F0'],
+  ['phantomquartz','ファントムクォーツ','D8D8D8'],['jasper','ジャスパー','C1440E'],
+  ['hessonite','ヘソナイト','C87020'],['mandaringarnet','マンダリンガーネット','FF6600'],
+  ['aventurinequartz','アベンチュリンクォーツ','4CAF50'],['redspinel','赤尖晶石','E0115F'],
+  ['rubyspinel','ルビースピネル','C8001A'],['calcite','方解石','F8F0D2'],
+  ['trapicheemerald','トラピッチェエメラルド','2E8B57'],['apatite','燐灰石','00CFFF'],
+  ['pyrope','パイロープ','6B0000'],
+ ])},
+ {id:'ore-1-3',h:'鉱石 1-3 Tanuki',items:flOres([
+  ['dumortieritequartz','デュモルチェライトクォーツ','3B5998'],
+  ['colorchangesapphire','カラーチェンジサファイア','6A5ACD'],['starruby','スタールビー','D75688'],
+  ['purplesapphire','パープルサファイア','AF59FF'],['cuprousoxidecuprite','キュープライト','9B1B30'],
+  ['orangesapphire','オレンジサファイア','FF8C00'],['pinktourmaline','ピンクトルマリン','FF69B4'],
+  ['indicolite','インディコライト','1A5A8A'],['carnelian','カーネリアン','B94040'],
+  ['smokyquartz','煙水晶','7B5E57'],['yellowsapphire','イエローサファイア','FFD700'],
+  ['heliodor','ヘリオドール','FFEA00'],['andradite','アンドラダイト','8B7536'],
+ ])},
+ {id:'ore-2-1',h:'鉱石 2-1 Bepp',items:flOres([
+  ['adularia','アデュラリア','F0EEE8'],['spessartine','スペサルティン','E8601A'],
+  ['flashopal','フラッシュオパール','C8D8E8'],['fluorescentdiamond','蛍光ダイヤモンド','C8A0E8'],
+  ['greenberyl','グリーンベリル','78C878'],['catseyespinel','キャッツアイスピネル','D4AF37'],
+  ['carbonado','カーボナード','2A2A2A'],['asteriatedquartz','アステリアテッドクォーツ','E8E8E8'],
+  ['browndiamond','ブラウンダイヤモンド','8B5E3C'],['strawberryquartz','ストロベリークォーツ','E8735A'],
+  ['bluespinel','ブルースピネル','4169E1'],['reddiamond','レッドダイヤモンド','9B111E'],
+  ['prasiolite','プラシオライト','8DB600'],
+ ])},
+ {id:'ore-2-2',h:'鉱石 2-2 Nukt',items:flOres([
+  ['elbaite','エルバイト','5A9A5A'],['lodolite','ロードライトクォーツ','A8C5A0'],
+  ['pinkspinel','ピンクスピネル','FF9EAF'],['whiteopal','ホワイトオパール','F8F4F0'],
+  ['hematite','赤鉄鉱','5C5C5C'],['fireopal','ファイアオパール','FF5A00'],
+  ['herkimerquartz','ハーキマークォーツ','E8F4F8'],['catseyesapphire','キャッツアイサファイア','1A4A8A'],
+  ['greensapphire','グリーンサファイア','3CB371'],['rhodolite','ロードライト','B03060'],
+  ['catseyetourmaline','キャッツアイトルマリン','D4AF37'],['rutilatedquartz','ルチルクォーツ','C8A951'],
+  ['redberyl','紅緑柱石','C71585'],
+ ])},
+ {id:'ore-3-1',h:'鉱石 3-1 WetLand',items:flOres([
+  ['titanite','チタナイト','C6A83E'],['larimar','ラリマー','76C7D8'],['iolite','アイオライト','596AA8'],
+  ['charoite','チャロアイト','8659A4'],['kunzite','クンツァイト','D7A4C8'],
+  ['tugtupite','ツグツパイト','D85C7F'],['clinohumite','クリノヒューマイト','D9822B'],
+  ['alexandrite','アレキサンドライト','4F8074'],['hauyne','アウイナイト','237BC4'],
+  ['benitoite','ベニトアイト','254FA3'],['eudialyte','ユーディアライト','A13F62'],
+  ['pezzottaite','ペッツォッタイト','E43D8F'],['taaffeite','ターフェアイト','087F82'],
+ ])},
+];
+let FL_EDIT=null;       // 編集中の項目キー
+const FL_FOLD={};       // 畳んでいるセクション
+
+// 既定(FL)にコメント側の上書きを重ねた、表示用の {text,note}
+function flItem(it){
+  const c=tlLatest(flKey(it.k));
+  return Object.assign({text:it.t||'',note:it.note||''},c?tlParse(c.text):{});
+}
+function flEditItem(k){FL_EDIT=(FL_EDIT===k?null:k);render();}
+function flSave(k){
+  const t=document.getElementById('fle-text').value.trim();
+  const n=document.getElementById('fle-note').value.trim();
+  FL_EDIT=null;
+  // 空欄も必ず書く(text= / note=)。書かないと既定の本文が復活してしまう
+  tlSnap(flKey(k),tlFields({text:t,note:n}));
+}
+function flFold(id){if(FL_FOLD[id])delete FL_FOLD[id];else FL_FOLD[id]=true;render();}
+function flItemHtml(it){
+  const v=flItem(it);
+  const chip=it.c?'<span class="fl-chip" style="background:#'+it.c+'"></span>':'';
+  const edited=!!tlLatest(flKey(it.k));
+  return '<div class="tl-item'+(v.text?' done':' idea')+'">'
+    +'<div class="fl-name">'+chip+esc(it.n)+(it.e?'<small>'+esc(it.e)+'</small>':'')+'</div>'
+    +'<div class="tl-body">'
+      +(FL_EDIT===it.k
+        ?'<div class="tl-edit">'
+          +'<label>フレーバーテキスト</label><textarea id="fle-text">'+esc(v.text)+'</textarea>'
+          +'<label>備考</label><textarea id="fle-note">'+esc(v.note)+'</textarea>'
+          +'<div class="btns"><button class="ok" onclick="flSave(\''+it.k+'\')">保存</button>'
+          +'<button class="no" onclick="flEditItem(null)">取り消し</button></div></div>'
+        :'<div class="fl-text">'+(v.text?esc(v.text):'<span class="fl-none">未記入</span>')+'</div>'
+          +(v.note?'<div class="tl-note">備考: '+esc(v.note)+'</div>':''))
+    +'</div>'
+    +'<div class="tl-ops">'
+      +(edited?'<span class="fl-stat" title="既定から編集済み">✎済</span>':'')
+      +'<button title="編集" onclick="flEditItem(\''+it.k+'\')">✎</button>'
+    +'</div></div>';
+}
+function renderFlavor(el,p){
+  let total=0,filled=0;
+  for(const s of FL)for(const it of s.items){total++;if(flItem(it).text)filled++;}
+  let html='<div class="phead"><h2>'+p.title+'</h2><p>'+p.desc+'</p></div>';
+  html+='<div class="tl-bar"><span class="stat">記入済み '+filled+' / '+total+'</span></div>';
+  html+='<p class="note">図鑑の掲載構造: 通貨 / 道具(Lv1〜12、13以降は12周期で使い回し) / エンチャント(既存説明文を流用) / '
+    +'鉱石(各バイオーム13種。土・index14〜16は非掲載)。'
+    +'編集は ✎ から。本文と備考は空欄でも保存できる。</p>';
+  for(const s of FL){
+    let n=0;for(const it of s.items)if(flItem(it).text)n++;
+    const folded=!!FL_FOLD[s.id];
+    html+='<div class="tl-chap"><h3>'+s.h+'<span class="fl-stat">'+n+'/'+s.items.length+'</span></h3>'
+      +'<span class="rule"></span>'
+      +'<button onclick="flFold(\''+s.id+'\')">'+(folded?'▸ ひらく':'▾ たたむ')+'</button></div>';
+    if(folded)continue;
+    if(s.note)html+='<p class="note">'+s.note+'</p>';
+    for(const it of s.items)html+=flItemHtml(it);
   }
   el.innerHTML=html;
 }
