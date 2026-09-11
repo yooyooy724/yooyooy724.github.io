@@ -1268,3 +1268,80 @@ kbd {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* --- 回答へのアドバイス --------------------------------------------- */
+
+.jp-advice {
+  margin: 0 0 2rem;
+  padding: 0 0 1.5rem;
+  border-bottom: 1px solid var(--jp-line);
+}
+
+.jp-advice:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.jp-advice-rank {
+  display: inline-block;
+  margin-right: 0.6em;
+  padding: 0.15em 0.6em;
+  border-radius: 999px;
+  background: var(--jp-accent-soft);
+  color: var(--jp-accent-ink);
+  font-size: 0.72em;
+  font-weight: 500;
+  vertical-align: 0.15em;
+}
+
+.jp-advice-target {
+  margin: 0 0 0.6rem;
+  font-size: 0.86rem;
+}
+
+.jp-advice-problem {
+  margin: 0 0 0.8rem;
+  font-weight: 500;
+}
+
+.jp-advice-quote {
+  margin: 0 0 0.9rem;
+  padding: 0.6rem 0.9rem;
+  border-left: 3px solid var(--jp-line-strong);
+  border-radius: 0;
+  background: var(--jp-surface-2);
+  color: var(--jp-ink-2);
+  font-size: 0.9rem;
+}
+
+.jp-advice-fix {
+  margin: 0.9rem 0 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.jp-advice-bad,
+.jp-advice-good {
+  margin: 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: 8px;
+  background: var(--jp-surface-2);
+  font-size: 0.92rem;
+}
+
+.jp-advice-good {
+  background: var(--jp-accent-soft);
+}
+
+.jp-advice-mark {
+  margin-right: 0.5em;
+  font-weight: 500;
+}
+
+.jp-advice-bad .jp-advice-mark {
+  color: var(--jp-bad, #b4453f);
+}
+
+.jp-advice-good .jp-advice-mark {
+  color: var(--jp-accent-ink);
+}

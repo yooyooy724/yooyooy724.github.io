@@ -4,6 +4,7 @@ import {
   SYNCED_AT,
   VAULT_ROOT,
   acceptedWeaknesses,
+  adviceList,
   allSectionIds,
   checkSections,
   competitionArguments,
@@ -1021,12 +1022,75 @@ export default function DeNAPrep() {
             </button>
           </div>
 
+          {/* ---------------- アドバイス ---------------- */}
+          <section className="jp-section" id="advice">
+            <SectionHead
+              id="advice"
+              title="回答へのアドバイス"
+              file="宿題/宿題03・宿題04"
+              lead="2026-09-12 時点の回答を読んでのレビュー。回答そのものは本人の言葉のまま保管庫にある。ここでは直さず、直し方だけ置く。"
+            />
+
+            {adviceList.map((a) => (
+              <article key={a.id} className="jp-advice">
+                <h3 className="jp-h3">
+                  <span className="jp-advice-rank">{a.rank}</span>
+                  {a.title}
+                </h3>
+
+                {a.target && (
+                  <p className="jp-advice-target">
+                    <a href={`#${a.target.id}`} onClick={(e) => { e.preventDefault(); goTo(a.target!.id); }}>
+                      {a.target.label} へ ↓
+                    </a>
+                  </p>
+                )}
+
+                <p className="jp-advice-problem">{a.problem}</p>
+
+                {a.quote && <blockquote className="jp-advice-quote">{a.quote}</blockquote>}
+
+                <ul className="jp-bullets">
+                  {a.why.map((w) => (
+                    <li key={w}>{w}</li>
+                  ))}
+                </ul>
+
+                {(a.fix.bad || a.fix.good) && (
+                  <div className="jp-advice-fix">
+                    {a.fix.bad && (
+                      <p className="jp-advice-bad">
+                        <span className="jp-advice-mark">✕</span>
+                        {a.fix.bad}
+                      </p>
+                    )}
+                    {a.fix.good && (
+                      <p className="jp-advice-good">
+                        <span className="jp-advice-mark">○</span>
+                        {a.fix.good}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {a.fix.steps && (
+                  <ul className="jp-bullets is-good">
+                    {a.fix.steps.map((s) => (
+                      <li key={s}>{s}</li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+            ))}
+          </section>
+
           {/* ---------------- 資料 ---------------- */}
           <h2 className="jp-part">
             <span className="label">資料</span>
             志望動機の材料
           </h2>
 
+          {/* ---------------- 志望動機の材料 ---------------- */}
           <section className="jp-section" id="reasons">
             <SectionHead
               id="reasons"
