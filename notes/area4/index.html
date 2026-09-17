@@ -75,6 +75,9 @@
   .callout{border-left:3px solid var(--orange);background:#fff;padding:10px 14px;border-radius:0 6px 6px 0;margin:10px 0 14px;max-width:72ch}
   .callout.note{border-left-color:var(--blue)}
   .quote{font-size:13px;color:var(--muted-strong);border-left:2px solid var(--line);padding-left:10px;margin:6px 0 10px;max-width:70ch}
+  .flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0 14px;font-size:13.5px}
+  .flow .step{background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 12px}
+  .flow .arrow{color:var(--muted);font-family:var(--mono)}
   .layers{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:10px 0 14px}
   .layer{background:#fff;border:1px solid var(--line);border-radius:6px;padding:12px 14px}
   .layer .name{font-family:var(--font-display);font-weight:700;font-size:15px}
@@ -93,8 +96,8 @@
   <header class="top">
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
-    <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Area4 をその入口にし、PvP 的な要素を添える。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-17</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Area4 のボスコンテンツとセットで考え、Master 後に新しい通貨とバザーが開く。確定したことと、まだ案のことを分けて持つ。</p>
+    <div class="meta"><span>更新 2026-09-17 (2)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <nav class="toc" aria-label="目次">
@@ -102,11 +105,12 @@
       <li><a href="#fixed">1. 確定していること</a></li>
       <li><a href="#exp">2. 狙う体験</a></li>
       <li><a href="#master">3. マスタープレステージ</a></li>
-      <li><a href="#area4">4. Area4 の Prestige</a></li>
-      <li><a href="#layers">5. 層構成</a></li>
-      <li><a href="#pvp">6. PvP 的要素</a></li>
-      <li><a href="#infra">7. 既存の仕組み</a></li>
-      <li><a href="#open">8. 未決</a></li>
+      <li><a href="#currency">4. 新しい通貨とバザー</a></li>
+      <li><a href="#area4">5. Area4 の Prestige</a></li>
+      <li><a href="#layers">6. 層構成</a></li>
+      <li><a href="#pvp">7. PvP 的要素</a></li>
+      <li><a href="#infra">8. 既存の仕組み</a></li>
+      <li><a href="#open">9. 未決</a></li>
     </ol>
   </nav>
 
@@ -123,8 +127,11 @@
       <ul>
         <li>Area4 として出す。Area4 に Biome は無い（深さの軸が無い）</li>
         <li>MasterPrestige コンテンツと、PvP 的なマルチプレイ要素を入れる</li>
-        <li>MasterPrestige のリセット対象は <strong>Relic・装備スロットの Upgrade・ストレージの Upgrade 以外のすべて</strong></li>
-        <li>MasterPrestige はエンディング（全部 max）後に解放し、<strong>完全に任意</strong>にする <span class="src">Discord 8/30 ya.yu</span></li>
+        <li>MasterPrestige は<strong>ボスコンテンツとセット</strong>。最初のボスを倒すとエンディングロール（Thank you for playing）が流れ、その後に MasterPrestige が解放される</li>
+        <li>MasterPrestige は完全に任意 <span class="src">Discord 8/30 ya.yu</span></li>
+        <li>リセット対象外: <strong>Relic・装備スロットの Upgrade・ストレージの Upgrade・Diamond・Soul・BlueBox・Trade・INDEX・所持 Spell・Battle</strong>。ただし <strong>Battle の装備はリセット</strong></li>
+        <li>Forge Level は残す。その代わり <strong>MaxLevel を徐々に上げる</strong></li>
+        <li>MasterPrestige 後に<strong>新しい通貨</strong>を追加する。名前は未定（<a href="#currency">#4</a>）</li>
       </ul>
     </section>
 
@@ -143,12 +150,14 @@
 
     <section id="master">
       <h2>3. マスタープレステージ</h2>
-      <h3>発動</h3>
-      <ul>
-        <li>エンディング後。「全部 max」＝ダイヤ Upgrade・Soul・NetherCream の Upgrade を取り切った状態 <span class="badge b-adopt">採用候補</span> <span class="src">Poedel</span></li>
-        <li>押すかどうかは完全に任意。押さなくても損はしない <span class="badge b-fixed">確定</span></li>
-        <li>入口は Area4 <span class="badge b-fixed">確定</span>。Area4 の中での位置づけは未決（<a href="#open">#8</a>）</li>
-      </ul>
+      <h3>解放の流れ <span class="badge b-fixed">確定</span></h3>
+      <div class="flow">
+        <span class="step">Area4 の最初のボスを倒す</span><span class="arrow">→</span>
+        <span class="step">エンディングロール「Thank you for playing」</span><span class="arrow">→</span>
+        <span class="step">MasterPrestige 解放（押すかどうかは任意）</span><span class="arrow">→</span>
+        <span class="step">新しい通貨 x0 → x1、新しいバザーが開く</span>
+      </div>
+      <p>「全部 max したら」という条件（Poedel 案）は、最初のボス撃破に置き換える。</p>
 
       <h3>何が残り、何が伸び、何が消えるか</h3>
       <div class="tablewrap">
@@ -157,11 +166,16 @@
           <tbody>
             <tr><td>Relic</td><td class="keep">残す</td><td>そのまま。オートメーション系の Upgrade もここに含める</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
             <tr><td>装備スロットの Upgrade</td><td class="keep">残す</td><td>解放したスロット数はそのまま</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
-            <tr><td>ストレージの Upgrade</td><td class="keep">残す</td><td>解放した容量はそのまま。さらに Master ごとに 1 ページ（または 1 行）増やす</td><td><span class="badge b-fixed">確定</span> <span class="badge b-adopt">採用候補</span></td><td class="src">ya.yu / Poedel</td></tr>
-            <tr><td>Forge Level</td><td class="grow">引き継いで伸びる</td><td>回数は 25/25 → 0/25 に戻るが、到達した Level は残る。次の周で 20/25 まで戻すと、召喚される装備は Lv15・16・17 のように前より上から始まる</td><td><span class="badge b-adopt">採用候補</span></td><td class="src">Poedel</td></tr>
-            <tr><td>Spell</td><td class="grow">引き継いで伸びる</td><td>所持したまま。2 周目で同じ Spell をもう一度取ると Tier2 になる（例: ピッケルのモメンタム Lv4 → Lv8）</td><td><span class="badge b-adopt">採用候補</span></td><td class="src">ya.yu / Poedel</td></tr>
-            <tr><td>ダイヤ Upgrade</td><td class="grow">引き継いで伸びる</td><td>買った分は残し、上限が広がる（10/10 → 10/15）。課金価値を消さない</td><td><span class="badge b-adopt">採用候補</span></td><td class="src">Poedel</td></tr>
-            <tr><td>それ以外のすべて</td><td class="reset">リセット</td><td>周回の進行・通貨・装備・Prestige 倍率・各 Area の到達深度・試練の進行など。具体リストは未決（<a href="#open">#8</a>）</td><td><span class="badge b-fixed">確定</span> <span class="badge b-open">未決</span></td><td class="src">ya.yu</td></tr>
+            <tr><td>ストレージの Upgrade</td><td class="keep">残す</td><td>解放した容量はそのまま。さらに Master ごとに 1 ページ（または 1 行）増やす案あり</td><td><span class="badge b-fixed">確定</span> <span class="badge b-adopt">採用候補</span></td><td class="src">ya.yu / Poedel</td></tr>
+            <tr><td>Diamond</td><td class="keep">残す</td><td>所持額も Upgrade も残す。上限を広げる（10/10 → 10/15）案あり</td><td><span class="badge b-fixed">確定</span> <span class="badge b-adopt">採用候補</span></td><td class="src">ya.yu / Poedel</td></tr>
+            <tr><td>Soul</td><td class="keep">残す</td><td>所持額も Upgrade も残す</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
+            <tr><td>BlueBox</td><td class="keep">残す</td><td>そのまま</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
+            <tr><td>Trade</td><td class="keep">残す</td><td>そのまま（指す機能の確認は <a href="#open">#9</a>）</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
+            <tr><td>コレクション INDEX</td><td class="keep">残す</td><td>発見済みはそのまま</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
+            <tr><td>所持 Spell</td><td class="keep">残す</td><td>所持したまま。2 周目で同じ Spell を取ると Tier2 になる案あり（例: モメンタム Lv4 → Lv8）</td><td><span class="badge b-fixed">確定</span> <span class="badge b-adopt">採用候補</span></td><td class="src">ya.yu / Poedel</td></tr>
+            <tr><td>Battle</td><td class="keep">残す</td><td>Battle の進行・Upgrade は残す。<strong>装備だけはリセット</strong></td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
+            <tr><td>Forge Level</td><td class="grow">残して伸びる</td><td>Level はそのまま残す。回数を戻す案（Poedel）ではなく、<strong>MaxLevel を徐々に上げる</strong>。上げる手段はバザーのアイテム（<a href="#currency">#4</a>）</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
+            <tr><td>それ以外のすべて</td><td class="reset">リセット</td><td>各 Area の周回の進行・Soil / Tear / NetherCream・装備（Battle の装備を含む）・Prestige 倍率・到達深度・試練の進行など。具体リストは <a href="#open">#9</a></td><td><span class="badge b-fixed">確定</span> <span class="badge b-open">未決</span></td><td class="src">ya.yu</td></tr>
           </tbody>
         </table>
       </div>
@@ -171,17 +185,47 @@
       <div class="quote">ya.yu: エンディング後の任意コンテンツ。Forge Level は核なので賛成。Spell は残して同じものを取ったら Tier2。オートメーションの Upgrade は戻さない。</div>
       <div class="quote">Poedel: ダイヤ Upgrade は上限を広げる（10/10 → 10/15）。Storage は Master ごとに 1 ページか 1 行増やす。</div>
       <div class="quote">ya.yu: ダイヤの案は一歩先を行かれた。Storage の案も入れる。</div>
+      <div class="quote">ya.yu 9/17: リセット対象外を Diamond・Soul・BlueBox・Trade・INDEX・所持 Spell・Battle まで広げる（Battle の装備は戻す）。Master は最初のボス撃破 → エンディングロール → 解放。Forge Level は残し MaxLevel を徐々に上げる。Master 後に新しい通貨とバザー。</div>
 
       <h3>「損したかも」を出さない不変条件 <span class="badge b-idea">案</span></h3>
       <ul>
         <li>Master で得るものは累計で単調増加。早く押しても遅く押しても、同じ到達点の総和は同じ</li>
-        <li>残す・伸びるものは一度も減らない（Relic・スロット・ストレージ・Forge Level・Spell・ダイヤの購入分）</li>
+        <li>残すものは一度も減らない（上の表の「残す」「残して伸びる」）</li>
         <li>押さない選択が常に安全。Master を要求するコンテンツは作らない</li>
       </ul>
     </section>
 
+    <section id="currency">
+      <h2>4. 新しい通貨とバザー</h2>
+      <h3>決まっていること <span class="badge b-fixed">確定</span></h3>
+      <ul>
+        <li>MasterPrestige 後に新しい通貨を追加する</li>
+        <li>演出は他の Prestige と同じ「通貨獲得の倍率」。ただし <strong>x1 始まりではなく x0 始まり</strong>（通貨X x0 → x1）。倍率が 0 の間は存在しないのと同じなので、解禁がなめらかに繋がる</li>
+        <li>通貨は<strong>洞窟の中で出る</strong>。獲得数は Soul と同じ規模にしたいので、バランスは慎重に決める</li>
+        <li>使い道は<strong>新しいバザー</strong>（Poedel のバザー案と同じ方向）</li>
+        <li>バザーには <strong>Forge Level 4 種の MaxLevel を 1 つ上げるアイテム</strong>が出る。これが「MaxLevel を徐々に上げる」の手段</li>
+      </ul>
+      <div class="callout">Poedel のバザー案そのものは、この文書にまだ載っていない（Claude が把握していない）。共有してもらえればここへ足す。</div>
+
+      <h3>通貨名の候補 <span class="badge b-idea">案</span></h3>
+      <p>世界観（ベクトル論）から。既存の Soul は内部名 Onies＝「死んだベクトルの塊」なので、エンディング後の通貨はその対になる「生きた側」から取るのが筋がよい。</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>候補（英 / 日）</th><th>由来</th><th>x0 → x1 との相性</th><th>所感</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Will</strong> / イシ（意思）</td><td>意思＝内部相が永遠に動き続ける「生きたベクトル」。評議会が「通貨にも燃料にも量産できない」と苛立つ唯一のもの。Soul（死んだベクトル）の対</td><td>コアに触れた（＝最初のボスを倒した）後にだけ手に入る、という筋が通る</td><td>推奨。テーマの核を通貨にする分、名前は短く</td></tr>
+            <tr><td><strong>Flux</strong> / ゆらぎ</td><td>失われた一本が抜けて格子が「永久の揺らぎ」に陥ったもの＝コアの意思</td><td>「x0 で止まっていたものが動き出す」の演出そのもの</td><td>次点。語感が軽く UI に収まりやすい</td></tr>
+            <tr><td><strong>Phase</strong> / 相（そう）</td><td>再帰ベクトルの内部相。同じ矢印でも中身が違う、を決めるもの</td><td>倍率で増える「深さ」の表現に合う</td><td>抽象的で、初見で何か分かりにくい</td></tr>
+            <tr><td><strong>Lost Vector</strong> / 一本（いっぽん）</td><td>コアから失われた一本の断片</td><td>最終命題を名指しする</td><td>重い。エンディング後の通貨としては直球すぎるかもしれない</td></tr>
+            <tr><td><strong>Prime Shard</strong> / プライム片</td><td>プライムコア（中心核の大宝石）の欠片</td><td>ボス＝コアの一部、と読める</td><td>宝石＝「止める側」なので、Master の意味（動き続ける）とは逆向き</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>選ぶときの軸: Soul（死んだ側）と対になるか / x0 → x1 の「動き出す」に合うか / 英語 UI で 1 語に収まるか。</p>
+    </section>
+
     <section id="area4">
-      <h2>4. Area4 の Prestige <span class="badge b-fixed">確定</span></h2>
+      <h2>5. Area4 の Prestige <span class="badge b-fixed">確定</span></h2>
       <p>Area4 の中で回る、ボス討伐を軸にした Prestige。Master とは別の層。</p>
       <div class="tablewrap">
         <table>
@@ -204,22 +248,23 @@
         <li>ボスの配置間隔（何 Level ごとか）</li>
         <li>初回 Prestige までの日数の最終値</li>
         <li>通貨が放置収入かドロップ由来か（後者なら <code>costCoef</code> に周回補正が必要）</li>
+        <li>「最初のボス」（エンディングを流すボス）が、この Prestige のボス列のどこに居るか</li>
       </ul>
     </section>
 
     <section id="layers">
-      <h2>5. 層構成 <span class="badge b-idea">案</span></h2>
+      <h2>6. 層構成 <span class="badge b-idea">案</span></h2>
       <div class="layers">
         <div class="layer"><div class="name">通常</div><div class="axis">軸: ボス撃破</div><dl><dt>消費</dt><dd>—</dd><dt>得る</dt><dd>cap +5、Prestige 解放</dd></dl></div>
         <div class="layer"><div class="name">Area4 Prestige</div><div class="axis">軸: k（回数）</div><dl><dt>消費</dt><dd>何も消さない</dd><dt>得る</dt><dd>currencyRate 線形倍率</dd><dt>周期</dt><dd>6 日 → 25 日</dd></dl></div>
-        <div class="layer"><div class="name">MasterPrestige</div><div class="axis">軸: m（回数）</div><dl><dt>消費</dt><dd>Relic・スロット・ストレージ以外</dd><dt>得る</dt><dd>Forge / Spell / ダイヤ / ストレージの底上げ</dd><dt>周期</dt><dd>エンディングごと</dd></dl></div>
+        <div class="layer"><div class="name">MasterPrestige</div><div class="axis">軸: m（回数）</div><dl><dt>消費</dt><dd>「残す」以外のすべて</dd><dt>得る</dt><dd>新通貨 x0 → x1、バザー、MaxLevel</dd><dt>周期</dt><dd>エンディングごと</dd></dl></div>
         <div class="layer"><div class="name">PvP 的要素</div><div class="axis">軸: シーズン</div><dl><dt>消費</dt><dd>—</dd><dt>得る</dt><dd>他人のマスターボスを倒す / 自分のが耐える</dd></dl></div>
       </div>
-      <div class="callout">要整理: 前回の案では Master を「Area4 の k と Level を畳む層」として式まで置いたが、今回の確定（Relic・スロット・ストレージ以外を全部リセット）は <strong>ゲーム全体</strong>の周回なので、Area4 の Prestige 進行も Master のリセット対象に含まれる想定に変わる。Area4 内での「傾きの底上げ」（<code>rateMult(k) = 1 + (0.3 + 0.05m) k</code> など）は、Master 後の Area4 の再スタートを速くする案として残す。</div>
+      <div class="callout">要整理: 前回の案では Master を「Area4 の k と Level を畳む層」として式まで置いたが、Master は <strong>ゲーム全体</strong>の周回なので、Area4 の Prestige 進行も Master のリセット対象に含まれる想定。Area4 内での「傾きの底上げ」（<code>rateMult(k) = 1 + (0.3 + 0.05m) k</code> など）は、Master 後の Area4 の再スタートを速くする案として残す。</div>
     </section>
 
     <section id="pvp">
-      <h2>6. PvP 的要素 <span class="badge b-idea">案</span></h2>
+      <h2>7. PvP 的要素 <span class="badge b-idea">案</span></h2>
       <p>非同期。Snapshot（凍結した ItemSet）を使い、負けても何も失わない。</p>
       <div class="tablewrap">
         <table>
@@ -242,7 +287,7 @@
     </section>
 
     <section id="infra">
-      <h2>7. 既存の仕組みとの対応</h2>
+      <h2>8. 既存の仕組みとの対応</h2>
       <div class="tablewrap">
         <table>
           <thead><tr><th>必要なもの</th><th>既存</th><th>状態</th></tr></thead>
@@ -252,33 +297,36 @@
             <tr><td>Area の器</td><td><code>WORLD_COUNT = 3</code>、宝石表は 4 つ分</td><td>Biome なしの Area は初。<code>MultiBiomeMaster</code> 側の前提を外す</td></tr>
             <tr><td>ボス戦の本体</td><td>Battle_NEW</td><td>ある。Area4 用に線形コストの Upgrade と cap を足す</td></tr>
             <tr><td>周回の切れ目</td><td>Area 単位（CONTEXT.md「周回」）</td><td>Area4 の Prestige は Area1〜3 に影響しない。Master は全 Area をまたぐので別の切れ目になる</td></tr>
-            <tr><td>Forge Level の上限</td><td>Relic の <code>equiplv_{kind}</code></td><td>「回数を戻して Level を残す」には回数と Level の分離が要る</td></tr>
-            <tr><td>Spell の Tier</td><td>SpellRoot（所持は 1 段階）</td><td>Tier の概念が無い。所持回数を持たせる</td></tr>
+            <tr><td>Forge Level の上限</td><td>Relic の <code>equiplv_{kind}</code></td><td>MaxLevel をバザーのアイテムで 1 つずつ上げる口が要る</td></tr>
+            <tr><td>通貨の倍率演出</td><td>Soil / Tear の Prestige 倍率</td><td>x0 始まりの倍率は初。0 の間は口を隠す</td></tr>
+            <tr><td>バザー</td><td>露店（NetherCream だけで買える売り場。棚・仕入れ・リロール・ボトル）</td><td>ある。新通貨で買う棚を別に持つか、同じ露店に混ぜるかは未決</td></tr>
+            <tr><td>Spell の Tier</td><td>SpellRoot（所持は 1 段階）</td><td>Tier の概念が無い。所持回数を持たせる（Tier2 案を採るなら）</td></tr>
           </tbody>
         </table>
       </div>
     </section>
 
     <section id="open">
-      <h2>8. 未決 <span class="badge b-open">未決</span></h2>
+      <h2>9. 未決 <span class="badge b-open">未決</span></h2>
       <div class="tablewrap">
         <table>
           <thead><tr><th class="num">#</th><th>項目</th><th>選択肢 / 仮の推奨</th></tr></thead>
           <tbody>
-            <tr><td class="num">1</td><td>リセット対象の具体リスト</td><td>「Relic・スロット・ストレージ以外すべて」を項目に展開する。特に: 装備そのもの、通貨（Soil / Tear / ダイヤ / Soul / NetherCream）、Area1〜3 の到達深度、試練の Tier 進行、コレクション INDEX</td></tr>
-            <tr><td class="num">2</td><td>Forge の回数と Level の関係</td><td>「25/25 → 0/25、次の周で 20/25 なら Lv15〜17」をどう式にするか。Master 回数ぶん Level を底上げする案</td></tr>
-            <tr><td class="num">3</td><td>Spell Tier2 の効果</td><td>数値を 2 倍（モメンタム Lv4 → Lv8）で統一するか、Spell ごとに決めるか。Tier3 以降を認めるか</td></tr>
-            <tr><td class="num">4</td><td>ダイヤ Upgrade の上限の増分</td><td>10/10 → 10/15 の例どおり +5 か。Master ごとに増やすか 1 回だけか</td></tr>
-            <tr><td class="num">5</td><td>ストレージの増分</td><td>1 ページか 1 行か。Master ごとに積むか</td></tr>
-            <tr><td class="num">6</td><td>Area4 の位置づけ</td><td>Master の入口（Area4 到達で Master 解放）か、Master 後の遊び場か、その両方か</td></tr>
-            <tr><td class="num">7</td><td>Area4 の本体ループ</td><td>戦闘画面のみ（Battle_NEW 流用）か、盤面にボスが降りてくるか</td></tr>
-            <tr><td class="num">8</td><td>Area4 の通貨</td><td>放置収入（推奨）か、ドロップ由来か。Area4 専用通貨か</td></tr>
-            <tr><td class="num">9</td><td>Area4 の解禁条件</td><td>Area3 の到達深度（推奨）か、別条件か</td></tr>
-            <tr><td class="num">10</td><td>Area4 への持ち込み</td><td>装備だけ（推奨）/ 装備 + Spell / 全部 / 無し</td></tr>
-            <tr><td class="num">11</td><td>ボスの間隔 / 初回日数</td><td>5 Level ごと / 6 日（推奨）</td></tr>
-            <tr><td class="num">12</td><td>PvP の形</td><td>マスターボス＝他人の Snapshot（推奨）か、ランキングだけか</td></tr>
-            <tr><td class="num">13</td><td>マスターボスの強さ</td><td>ItemSet 換算を m のリーグ内で正規化（推奨）</td></tr>
-            <tr><td class="num">14</td><td>「全部 max」の定義</td><td>ダイヤ Upgrade・Soul・NetherCream の何を取り切ったら Master 解放か</td></tr>
+            <tr><td class="num">1</td><td>新しい通貨の名前</td><td>候補は <a href="#currency">#4</a>。推奨 Will（イシ）、次点 Flux（ゆらぎ）</td></tr>
+            <tr><td class="num">2</td><td>新しい通貨の獲得率</td><td>Soul と同じ規模。洞窟のどこで出るか（ブロック / 宝石 / ボス）と、Master 回数 m で倍率をどう伸ばすか</td></tr>
+            <tr><td class="num">3</td><td>新しいバザーの品揃え</td><td>Poedel のバザー案を共有してもらい、ここへ載せる。MaxLevel +1 アイテムの値段と出現率</td></tr>
+            <tr><td class="num">4</td><td>MaxLevel の上げ方</td><td>バザーのアイテムだけか、Master 回数でも上がるか。1 回の Master で上げられる上限を置くか</td></tr>
+            <tr><td class="num">5</td><td>「Trade」が指す機能</td><td>露店（NetherCream の売り場）か、別の機能か</td></tr>
+            <tr><td class="num">6</td><td>リセット対象の具体リスト</td><td>「残す」以外を項目に展開する。特に: Soil / Tear / NetherCream の所持額、各 Area の到達深度、試練の Tier 進行、Spell 以外の試練報酬</td></tr>
+            <tr><td class="num">7</td><td>Spell Tier2 の扱い</td><td>採るなら効果の決め方（数値 2 倍で統一か、Spell ごとか）。Tier3 以降を認めるか</td></tr>
+            <tr><td class="num">8</td><td>Diamond 上限 / ストレージの増分</td><td>10/10 → 10/15 の +5 か。ストレージは 1 ページか 1 行か。Master ごとに積むか</td></tr>
+            <tr><td class="num">9</td><td>Area4 の本体ループ</td><td>戦闘画面のみ（Battle_NEW 流用）か、盤面にボスが降りてくるか</td></tr>
+            <tr><td class="num">10</td><td>Area4 の通貨</td><td>放置収入（推奨）か、ドロップ由来か。Area4 専用通貨か。新しい通貨とは別物か</td></tr>
+            <tr><td class="num">11</td><td>Area4 の解禁条件</td><td>Area3 の到達深度（推奨）か、別条件か</td></tr>
+            <tr><td class="num">12</td><td>Area4 への持ち込み</td><td>装備だけ（推奨）/ 装備 + Spell / 全部 / 無し</td></tr>
+            <tr><td class="num">13</td><td>ボスの間隔 / 初回日数</td><td>5 Level ごと / 6 日（推奨）</td></tr>
+            <tr><td class="num">14</td><td>PvP の形</td><td>マスターボス＝他人の Snapshot（推奨）か、ランキングだけか</td></tr>
+            <tr><td class="num">15</td><td>マスターボスの強さ</td><td>ItemSet 換算を m のリーグ内で正規化（推奨）</td></tr>
           </tbody>
         </table>
       </div>
