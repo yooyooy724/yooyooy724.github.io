@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MINERTIA Area4 / マスタープレステージ</title>
+<style>
+  /* 配色・字組みは他のノート (PromotionSite 等) と同じく、ポートフォリオ (src/globals.css) に合わせる。
+     紙のような淡色地 + ink/orange/green/blue の4色だけで組む。 */
+  :root{
+    --ink:#151a17;
+    --paper:#f2efe7;
+    --card:#e5e2d9;
+    --muted:#757a74;
+    --muted-strong:#5f645e;
+    --line:#cbc8bf;
+    --green:#b8de50;
+    --orange:#f06b45;
+    --blue:#a7c6f1;
+    --font-jp:"Yu Gothic","Hiragino Kaku Gothic ProN",sans-serif;
+    --font-display:Arial,Helvetica,sans-serif;
+    --mono:Consolas,"Courier New",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--font-jp);line-height:1.9;font-size:15px;padding-inline:16px;padding-block:0 64px}
+  a{color:inherit}
+  .label{font-family:var(--font-display);font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+
+  .wrap{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:200px minmax(0,1fr);gap:40px}
+  @media (max-width:800px){.wrap{grid-template-columns:minmax(0,1fr);gap:0}}
+
+  header.top{grid-column:1/-1;padding-block:40px 10px;border-bottom:1px solid var(--line);margin-bottom:24px}
+  header.top .label{color:var(--muted-strong)}
+  h1{font-family:var(--font-display);font-size:clamp(24px,4vw,36px);line-height:1.25;margin:8px 0 10px;letter-spacing:.01em}
+  .lede{color:var(--muted-strong);max-width:62ch}
+  .meta{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:12px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+  nav.toc{position:sticky;top:0;align-self:start;padding-top:4px}
+  nav.toc ol{list-style:none;display:grid;gap:2px}
+  nav.toc a{display:block;padding:4px 10px;border-left:2px solid var(--line);color:var(--muted-strong);text-decoration:none;font-size:13px}
+  nav.toc a:hover,nav.toc a:focus-visible{color:var(--ink);border-left-color:var(--orange);outline:none}
+  @media (max-width:800px){nav.toc{position:static;margin-bottom:20px}nav.toc ol{display:flex;flex-wrap:wrap;gap:6px}nav.toc a{border:1px solid var(--line);border-radius:999px;padding:2px 10px}}
+
+  main{min-width:0}
+  section{margin-bottom:44px}
+  h2{font-family:var(--font-display);font-size:20px;margin:0 0 12px;padding-bottom:6px;border-bottom:2px solid var(--card);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  h3{font-family:var(--font-display);font-size:15px;margin:22px 0 8px}
+  p{margin:0 0 10px;max-width:70ch}
+  ul,ol{margin:0 0 10px;padding-left:1.4em;max-width:72ch}
+  li{margin-bottom:3px}
+  code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:1px 5px;border-radius:3px}
+  strong{font-weight:700}
+
+  .badge{display:inline-block;font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.06em;padding:0 8px;border-radius:999px;line-height:1.8;vertical-align:middle;white-space:nowrap;color:var(--ink)}
+  .b-fixed{background:var(--green)}
+  .b-adopt{background:var(--orange);color:#fff}
+  .b-idea{background:var(--blue)}
+  .b-open{background:transparent;border:1px solid var(--muted);color:var(--muted-strong)}
+  .src{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:8px 18px;padding:12px 16px;background:var(--card);border-radius:6px;font-size:13px;margin-bottom:10px}
+  .legend .badge{margin-right:4px}
+
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:#fff;margin:8px 0 14px}
+  table{border-collapse:collapse;width:100%;font-size:13.5px}
+  th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+  th{font-family:var(--font-display);font-size:12px;letter-spacing:.04em;color:var(--muted-strong);background:var(--card);white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  td.num,th.num{font-family:var(--mono);white-space:nowrap}
+  td.keep{color:#4a7a1e;font-weight:700;white-space:nowrap}
+  td.grow{color:#b3491f;font-weight:700;white-space:nowrap}
+  td.reset{color:var(--muted-strong);font-weight:700;white-space:nowrap}
+
+  .callout{border-left:3px solid var(--orange);background:#fff;padding:10px 14px;border-radius:0 6px 6px 0;margin:10px 0 14px;max-width:72ch}
+  .callout.note{border-left-color:var(--blue)}
+  .quote{font-size:13px;color:var(--muted-strong);border-left:2px solid var(--line);padding-left:10px;margin:6px 0 10px;max-width:70ch}
+  .layers{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:10px 0 14px}
+  .layer{background:#fff;border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+  .layer .name{font-family:var(--font-display);font-weight:700;font-size:15px}
+  .layer .axis{font-family:var(--mono);font-size:12px;color:var(--muted-strong);margin-bottom:6px}
+  .layer dl{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:13px}
+  .layer dt{color:var(--muted)}
+  .num-list{counter-reset:q;list-style:none;padding:0}
+  .num-list li{position:relative;padding-left:2.2em}
+  .num-list li::before{counter-increment:q;content:counter(q);position:absolute;left:0;top:.2em;font-family:var(--font-display);font-size:11px;font-weight:700;color:var(--ink);background:var(--green);border-radius:999px;width:1.7em;height:1.7em;display:grid;place-items:center}
+  footer{grid-column:1/-1;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:14px;font-family:var(--mono)}
+  a:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="label">Idle Minertia / Design Notes / Area4</div>
+    <h1>Area4 / マスタープレステージ 仕様</h1>
+    <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Area4 をその入口にし、PvP 的な要素を添える。確定したことと、まだ案のことを分けて持つ。</p>
+    <div class="meta"><span>更新 2026-09-17</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+  </header>
+
+  <nav class="toc" aria-label="目次">
+    <ol>
+      <li><a href="#fixed">1. 確定していること</a></li>
+      <li><a href="#exp">2. 狙う体験</a></li>
+      <li><a href="#master">3. マスタープレステージ</a></li>
+      <li><a href="#area4">4. Area4 の Prestige</a></li>
+      <li><a href="#layers">5. 層構成</a></li>
+      <li><a href="#pvp">6. PvP 的要素</a></li>
+      <li><a href="#infra">7. 既存の仕組み</a></li>
+      <li><a href="#open">8. 未決</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <div class="legend">
+      <span><span class="badge b-fixed">確定</span>ya.yu が決めた</span>
+      <span><span class="badge b-adopt">採用候補</span>Discord の議論で賛成が出た</span>
+      <span><span class="badge b-idea">案</span>Claude の提案。まだ判断していない</span>
+      <span><span class="badge b-open">未決</span>決める必要がある</span>
+    </div>
+
+    <section id="fixed">
+      <h2>1. 確定していること <span class="badge b-fixed">確定</span></h2>
+      <ul>
+        <li>Area4 として出す。Area4 に Biome は無い（深さの軸が無い）</li>
+        <li>MasterPrestige コンテンツと、PvP 的なマルチプレイ要素を入れる</li>
+        <li>MasterPrestige のリセット対象は <strong>Relic・装備スロットの Upgrade・ストレージの Upgrade 以外のすべて</strong></li>
+        <li>MasterPrestige はエンディング（全部 max）後に解放し、<strong>完全に任意</strong>にする <span class="src">Discord 8/30 ya.yu</span></li>
+      </ul>
+    </section>
+
+    <section id="exp">
+      <h2>2. 狙う体験</h2>
+      <ol class="num-list">
+        <li>ボスが近づく高揚</li>
+        <li>倒した後「今 Prestige するか、次のボスまで粘るか」を自分で決める</li>
+        <li>Prestige 直後に再び軽快に伸びる</li>
+        <li>「損したかも」を一切混ぜない</li>
+      </ol>
+      <h3>棄却した案</h3>
+      <p>「効果はそのまま、Level だけリセット」。Prestige が無料の割引になり、細かく回すほど得・Upgrade は後回しが最適・通貨の残りで後悔、と誘因が全部ボスと逆を向く。</p>
+      <div class="callout">MasterPrestige は「プレイヤーの負担が大きい」ものとして扱う。だから任意にする。ループが回るたびに全体が少しずつ強くなる、を長く続く形にする。 <span class="src">Discord 8/29–8/31</span></div>
+    </section>
+
+    <section id="master">
+      <h2>3. マスタープレステージ</h2>
+      <h3>発動</h3>
+      <ul>
+        <li>エンディング後。「全部 max」＝ダイヤ Upgrade・Soul・NetherCream の Upgrade を取り切った状態 <span class="badge b-adopt">採用候補</span> <span class="src">Poedel</span></li>
+        <li>押すかどうかは完全に任意。押さなくても損はしない <span class="badge b-fixed">確定</span></li>
+        <li>入口は Area4 <span class="badge b-fixed">確定</span>。Area4 の中での位置づけは未決（<a href="#open">#8</a>）</li>
+      </ul>
+
+      <h3>何が残り、何が伸び、何が消えるか</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>対象</th><th>扱い</th><th>内容</th><th>状態</th><th>出典</th></tr></thead>
+          <tbody>
+            <tr><td>Relic</td><td class="keep">残す</td><td>そのまま。オートメーション系の Upgrade もここに含める</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
+            <tr><td>装備スロットの Upgrade</td><td class="keep">残す</td><td>解放したスロット数はそのまま</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
+            <tr><td>ストレージの Upgrade</td><td class="keep">残す</td><td>解放した容量はそのまま。さらに Master ごとに 1 ページ（または 1 行）増やす</td><td><span class="badge b-fixed">確定</span> <span class="badge b-adopt">採用候補</span></td><td class="src">ya.yu / Poedel</td></tr>
+            <tr><td>Forge Level</td><td class="grow">引き継いで伸びる</td><td>回数は 25/25 → 0/25 に戻るが、到達した Level は残る。次の周で 20/25 まで戻すと、召喚される装備は Lv15・16・17 のように前より上から始まる</td><td><span class="badge b-adopt">採用候補</span></td><td class="src">Poedel</td></tr>
+            <tr><td>Spell</td><td class="grow">引き継いで伸びる</td><td>所持したまま。2 周目で同じ Spell をもう一度取ると Tier2 になる（例: ピッケルのモメンタム Lv4 → Lv8）</td><td><span class="badge b-adopt">採用候補</span></td><td class="src">ya.yu / Poedel</td></tr>
+            <tr><td>ダイヤ Upgrade</td><td class="grow">引き継いで伸びる</td><td>買った分は残し、上限が広がる（10/10 → 10/15）。課金価値を消さない</td><td><span class="badge b-adopt">採用候補</span></td><td class="src">Poedel</td></tr>
+            <tr><td>それ以外のすべて</td><td class="reset">リセット</td><td>周回の進行・通貨・装備・Prestige 倍率・各 Area の到達深度・試練の進行など。具体リストは未決（<a href="#open">#8</a>）</td><td><span class="badge b-fixed">確定</span> <span class="badge b-open">未決</span></td><td class="src">ya.yu</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>議論の経緯</h3>
+      <div class="quote">Poedel: 全部 max した後の遊びとして。Forge Level は残して回数だけ戻す。ループのたびに強くなる。</div>
+      <div class="quote">ya.yu: エンディング後の任意コンテンツ。Forge Level は核なので賛成。Spell は残して同じものを取ったら Tier2。オートメーションの Upgrade は戻さない。</div>
+      <div class="quote">Poedel: ダイヤ Upgrade は上限を広げる（10/10 → 10/15）。Storage は Master ごとに 1 ページか 1 行増やす。</div>
+      <div class="quote">ya.yu: ダイヤの案は一歩先を行かれた。Storage の案も入れる。</div>
+
+      <h3>「損したかも」を出さない不変条件 <span class="badge b-idea">案</span></h3>
+      <ul>
+        <li>Master で得るものは累計で単調増加。早く押しても遅く押しても、同じ到達点の総和は同じ</li>
+        <li>残す・伸びるものは一度も減らない（Relic・スロット・ストレージ・Forge Level・Spell・ダイヤの購入分）</li>
+        <li>押さない選択が常に安全。Master を要求するコンテンツは作らない</li>
+      </ul>
+    </section>
+
+    <section id="area4">
+      <h2>4. Area4 の Prestige <span class="badge b-fixed">確定</span></h2>
+      <p>Area4 の中で回る、ボス討伐を軸にした Prestige。Master とは別の層。</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>項目</th><th>内容</th></tr></thead>
+          <tbody>
+            <tr><td>Level / コスト</td><td>リセットしない。<code>upgradeCost = costCoef * totalLevel</code>（通算）</td></tr>
+            <tr><td>解放</td><td>ボス討伐で Prestige が解放される</td></tr>
+            <tr><td>報酬</td><td><code>currencyRate</code> の恒久倍率。倒したボス数が多いほど高い（粘る動機）</td></tr>
+            <tr><td>通貨</td><td>持ち越し。いつ買っても同じ値段なので後悔が生まれない</td></tr>
+            <tr><td>上限</td><td><code>upgradeLevelCap = 30 + 5 * defeatedBossCount</code>（ボス 1 体につき +5）</td></tr>
+            <tr><td>順序</td><td>ボス撃破 → 上限が開く → Prestige でレート上昇</td></tr>
+            <tr><td>敵 HP</td><td><code>enemyHpBaseMult</code> は攻撃倍率と切り離し、周回ごとに <code>3^(0.85 * 追加Level数)</code> 程度</td></tr>
+            <tr><td>周期</td><td>コストが線形なので k 周目の区間コストは線形に増える。25 日周期を保つなら <code>rateMult(k) ≈ 1 + 0.3k</code> の線形伸び。指数倍率は周期が崩壊する</td></tr>
+            <tr><td>初回</td><td>6 日前後。4 周目あたりで 25 日に収束</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>Prestige 側の未決 <span class="badge b-open">未決</span></h3>
+      <ul>
+        <li>ボスの配置間隔（何 Level ごとか）</li>
+        <li>初回 Prestige までの日数の最終値</li>
+        <li>通貨が放置収入かドロップ由来か（後者なら <code>costCoef</code> に周回補正が必要）</li>
+      </ul>
+    </section>
+
+    <section id="layers">
+      <h2>5. 層構成 <span class="badge b-idea">案</span></h2>
+      <div class="layers">
+        <div class="layer"><div class="name">通常</div><div class="axis">軸: ボス撃破</div><dl><dt>消費</dt><dd>—</dd><dt>得る</dt><dd>cap +5、Prestige 解放</dd></dl></div>
+        <div class="layer"><div class="name">Area4 Prestige</div><div class="axis">軸: k（回数）</div><dl><dt>消費</dt><dd>何も消さない</dd><dt>得る</dt><dd>currencyRate 線形倍率</dd><dt>周期</dt><dd>6 日 → 25 日</dd></dl></div>
+        <div class="layer"><div class="name">MasterPrestige</div><div class="axis">軸: m（回数）</div><dl><dt>消費</dt><dd>Relic・スロット・ストレージ以外</dd><dt>得る</dt><dd>Forge / Spell / ダイヤ / ストレージの底上げ</dd><dt>周期</dt><dd>エンディングごと</dd></dl></div>
+        <div class="layer"><div class="name">PvP 的要素</div><div class="axis">軸: シーズン</div><dl><dt>消費</dt><dd>—</dd><dt>得る</dt><dd>他人のマスターボスを倒す / 自分のが耐える</dd></dl></div>
+      </div>
+      <div class="callout">要整理: 前回の案では Master を「Area4 の k と Level を畳む層」として式まで置いたが、今回の確定（Relic・スロット・ストレージ以外を全部リセット）は <strong>ゲーム全体</strong>の周回なので、Area4 の Prestige 進行も Master のリセット対象に含まれる想定に変わる。Area4 内での「傾きの底上げ」（<code>rateMult(k) = 1 + (0.3 + 0.05m) k</code> など）は、Master 後の Area4 の再スタートを速くする案として残す。</div>
+    </section>
+
+    <section id="pvp">
+      <h2>6. PvP 的要素 <span class="badge b-idea">案</span></h2>
+      <p>非同期。Snapshot（凍結した ItemSet）を使い、負けても何も失わない。</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>案</th><th>内容</th><th>良い点</th><th>懸念</th></tr></thead>
+          <tbody>
+            <tr><td>1. マスターボス＝他人の Snapshot</td><td>Master した瞬間の ItemSet を凍結して上げる。他人の Area4 でマスターボスとして出現し、倒すと相手の m に応じた Master 点</td><td>ボスの世代交代をプレイヤーが作るので新ボスの絵が要らない。既存の Snapshot を流用</td><td>強すぎる Snapshot が壁 → m のリーグで出し分け</td></tr>
+            <tr><td>2. 防衛報酬</td><td>自分のマスターボスが耐えた回数 / 時間で毎シーズン Master 点</td><td>放置ゲームらしく、何もしなくても参加</td><td>倒されても失うものは無い設計にする</td></tr>
+            <tr><td>3. 討伐ラダー</td><td>今シーズンに倒したマスターボスの m の合計を RankingRoot のスコアに</td><td>既存のシーズン・保留報酬を流用</td><td>装備の強さ競争にしすぎない</td></tr>
+            <tr><td>4. 復讐マッチ</td><td>自分のマスターボスを倒した相手が候補に出る</td><td>高揚が最も強い</td><td>通知の量。まずは 1〜3 で成立</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>不変条件</h3>
+      <ul>
+        <li>負けても減るものが無い（通貨・Level・m・Snapshot のいずれも）</li>
+        <li>攻撃側は「倒せた分だけ加点」、防衛側は「耐えた分だけ加点」。両方が正</li>
+        <li>マッチングは m のリーグで閉じる。Master を急いでもリーグが上がるだけ</li>
+        <li>マスターボスは凍結。相手が強化しても自分の盤面は変わらない</li>
+      </ul>
+    </section>
+
+    <section id="infra">
+      <h2>7. 既存の仕組みとの対応</h2>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>必要なもの</th><th>既存</th><th>状態</th></tr></thead>
+          <tbody>
+            <tr><td>ItemSet の凍結と上げ下げ</td><td>Nether の Snapshot・コンパニオン</td><td>ある。Area4 用の枠を 1 つ増やす</td></tr>
+            <tr><td>シーズン・スコア送信・保留報酬</td><td><code>RankingRoot</code>（Firebase、1 時間おき）</td><td>ある。スコア式を差し替える</td></tr>
+            <tr><td>Area の器</td><td><code>WORLD_COUNT = 3</code>、宝石表は 4 つ分</td><td>Biome なしの Area は初。<code>MultiBiomeMaster</code> 側の前提を外す</td></tr>
+            <tr><td>ボス戦の本体</td><td>Battle_NEW</td><td>ある。Area4 用に線形コストの Upgrade と cap を足す</td></tr>
+            <tr><td>周回の切れ目</td><td>Area 単位（CONTEXT.md「周回」）</td><td>Area4 の Prestige は Area1〜3 に影響しない。Master は全 Area をまたぐので別の切れ目になる</td></tr>
+            <tr><td>Forge Level の上限</td><td>Relic の <code>equiplv_{kind}</code></td><td>「回数を戻して Level を残す」には回数と Level の分離が要る</td></tr>
+            <tr><td>Spell の Tier</td><td>SpellRoot（所持は 1 段階）</td><td>Tier の概念が無い。所持回数を持たせる</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="open">
+      <h2>8. 未決 <span class="badge b-open">未決</span></h2>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th class="num">#</th><th>項目</th><th>選択肢 / 仮の推奨</th></tr></thead>
+          <tbody>
+            <tr><td class="num">1</td><td>リセット対象の具体リスト</td><td>「Relic・スロット・ストレージ以外すべて」を項目に展開する。特に: 装備そのもの、通貨（Soil / Tear / ダイヤ / Soul / NetherCream）、Area1〜3 の到達深度、試練の Tier 進行、コレクション INDEX</td></tr>
+            <tr><td class="num">2</td><td>Forge の回数と Level の関係</td><td>「25/25 → 0/25、次の周で 20/25 なら Lv15〜17」をどう式にするか。Master 回数ぶん Level を底上げする案</td></tr>
+            <tr><td class="num">3</td><td>Spell Tier2 の効果</td><td>数値を 2 倍（モメンタム Lv4 → Lv8）で統一するか、Spell ごとに決めるか。Tier3 以降を認めるか</td></tr>
+            <tr><td class="num">4</td><td>ダイヤ Upgrade の上限の増分</td><td>10/10 → 10/15 の例どおり +5 か。Master ごとに増やすか 1 回だけか</td></tr>
+            <tr><td class="num">5</td><td>ストレージの増分</td><td>1 ページか 1 行か。Master ごとに積むか</td></tr>
+            <tr><td class="num">6</td><td>Area4 の位置づけ</td><td>Master の入口（Area4 到達で Master 解放）か、Master 後の遊び場か、その両方か</td></tr>
+            <tr><td class="num">7</td><td>Area4 の本体ループ</td><td>戦闘画面のみ（Battle_NEW 流用）か、盤面にボスが降りてくるか</td></tr>
+            <tr><td class="num">8</td><td>Area4 の通貨</td><td>放置収入（推奨）か、ドロップ由来か。Area4 専用通貨か</td></tr>
+            <tr><td class="num">9</td><td>Area4 の解禁条件</td><td>Area3 の到達深度（推奨）か、別条件か</td></tr>
+            <tr><td class="num">10</td><td>Area4 への持ち込み</td><td>装備だけ（推奨）/ 装備 + Spell / 全部 / 無し</td></tr>
+            <tr><td class="num">11</td><td>ボスの間隔 / 初回日数</td><td>5 Level ごと / 6 日（推奨）</td></tr>
+            <tr><td class="num">12</td><td>PvP の形</td><td>マスターボス＝他人の Snapshot（推奨）か、ランキングだけか</td></tr>
+            <tr><td class="num">13</td><td>マスターボスの強さ</td><td>ItemSet 換算を m のリーグ内で正規化（推奨）</td></tr>
+            <tr><td class="num">14</td><td>「全部 max」の定義</td><td>ダイヤ Upgrade・Soul・NetherCream の何を取り切ったら Master 解放か</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>Idle Minertia · Area4 / MasterPrestige · 2026-09-17 · 決定は IdeaBoard を正本にする</footer>
+</div>
+</body>
+</html>
