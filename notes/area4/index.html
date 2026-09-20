@@ -97,7 +97,7 @@
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
     <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Area4 のボスコンテンツとセットで考え、Master 後に新しい通貨とバザーが開く。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-17 (2)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-09-20</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <nav class="toc" aria-label="目次">
@@ -132,6 +132,7 @@
         <li>リセット対象外: <strong>Relic・装備スロットの Upgrade・ストレージの Upgrade・Diamond・Soul・BlueBox・Trade・INDEX・所持 Spell・Battle</strong>。ただし <strong>Battle の装備はリセット</strong></li>
         <li>Forge Level は残す。その代わり <strong>MaxLevel を徐々に上げる</strong></li>
         <li>MasterPrestige 後に<strong>新しい通貨</strong>を追加する。名前は未定（<a href="#currency">#4</a>）</li>
+        <li>新しい通貨は洞窟の専用ブロックから、<strong>時間基準</strong>で出る。頻度は竿 1 本の釣りで Soul が出るのと同じ <strong>x1 で 0.5 個/日</strong>。倍率は<strong>通算ボス数 n</strong>で伸びる</li>
       </ul>
     </section>
 
@@ -206,6 +207,29 @@
         <li>バザーには <strong>Forge Level 4 種の MaxLevel を 1 つ上げるアイテム</strong>が出る。これが「MaxLevel を徐々に上げる」の手段</li>
       </ul>
       <div class="callout">Poedel のバザー案そのものは、この文書にまだ載っていない（Claude が把握していない）。共有してもらえればここへ足す。</div>
+
+      <h3>取得の式 <span class="badge b-fixed">確定</span></h3>
+      <ul>
+        <li>出どころ: 洞窟の<strong>専用ブロック</strong>。壊すと 1 個。Box ブロックの生成・破壊の口を流用する</li>
+        <li>頻度は<strong>時間で決める</strong>。期待値 <code>0.5 個/日 × x</code>。掘る速さが上がっても頻度は変わらない</li>
+        <li>基準は竿 1 本の釣りで Soul が出る頻度: 釣果あたり 0.0071% × 8.5 秒周期 × 水上率 0.7 ≈ <strong>0.51 個/日</strong>（約 2 日に 1 個）</li>
+        <li>実装: ブロックを壊すたびの出現確率 <code>p = (0.5 × x ÷ 86400) ÷ 破壊速度(個/秒)</code>。破壊速度は Box のオフライン予測で使っている <code>PredictBreakBlockCountPerSec</code> をそのまま使う</li>
+        <li>倍率 x: エンディング前は <strong>x0</strong>（口を隠す）。最初のボス撃破で <strong>x1</strong>。以後は通算ボス数 n で <code>x = 1 + 0.5 × (n − 1)</code>。Master では戻さない（Master の回数では伸ばさない。急がせないため）</li>
+        <li>オフライン: 釣りと同じく「時間 × 補正」で払う（補正は釣りの 0.7 と同じ考え方で実測して決める）</li>
+      </ul>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th class="num">通算ボス数 n</th><th class="num">倍率 x</th><th class="num">期待値 / 日</th><th>1 個あたり</th></tr></thead>
+          <tbody>
+            <tr><td class="num">0</td><td class="num">x0</td><td class="num">0</td><td>出ない</td></tr>
+            <tr><td class="num">1</td><td class="num">x1.0</td><td class="num">0.5</td><td>約 2 日</td></tr>
+            <tr><td class="num">2</td><td class="num">x1.5</td><td class="num">0.75</td><td>約 1.3 日</td></tr>
+            <tr><td class="num">3</td><td class="num">x2.0</td><td class="num">1.0</td><td>約 1 日</td></tr>
+            <tr><td class="num">5</td><td class="num">x3.0</td><td class="num">1.5</td><td>約 16 時間</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>n あたり +0.5 は仮の値。バザーの値段（MaxLevel +1 の価格）と一緒に最終調整する。</p>
 
       <h3>通貨名の候補 <span class="badge b-idea">案</span></h3>
       <p>世界観（ベクトル論）から。既存の Soul は内部名 Onies＝「死んだベクトルの塊」なので、エンディング後の通貨はその対になる「生きた側」から取るのが筋がよい。</p>
@@ -299,6 +323,7 @@
             <tr><td>周回の切れ目</td><td>Area 単位（CONTEXT.md「周回」）</td><td>Area4 の Prestige は Area1〜3 に影響しない。Master は全 Area をまたぐので別の切れ目になる</td></tr>
             <tr><td>Forge Level の上限</td><td>Relic の <code>equiplv_{kind}</code></td><td>MaxLevel をバザーのアイテムで 1 つずつ上げる口が要る</td></tr>
             <tr><td>通貨の倍率演出</td><td>Soil / Tear の Prestige 倍率</td><td>x0 始まりの倍率は初。0 の間は口を隠す</td></tr>
+            <tr><td>時間基準の出現率</td><td>Box のオフライン予測 <code>PredictBreakBlockCountPerSec</code>、釣りの周期と補正</td><td>ある。ブロック破壊時の確率を「目標レート ÷ 破壊速度」で出す口を足す</td></tr>
             <tr><td>バザー</td><td>露店（NetherCream だけで買える売り場。棚・仕入れ・リロール・ボトル）</td><td>ある。新通貨で買う棚を別に持つか、同じ露店に混ぜるかは未決</td></tr>
             <tr><td>Spell の Tier</td><td>SpellRoot（所持は 1 段階）</td><td>Tier の概念が無い。所持回数を持たせる（Tier2 案を採るなら）</td></tr>
           </tbody>
@@ -313,7 +338,7 @@
           <thead><tr><th class="num">#</th><th>項目</th><th>選択肢 / 仮の推奨</th></tr></thead>
           <tbody>
             <tr><td class="num">1</td><td>新しい通貨の名前</td><td>候補は <a href="#currency">#4</a>。推奨 Will（イシ）、次点 Flux（ゆらぎ）</td></tr>
-            <tr><td class="num">2</td><td>新しい通貨の獲得率</td><td>Soul と同じ規模。洞窟のどこで出るか（ブロック / 宝石 / ボス）と、Master 回数 m で倍率をどう伸ばすか</td></tr>
+            <tr><td class="num">2</td><td>新しい通貨の細部</td><td>専用ブロックの見た目と出現の演出。n あたり +0.5 の最終値。オフライン補正の実測</td></tr>
             <tr><td class="num">3</td><td>新しいバザーの品揃え</td><td>Poedel のバザー案を共有してもらい、ここへ載せる。MaxLevel +1 アイテムの値段と出現率</td></tr>
             <tr><td class="num">4</td><td>MaxLevel の上げ方</td><td>バザーのアイテムだけか、Master 回数でも上がるか。1 回の Master で上げられる上限を置くか</td></tr>
             <tr><td class="num">5</td><td>「Trade」が指す機能</td><td>露店（NetherCream の売り場）か、別の機能か</td></tr>
