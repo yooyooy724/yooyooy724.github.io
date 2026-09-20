@@ -97,7 +97,7 @@
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
     <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Area4 のボスコンテンツとセットで考え、Master 後に新しい通貨とバザーが開く。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-20</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-09-20 (2)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <nav class="toc" aria-label="目次">
@@ -215,7 +215,8 @@
         <li>基準は竿 1 本の釣りで Soul が出る頻度: 釣果あたり 0.0071% × 8.5 秒周期 × 水上率 0.7 ≈ <strong>0.51 個/日</strong>（約 2 日に 1 個）</li>
         <li>実装: ブロックを壊すたびの出現確率 <code>p = (0.5 × x ÷ 86400) ÷ 破壊速度(個/秒)</code>。破壊速度は Box のオフライン予測で使っている <code>PredictBreakBlockCountPerSec</code> をそのまま使う</li>
         <li>倍率 x: エンディング前は <strong>x0</strong>（口を隠す）。最初のボス撃破で <strong>x1</strong>。以後は通算ボス数 n で <code>x = 1 + 0.5 × (n − 1)</code>。Master では戻さない（Master の回数では伸ばさない。急がせないため）</li>
-        <li>オフライン: 釣りと同じく「時間 × 補正」で払う（補正は釣りの 0.7 と同じ考え方で実測して決める）</li>
+        <li>オフライン: 期待値は「時間 × 補正」で出す（補正は釣りの 0.7 と同じ考え方で実測して決める）。ただし<strong>個数は期待値を丸めずに確率で引く</strong>。期待値 λ に対して Poisson(λ) で個数を決める（平均は λ のまま、分散が実プレイと同じになる）</li>
+        <li>確率で引く理由: 1 日おきに戻る人の期待値が 0.7 のとき、四捨五入だと毎回 0 個で永遠に手に入らない。確率なら 7 割の日に 1 個入る。また、実プレイの乱数によるばらつきをオフラインでも再現できる</li>
       </ul>
       <div class="tablewrap">
         <table>
