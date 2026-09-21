@@ -97,7 +97,7 @@
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
     <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Area4 のボスコンテンツとセットで考え、Master 後に新しい通貨とバザーが開く。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-20 (2)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-09-21</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <nav class="toc" aria-label="目次">
@@ -131,7 +131,7 @@
         <li>MasterPrestige は完全に任意 <span class="src">Discord 8/30 ya.yu</span></li>
         <li>リセット対象外: <strong>Relic・装備スロットの Upgrade・ストレージの Upgrade・Diamond・Soul・BlueBox・Trade・INDEX・所持 Spell・Battle</strong>。ただし <strong>Battle の装備はリセット</strong></li>
         <li>Forge Level は残す。その代わり <strong>MaxLevel を徐々に上げる</strong></li>
-        <li>MasterPrestige 後に<strong>新しい通貨</strong>を追加する。名前は未定（<a href="#currency">#4</a>）</li>
+        <li>MasterPrestige 後に新しい通貨 <strong>Geode</strong>（ジオード / 晶洞。内部 ID は <code>Geode2</code>）を追加する</li>
         <li>新しい通貨は洞窟の専用ブロックから、<strong>時間基準</strong>で出る。頻度は竿 1 本の釣りで Soul が出るのと同じ <strong>x1 で 0.5 個/日</strong>。倍率は<strong>通算ボス数 n</strong>で伸びる</li>
       </ul>
     </section>
@@ -232,7 +232,15 @@
       </div>
       <p>n あたり +0.5 は仮の値。バザーの値段（MaxLevel +1 の価格）と一緒に最終調整する。</p>
 
-      <h3>通貨名の候補 <span class="badge b-idea">案</span></h3>
+      <h3>通貨名 <span class="badge b-fixed">確定</span></h3>
+      <ul>
+        <li>表示名は <strong>Geode</strong>（ja: ジオード / zh: 晶洞 / fr: Géode / ru: Жеода）</li>
+        <li>内部 ID は <code>Geode2</code>。<code>Geode</code> は Box が使っているため（<code>MultiCurrencyIdDef.BoxId</code>）。ID を後から変えるとセーブ済みの残高が読めなくなるので固定する</li>
+        <li>クラス名は <code>MasterCurrency*</code> のまま。既存の <code>Geode*</code>（GeodeFactory / GeodeTypeConfig）は「盤面のブロック」を指すので衝突させない</li>
+      </ul>
+      <div class="callout">要確認: <code>notification.currency.geode</code>（Box の通知での表示名）が既に「Geode / ジオード」になっている。通知では Box と新通貨が同じ名前で出るので、Box 側を「Box」に統一するか、新通貨の表記を変えるかを決める必要がある。</div>
+
+      <h3>検討した候補 <span class="badge b-idea">案</span></h3>
       <p>世界観（ベクトル論）から。既存の Soul は内部名 Onies＝「死んだベクトルの塊」なので、エンディング後の通貨はその対になる「生きた側」から取るのが筋がよい。</p>
       <div class="tablewrap">
         <table>
@@ -338,7 +346,7 @@
         <table>
           <thead><tr><th class="num">#</th><th>項目</th><th>選択肢 / 仮の推奨</th></tr></thead>
           <tbody>
-            <tr><td class="num">1</td><td>新しい通貨の名前</td><td>候補は <a href="#currency">#4</a>。推奨 Will（イシ）、次点 Flux（ゆらぎ）</td></tr>
+            <tr><td class="num">1</td><td>Box の表示名との重複</td><td>通知で Box も「Geode」と出る（<code>notification.currency.geode</code>）。Box 側を「Box」に統一するか、新通貨の表記を変えるか</td></tr>
             <tr><td class="num">2</td><td>新しい通貨の細部</td><td>専用ブロックの見た目と出現の演出。n あたり +0.5 の最終値。オフライン補正の実測</td></tr>
             <tr><td class="num">3</td><td>新しいバザーの品揃え</td><td>Poedel のバザー案を共有してもらい、ここへ載せる。MaxLevel +1 アイテムの値段と出現率</td></tr>
             <tr><td class="num">4</td><td>MaxLevel の上げ方</td><td>バザーのアイテムだけか、Master 回数でも上がるか。1 回の Master で上げられる上限を置くか</td></tr>
