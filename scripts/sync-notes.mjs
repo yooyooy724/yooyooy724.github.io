@@ -75,8 +75,8 @@ const SITES = [
     label: "Area4",
     title: "Area4 / マスタープレステージ",
     desc: "エンディング後の任意の大周回と、Area4・PvP 的要素の仕様。",
-    can: "確定・採用候補・案・未決を分けて持つ設計メモ。コメント機能はまだ無い。",
-    files: ["index.html"],
+    can: "確定・採用候補・案・未決を分けて持つ設計メモ。章ごとに書き込めます。",
+    files: ["index.html", "feedback.json"],
     dirs: [],
   },
 ];

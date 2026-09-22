@@ -37,11 +37,12 @@ function readJson(file, fallback) {
 
 const report = [];
 
-// --- StorySite / SteamSite / PromotionSite: feedback.json ---
+// --- StorySite / SteamSite / PromotionSite / Area4Site: feedback.json ---
 for (const [dir, from] of [
   ["story", "StorySite"],
   ["steam", "SteamSite"],
   ["promotion", "PromotionSite"],
+  ["area4", "Area4Site"],
 ]) {
   const published = join(notes, dir, "feedback.json");
   const local = join(source, from, "feedback.json");

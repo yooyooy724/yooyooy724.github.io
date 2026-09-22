@@ -89,6 +89,35 @@
   .num-list li::before{counter-increment:q;content:counter(q);position:absolute;left:0;top:.2em;font-family:var(--font-display);font-size:11px;font-weight:700;color:var(--ink);background:var(--green);border-radius:999px;width:1.7em;height:1.7em;display:grid;place-items:center}
   footer{grid-column:1/-1;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:14px;font-family:var(--mono)}
   a:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+  /* ---- 章ごとの書き込み ---- */
+  .cmt{margin-top:16px;border-top:1px dashed var(--line);padding-top:10px}
+  .cmt .cmt-head{font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
+  .cmt ul{list-style:none;padding:0;margin:0 0 8px;display:grid;gap:6px}
+  .cmt li{background:#fff;border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:13.5px;line-height:1.7}
+  .cmt li.is-pending{border-color:var(--orange)}
+  .cmt .cmt-text{white-space:pre-wrap;word-break:break-word}
+  .cmt .cmt-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:4px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .cmt .cmt-meta button{background:none;border:0;padding:0;font:inherit;color:var(--muted-strong);cursor:pointer;text-decoration:underline}
+  .cmt .cmt-meta button:hover{color:var(--orange)}
+  .cmt form{display:grid;gap:6px}
+  .cmt textarea{width:100%;min-height:62px;resize:vertical;font-family:var(--font-jp);font-size:13.5px;line-height:1.7;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink)}
+  .cmt .cmt-actions{display:flex;gap:8px;align-items:center}
+  .cmt .btn{font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:.04em;padding:5px 14px;border:1px solid var(--ink);border-radius:999px;background:var(--green);color:var(--ink);cursor:pointer}
+  .cmt .btn.ghost{background:transparent;border-color:var(--line);color:var(--muted-strong)}
+  .cmt .btn:disabled{opacity:.45;cursor:default}
+  .cmt .hint{font-size:11.5px;color:var(--muted)}
+
+  /* ---- 状態バー ---- */
+  #noteBar{position:fixed;right:16px;bottom:16px;z-index:10;display:flex;gap:8px;align-items:center;
+    background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:6px 12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.12);font-size:12px;font-family:var(--mono)}
+  #noteBar .dot{width:8px;height:8px;border-radius:999px;background:var(--muted)}
+  #noteBar.live .dot{background:var(--green)}
+  #noteBar.propose .dot{background:var(--blue)}
+  #noteBar button{font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.04em;
+    padding:3px 12px;border:1px solid var(--ink);border-radius:999px;background:var(--orange);color:#fff;cursor:pointer}
+  @media (max-width:800px){#noteBar{right:10px;bottom:10px;font-size:11px}}
 </style>
 </head>
 <body>
@@ -97,7 +126,7 @@
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
     <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Area4 のボスコンテンツとセットで考え、Master 後に新しい通貨とバザーが開く。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-22</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-09-22 (2)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <nav class="toc" aria-label="目次">
@@ -390,5 +419,263 @@
 
   <footer>Idle Minertia · Area4 / MasterPrestige · 2026-09-17 · 決定は IdeaBoard を正本にする</footer>
 </div>
+
+<script>
+/* =========================================================
+   Area4 / マスタープレステージ ノート — 章ごとの書き込み
+
+   保存先は3通り。データの形は他のノートサイトと同じ feedback.json。
+     - start_site.bat 起動中 … feedback.json へ自動保存 (live)
+     - GitHub Pages(静的)   … 読み取り + 提案モード(Issue で送る) (propose)
+     - どちらでもない        … このブラウザの localStorage だけ
+
+   書き込み1件 = comments['area4-<章のid>'] の1要素 {text, ts}。
+   マージ規則(和集合・後勝ち、鍵は ts+text)は scripts/notes-merge.mjs と共通なので、
+   ページ側に新しいデータ形式を持ち込まずに済む。
+   編集は「消して入れ直す」。本文を変えたら必ず新しい ts を振る (でないと旧本文と同一視されない)。
+   ========================================================= */
+(function(){
+  const SITE='area4';
+  const LS_KEY='minertia_area4_note_v1';
+  const PEND_KEY='minertia_area4_pending_v1';
+  const GH_ISSUE='https://github.com/yooyooy724/yooyooy724.github.io/issues/new';
+  // http/https で開いていれば同じ場所の /api/feedback を叩く。file:// のときだけローカルサーバーを指す。
+  const API=(location.protocol==='http:'||location.protocol==='https:')?'':'http://localhost:8140';
+
+  let SERVER=false;   // サーバー接続中。feedback.json へ自動保存
+  let PROPOSE=false;  // 静的配信。手元に溜めて Issue で送る
+
+  const emptyFb=()=>({comments:{},reactions:{},choices:{}});
+  let STORE=emptyFb();    // 表示用(公開分 + 未送信分)
+  let BASE=emptyFb();     // 公開されている分
+  let PENDING=emptyFb();  // まだ送っていない分
+  let editing=null;       // 編集中の書き込み '<id>#<ts>|<text>'
+
+  try{const v=localStorage.getItem(LS_KEY); if(v)STORE=Object.assign(emptyFb(),JSON.parse(v));}catch(e){}
+
+  const pendCount=()=>Object.values(PENDING.comments).reduce((n,a)=>n+a.length,0);
+  const savePending=()=>{try{localStorage.setItem(PEND_KEY,JSON.stringify(PENDING));}catch(e){}};
+
+  let postTimer=null;
+  function save(){
+    if(PROPOSE){savePending();return;}
+    try{localStorage.setItem(LS_KEY,JSON.stringify(STORE));}catch(e){}
+    if(SERVER){
+      clearTimeout(postTimer);
+      postTimer=setTimeout(()=>{
+        fetch(API+'/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(STORE)})
+          .catch(()=>{SERVER=false;renderBar();});
+      },250);
+    }
+  }
+
+  // 和集合・後勝ち。scripts/notes-merge.mjs と同じ規則。
+  function mergeFb(base,patch){
+    const out=emptyFb();
+    const ids=new Set(Object.keys(base.comments||{}).concat(Object.keys(patch.comments||{})));
+    for(const id of ids){
+      const seen=new Set(); const arr=[];
+      for(const c of ((base.comments||{})[id]||[]).concat((patch.comments||{})[id]||[])){
+        if(!c||typeof c.text!=='string')continue;
+        const k=c.ts+'|'+c.text;
+        if(seen.has(k))continue;
+        seen.add(k); arr.push(c);
+      }
+      arr.sort((a,b)=>String(a.ts).localeCompare(String(b.ts)));
+      if(arr.length)out.comments[id]=arr;
+    }
+    out.reactions=Object.assign({},base.reactions,patch.reactions);
+    out.choices=Object.assign({},base.choices,patch.choices);
+    return out;
+  }
+
+  async function connect(){
+    try{
+      const r=await fetch(API+'/api/feedback',{cache:'no-store'});
+      if(!r.ok)throw 0;
+      STORE=mergeFb(STORE,await r.json()); // 過去分(ファイル)とこのブラウザ分を統合
+      SERVER=true;
+      save();                              // 統合結果をファイルへ書き戻す
+      return;
+    }catch(e){SERVER=false;}
+    // サーバーが無ければ、同じ場所の feedback.json を静的に読む(GitHub Pages 配信)。
+    try{
+      const r=await fetch('feedback.json',{cache:'no-store'});
+      if(!r.ok)throw 0;
+      const remote=await r.json();
+      if(!remote||typeof remote!=='object')throw 0;
+      BASE={comments:remote.comments||{},reactions:remote.reactions||{},choices:remote.choices||{}};
+      PROPOSE=true;
+      try{const v=localStorage.getItem(PEND_KEY); if(v)PENDING=Object.assign(emptyFb(),JSON.parse(v));}catch(e){}
+      reconcile();
+      STORE=mergeFb(BASE,PENDING);
+    }catch(e){}
+  }
+
+  // 公開データに既に載った分を未送信リストから外す。申告ではなく実データで判定する。
+  function reconcile(){
+    for(const id of Object.keys(PENDING.comments)){
+      const seen=new Set((BASE.comments[id]||[]).map(c=>c.ts+'|'+c.text));
+      const rest=PENDING.comments[id].filter(c=>!seen.has(c.ts+'|'+c.text));
+      if(rest.length)PENDING.comments[id]=rest; else delete PENDING.comments[id];
+    }
+    savePending();
+  }
+
+  // 未送信分を Issue の本文に載せて GitHub を開く。ページ側に認証情報は持たない。
+  function submit(){
+    const n=pendCount();
+    if(!n){alert('未送信の書き込みはありません。');return;}
+    const payload=Object.assign({site:SITE,at:new Date().toISOString()},PENDING);
+    const body='### notes-inbox\n\nこの Issue は自動処理されます。内容を編集しないでください。\n\n```json\n'
+      +JSON.stringify(payload)+'\n```\n';
+    const title='[notes-inbox] '+SITE+' '+n+'件';
+    const url=GH_ISSUE+'?title='+encodeURIComponent(title)+'&body='+encodeURIComponent(body);
+    if(url.length>7500){
+      // URL が長すぎるとブラウザ/GitHub 側で切られる。手貼りに切り替える。
+      navigator.clipboard.writeText(body).then(
+        ()=>{alert('量が多いため本文をクリップボードにコピーしました。\n開いた画面のタイトルを「'+title+'」にして、本文に貼り付けてください。');
+             window.open(GH_ISSUE,'_blank');},
+        ()=>prompt('この本文をコピーして、新規 Issue に貼り付けてください（タイトル: '+title+'）',body));
+      return;
+    }
+    window.open(url,'_blank');
+    alert('GitHub の画面が開きます。内容を確認して「Submit new issue」を押してください。\n反映されるとこのページに載ります（1分ほど）。');
+  }
+
+  /* ---------- 操作 ---------- */
+  const idOf=section=>'area4-'+section;
+  const listOf=id=>(STORE.comments[id]||[]).slice().sort((a,b)=>String(a.ts).localeCompare(String(b.ts)));
+  const isPending=(id,c)=>(PENDING.comments[id]||[]).some(x=>x.ts===c.ts&&x.text===c.text);
+
+  function add(id,text){
+    text=String(text||'').trim();
+    if(!text)return;
+    const c={text:text,ts:new Date().toISOString()};
+    (STORE.comments[id]=STORE.comments[id]||[]).push(c);
+    if(PROPOSE)(PENDING.comments[id]=PENDING.comments[id]||[]).push(c);
+    save();
+    if(SERVER){
+      fetch(API+'/api/log',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({site:SITE,id:id,text:c.text,ts:c.ts})}).catch(()=>{});
+    }
+  }
+  function remove(id,c){
+    STORE.comments[id]=(STORE.comments[id]||[]).filter(x=>!(x.ts===c.ts&&x.text===c.text));
+    if(!STORE.comments[id].length)delete STORE.comments[id];
+    if(PENDING.comments[id]){
+      PENDING.comments[id]=PENDING.comments[id].filter(x=>!(x.ts===c.ts&&x.text===c.text));
+      if(!PENDING.comments[id].length)delete PENDING.comments[id];
+    }
+    save();
+  }
+
+  /* ---------- 描画 ---------- */
+  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const linkify=s=>s.replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+  function stamp(iso){
+    const d=new Date(iso); if(isNaN(d))return iso;
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')
+      +' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  }
+
+  function renderBar(){
+    const bar=document.getElementById('noteBar');
+    if(!bar)return;
+    bar.className=SERVER?'live':(PROPOSE?'propose':'');
+    const n=pendCount();
+    const mode=SERVER?'保存中 (feedback.json)':(PROPOSE?'公開版 — 提案モード':'このブラウザにだけ保存');
+    bar.innerHTML='<span class="dot"></span><span>'+esc(mode)+'</span>'
+      +(PROPOSE?'<span>未送信 '+n+'</span><button type="button" id="noteSend">送信</button>':'');
+    const send=document.getElementById('noteSend');
+    if(send)send.addEventListener('click',submit);
+  }
+
+  function renderSection(section){
+    const box=section.querySelector('.cmt');
+    if(!box)return;
+    const id=idOf(section.id);
+    const items=listOf(id);
+    const ul=box.querySelector('ul');
+    ul.innerHTML='';
+    for(const c of items){
+      const key=id+'#'+c.ts+'|'+c.text;
+      const li=document.createElement('li');
+      if(isPending(id,c))li.className='is-pending';
+      li.innerHTML='<div class="cmt-text">'+linkify(esc(c.text))+'</div>'
+        +'<div class="cmt-meta"><span>'+esc(stamp(c.ts))+'</span>'
+        +(isPending(id,c)?'<span>未送信</span>':'')
+        +'<button type="button" data-act="edit">編集</button>'
+        +'<button type="button" data-act="del">削除</button></div>';
+      li.querySelector('[data-act="edit"]').addEventListener('click',()=>{
+        editing=key;
+        const ta=box.querySelector('textarea');
+        ta.value=c.text; ta.focus();
+        renderAll();
+      });
+      li.querySelector('[data-act="del"]').addEventListener('click',()=>{
+        if(!confirm('この書き込みを削除しますか？'))return;
+        if(editing===key)editing=null;
+        remove(id,c); renderAll();
+      });
+      ul.appendChild(li);
+    }
+    box.querySelector('.cmt-head').textContent='この章への書き込み'+(items.length?'（'+items.length+'）':'');
+    const editingHere=editing&&editing.startsWith(id+'#');
+    box.querySelector('.cmt-cancel').style.display=editingHere?'':'none';
+    box.querySelector('.cmt-submit').textContent=editingHere?'書き換える':'書き込む';
+  }
+
+  function renderAll(){
+    document.querySelectorAll('main section[id]').forEach(renderSection);
+    renderBar();
+  }
+
+  function build(){
+    document.querySelectorAll('main section[id]').forEach(section=>{
+      const id=idOf(section.id);
+      const box=document.createElement('div');
+      box.className='cmt';
+      box.innerHTML='<div class="cmt-head">この章への書き込み</div><ul></ul>'
+        +'<form><textarea placeholder="決めたこと・気になったことを書く（1行目が見出しになります）"></textarea>'
+        +'<div class="cmt-actions"><button type="submit" class="btn cmt-submit">書き込む</button>'
+        +'<button type="button" class="btn ghost cmt-cancel" style="display:none">やめる</button>'
+        +'<span class="hint">Ctrl+Enter でも書き込めます</span></div></form>';
+      const form=box.querySelector('form');
+      const ta=box.querySelector('textarea');
+      form.addEventListener('submit',e=>{
+        e.preventDefault();
+        const text=ta.value.trim();
+        if(!text)return;
+        // 編集は「消して入れ直す」。本文を変えたら新しい ts になるので、旧本文と別物として扱われる。
+        if(editing&&editing.startsWith(id+'#')){
+          const rest=editing.slice((id+'#').length);
+          const i=rest.indexOf('|');
+          remove(id,{ts:rest.slice(0,i),text:rest.slice(i+1)});
+          editing=null;
+        }
+        add(id,text);
+        ta.value='';
+        renderAll();
+      });
+      ta.addEventListener('keydown',e=>{
+        if((e.ctrlKey||e.metaKey)&&e.key==='Enter')form.requestSubmit();
+      });
+      box.querySelector('.cmt-cancel').addEventListener('click',()=>{
+        editing=null; ta.value=''; renderAll();
+      });
+      section.appendChild(box);
+    });
+
+    const bar=document.createElement('div');
+    bar.id='noteBar';
+    document.body.appendChild(bar);
+  }
+
+  build();
+  renderAll();
+  connect().then(renderAll);
+})();
+</script>
 </body>
 </html>
