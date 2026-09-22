@@ -97,7 +97,7 @@
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
     <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Area4 のボスコンテンツとセットで考え、Master 後に新しい通貨とバザーが開く。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-21</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-09-22</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <nav class="toc" aria-label="目次">
@@ -232,6 +232,27 @@
       </div>
       <p>n あたり +0.5 は仮の値。バザーの値段（MaxLevel +1 の価格）と一緒に最終調整する。</p>
 
+      <h3>バザーの品揃え <span class="badge b-idea">案</span></h3>
+      <p>Geode で買える商品。既存の露店と同じく「レア度の高い商品ほど効果が大きく、値段も高い」形にする（露店のボトルが大きさで効能の量を変えるのと同じ）。</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>商品</th><th>効果</th><th>既存の仕組み</th><th>状態</th><th>出典</th></tr></thead>
+          <tbody>
+            <tr><td>Forge MaxLevel +1</td><td>Forge Level 4 種のいずれかの上限を 1 上げる</td><td>Relic の <code>equiplv_{kind}</code></td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
+            <tr><td>Soul 獲得倍率</td><td>Soul の獲得量を増やす</td><td><code>CurrencyIdDef.SoulId</code></td><td><span class="badge b-idea">案</span></td><td class="src">Poedel</td></tr>
+            <tr><td>空飛ぶ宝箱の出現率</td><td>宝箱が飛んでくる頻度を上げる</td><td><code>FlyingPresentRoot</code></td><td><span class="badge b-idea">案</span></td><td class="src">Poedel</td></tr>
+            <tr><td>空飛ぶ宝箱の自動取得</td><td>タップしなくても取れるようにする</td><td>FlyingPresent に自動化は未実装</td><td><span class="badge b-idea">案</span></td><td class="src">Poedel</td></tr>
+            <tr><td>盤面の一撃</td><td>ブロックを壊したとき、ごく低確率（0.0001% 程度）で盤面を一掃する</td><td>盤面</td><td><span class="badge b-idea">案</span></td><td class="src">Poedel</td></tr>
+            <tr><td>装備の持ち越し</td><td>Prestige で装備を失わない確率。弱い版は「Lv20 → Lv10 に落として残す」など劣化して残す</td><td>Prestige</td><td><span class="badge b-idea">案</span></td><td class="src">Poedel</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>どれも<strong>純粋な上振れ</strong>。持っていないときより悪くなるものが無いので「損したかも」は出ない</li>
+        <li>「装備の持ち越し」の劣化版（Lv20 → Lv10）は、失うのではなく<strong>レア度の低い商品の効果が弱い</strong>という形。段階が自然に作れる</li>
+        <li>元は「深く掘って出る一点物（Arkenstone のような発掘品）」として出た案。世界観にも根拠がある（「同じ宝石は二度と作れない」Worldview §5）が、入手経路を Geode とバザーに一本化するため、<strong>バザーの商品</strong>として持つことにした</li>
+      </ul>
+
       <h3>通貨名 <span class="badge b-fixed">確定</span></h3>
       <ul>
         <li>表示名は <strong>Geode</strong>（ja: ジオード / zh: 晶洞 / fr: Géode / ru: Жеода）</li>
@@ -348,7 +369,7 @@
           <tbody>
             <tr><td class="num">1</td><td>Box の表示名との重複</td><td>通知で Box も「Geode」と出る（<code>notification.currency.geode</code>）。Box 側を「Box」に統一するか、新通貨の表記を変えるか</td></tr>
             <tr><td class="num">2</td><td>新しい通貨の細部</td><td>専用ブロックの見た目と出現の演出。n あたり +0.5 の最終値。オフライン補正の実測</td></tr>
-            <tr><td class="num">3</td><td>新しいバザーの品揃え</td><td>Poedel のバザー案を共有してもらい、ここへ載せる。MaxLevel +1 アイテムの値段と出現率</td></tr>
+            <tr><td class="num">3</td><td>バザーの商品の値段と出現率</td><td>品揃えは上の表。レア度ごとの値段（Geode 何個）と、棚に並ぶ確率を決める</td></tr>
             <tr><td class="num">4</td><td>MaxLevel の上げ方</td><td>バザーのアイテムだけか、Master 回数でも上がるか。1 回の Master で上げられる上限を置くか</td></tr>
             <tr><td class="num">5</td><td>「Trade」が指す機能</td><td>露店（NetherCream の売り場）か、別の機能か</td></tr>
             <tr><td class="num">6</td><td>リセット対象の具体リスト</td><td>「残す」以外を項目に展開する。特に: Soil / Tear / NetherCream の所持額、各 Area の到達深度、試練の Tier 進行、Spell 以外の試練報酬</td></tr>
