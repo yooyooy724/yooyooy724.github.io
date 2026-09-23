@@ -140,14 +140,16 @@
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
     <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Forge Level を伸ばし続けるための仕組みで、Area4 のボスコンテンツとセットで考える。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-23 (3)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-09-23 (4)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <div class="purpose">
     <div class="label">Purpose</div>
     <h2>マスタープレステージの目的は、Forge Level を伸ばし続けること</h2>
     <ul>
-      <li><strong>最大レベルに達していても、Master 1 回ごとに MaxLevel が +2〜3 伸びる</strong></li>
+      <li>Master は <strong>Tier 制</strong>。報酬は不連続に入る</li>
+      <li><strong>Tier が 1 上がるごとに、Forge の MaxLevel が 4 種すべて +1</strong></li>
+      <li>上限が上がるだけ。実際に上げるには <strong>Soul</strong> が要る</li>
       <li>「上限に張り付いて終わり」を無くす</li>
       <li>他に得られるもの（Geode・バザー・ストレージ・ダイヤ上限）は、すべてこの目的を支える枝</li>
       <li>迷ったら「Forge Level が伸びるか」で判断する</li>
@@ -190,7 +192,10 @@
         <li>MasterPrestige は完全に任意 <span class="src">Discord 8/30 ya.yu</span></li>
         <li>リセット対象外: <strong>Relic・装備スロットの Upgrade・ストレージの Upgrade・Diamond・Soul・NetherCream・BlueBox・Trade・INDEX・所持 Spell・Battle</strong>。ただし <strong>Battle の装備はリセット</strong></li>
         <li>Forge Level は残す。その代わり <strong>MaxLevel を徐々に上げる</strong></li>
-        <li><strong>Master の主たる目的は Forge Level の上昇</strong>。1 周期 <strong>3〜4 日</strong>で <strong>MaxLevel +2〜3</strong>。最大レベルに達している人でも伸び続ける</li>
+        <li><strong>Master の主たる目的は Forge Level の上昇</strong>。1 周期 <strong>3〜4 日</strong>。最大レベルに達している人でも伸び続ける</li>
+        <li>Master は <strong>Tier 制</strong>。Tier ごとに Forge の <strong>MaxLevel を 4 種すべて +1</strong></li>
+        <li>Forge Level は <strong>Soul</strong> で買う。上限が上がっても Soul が無ければ上げられない</li>
+        <li>新しいバザーに <strong>Soul 獲得量を上げる Upgrade</strong> を置く（Geode で買う）</li>
         <li>MasterPrestige 後に新しい通貨 <strong>Geode</strong>（ジオード / 晶洞。内部 ID は <code>Geode2</code>）を追加する</li>
         <li>新しい通貨は洞窟の専用ブロックから、<strong>時間基準</strong>で出る。頻度は竿 1 本の釣りで Soul が出るのと同じ <strong>x1 で 0.5 個/日</strong>。倍率は<strong>通算ボス数 n</strong>で伸びる</li>
       </ul>
@@ -228,6 +233,34 @@
         <span class="step">新しい通貨 x0 → x1、新しいバザーが開く</span>
       </div>
       <ul><li>「全部 max したら」という条件（Poedel 案）は、最初のボス撃破に置き換える</li></ul>
+
+      <h3>Tier 制 <span class="badge b-fixed">確定</span></h3>
+      <ul>
+        <li>Master は Tier 制。報酬は不連続（Tier を 1 上げたときだけ入る）</li>
+        <li>Tier +1 → Forge の <strong>MaxLevel が 4 種すべて +1</strong>（Mattock / Pickaxe / Sledgehammer / Enchantment）</li>
+        <li>上がるのは<strong>上限だけ</strong>。実際に Level を上げるのは Soul</li>
+      </ul>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>いまの実装</th><th>値</th><th>場所</th></tr></thead>
+          <tbody>
+            <tr><td>Forge Level の Upgrade</td><td><code>equiplv_{kind}</code> × 4 種（InfiniteUpgrade）</td><td><code>Relic.cs:337-340</code></td></tr>
+            <tr><td>コスト</td><td>Soul。道具は 1,2,3…／エンチャントは 5,10,15…（線形）</td><td><code>Relic.cs:326-333</code></td></tr>
+            <tr><td>いまの上限</td><td>20（Area3 に入れると +5 で 25）</td><td><code>Relic.cs:62-63</code></td></tr>
+            <tr><td>上限の決め方</td><td><strong><code>MaxLevelProvider</code> で動的に返している</strong></td><td><code>Relic.cs:344</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>上限がすでに動的なので、実装は <code>+ Master の Tier</code> を足すだけで済む</li>
+      </ul>
+
+      <h3>Soul がボトルネックになる <span class="badge b-fixed">確定</span></h3>
+      <ul>
+        <li>MaxLevel が上がっても、Soul が無ければ Forge Level は上がらない</li>
+        <li>いまの Soul の入り口は <strong>釣り</strong>（竿1本で約 0.5 個/日）と <strong>Nether 挑戦</strong>（試練報酬で挑戦ごと最大 +5）だけ</li>
+        <li>Tier が進むほど Soul の要求が増えるので、<strong>Soul 獲得量の Upgrade をバザーに置く</strong></li>
+      </ul>
 
       <h3>何が残り、何が伸び、何が消えるか</h3>
       <div class="tablewrap">
@@ -313,7 +346,7 @@
           <thead><tr><th>商品</th><th>効果</th><th>既存の仕組み</th><th>状態</th><th>出典</th></tr></thead>
           <tbody>
             <tr><td>Forge MaxLevel +1</td><td>Forge Level 4 種のいずれかの上限を 1 上げる</td><td>Relic の <code>equiplv_{kind}</code></td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
-            <tr><td>Soul 獲得倍率</td><td>Soul の獲得量を増やす</td><td><code>CurrencyIdDef.SoulId</code></td><td><span class="badge b-idea">案</span></td><td class="src">Poedel</td></tr>
+            <tr><td><strong>Soul 獲得量</strong></td><td>Soul の獲得量を増やす。<strong>Tier で上がった MaxLevel に追いつくための本命</strong></td><td><code>CurrencyIdDef.SoulId</code></td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
             <tr><td>空飛ぶ宝箱の出現率</td><td>宝箱が飛んでくる頻度を上げる</td><td><code>FlyingPresentRoot</code></td><td><span class="badge b-idea">案</span></td><td class="src">Poedel</td></tr>
             <tr><td>空飛ぶ宝箱の自動取得</td><td>タップしなくても取れるようにする</td><td>FlyingPresent に自動化は未実装</td><td><span class="badge b-idea">案</span></td><td class="src">Poedel</td></tr>
             <tr><td>盤面の一撃</td><td>ブロックを壊したとき、ごく低確率（0.0001% 程度）で盤面を一掃する</td><td>盤面</td><td><span class="badge b-idea">案</span></td><td class="src">Poedel</td></tr>
@@ -327,25 +360,11 @@
         <li>元は「深く掘って出る一点物（Arkenstone のような発掘品）」として出た案。世界観にも根拠がある（「同じ宝石は二度と作れない」Worldview §5）が、入手経路を Geode とバザーに一本化するため、<strong>バザーの商品</strong>として持つことにした</li>
       </ul>
 
-      <h3>目的との辻褄 <span class="badge b-open">未決</span></h3>
+      <h3>Geode の役割 <span class="badge b-fixed">確定</span></h3>
       <ul>
-        <li>目標: Master 1 周期（3〜4 日）で MaxLevel +2〜3</li>
-        <li><strong>いまの Geode のレートだと届かない</strong></li>
-      </ul>
-      <div class="tablewrap">
-        <table>
-          <thead><tr><th>項目</th><th class="num">値</th><th>備考</th></tr></thead>
-          <tbody>
-            <tr><td>1 周期の長さ</td><td class="num">3.5 日</td><td>3〜4 日の中央</td></tr>
-            <tr><td>Geode の入り</td><td class="num">1.75 個</td><td>0.5 個/日 × 3.5 日</td></tr>
-            <tr><td>MaxLevel +1 の値段が 1 Geode なら</td><td class="num">+1.75</td><td><strong>目標の +2〜3 に届かない</strong></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <ul>
-        <li><strong>A. Master そのものが直接 +2 上げる</strong>。バザーの MaxLevel アイテムは Geode で買う上積み分にする（目的が最も明確になる）</li>
-        <li><strong>B. Geode のレートを上げる</strong>（0.6〜0.9 個/日）。釣りの Soul と同じ、という基準からは外れる</li>
-        <li><strong>C. MaxLevel +1 の値段を 1 Geode 未満にする</strong>（1 個で 2 レベルぶん等）。Geode の価値が薄まる</li>
+        <li>MaxLevel は <strong>Master の Tier</strong> が上げる。Geode は使わない</li>
+        <li>Geode は <strong>バザーで Soul 獲得量を上げる</strong>ために使う</li>
+        <li>Forge Level を実際に上げるのは Soul なので、Geode は「上限に追いつく速さ」を買うもの</li>
       </ul>
 
       <h3>通貨名 <span class="badge b-fixed">確定</span></h3>
@@ -485,7 +504,8 @@
           <thead><tr><th class="num">#</th><th>項目</th><th>選択肢 / 仮の推奨</th></tr></thead>
           <tbody>
             <tr><td class="num">1</td><td>Box の表示名との重複</td><td>通知で Box も「Geode」と出る（<code>notification.currency.geode</code>）。Box 側を「Box」に統一するか、新通貨の表記を変えるか</td></tr>
-            <tr><td class="num">1.5</td><td>MaxLevel +2〜3 の埋め方</td><td>A: Master が直接上げる / B: Geode のレートを上げる / C: 値段を下げる（<a href="#currency">#4</a>）</td></tr>
+            <tr><td class="num">1.5</td><td>Tier の上げ方</td><td>1 Master = 1 Tier か、条件（ボス数など）で複数 Tier 上がるか。3〜4 日で Tier がいくつ進むか</td></tr>
+            <tr><td class="num">1.6</td><td>Soul 獲得 Upgrade の効き方</td><td>倍率か固定加算か。Tier が進むほど要求 Soul が増えるので、追いつく曲線を決める</td></tr>
             <tr><td class="num">2</td><td>新しい通貨の細部</td><td>専用ブロックの見た目と出現の演出。n あたり +0.5 の最終値。オフライン補正の実測</td></tr>
             <tr><td class="num">3</td><td>バザーの商品の値段と出現率</td><td>品揃えは上の表。レア度ごとの値段（Geode 何個）と、棚に並ぶ確率を決める</td></tr>
             <tr><td class="num">4</td><td>MaxLevel の上げ方</td><td>バザーのアイテムだけか、Master 回数でも上がるか。1 回の Master で上げられる上限を置くか</td></tr>
