@@ -74,6 +74,8 @@
 
   .callout{border-left:3px solid var(--orange);background:#fff;padding:10px 14px;border-radius:0 6px 6px 0;margin:10px 0 14px;max-width:72ch}
   .callout.note{border-left-color:var(--blue)}
+  .callout ul{margin:0;padding-left:1.3em}
+  .callout ul:last-child{margin-bottom:0}
   .quote{font-size:13px;color:var(--muted-strong);border-left:2px solid var(--line);padding-left:10px;margin:6px 0 10px;max-width:70ch}
   .flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0 14px;font-size:13.5px}
   .flow .step{background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 12px}
@@ -138,16 +140,18 @@
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
     <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Forge Level を伸ばし続けるための仕組みで、Area4 のボスコンテンツとセットで考える。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-23 (2)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-09-23 (3)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <div class="purpose">
     <div class="label">Purpose</div>
     <h2>マスタープレステージの目的は、Forge Level を伸ばし続けること</h2>
-    <p><strong>すでに Forge Level が最大に達していても、Master を 1 回まわすごとに MaxLevel が +2〜3 伸びる。</strong>
-       「上限に張り付いて終わり」を無くし、遊び続けるかぎり装備が強くなり続ける状態をつくる。</p>
-    <p>他に得られるもの（新通貨 Geode・バザー・ストレージ・ダイヤ上限）は、すべてこの目的を支える枝。
-       迷ったら「Forge Level が伸びるか」で判断する。</p>
+    <ul>
+      <li><strong>最大レベルに達していても、Master 1 回ごとに MaxLevel が +2〜3 伸びる</strong></li>
+      <li>「上限に張り付いて終わり」を無くす</li>
+      <li>他に得られるもの（Geode・バザー・ストレージ・ダイヤ上限）は、すべてこの目的を支える枝</li>
+      <li>迷ったら「Forge Level が伸びるか」で判断する</li>
+    </ul>
     <div class="nums">
       <div class="num"><div class="k">1 周期</div><div class="v">3〜4 <span class="u">日</span></div></div>
       <div class="num"><div class="k">1 周期あたり</div><div class="v">+2〜3 <span class="u">MaxLevel</span></div></div>
@@ -201,8 +205,17 @@
         <li>「損したかも」を一切混ぜない</li>
       </ol>
       <h3>棄却した案</h3>
-      <p>「効果はそのまま、Level だけリセット」。Prestige が無料の割引になり、細かく回すほど得・Upgrade は後回しが最適・通貨の残りで後悔、と誘因が全部ボスと逆を向く。</p>
-      <div class="callout">MasterPrestige は「プレイヤーの負担が大きい」ものとして扱う。だから任意にする。ループが回るたびに全体が少しずつ強くなる、を長く続く形にする。 <span class="src">Discord 8/29–8/31</span></div>
+      <ul>
+        <li>「効果はそのまま、Level だけリセット」</li>
+        <li>Prestige が無料の割引になる</li>
+        <li>細かく回すほど得・Upgrade は後回しが最適・通貨の残りで後悔</li>
+        <li>誘因が全部ボスと逆を向く</li>
+      </ul>
+      <div class="callout"><ul>
+        <li>MasterPrestige は「プレイヤーの負担が大きい」ものとして扱う</li>
+        <li>だから任意にする</li>
+        <li>ループが回るたびに全体が少しずつ強くなる、を長く続く形にする</li>
+      </ul><span class="src">Discord 8/29–8/31</span></div>
     </section>
 
     <section id="master">
@@ -214,7 +227,7 @@
         <span class="step">MasterPrestige 解放（押すかどうかは任意）</span><span class="arrow">→</span>
         <span class="step">新しい通貨 x0 → x1、新しいバザーが開く</span>
       </div>
-      <p>「全部 max したら」という条件（Poedel 案）は、最初のボス撃破に置き換える。</p>
+      <ul><li>「全部 max したら」という条件（Poedel 案）は、最初のボス撃破に置き換える</li></ul>
 
       <h3>何が残り、何が伸び、何が消えるか</h3>
       <div class="tablewrap">
@@ -263,7 +276,7 @@
         <li>使い道は<strong>新しいバザー</strong>（Poedel のバザー案と同じ方向）</li>
         <li>バザーには <strong>Forge Level 4 種の MaxLevel を 1 つ上げるアイテム</strong>が出る。これが「MaxLevel を徐々に上げる」の手段</li>
       </ul>
-      <div class="callout">Poedel のバザー案そのものは、この文書にまだ載っていない（Claude が把握していない）。共有してもらえればここへ足す。</div>
+      <div class="callout"><ul><li>Poedel のバザー案そのものは未掲載（共有されたらここへ足す）</li></ul></div>
 
       <h3>取得の式 <span class="badge b-fixed">確定</span></h3>
       <ul>
@@ -287,10 +300,14 @@
           </tbody>
         </table>
       </div>
-      <p>n あたり +0.5 は仮の値。バザーの値段（MaxLevel +1 の価格）と一緒に最終調整する。</p>
+      <ul><li>n あたり +0.5 は仮の値。バザーの値段と一緒に最終調整する</li></ul>
 
       <h3>バザーの品揃え <span class="badge b-idea">案</span></h3>
-      <p>Geode で買える商品。既存の露店と同じく「レア度の高い商品ほど効果が大きく、値段も高い」形にする（露店のボトルが大きさで効能の量を変えるのと同じ）。</p>
+      <ul>
+        <li>Geode で買える商品</li>
+        <li>レア度が高いほど効果が大きく、値段も高い</li>
+        <li>露店のボトルが大きさで効能の量を変えるのと同じ形</li>
+      </ul>
       <div class="tablewrap">
         <table>
           <thead><tr><th>商品</th><th>効果</th><th>既存の仕組み</th><th>状態</th><th>出典</th></tr></thead>
@@ -311,7 +328,10 @@
       </ul>
 
       <h3>目的との辻褄 <span class="badge b-open">未決</span></h3>
-      <p>Master 1 周期（3〜4 日）で MaxLevel +2〜3 が目標。いまの Geode のレートだと届きません。</p>
+      <ul>
+        <li>目標: Master 1 周期（3〜4 日）で MaxLevel +2〜3</li>
+        <li><strong>いまの Geode のレートだと届かない</strong></li>
+      </ul>
       <div class="tablewrap">
         <table>
           <thead><tr><th>項目</th><th class="num">値</th><th>備考</th></tr></thead>
@@ -322,7 +342,6 @@
           </tbody>
         </table>
       </div>
-      <p>埋め方は 3 通り。どれを採るかは未決。</p>
       <ul>
         <li><strong>A. Master そのものが直接 +2 上げる</strong>。バザーの MaxLevel アイテムは Geode で買う上積み分にする（目的が最も明確になる）</li>
         <li><strong>B. Geode のレートを上げる</strong>（0.6〜0.9 個/日）。釣りの Soul と同じ、という基準からは外れる</li>
@@ -335,10 +354,18 @@
         <li>内部 ID は <code>Geode2</code>。<code>Geode</code> は Box が使っているため（<code>MultiCurrencyIdDef.BoxId</code>）。ID を後から変えるとセーブ済みの残高が読めなくなるので固定する</li>
         <li>クラス名は <code>MasterCurrency*</code> のまま。既存の <code>Geode*</code>（GeodeFactory / GeodeTypeConfig）は「盤面のブロック」を指すので衝突させない</li>
       </ul>
-      <div class="callout">要確認: <code>notification.currency.geode</code>（Box の通知での表示名）が既に「Geode / ジオード」になっている。通知では Box と新通貨が同じ名前で出るので、Box 側を「Box」に統一するか、新通貨の表記を変えるかを決める必要がある。</div>
+      <div class="callout"><ul>
+        <li>要確認: <code>notification.currency.geode</code>（Box の通知での表示名）が既に「Geode / ジオード」</li>
+        <li>通知で Box と新通貨が同じ名前になる</li>
+        <li>Box 側を「Box」に統一するか、新通貨の表記を変えるか</li>
+      </ul></div>
 
       <h3>検討した候補 <span class="badge b-idea">案</span></h3>
-      <p>世界観（ベクトル論）から。既存の Soul は内部名 Onies＝「死んだベクトルの塊」なので、エンディング後の通貨はその対になる「生きた側」から取るのが筋がよい。</p>
+      <ul>
+        <li>出どころは世界観（ベクトル論）</li>
+        <li>Soul の内部名 Onies＝「死んだベクトルの塊」</li>
+        <li>エンディング後の通貨はその対＝「生きた側」から取る</li>
+      </ul>
       <div class="tablewrap">
         <table>
           <thead><tr><th>候補（英 / 日）</th><th>由来</th><th>x0 → x1 との相性</th><th>所感</th></tr></thead>
@@ -351,12 +378,19 @@
           </tbody>
         </table>
       </div>
-      <p>選ぶときの軸: Soul（死んだ側）と対になるか / x0 → x1 の「動き出す」に合うか / 英語 UI で 1 語に収まるか。</p>
+      <ul>
+        <li>選ぶ軸: Soul（死んだ側）と対になるか</li>
+        <li>x0 → x1 の「動き出す」に合うか</li>
+        <li>英語 UI で 1 語に収まるか</li>
+      </ul>
     </section>
 
     <section id="area4">
       <h2>5. Area4 の Prestige <span class="badge b-fixed">確定</span></h2>
-      <p>Area4 の中で回る、ボス討伐を軸にした Prestige。Master とは別の層。</p>
+      <ul>
+        <li>Area4 の中で回る、ボス討伐を軸にした Prestige</li>
+        <li>Master とは別の層</li>
+      </ul>
       <div class="tablewrap">
         <table>
           <thead><tr><th>項目</th><th>内容</th></tr></thead>
@@ -390,12 +424,19 @@
         <div class="layer"><div class="name">MasterPrestige</div><div class="axis">軸: m（回数）</div><dl><dt>消費</dt><dd>「残す」以外のすべて</dd><dt>得る</dt><dd>新通貨 x0 → x1、バザー、MaxLevel</dd><dt>周期</dt><dd>3〜4 日</dd></dl></div>
         <div class="layer"><div class="name">PvP 的要素</div><div class="axis">軸: シーズン</div><dl><dt>消費</dt><dd>—</dd><dt>得る</dt><dd>他人のマスターボスを倒す / 自分のが耐える</dd></dl></div>
       </div>
-      <div class="callout">要整理: 前回の案では Master を「Area4 の k と Level を畳む層」として式まで置いたが、Master は <strong>ゲーム全体</strong>の周回なので、Area4 の Prestige 進行も Master のリセット対象に含まれる想定。Area4 内での「傾きの底上げ」（<code>rateMult(k) = 1 + (0.3 + 0.05m) k</code> など）は、Master 後の Area4 の再スタートを速くする案として残す。</div>
+      <div class="callout"><ul>
+        <li>要整理: 前回の案は Master を「Area4 の k と Level を畳む層」としていた</li>
+        <li>Master は <strong>ゲーム全体</strong>の周回なので、Area4 の Prestige 進行もリセット対象に入る想定</li>
+        <li>Area4 内の「傾きの底上げ」（<code>rateMult(k) = 1 + (0.3 + 0.05m) k</code>）は、Master 後の再スタートを速くする案として残す</li>
+      </ul></div>
     </section>
 
     <section id="pvp">
       <h2>7. PvP 的要素 <span class="badge b-idea">案</span></h2>
-      <p>非同期。Snapshot（凍結した ItemSet）を使い、負けても何も失わない。</p>
+      <ul>
+        <li>非同期。Snapshot（凍結した ItemSet）を使う</li>
+        <li>負けても何も失わない</li>
+      </ul>
       <div class="tablewrap">
         <table>
           <thead><tr><th>案</th><th>内容</th><th>良い点</th><th>懸念</th></tr></thead>
