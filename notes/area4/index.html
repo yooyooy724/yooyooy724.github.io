@@ -138,7 +138,7 @@
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
     <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Forge Level を伸ばし続けるための仕組みで、Area4 のボスコンテンツとセットで考える。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-23</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-09-23 (2)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <div class="purpose">
@@ -184,7 +184,7 @@
         <li>MasterPrestige コンテンツと、PvP 的なマルチプレイ要素を入れる</li>
         <li>MasterPrestige は<strong>ボスコンテンツとセット</strong>。最初のボスを倒すとエンディングロール（Thank you for playing）が流れ、その後に MasterPrestige が解放される</li>
         <li>MasterPrestige は完全に任意 <span class="src">Discord 8/30 ya.yu</span></li>
-        <li>リセット対象外: <strong>Relic・装備スロットの Upgrade・ストレージの Upgrade・Diamond・Soul・BlueBox・Trade・INDEX・所持 Spell・Battle</strong>。ただし <strong>Battle の装備はリセット</strong></li>
+        <li>リセット対象外: <strong>Relic・装備スロットの Upgrade・ストレージの Upgrade・Diamond・Soul・NetherCream・BlueBox・Trade・INDEX・所持 Spell・Battle</strong>。ただし <strong>Battle の装備はリセット</strong></li>
         <li>Forge Level は残す。その代わり <strong>MaxLevel を徐々に上げる</strong></li>
         <li><strong>Master の主たる目的は Forge Level の上昇</strong>。1 周期 <strong>3〜4 日</strong>で <strong>MaxLevel +2〜3</strong>。最大レベルに達している人でも伸び続ける</li>
         <li>MasterPrestige 後に新しい通貨 <strong>Geode</strong>（ジオード / 晶洞。内部 ID は <code>Geode2</code>）を追加する</li>
@@ -226,13 +226,14 @@
             <tr><td>ストレージの Upgrade</td><td class="keep">残す</td><td>解放した容量はそのまま。さらに Master ごとに 1 ページ（または 1 行）増やす案あり</td><td><span class="badge b-fixed">確定</span> <span class="badge b-adopt">採用候補</span></td><td class="src">ya.yu / Poedel</td></tr>
             <tr><td>Diamond</td><td class="keep">残す</td><td>所持額も Upgrade も残す。上限を広げる（10/10 → 10/15）案あり</td><td><span class="badge b-fixed">確定</span> <span class="badge b-adopt">採用候補</span></td><td class="src">ya.yu / Poedel</td></tr>
             <tr><td>Soul</td><td class="keep">残す</td><td>所持額も Upgrade も残す</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
+            <tr><td>NetherCream</td><td class="keep">残す</td><td>所持額も Upgrade も残す</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu（ノートへの書き込み 9/22）</td></tr>
             <tr><td>BlueBox</td><td class="keep">残す</td><td>そのまま</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
             <tr><td>Trade</td><td class="keep">残す</td><td>そのまま（指す機能の確認は <a href="#open">#9</a>）</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
             <tr><td>コレクション INDEX</td><td class="keep">残す</td><td>発見済みはそのまま</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
             <tr><td>所持 Spell</td><td class="keep">残す</td><td>所持したまま。2 周目で同じ Spell を取ると Tier2 になる案あり（例: モメンタム Lv4 → Lv8）</td><td><span class="badge b-fixed">確定</span> <span class="badge b-adopt">採用候補</span></td><td class="src">ya.yu / Poedel</td></tr>
             <tr><td>Battle</td><td class="keep">残す</td><td>Battle の進行・Upgrade は残す。<strong>装備だけはリセット</strong></td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
             <tr><td>Forge Level</td><td class="grow">残して伸びる</td><td>Level はそのまま残す。回数を戻す案（Poedel）ではなく、<strong>MaxLevel を徐々に上げる</strong>。上げる手段はバザーのアイテム（<a href="#currency">#4</a>）</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
-            <tr><td>それ以外のすべて</td><td class="reset">リセット</td><td>各 Area の周回の進行・Soil / Tear / NetherCream・装備（Battle の装備を含む）・Prestige 倍率・到達深度・試練の進行など。具体リストは <a href="#open">#9</a></td><td><span class="badge b-fixed">確定</span> <span class="badge b-open">未決</span></td><td class="src">ya.yu</td></tr>
+            <tr><td>それ以外のすべて</td><td class="reset">リセット</td><td>各 Area の周回の進行・Soil / Tear・装備（Battle の装備を含む）・Prestige 倍率・到達深度・試練の進行など。具体リストは <a href="#open">#9</a></td><td><span class="badge b-fixed">確定</span> <span class="badge b-open">未決</span></td><td class="src">ya.yu</td></tr>
           </tbody>
         </table>
       </div>
@@ -448,7 +449,7 @@
             <tr><td class="num">3</td><td>バザーの商品の値段と出現率</td><td>品揃えは上の表。レア度ごとの値段（Geode 何個）と、棚に並ぶ確率を決める</td></tr>
             <tr><td class="num">4</td><td>MaxLevel の上げ方</td><td>バザーのアイテムだけか、Master 回数でも上がるか。1 回の Master で上げられる上限を置くか</td></tr>
             <tr><td class="num">5</td><td>「Trade」が指す機能</td><td>露店（NetherCream の売り場）か、別の機能か</td></tr>
-            <tr><td class="num">6</td><td>リセット対象の具体リスト</td><td>「残す」以外を項目に展開する。特に: Soil / Tear / NetherCream の所持額、各 Area の到達深度、試練の Tier 進行、Spell 以外の試練報酬</td></tr>
+            <tr><td class="num">6</td><td>リセット対象の具体リスト</td><td>「残す」以外を項目に展開する。特に: Soil / Tear の所持額、各 Area の到達深度、試練の Tier 進行、Spell 以外の試練報酬</td></tr>
             <tr><td class="num">7</td><td>Spell Tier2 の扱い</td><td>採るなら効果の決め方（数値 2 倍で統一か、Spell ごとか）。Tier3 以降を認めるか</td></tr>
             <tr><td class="num">8</td><td>Diamond 上限 / ストレージの増分</td><td>10/10 → 10/15 の +5 か。ストレージは 1 ページか 1 行か。Master ごとに積むか</td></tr>
             <tr><td class="num">9</td><td>Area4 の本体ループ</td><td>戦闘画面のみ（Battle_NEW 流用）か、盤面にボスが降りてくるか</td></tr>
