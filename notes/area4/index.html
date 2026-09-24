@@ -151,7 +151,7 @@
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
     <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Forge Level を伸ばし続けるための仕組みで、Area4 のボスコンテンツとセットで考える。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-25 (2)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-09-25 (3)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <div class="purpose">
@@ -207,6 +207,8 @@
         <li>Master は <strong>Tier 制</strong>。Tier ごとに Forge の <strong>MaxLevel を 4 種すべて +1</strong></li>
         <li>Forge Level は <strong>Soul</strong> で買う。上限が上がっても Soul が無ければ上げられない</li>
         <li>新しいバザーに <strong>Soul 獲得量を上げる Upgrade</strong> を置く（Geode で買う）</li>
+        <li><strong>9/25 ラウンド 4 で確定した分</strong>: ボスは<strong>掘る</strong>（巨大ブロックを Cave の採掘力で削る。制限時間はマグマと同じく HP へのダメージで表現） ／ 試練の報酬は<strong>「受け取り済み」を別に持ち</strong>、再クリアで二度出ない。Area4 の解禁も同じ旗 ／
+          必要 Lv は <strong>Forge 基準 F0 からの差 d(n)</strong> で定義（F0 の値は未決。25 は上限であって実測ではない） ／ 生涯記録は<strong>新しいリポジトリ 1 つ</strong>に写す ／ 最初のボスは <strong>Insane クリア直後</strong>の進行で倒せる ／ PvP は Master と独立なので<strong>今回は扱わない</strong></li>
         <li><strong>9/25 ラウンド 3 で確定した分</strong>: 段の名前は<strong>層（Layer）</strong>（Cave の Stratum はプレイヤー向けには「階層」なので衝突しない） ／ Area4 に Upgrade と通貨は<strong>無し</strong>（持ち込んだ装備の強さだけでボスを倒す） ／
           試練の進行はリセットするが<strong>報酬（Forge Level・Spell など）は残す</strong> ／ Area3・Biome の解禁は<strong>戻る</strong>（到達報酬は再発火しない） ／ ボスの強さは<strong>「必要な装備 Lv」で定義</strong>し HP はそこから逆算（Lv 差 3 を常に使うかは要検討） ／
           ボスの列は周回で戻らず、<strong>層 ＝ 通算討伐数</strong> ／ バザーの値段の基準は層で動かさない（固定）</li>
@@ -300,11 +302,11 @@
             <tr><td>BlueBox</td><td class="keep">残す</td><td>そのまま</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
             <tr><td>Trade</td><td class="keep">残す</td><td>そのまま（指す機能の確認は <a href="#open">#9</a>）</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
             <tr><td>コレクション INDEX</td><td class="keep">残す</td><td>発見済みはそのまま</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
-            <tr><td>試練の報酬</td><td class="keep">残す</td><td>試練の<strong>進行はリセット</strong>するが、受け取った報酬（Forge Level・Spell・NetherCream・Soul）は残す。Forge Level は Relic の購入分 + 試練の報酬分なので、報酬分を進行と切り離して持つ必要がある（<code>Relic.cs:416</code>）</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
+            <tr><td>試練の報酬</td><td class="keep">残す</td><td>試練の<strong>進行はリセット</strong>するが、受け取った報酬（Forge Level・Spell・NetherCream・Soul）は残す。<strong>「受け取り済み」を進行と別に持ち、再クリアしても同じ報酬は二度出ない</strong>。Area4 の解禁（Hard 制覇）も同じ旗で残す（<code>Relic.cs:416</code>、9/25 確定）</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
             <tr><td>Area3・Biome の解禁</td><td class="reset">戻る</td><td>最大到達深度を写して消すので解禁も戻る。再到達が周回の中身。到達報酬は再発火しない</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
             <tr><td>所持 Spell</td><td class="keep">残す</td><td>所持したまま。2 周目で同じ Spell を取ると Tier2 になる案あり（例: モメンタム Lv4 → Lv8）</td><td><span class="badge b-fixed">確定</span> <span class="badge b-adopt">採用候補</span></td><td class="src">ya.yu / Poedel</td></tr>
             <tr><td>Battle</td><td class="keep">残す</td><td>Battle の進行・Upgrade は残す。<strong>装備だけはリセット</strong></td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
-            <tr><td>生涯記録（Records）</td><td class="keep">残す</td><td>統計に載る・載りそうな値は消さない。最大到達深度は<strong>生涯記録へ写してから消す</strong>。深度報酬は再発火させず、Area・Biome の解禁は別に制御する</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu 9/24</td></tr>
+            <tr><td>生涯記録（Records）</td><td class="keep">残す</td><td>統計に載る・載りそうな値は消さない。最大到達深度は<strong>生涯記録へ写してから消す</strong>。深度報酬は再発火させず、Area・Biome の解禁は戻す。器は<strong>新しい「生涯記録」リポジトリ 1 つ</strong>（記録画面は自前の保存を持たないため、<code>PlayerStatsViewModel.cs:45</code>）。記録画面は「生涯記録と今周回の大きい方」を出す（9/25 確定）</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu 9/24</td></tr>
             <tr><td>Forge Level</td><td class="grow">残して伸びる</td><td>Level はそのまま残す。回数を戻す案（Poedel）ではなく、<strong>MaxLevel を徐々に上げる</strong>。上げる手段はバザーのアイテム（<a href="#currency">#4</a>）</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
             <tr><td>それ以外のすべて</td><td class="reset">リセット</td><td>各 Area の周回の進行・Soil / Tear・装備（Battle の装備を含む）・Prestige 倍率・到達深度・試練の進行など。具体リストは <a href="#open">#9</a></td><td><span class="badge b-fixed">確定</span> <span class="badge b-open">未決</span></td><td class="src">ya.yu</td></tr>
           </tbody>
@@ -428,7 +430,7 @@
         <li>Soul 獲得量は倍率（露店のボトルと同じ <code>1 + 合計%</code>）</li>
         <li>装備の持ち越しは<strong>外す</strong>（Lv38 を持ち越したループが潜行を上回る）</li>
         <li><strong>Relic 型の固定一覧</strong>（商品 × Lv、買うと Lv が 1 上がる）。棚の仕入れ・リロールは持ち込まない（9/25 確定）</li>
-        <li>商品 Lv1 の値段の基準: 「Forge の基準値 + 5 Lv の装備で 1 日掘れば買える」。Forge の基準値は Insane をクリアできる程度（候補: Area3 の上限 25）</li>
+        <li>商品 Lv1 の値段の基準: 「F0 + 5 Lv の装備で 1 日掘れば買える」。F0 ＝ Insane クリア直後の Forge Level（値は未決。25 は上限であって典型ではない）</li>
         <li>値段の基準は<strong>層で動かさない</strong>（9/25 確定）。層が上がって Forge 上限が伸びると同じ商品が相対的に安くなる。それが Master の報酬感</li>
       </ul>
       <div class="cards">
@@ -552,7 +554,11 @@
         <li>Area4 は WorldSelection の 4 つ目のボタンから開く。内部の World・Biome は無く、入り方は Nether と同じ</li>
         <li>解禁は<strong>試練 Hard の制覇</strong>（Insane にしないのは、ボスに負ける期間をある程度設けるため）。持ち込みは装備だけ</li>
         <li><strong>Area4 に Upgrade と通貨は無い</strong>（9/25 確定）。ボスは持ち込んだ装備の強さだけで倒す。下表の <code>upgradeCost</code>・<code>upgradeLevelCap</code>・「通貨」の行は<strong>落とす</strong></li>
-        <li>ボスの強さは<strong>「必要な装備 Lv」</strong>で定義し、HP は攻撃力の式（4.23^Lv）から逆算する。仮: ボス n の必要 Lv ＝ 25 + 3n。進行が進むと Lv 差 3 がきつくなる可能性があるので、差を常に 3 にするかはシミュレーションで決める</li>
+        <li>ボスの強さは<strong>「必要な装備 Lv」</strong>で定義し、HP は攻撃力の式（4.23^Lv）から逆算する</li>
+        <li>倒し方は<strong>掘る</strong>。巨大ブロックとして出て、Cave の採掘力で削る。制限時間は<strong>マグマと同じく HP へのダメージ</strong>で表現する（削る速さが足りないと HP が戻って負け）（9/25 確定）</li>
+        <li>必要 Lv ＝ <strong>(F0 + 層) + d(n)</strong>。F0 は「Insane クリア直後の Forge Level」、d(n) は 5 程度から始めて月 2 回（15 日）相当まで緩やかに伸ばす。値はシミュレーションで出す（9/25 確定）</li>
+        <li><strong>F0 は未決</strong>。これまで書いた 25 は Soul で買える上限（20 + Area3 の 5、<code>Relic.cs:62-63</code>）で、実測ではない。Insane クリア直後の典型値は yooyo が持つプレイヤーデータで決める</li>
+        <li>最初のボスは <strong>Insane クリア直後</strong>の進行で倒せる強さ（＝ d(1) は「Insane クリア直後の装備でぎりぎり」）</li>
         <li>ボスの列は周回で最初へ戻らない。ボス n を倒したら次は n+1。<strong>層 ＝ 通算討伐数</strong>。Forge が +1/ボス、必要 Lv が +3/ボスなので差が広がり、周期が自然に伸びる</li>
       </ul>
       <div class="tablewrap">
@@ -575,7 +581,9 @@
       <ul>
         <li>最初のボス: 試練 Insane をクリアできる進行で倒せる強さ（9/25 確定）</li>
         <li>次のボスまで最低 2〜3 日。段が上がるほど難しくなり、最終的に月 2 回程度まで伸びる（9/25 確定）</li>
-        <li>必要 Lv の伸び（常に +3 か、層が進むほど緩めるか）。シミュレーションで出す</li>
+        <li>F0 の値（Insane クリア直後の Forge Level の典型）</li>
+        <li>d(n) の具体値。F0 が決まってからシミュレーションで出す</li>
+        <li>マグマ相当のダメージ量（HP の戻り）と、負けたときの扱い</li>
       </ul>
     </section>
 
@@ -597,6 +605,7 @@
     <section id="pvp">
       <h2>7. PvP 的要素 <span class="badge b-idea">案</span></h2>
       <ul>
+        <li><strong>9/25: Master の設計は PvP と独立</strong>（PvP は Master の影響を受ける側）。このページでは PvP を扱わない。下は案のまま残す</li>
         <li>非同期。Snapshot（凍結した ItemSet）を使う</li>
         <li>負けても何も失わない</li>
       </ul>
@@ -649,7 +658,8 @@
           <tbody>
             <tr><td class="num">1</td><td><s>Master の段の名前</s></td><td>層（Layer）で確定</td></tr>
             <tr><td class="num">1.1</td><td><s>Area4 の Upgrade と通貨</s></td><td>無しで確定</td></tr>
-            <tr><td class="num">1.2</td><td>試練の報酬を進行と切り離す形</td><td>Forge Level 報酬分・Spell を「受け取り済み」として別に持つ。Area4 の解禁（Hard 制覇）も進行が消えるので生涯記録側の旗にする</td></tr>
+            <tr><td class="num">1.2</td><td><s>試練の報酬を進行と切り離す形</s></td><td>「受け取り済み」を別に持つで確定</td></tr>
+            <tr><td class="num">1.3</td><td><strong>F0（Forge の基準値）</strong></td><td>Insane クリア直後の Forge Level の典型。ボスの必要 Lv とバザーの値段の両方がこれに掛かる。プレイヤーデータで決める</td></tr>
             <tr><td class="num">1.5</td><td>Tier の上げ方</td><td>1 Master = 1 Tier か、条件（ボス数など）で複数 Tier 上がるか。3〜4 日で Tier がいくつ進むか</td></tr>
             <tr><td class="num">1.6</td><td>Soul 獲得 Upgrade の効き方</td><td>倍率か固定加算か。Tier が進むほど要求 Soul が増えるので、追いつく曲線を決める</td></tr>
             <tr><td class="num">2</td><td>バザーの器</td><td><s>棚か固定一覧か</s> → 固定一覧で確定。残りは商品のレベルの初期値と上限</td></tr>
