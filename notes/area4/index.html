@@ -151,7 +151,7 @@
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
     <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Forge Level を伸ばし続けるための仕組みで、Area4 のボスコンテンツとセットで考える。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-25 (3)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-09-25 (4)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <div class="purpose">
@@ -207,6 +207,7 @@
         <li>Master は <strong>Tier 制</strong>。Tier ごとに Forge の <strong>MaxLevel を 4 種すべて +1</strong></li>
         <li>Forge Level は <strong>Soul</strong> で買う。上限が上がっても Soul が無ければ上げられない</li>
         <li>新しいバザーに <strong>Soul 獲得量を上げる Upgrade</strong> を置く（Geode で買う）</li>
+        <li><strong>9/25 ラウンド 5</strong>: F0 は<strong>道具 13・エンチャント 8 で仮置き</strong>して進める（後で実測に差し替え）</li>
         <li><strong>9/25 ラウンド 4 で確定した分</strong>: ボスは<strong>掘る</strong>（巨大ブロックを Cave の採掘力で削る。制限時間はマグマと同じく HP へのダメージで表現） ／ 試練の報酬は<strong>「受け取り済み」を別に持ち</strong>、再クリアで二度出ない。Area4 の解禁も同じ旗 ／
           必要 Lv は <strong>Forge 基準 F0 からの差 d(n)</strong> で定義（F0 の値は未決。25 は上限であって実測ではない） ／ 生涯記録は<strong>新しいリポジトリ 1 つ</strong>に写す ／ 最初のボスは <strong>Insane クリア直後</strong>の進行で倒せる ／ PvP は Master と独立なので<strong>今回は扱わない</strong></li>
         <li><strong>9/25 ラウンド 3 で確定した分</strong>: 段の名前は<strong>層（Layer）</strong>（Cave の Stratum はプレイヤー向けには「階層」なので衝突しない） ／ Area4 に Upgrade と通貨は<strong>無し</strong>（持ち込んだ装備の強さだけでボスを倒す） ／
@@ -433,6 +434,27 @@
         <li>商品 Lv1 の値段の基準: 「F0 + 5 Lv の装備で 1 日掘れば買える」。F0 ＝ Insane クリア直後の Forge Level（値は未決。25 は上限であって典型ではない）</li>
         <li>値段の基準は<strong>層で動かさない</strong>（9/25 確定）。層が上がって Forge 上限が伸びると同じ商品が相対的に安くなる。それが Master の報酬感</li>
       </ul>
+      <h3>値段のシミュレーション（F0 ＝ 13） <span class="badge b-idea">案</span></h3>
+      <ul>
+        <li>商品 Lv1 ＝ 装備 Lv18（F0 + 5）で 1 日 ＝ 9.25^17 × 36.7 万ブロック ≈ <strong>9.8e21 Geode</strong></li>
+        <li>商品 Lv k の値段は 9.25 倍/Lv、装備の獲得も 9.25 倍/Lv なので、<strong>商品 Lv k を 1 日で買える装備 Lv ＝ 17 + k</strong></li>
+      </ul>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th class="num">装備 Lv</th><th class="num">商品 Lv1 を買う日数</th></tr></thead>
+          <tbody>
+            <tr><td class="num">13（F0）</td><td class="num">68,000</td></tr>
+            <tr><td class="num">16</td><td class="num">86</td></tr>
+            <tr><td class="num">17</td><td class="num">9.3</td></tr>
+            <tr><td class="num">18</td><td class="num">1.0</td></tr>
+            <tr><td class="num">25（マージの壁）</td><td class="num">0.0001</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li><strong>問題</strong>: k ＝ 5 は「装備 Lv ＝ Forge」の前提だった。マージで +12 まで 2 日で届くので、<strong>初日から商品 Lv8 まで買える</strong>。壁は商品 Lv9（装備 Lv26 で 1 日）に来る</li>
+        <li>壁を商品 Lv1〜2 に置きたいなら k ＝ 5 ではなく <strong>k ≈ 12〜13</strong>（マージの壁 25 が基準）。層が 1 上がるごとに壁が商品 1 Lv ぶん動くのは同じ</li>
+      </ul>
       <div class="cards">
         <div class="card fixed">
           <div class="card-head"><span class="card-kind">ボトル</span><span class="badge b-fixed">確定</span></div>
@@ -557,7 +579,7 @@
         <li>ボスの強さは<strong>「必要な装備 Lv」</strong>で定義し、HP は攻撃力の式（4.23^Lv）から逆算する</li>
         <li>倒し方は<strong>掘る</strong>。巨大ブロックとして出て、Cave の採掘力で削る。制限時間は<strong>マグマと同じく HP へのダメージ</strong>で表現する（削る速さが足りないと HP が戻って負け）（9/25 確定）</li>
         <li>必要 Lv ＝ <strong>(F0 + 層) + d(n)</strong>。F0 は「Insane クリア直後の Forge Level」、d(n) は 5 程度から始めて月 2 回（15 日）相当まで緩やかに伸ばす。値はシミュレーションで出す（9/25 確定）</li>
-        <li><strong>F0 は未決</strong>。これまで書いた 25 は Soul で買える上限（20 + Area3 の 5、<code>Relic.cs:62-63</code>）で、実測ではない。Insane クリア直後の典型値は yooyo が持つプレイヤーデータで決める</li>
+        <li><strong>F0 ＝ 道具 13・エンチャント 8（仮置き、9/25）</strong>。これまで書いた 25 は Soul で買える上限（20 + Area3 の 5、<code>Relic.cs:62-63</code>）で、実測ではない。実測が取れたら差し替える</li>
         <li>最初のボスは <strong>Insane クリア直後</strong>の進行で倒せる強さ（＝ d(1) は「Insane クリア直後の装備でぎりぎり」）</li>
         <li>ボスの列は周回で最初へ戻らない。ボス n を倒したら次は n+1。<strong>層 ＝ 通算討伐数</strong>。Forge が +1/ボス、必要 Lv が +3/ボスなので差が広がり、周期が自然に伸びる</li>
       </ul>
@@ -581,9 +603,51 @@
       <ul>
         <li>最初のボス: 試練 Insane をクリアできる進行で倒せる強さ（9/25 確定）</li>
         <li>次のボスまで最低 2〜3 日。段が上がるほど難しくなり、最終的に月 2 回程度まで伸びる（9/25 確定）</li>
-        <li>F0 の値（Insane クリア直後の Forge Level の典型）</li>
-        <li>d(n) の具体値。F0 が決まってからシミュレーションで出す</li>
+        <li>d(n) の具体値（下の案を採るか）</li>
         <li>マグマ相当のダメージ量（HP の戻り）と、負けたときの扱い</li>
+      </ul>
+      <h3>ボス間隔のシミュレーション <span class="badge b-idea">案</span></h3>
+      <ul>
+        <li>モデルは Geode の倍率シミュレーションと同じ（攻撃力 4.23^Lv、ブロック HP、盤面、マージ 2 個で +1、Box 率 3%、エージェント 6）</li>
+        <li>F0 ＝ 13 で潜行し、装備 Lv が F0 + d に初めて届く日数を出した。<strong>周回のたびに装備は消えるので、この日数がそのまま「Master 直後からボスまでの日数」</strong></li>
+      </ul>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th class="num">d</th><th class="num">装備 Lv</th><th class="num">届く日数</th><th>備考</th></tr></thead>
+          <tbody>
+            <tr><td class="num">1〜5</td><td class="num">14〜18</td><td class="num">0.0</td><td>浅い層は即座に進むので、初日に一気に上がる</td></tr>
+            <tr><td class="num">10</td><td class="num">23</td><td class="num">0.6</td><td></td></tr>
+            <tr><td class="num">11</td><td class="num">24</td><td class="num">0.9</td><td></td></tr>
+            <tr><td class="num">12</td><td class="num">25</td><td class="num">1.8</td><td>ここから魔法の壁で急に鈍る</td></tr>
+            <tr><td class="num">13</td><td class="num">26</td><td class="num">5.6</td><td></td></tr>
+            <tr><td class="num">14</td><td class="num">27</td><td class="num">8.0</td><td></td></tr>
+            <tr><td class="num">15</td><td class="num">28</td><td class="num">16.6</td><td>月 2 回相当</td></tr>
+            <tr><td class="num">16</td><td class="num">29</td><td class="num">54</td><td>届かない扱い</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>読み: マージで <strong>+12 までは 2 日で届き</strong>、そこから 1 Lv ごとに日数が 2〜3 倍になる。「Lv 差 3」ではなく<strong>「壁の手前 12 から先の 1 Lv 刻み」</strong>が間隔を決める</li>
+        <li>層が 1 上がると Forge が +1 なので、曲線ごと 1 Lv 右へずれる（Soul で Forge を買えていれば）</li>
+      </ul>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th class="num">ボス n</th><th class="num">d(n)</th><th class="num">必要 Lv（層 n−1 のとき）</th><th class="num">Master 直後からの日数</th></tr></thead>
+          <tbody>
+            <tr><td class="num">1</td><td class="num">12</td><td class="num">25</td><td class="num">1.8（Insane クリア直後の装備ならすぐ）</td></tr>
+            <tr><td class="num">2</td><td class="num">12.5</td><td class="num">26.5</td><td class="num">≈ 3</td></tr>
+            <tr><td class="num">3</td><td class="num">13</td><td class="num">28</td><td class="num">5.6</td></tr>
+            <tr><td class="num">4</td><td class="num">13.5</td><td class="num">29.5</td><td class="num">≈ 7</td></tr>
+            <tr><td class="num">5</td><td class="num">14</td><td class="num">31</td><td class="num">8</td></tr>
+            <tr><td class="num">6</td><td class="num">14.5</td><td class="num">32.5</td><td class="num">≈ 12</td></tr>
+            <tr><td class="num">7 以降</td><td class="num">15</td><td class="num">34 + (n−7)</td><td class="num">16.6（月 2 回）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>d は 0.5 刻みでよい（HP ＝ 基準 × 4.23^d なので整数でなくてよい）</li>
+        <li>Master せずに続けて挑む場合は、表の日数の差分が次のボスまでの時間になる（短い）</li>
+        <li>要検証: 「Forge 13 で装備 Lv 25 まで 2 日」がモデルの出力。実際のプレイヤーの装備 Lv と合わなければ d を丸ごとずらす</li>
       </ul>
     </section>
 
