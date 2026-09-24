@@ -151,7 +151,7 @@
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
     <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Forge Level を伸ばし続けるための仕組みで、Area4 のボスコンテンツとセットで考える。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-25 (5)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-09-25 (6)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <div class="purpose">
@@ -159,7 +159,7 @@
     <h2>マスタープレステージの目的は、Forge Level を伸ばし続けること</h2>
     <ul>
       <li>Master は <strong>Tier 制</strong>。報酬は不連続に入る</li>
-      <li><strong>Tier が 1 上がるごとに、Forge の MaxLevel が 4 種すべて +1</strong></li>
+      <li><strong>層が 1 上がるごとに、Forge の MaxLevel が 4 種すべて +3</strong>（9/25 に +1 から変更）</li>
       <li>上限が上がるだけ。実際に上げるには <strong>Soul</strong> が要る</li>
       <li>「上限に張り付いて終わり」を無くす</li>
       <li>他に得られるもの（Geode・バザー・ストレージ・ダイヤ上限）は、すべてこの目的を支える枝</li>
@@ -204,9 +204,10 @@
         <li>リセット対象外: <strong>Relic・装備スロットの Upgrade・ストレージの Upgrade・Diamond・Soul・NetherCream・BlueBox・Trade・INDEX・所持 Spell・Battle</strong>。ただし <strong>Battle の装備はリセット</strong></li>
         <li>Forge Level は残す。その代わり <strong>MaxLevel を徐々に上げる</strong></li>
         <li><strong>Master の主たる目的は Forge Level の上昇</strong>。1 周期 <strong>3〜4 日</strong>。最大レベルに達している人でも伸び続ける</li>
-        <li>Master は <strong>Tier 制</strong>。Tier ごとに Forge の <strong>MaxLevel を 4 種すべて +1</strong></li>
+        <li>Master は <strong>層制</strong>。層ごとに Forge の <strong>MaxLevel を 4 種すべて +3</strong>（9/25 に +1 から変更）</li>
         <li>Forge Level は <strong>Soul</strong> で買う。上限が上がっても Soul が無ければ上げられない</li>
         <li>新しいバザーに <strong>Soul 獲得量を上げる Upgrade</strong> を置く（Geode で買う）</li>
+        <li><strong>9/25 ラウンド 6</strong>: 層 1 つにつき Forge の MaxLevel を <strong>+3</strong>（+1 から変更）。その Soul は十分に集まる前提で、バザーの Soul Upgrade を設計する</li>
         <li><strong>9/25 ラウンド 5</strong>: 最初のボスの<strong>必要な装備 Lv ＝ 道具 13・エンチャント 8</strong>（Insane クリア直後の装備。仮置き、後で実測に差し替え）。Forge の基準値という枠組みはやめ、ボスごとの必要 Lv を直接置く</li>
         <li><strong>9/25 ラウンド 4 で確定した分</strong>: ボスは<strong>掘る</strong>（巨大ブロックを Cave の採掘力で削る。制限時間はマグマと同じく HP へのダメージで表現） ／ 試練の報酬は<strong>「受け取り済み」を別に持ち</strong>、再クリアで二度出ない。Area4 の解禁も同じ旗 ／
           必要 Lv は<strong>ボスごとの表</strong>で置く（最初のボスは Insane クリア直後の到達値 ＝ 道具 13・エンチャント 8） ／ 生涯記録は<strong>新しいリポジトリ 1 つ</strong>に写す ／ 最初のボスは <strong>Insane クリア直後</strong>の進行で倒せる ／ PvP は Master と独立なので<strong>今回は扱わない</strong></li>
@@ -261,7 +262,8 @@
       <h3>Tier 制 <span class="badge b-fixed">確定</span></h3>
       <ul>
         <li>Master は Tier 制。報酬は不連続（Tier を 1 上げたときだけ入る）</li>
-        <li>Tier +1 → Forge の <strong>MaxLevel が 4 種すべて +1</strong>（Mattock / Pickaxe / Sledgehammer / Enchantment）</li>
+        <li>層 +1 → Forge の <strong>MaxLevel が 4 種すべて +3</strong>（Mattock / Pickaxe / Sledgehammer / Enchantment）。9/25 に +1 から変更</li>
+        <li>上がった 3 Lv ぶんの Soul は<strong>十分に集まる前提</strong>で組む。必要量は下の「Soul の要求」</li>
         <li>上がるのは<strong>上限だけ</strong>。実際に Level を上げるのは Soul</li>
         <li><strong>Master はボスを倒すと押せる。複数倒してから押してもよく、倒した数だけ段が上がる</strong>（9/24 確定）</li>
         <li>Master は <strong>1 日 1 回</strong>まで（連打の保険）</li>
@@ -280,6 +282,30 @@
       </div>
       <ul>
         <li>上限がすでに動的なので、実装は <code>+ Master の Tier</code> を足すだけで済む</li>
+      </ul>
+
+      <h3>Soul の要求（層 +3 のとき） <span class="badge b-idea">案</span></h3>
+      <ul>
+        <li>Forge の Soul コスト（<code>Relic.cs:326-333</code>）: 道具は Lv k を買うのに k、エンチャントは 5k</li>
+        <li>層 1 つで 4 種 × 3 Lv。Forge が L から L+3 になるときの Soul ＝ 道具 3 種 × (3L + 6) + エンチャント (15L + 30) ＝ <strong>24L + 48</strong></li>
+      </ul>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th class="num">層</th><th class="num">Forge（前 → 後）</th><th class="num">必要 Soul</th><th class="num">周期（日）</th><th class="num">必要 Soul / 日</th></tr></thead>
+          <tbody>
+            <tr><td class="num">1</td><td class="num">8 → 11</td><td class="num">240</td><td class="num">2</td><td class="num">120</td></tr>
+            <tr><td class="num">2</td><td class="num">11 → 14</td><td class="num">312</td><td class="num">4</td><td class="num">78</td></tr>
+            <tr><td class="num">3</td><td class="num">14 → 17</td><td class="num">384</td><td class="num">8</td><td class="num">48</td></tr>
+            <tr><td class="num">4</td><td class="num">17 → 20</td><td class="num">456</td><td class="num">16</td><td class="num">29</td></tr>
+            <tr><td class="num">5</td><td class="num">20 → 23</td><td class="num">528</td><td class="num">16</td><td class="num">33</td></tr>
+            <tr><td class="num">10</td><td class="num">35 → 38</td><td class="num">888</td><td class="num">16</td><td class="num">56</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>Forge の出発点 8 は仮（Insane クリア時の Forge Level は未計測。到達値 13 からマージ分を引いた見当）</li>
+        <li>いまの Soul の入りは日に数個。<strong>層 1 の時点で 100 Soul/日 前後、以後 30〜60 Soul/日</strong>が要る。バザーの Soul 獲得量 Upgrade はこの桁を狙って設計する</li>
+        <li>周期が 16 日で頭打ちになる一方、Soul の要求は層ごとに +72 ずつ増えるので、<strong>Soul 獲得量 Upgrade も層と一緒に伸び続ける</strong>必要がある</li>
       </ul>
 
       <h3>Soul がボトルネックになる <span class="badge b-fixed">確定</span></h3>
@@ -439,7 +465,7 @@
         <li>商品 Lv1 ＝ <strong>装備 Lv 18（13 + 5）で 1 日</strong>掘れば買える。値段 ＝ 9.25^17 × その Lv での 1 日のブロック数</li>
         <li>商品 Lv k の値段は 9.25 倍/Lv、装備の獲得も 9.25 倍/Lv なので、<strong>商品 Lv k を 1 日で買える装備 Lv ＝ 17 + k</strong></li>
         <li>装備 Lv 13 だと商品 Lv1 に 9.25^5 ≈ 6.8 万日かかる ＝ 実質買えない。Lv 17 で 9 日。「Forge 不足で買えない」がそのまま出る</li>
-        <li>層が 1 上がる（Forge +1）ごとに、買える商品 Lv が 1 つ進む</li>
+        <li>層が 1 上がる（Forge +3）ごとに、買える商品 Lv が 3 つ進む</li>
         <li>1 日のブロック数は実測がないので、値段の絶対値はプレイヤーデータで決める（式だけ確定）</li>
       </ul>
       <div class="cards">
@@ -499,7 +525,7 @@
         <div class="card dropped">
           <div class="card-head"><span class="card-kind">外した</span></div>
           <div class="card-title">Forge MaxLevel +1</div>
-          <ul><li>Tier が上げるので不要になった</li></ul>
+          <ul><li>層が上げる（+3/層）ので不要になった</li></ul>
         </div>
         <div class="card dropped">
           <div class="card-head"><span class="card-kind">外した</span></div>
@@ -566,8 +592,8 @@
         <li>ボスの強さは<strong>「必要な装備 Lv」</strong>で定義し、HP は攻撃力の式（4.23^Lv）から逆算する</li>
         <li>倒し方は<strong>掘る</strong>。巨大ブロックとして出て、Cave の採掘力で削る。制限時間は<strong>マグマと同じく HP へのダメージ</strong>で表現する（削る速さが足りないと HP が戻って負け）（9/25 確定）</li>
         <li>最初のボスの必要 Lv ＝ <strong>道具 13・エンチャント 8</strong>（Insane クリア直後の装備。仮置き）。以前の 25 は Forge の上限を取り違えたもの</li>
-        <li>ボス n の必要 Lv は<strong>表で直接置く</strong>（Forge の基準値から差を足す枠組みはやめた）。層が上がると Forge が +1 されるぶん、必要 Lv も +1 ずつ乗せる</li>
-        <li>ボスの列は周回で最初へ戻らない。ボス n を倒したら次は n+1。<strong>層 ＝ 通算討伐数</strong>。Forge が +1/ボス、必要 Lv が +3/ボスなので差が広がり、周期が自然に伸びる</li>
+        <li>ボス n の必要 Lv は<strong>表で直接置く</strong>（Forge の基準値から差を足す枠組みはやめた）。層が上がると Forge が +3 されるぶん、必要 Lv も +3 ずつ乗せる</li>
+        <li>ボスの列は周回で最初へ戻らない。ボス n を倒したら次は n+1。<strong>層 ＝ 通算討伐数</strong>。Forge が +3/ボス、必要 Lv はそれに上乗せを足すので差が広がり、周期が自然に伸びる</li>
       </ul>
       <div class="tablewrap">
         <table>
@@ -596,24 +622,25 @@
       <ul>
         <li>装備の Lv はマージ（同 Lv 2 個で +1）で上がるので、<strong>+1 Lv に要する時間は約 2 倍</strong>になる（潜行が魔法の壁で止まっているときはもっと急）</li>
         <li>周回で装備は消えるので、Master 直後からボスまでの日数 ＝ 最初のボスまでの日数 T1 × 2^(必要 Lv の上乗せ)</li>
-        <li>層が 1 上がると Forge が +1（Soul で買えていれば）なので、必要 Lv も層ぶん +1 して間隔を保つ</li>
+        <li>層が 1 上がると Forge が +3（Soul は十分に集まる前提）なので、必要 Lv も層ぶん +3 して間隔を保つ</li>
         <li>T1（Insane クリア直後の装備に周回の頭から戻るまでの日数）は未計測。仮に 1 日とする</li>
       </ul>
       <div class="tablewrap">
         <table>
-          <thead><tr><th class="num">ボス n</th><th class="num">層（倒す前）</th><th class="num">上乗せ</th><th class="num">必要 Lv（道具）</th><th class="num">必要 Lv（エンチャント）</th><th class="num">Master 直後からの日数（T1＝1 日）</th></tr></thead>
+          <thead><tr><th class="num">ボス n</th><th class="num">層（倒す前）</th><th class="num">Forge 上限の伸び</th><th class="num">上乗せ</th><th class="num">必要 Lv（道具）</th><th class="num">必要 Lv（エンチャント）</th><th class="num">Master 直後からの日数（T1＝1 日）</th></tr></thead>
           <tbody>
-            <tr><td class="num">1</td><td class="num">0</td><td class="num">0</td><td class="num">13</td><td class="num">8</td><td class="num">1</td></tr>
-            <tr><td class="num">2</td><td class="num">1</td><td class="num">+1</td><td class="num">15</td><td class="num">10</td><td class="num">2</td></tr>
-            <tr><td class="num">3</td><td class="num">2</td><td class="num">+2</td><td class="num">17</td><td class="num">12</td><td class="num">4</td></tr>
-            <tr><td class="num">4</td><td class="num">3</td><td class="num">+3</td><td class="num">19</td><td class="num">14</td><td class="num">8</td></tr>
-            <tr><td class="num">5</td><td class="num">4</td><td class="num">+4</td><td class="num">21</td><td class="num">16</td><td class="num">16（月 2 回）</td></tr>
-            <tr><td class="num">6 以降</td><td class="num">n−1</td><td class="num">+4</td><td class="num">16 + n</td><td class="num">11 + n</td><td class="num">16</td></tr>
+            <tr><td class="num">1</td><td class="num">0</td><td class="num">+0</td><td class="num">0</td><td class="num">13</td><td class="num">8</td><td class="num">1</td></tr>
+            <tr><td class="num">2</td><td class="num">1</td><td class="num">+3</td><td class="num">+1</td><td class="num">17</td><td class="num">12</td><td class="num">2</td></tr>
+            <tr><td class="num">3</td><td class="num">2</td><td class="num">+6</td><td class="num">+2</td><td class="num">21</td><td class="num">16</td><td class="num">4</td></tr>
+            <tr><td class="num">4</td><td class="num">3</td><td class="num">+9</td><td class="num">+3</td><td class="num">25</td><td class="num">20</td><td class="num">8</td></tr>
+            <tr><td class="num">5</td><td class="num">4</td><td class="num">+12</td><td class="num">+4</td><td class="num">29</td><td class="num">24</td><td class="num">16（月 2 回）</td></tr>
+            <tr><td class="num">6 以降</td><td class="num">n−1</td><td class="num">+3(n−1)</td><td class="num">+4</td><td class="num">14 + 3n</td><td class="num">9 + 3n</td><td class="num">16</td></tr>
           </tbody>
         </table>
       </div>
       <ul>
-        <li>式: 必要 Lv（道具）＝ 13 + 層 + min(層, 4)、エンチャントは −5</li>
+        <li>式: 必要 Lv（道具）＝ 13 + 3 × 層 + min(層, 4)、エンチャントは −5</li>
+        <li>Forge を買い切れていない分は、そのまま必要 Lv との差（＝日数の倍率）になる。Forge 1 Lv 遅れ ＝ 日数 2 倍</li>
         <li>0.5 Lv 刻みにすれば「2 日 → 3 日 → 4 日 …」と緩くできる（HP ＝ 基準 × 4.23^Lv なので整数でなくてよい）</li>
         <li>Master せずに続けて挑む場合は、表の日数の差分が次のボスまでの時間（短い）</li>
         <li>要計測: T1 と、実際の「+1 Lv の所要時間の倍率」。数式モデル（Box 率 3% でマージ）は Forge 13 から 2 日で Lv25 と出したが、実際のプレイヤーは 13 前後なので<strong>モデルは楽観的すぎる</strong>。プレイヤーデータで T1 を測ってから確定する</li>
