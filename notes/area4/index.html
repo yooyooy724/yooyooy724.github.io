@@ -151,7 +151,7 @@
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
     <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Forge Level を伸ばし続けるための仕組みで、Area4 のボスコンテンツとセットで考える。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-25 (9)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-09-25 (10)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <div class="purpose">
@@ -208,6 +208,7 @@
         <li>Area4 のボスへの攻撃力は、<strong>装備の由来 Area ごとに ×5</strong>（Nether の 100^worldIndex と同じ形。バランスの基準は Area3 の装備）</li>
         <li>Forge Level は <strong>Soul</strong> で買う。上限が上がっても Soul が無ければ上げられない</li>
         <li>新しいバザーに <strong>Soul 獲得量を上げる Upgrade</strong> を置く（Geode で買う）</li>
+        <li><strong>9/25 リセット実装後の判断</strong>: MilestoneV3 の周回内報酬（BattleStats）は通常 Prestige と同じく再び出る ／ <strong>CaveDepthMilestone（深度の到達報酬）は再発火させず、効果も下げない</strong>（生涯記録の深度で判定。Biome の解禁だけは今の周回の深度） ／ GemCollectionMission ＝ Trade なので<strong>残す</strong></li>
         <li><strong>9/25 リセットの方式</strong>: <strong>Root ごとに OnMasterPrestige を実装</strong>（Root ごとに「何を残すか」を明確にするため。例: Currency は TotalNumber・MaxNumber を残す）。セーブの分類は <a href="#infra">#8</a> の表 ／ 実装は worktree <code>area4-master-reset</code> でサブエージェントが進める</li>
         <li><strong>9/25 ラウンド 7</strong>: 必要 Lv の表（+1/層、Area3 基準）で進める ／ <strong>Soul 獲得量の Upgrade は初回実装に入れない</strong>（バザーは残りの商品案から組む） ／ すり合わせは完了、実装へ</li>
         <li><strong>9/25 ラウンド 6</strong>: 層 1 つにつき Forge の MaxLevel は <strong>+1 に据え置き</strong>（+3 は Soul コストが線形で破綻） ／ Area4 のボスへの攻撃力は<strong>装備の由来 Area ごとに ×5</strong>（Nether と同じ形、<code>NetherStageRoot.cs:233</code> は ×100）。バランスの基準は <strong>Area3 の装備</strong></li>
@@ -701,7 +702,10 @@
         <li>セーブは 66 ファイル（<code>RootInstaller.cs</code>）。通常 Prestige が呼ぶ Reset は Biome・装備・Milestone の 3 つだけ</li>
         <li><strong>Root ごとに <code>IMasterPrestigeResettable.OnMasterPrestige()</code> を実装</strong>する。Root が自分で「何を残すか」を決める（9/25 確定）</li>
         <li>セーブファイルを消して再起動する案は取らない。Root の外から消すと「一部残す」の境界が Root の外に漏れるため</li>
-        <li>Master の Root（層・通算討伐数・1 日 1 回）と生涯記録の Root を先に作り、参加者を順に呼ぶ</li>
+        <li>Master の Root（層・通算討伐数・1 日 1 回）と生涯記録の Root を先に作り、参加者を順に呼ぶ。<strong>実装済み</strong>（<code>area4-master-prestige</code>、CubeTest 826 件）</li>
+        <li>参加者の 1 つが失敗しても残りは止めない（層は先に保存済みなので、止めると残りの Root だけ前の周回を持ち越す）</li>
+        <li>深度の到達報酬（CaveDepthMilestone）は生涯記録の深度で判定し、再発火させず効果も下げない。Biome の解禁だけは今の周回の深度</li>
+        <li>記録画面は「生涯記録と今の周回の大きい方」を出す</li>
       </ul>
       <h3>セーブの分類 <span class="badge b-fixed">確定</span></h3>
       <div class="tablewrap">
@@ -710,7 +714,8 @@
           <tbody>
             <tr><td class="keep">残す</td><td>Relic（Forge Level・ストレージ Upgrade 込み）、EquipmentSlotsStorageUpgrade、Spell、Battle の進行 6 件（BattleNew / BattleRepository / BattleWaveMilestone2 / BattleLootCanTier / BattleStatsEnhancer / BattleStatistics）、Nether 7 件（N_R / NtA / NtC / NtPC / NtR / NtS / NtSn）、Bazaar（露店）、EConvertLimit（Trade）、NotificationDiscovery（INDEX の発見済み）、Time / OnlineTime / ScreenSaveStats / EquipmentItemCounter（記録）、Shop / AdCount / FixedBooster / FlyingPresent / Firebase / Player / Ranking / Tutorial / Diary / DailyMission（課金・設定・運用）</td></tr>
             <tr><td class="grow">一部残す</td><td>DropRepository（通貨: Diamond・Soul・NetherCream・BlueBox・Geode・課金台帳・TotalNumber・MaxNumber は残す。Soil・Tear・Gem・Box の残高は消す）、Challenge（進行は消す。報酬の受け取り済みを別に持つ）、MBiome / BiomeRepo（最大到達深度を生涯記録へ写して消す）、MultiWorld（Area の解禁は戻す。Area4 の解禁だけ生涯記録へ）、Milestone 2 件（進行は消す。受け取った到達報酬は再発火させない）</td></tr>
-            <tr><td class="reset">消す</td><td>装備 3 件（MEquipment / CrusherEquipment / MEqGene）、Battle 装備 3 件（BattleEquipment / BattleAllies / AlliesItemStock）、Upgrade 5 件（MUpgrades / MAUpgrades / Biome1 ×2 / SecondUpgrades）、Prestige 4 件、MassOutbreak、Enemy、Fishing、EquipmentItemLevelProvider、CurrencyOfflineBonus、Automation、Ability、GemCollectionMission、MissionRepositoryV2</td></tr>
+            <tr><td class="reset">消す</td><td>装備 3 件（MEquipment / CrusherEquipment / MEqGene）、Battle 装備 3 件（BattleEquipment / BattleAllies / AlliesItemStock）、Upgrade 5 件（MUpgrades / MAUpgrades / Biome1 ×2 / SecondUpgrades）、Prestige 4 件（到達倍率の記録 MaxMultiplication は残す）、Fishing（釣り箱だけ。竿は Spell 由来）、CurrencyOfflineBonus、Automation（設定も既定へ）、Ability、MissionRepositoryV2</td></tr>
+            <tr><td class="keep">残す（実装で確定）</td><td>GemCollectionMission（＝ Trade）、EquipmentItemLevelProvider（Forge 由来の値しか無い）、MassOutbreak（時刻とシードで再計算される）。Enemy は存在しない</td></tr>
           </tbody>
         </table>
       </div>
