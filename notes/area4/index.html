@@ -151,7 +151,7 @@
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
     <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Forge Level を伸ばし続けるための仕組みで、Area4 のボスコンテンツとセットで考える。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-25 (10)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-09-25 (11)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <div class="purpose">
@@ -623,6 +623,30 @@
         <li>必要 Lv の表（下の案を採るか）。装備 Lv が「+1 につき所要時間 2 倍」という前提の検証</li>
         <li>マグマ相当のダメージ量（HP の戻り）と、負けたときの扱い</li>
       </ul>
+      <h3>ボスの実装案 <span class="badge b-idea">案</span></h3>
+      <ul>
+        <li><strong>Nether と同じ作り</strong>: 専用の StageRoot（<code>Area4StageRoot</code>）と設定（<code>Area4StageConfigProvider</code>）、入場中の旗を持つ Root（<code>Area4Root.IsBossMode</code>）。入口は WorldSelection の 4 つ目のボタン（<code>NetherStageRoot.cs</code> / <code>NetherStageConfigProvider.cs</code> が雛形）</li>
+        <li>持ち込み: いまのスロットの装備を複製して盤面のエージェントにする（Nether の <code>ActiveEquipment</code> と同じ。消費しない）</li>
+        <li>攻撃力: <code>CalculatePowerMultiplier(item.Power()) × 5^worldIndex</code>（Nether の <code>100^worldIndex</code> の底を 5 に。<code>NetherStageRoot.cs:233</code>）</li>
+      </ul>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>要素</th><th>案</th><th>根拠・流用元</th></tr></thead>
+          <tbody>
+            <tr><td>盤面</td><td>3×3 の中央に巨大ブロック 1 つ。周りは空</td><td>エージェントが隣接して掘れる最小の形。<code>StageRootConfig.SlotCount</code></td></tr>
+            <tr><td>ボスの HP</td><td>HP_n ＝ 6 人分の DPS(必要 Lv_n、エンチャント −5、Area3 の装備) × 制限時間 T × 0.8</td><td>必要 Lv ちょうどなら 2 割の余裕で倒せる。DPS は <code>EquipmentStatsCalculator</code> と <code>4.23^Lv</code> から</td></tr>
+            <tr><td>制限時間</td><td>ボスのブロックに <code>DpsAsMagma</code> を持たせ、隣接するエージェントの HP を削る。DPS ＝ 部隊の最大 HP ÷ T</td><td>マグマと同じ経路（<code>AgentEntity.ApplyMagmaDamage</code> → <code>GetMagmaDpsAtPosition</code>）。T は仮に 90 秒</td></tr>
+            <tr><td>勝ち</td><td>HP 0 → <code>MasterPrestigeRoot.RecordBossDefeated()</code>。初回はエンディングロール → 見終えたら <code>LifetimeRecordRoot.MarkEndingSeen()</code></td><td>Master の Root は実装済み</td></tr>
+            <tr><td>負け</td><td><code>OnAllAgentsDead</code> で退出。失うものは無し。すぐ再挑戦できる</td><td>Nether の敗北と同じ（<code>NetherStageRoot.cs:50</code>）</td></tr>
+            <tr><td>ボスの番号</td><td>n ＝ 通算討伐数 + 1。倒しても Master せずに次へ進める</td><td>層 ＝ 通算討伐数、列は戻らない（確定）</td></tr>
+            <tr><td>解禁</td><td>試練 Hard 制覇（<code>LifetimeRecordRoot.IsArea4Unlocked</code>。Master でも残る）</td><td>実装済み</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>Unity 側: Area4 の画面（ボスの絵・HP バー・残り時間の見せ方）、WorldSelection のボタン、エンディングロール、Master ボタンとリセット後のシーン読み直し</li>
+      </ul>
+
       <h3>必要 Lv の伸ばし方 <span class="badge b-fixed">確定</span></h3>
       <ul>
         <li>装備の Lv はマージ（同 Lv 2 個で +1）で上がるので、<strong>+1 Lv に要する時間は約 2 倍</strong>になる（潜行が魔法の壁で止まっているときはもっと急）</li>
