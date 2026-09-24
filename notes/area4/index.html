@@ -151,7 +151,7 @@
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
     <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Forge Level を伸ばし続けるための仕組みで、Area4 のボスコンテンツとセットで考える。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-24 (2)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-09-24 (3)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <div class="purpose">
@@ -369,18 +369,33 @@
         <li>感度: Box 率 1〜6%、移動 0.5〜2 秒で振っても、<strong>指数（底 ≥ 1.5）なら潜行が必ず勝つ</strong>。線形・二乗は条件によらずループが勝つ</li>
       </ul>
 
-      <h3>推奨 <span class="badge b-idea">案</span></h3>
+      <h3>底の候補 <span class="badge b-adopt">採用候補</span></h3>
       <ul>
-        <li><strong>1 ブロックの獲得量 = 2^(Lv − 1)</strong>（Lv1 で 1、Lv25 で 1.7e7、Lv38 で 1.4e11）</li>
-        <li>レベル 1 つで 2 倍。潜行 3.5 日はループの約 900 倍。レベル上げが決定的に重要になる</li>
-        <li>底 3 以上は「潜行 ≫ ループ」が過剰で桁が暴れる。1.5 だと差が 28 倍で「レベル上げが重要」の実感が薄い</li>
-        <li>数字が大きくなるが、Soil と同じ BigDouble 表記なので UI は既存のまま</li>
+        <li>ya.yu 案: <strong>9.25^Lv</strong>。1 レベルで約 9 倍なので、「Forge が足りないと買えない」をそのまま値段で表せる（底が大きいほど値段がレベルの関門になる）</li>
+        <li>Claude 案: 2^Lv。桁が穏やかで、Tier 間の値段の膨らみも 2 倍ずつ</li>
+        <li>どちらもループには勝つ。違いは「値段が関門になる強さ」と「桁の大きさ」</li>
+      </ul>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th class="num">底 b</th><th class="num">1.75 日</th><th class="num">3.5 日</th><th class="num">7 日</th><th class="num">14 日</th><th class="num">7 日 ÷ 3.5 日</th><th class="num">Lv38 の 1 ブロック</th></tr></thead>
+          <tbody>
+            <tr><td class="num">2</td><td class="num">2.3e8</td><td class="num">3.4e8</td><td class="num">3.9e8</td><td class="num">1.6e9</td><td class="num">1.14</td><td class="num">1.4e11</td></tr>
+            <tr><td class="num">4.23</td><td class="num">1.4e12</td><td class="num">3.7e12</td><td class="num">5.6e12</td><td class="num">8.1e13</td><td class="num">1.52</td><td class="num">1.5e23</td></tr>
+            <tr><td class="num">9.25</td><td class="num">1.4e16</td><td class="num">7.4e16</td><td class="num">1.4e17</td><td class="num">8.2e18</td><td class="num">1.82</td><td class="num">5.6e35</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>値は 1 日あたり（Forge Level 25 を 1 とした相対値）。ループ 60 秒はどの底でも 3.8e5</li>
+        <li>潜行を 7 日に伸ばしても 1 日あたりは 1.1〜1.8 倍にしかならない（レベルは時間の log でしか伸びない）。Master は Tier ごとに底の倍（9.25 なら 9 倍）を返すので、<strong>Master を先延ばしにする誘因は生まれない</strong></li>
+        <li>9.25 は 1 層あたりの HP の伸び（9.88）とほぼ同じ。「1 レベル ≈ 1 層ぶん深く掘れる ≈ 通貨 9 倍」で説明がつく</li>
+        <li>底が大きいほど、周回の稼ぎは最後のレベルにほぼ集中する（9.25 なら約 89%）。レベルが上がった瞬間に桁が変わる見え方になる</li>
       </ul>
       <div class="tablewrap">
         <table>
           <thead><tr><th>決めること</th><th>案</th></tr></thead>
           <tbody>
-            <tr><td>Tier が進むと Forge Level が上がり、基準の獲得量も 2 倍ずつ増える</td><td>バザーの値段を <strong>Tier ごとに 2 倍</strong>にする（Soil の Prestige と同じ膨らみ方）。または式を 2^(Lv − Forge) にして Tier 間を平らにする</li></tr>
+            <tr><td>Tier が進むと Forge Level が上がり、基準の獲得量も底の倍ずつ増える</td><td>バザーの値段を <strong>Tier ごとに底の倍</strong>（9.25 なら 9.25 倍）にする。「Lv N 相当の値段」として持てば、Forge 不足で買えない表現がそのまま出る</td></tr>
             <tr><td>「装備の持ち越し」の商品と相性が悪い</td><td>Lv38 の装備を持ち越してループすると 381,000 × 2^13 で潜行を上回る。<strong>持ち越しは外す</strong>か、持ち越した装備は獲得量に効かないようにする</td></tr>
             <tr><td>どのアイテムのレベルを見るか</td><td>ブロックを壊したエージェントの装備（<code>agent.Item</code>）。複数人で壊したなら最後の一撃</td></tr>
             <tr><td>釣り・オフライン</td><td>釣り竿は装備ではないので対象外。オフラインは「離席前の装備レベル × 予測ブロック数」で払い、Poisson は不要になる</td></tr>
@@ -611,7 +626,7 @@
             <tr><td class="num">1</td><td>Box の表示名との重複</td><td>通知で Box も「Geode」と出る（<code>notification.currency.geode</code>）。Box 側を「Box」に統一するか、新通貨の表記を変えるか</td></tr>
             <tr><td class="num">1.5</td><td>Tier の上げ方</td><td>1 Master = 1 Tier か、条件（ボス数など）で複数 Tier 上がるか。3〜4 日で Tier がいくつ進むか</td></tr>
             <tr><td class="num">1.6</td><td>Soul 獲得 Upgrade の効き方</td><td>倍率か固定加算か。Tier が進むほど要求 Soul が増えるので、追いつく曲線を決める</td></tr>
-            <tr><td class="num">2</td><td>レベル倍率の確定</td><td>推奨 2^(Lv−1)。Tier 間を平らにするか（2^(Lv−Forge)）、値段を Tier ごとに 2 倍にするか。「装備の持ち越し」を外すか</td></tr>
+            <tr><td class="num">2</td><td>レベル倍率の確定</td><td>9.25^(Lv−1)（ya.yu 案）か 2^(Lv−1)。値段を Tier ごとに底の倍にする。「装備の持ち越し」を外すか</td></tr>
             <tr><td class="num">3</td><td>バザーの商品の値段と出現率</td><td>品揃えは上の表。レア度ごとの値段（Geode 何個）と、棚に並ぶ確率を決める</td></tr>
             <tr><td class="num">4</td><td>MaxLevel の上げ方</td><td>バザーのアイテムだけか、Master 回数でも上がるか。1 回の Master で上げられる上限を置くか</td></tr>
             <tr><td class="num">5</td><td>「Trade」が指す機能</td><td>露店（NetherCream の売り場）か、別の機能か</td></tr>
