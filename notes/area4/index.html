@@ -151,7 +151,7 @@
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
     <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Forge Level を伸ばし続けるための仕組みで、Area4 のボスコンテンツとセットで考える。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-25 (11)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-09-25 (12)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <div class="purpose">
@@ -208,6 +208,7 @@
         <li>Area4 のボスへの攻撃力は、<strong>装備の由来 Area ごとに ×5</strong>（Nether の 100^worldIndex と同じ形。バランスの基準は Area3 の装備）</li>
         <li>Forge Level は <strong>Soul</strong> で買う。上限が上がっても Soul が無ければ上げられない</li>
         <li>新しいバザーに <strong>Soul 獲得量を上げる Upgrade</strong> を置く（Geode で買う）</li>
+        <li><strong>9/25 バザーの初回商品</strong>: <strong>NetherCream 獲得量</strong>（Lv 制）／<strong>空飛ぶ宝箱の出現率</strong>（Lv 制）／<strong>空飛ぶ宝箱の自動取得</strong>（一点物。無料回数の範囲だけ自動で取り、広告分は手で取る）。値段は Lv1 ＝ 9.25^17 × 10 万ブロック ≈ 2.7e21、9.25 倍/Lv ／ ボスの Domain 実装に着手</li>
         <li><strong>9/25 リセット実装後の判断</strong>: MilestoneV3 の周回内報酬（BattleStats）は通常 Prestige と同じく再び出る ／ <strong>CaveDepthMilestone（深度の到達報酬）は再発火させず、効果も下げない</strong>（生涯記録の深度で判定。Biome の解禁だけは今の周回の深度） ／ GemCollectionMission ＝ Trade なので<strong>残す</strong></li>
         <li><strong>9/25 リセットの方式</strong>: <strong>Root ごとに OnMasterPrestige を実装</strong>（Root ごとに「何を残すか」を明確にするため。例: Currency は TotalNumber・MaxNumber を残す）。セーブの分類は <a href="#infra">#8</a> の表 ／ 実装は worktree <code>area4-master-reset</code> でサブエージェントが進める</li>
         <li><strong>9/25 ラウンド 7</strong>: 必要 Lv の表（+1/層、Area3 基準）で進める ／ <strong>Soul 獲得量の Upgrade は初回実装に入れない</strong>（バザーは残りの商品案から組む） ／ すり合わせは完了、実装へ</li>
@@ -485,8 +486,8 @@
           <ul><li>釣りの当たり率（Box / BlueBox / 装備 / Soul）を上げる</li><li>Soul と Geode の両方に効く</li></ul>
           <div class="card-foot"><code>FishingCatchTable</code> · Claude</div>
         </div>
-        <div class="card">
-          <div class="card-head"><span class="card-kind">ボトル</span><span class="badge b-idea">案</span></div>
+        <div class="card fixed">
+          <div class="card-head"><span class="card-kind">ボトル</span><span class="badge b-fixed">初回で出す</span></div>
           <div class="card-title">NetherCream 獲得量</div>
           <ul><li>露店を回しやすくする</li><li>Master 後の再登頂を速める</li></ul>
           <div class="card-foot"><code>MagmaCreamId</code> · Claude</div>
@@ -503,14 +504,14 @@
           <ul><li>ボスごとの挑戦回数が 1 増える</li><li>Soul の固定入手が増える</li></ul>
           <div class="card-foot"><code>NetherAttemptRoot.ExtraAttempts</code> · Claude</div>
         </div>
-        <div class="card">
-          <div class="card-head"><span class="card-kind">一点物</span><span class="badge b-idea">案</span></div>
+        <div class="card fixed">
+          <div class="card-head"><span class="card-kind">一点物</span><span class="badge b-fixed">初回で出す</span></div>
           <div class="card-title">空飛ぶ宝箱の出現率</div>
           <ul><li>宝箱が飛んでくる頻度を上げる</li></ul>
           <div class="card-foot"><code>FlyingPresentRoot</code> · Poedel</div>
         </div>
-        <div class="card">
-          <div class="card-head"><span class="card-kind">一点物</span><span class="badge b-idea">案</span></div>
+        <div class="card fixed">
+          <div class="card-head"><span class="card-kind">一点物</span><span class="badge b-fixed">初回で出す</span></div>
           <div class="card-title">空飛ぶ宝箱の自動取得</div>
           <ul><li>タップしなくても取れる</li><li>自動化は未実装（新規）</li></ul>
           <div class="card-foot">Poedel</div>
