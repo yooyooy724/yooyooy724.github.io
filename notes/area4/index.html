@@ -151,7 +151,7 @@
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
     <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Forge Level を伸ばし続けるための仕組みで、Area4 のボスコンテンツとセットで考える。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-24 (3)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-09-24 (4)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <div class="purpose">
@@ -207,6 +207,10 @@
         <li>Master は <strong>Tier 制</strong>。Tier ごとに Forge の <strong>MaxLevel を 4 種すべて +1</strong></li>
         <li>Forge Level は <strong>Soul</strong> で買う。上限が上がっても Soul が無ければ上げられない</li>
         <li>新しいバザーに <strong>Soul 獲得量を上げる Upgrade</strong> を置く（Geode で買う）</li>
+        <li><strong>9/24 に確定した 11 件</strong>（詳細は各章）:
+          Geode は <code>9.25^(Lv−1)</code> ／ 見るのは装備本体の Lv だけ ／ オフラインは離席時の Lv × 予測ブロック数 ／ 試練の盤面では出ない ／
+          Master はボスを倒すと押せ、<strong>倒したボスの数だけ段が上がる</strong> ／ 残すものに Forge Level と生涯記録（Records）を追加 ／
+          バザーの商品はレベルを持ち値段はそのレベルで決まる（Forge Level は直接使わない） ／ Soul Upgrade は倍率 ／ 装備の持ち越しは外す ／ Master は 1 日 1 回 ／ Box の通知名を Box に直す</li>
         <li>MasterPrestige 後に新しい通貨 <strong>Geode</strong>（ジオード / 晶洞。内部 ID は <code>Geode2</code>）を追加する</li>
         <li>新しい通貨は洞窟の<strong>ブロック破壊</strong>で出る。量は<strong>壊したアイテムのレベル</strong>で決まる（Lv1 で 1）。倍率の値はシミュレーションで決める（<a href="#currency">#4</a>）</li>
       </ul>
@@ -250,6 +254,9 @@
         <li>Master は Tier 制。報酬は不連続（Tier を 1 上げたときだけ入る）</li>
         <li>Tier +1 → Forge の <strong>MaxLevel が 4 種すべて +1</strong>（Mattock / Pickaxe / Sledgehammer / Enchantment）</li>
         <li>上がるのは<strong>上限だけ</strong>。実際に Level を上げるのは Soul</li>
+        <li><strong>Master はボスを倒すと押せる。複数倒してから押してもよく、倒した数だけ段が上がる</strong>（9/24 確定）</li>
+        <li>Master は <strong>1 日 1 回</strong>まで（連打の保険）</li>
+        <li>用語: 試練の「Tier」と衝突するので、Master の段は別の名前にする（名称は未決）</li>
       </ul>
       <div class="tablewrap">
         <table>
@@ -289,6 +296,7 @@
             <tr><td>コレクション INDEX</td><td class="keep">残す</td><td>発見済みはそのまま</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
             <tr><td>所持 Spell</td><td class="keep">残す</td><td>所持したまま。2 周目で同じ Spell を取ると Tier2 になる案あり（例: モメンタム Lv4 → Lv8）</td><td><span class="badge b-fixed">確定</span> <span class="badge b-adopt">採用候補</span></td><td class="src">ya.yu / Poedel</td></tr>
             <tr><td>Battle</td><td class="keep">残す</td><td>Battle の進行・Upgrade は残す。<strong>装備だけはリセット</strong></td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
+            <tr><td>生涯記録（Records）</td><td class="keep">残す</td><td>統計に載る・載りそうな値は消さない。遊びで使う値がリセットされても別に残す手段を整える</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu 9/24</td></tr>
             <tr><td>Forge Level</td><td class="grow">残して伸びる</td><td>Level はそのまま残す。回数を戻す案（Poedel）ではなく、<strong>MaxLevel を徐々に上げる</strong>。上げる手段はバザーのアイテム（<a href="#currency">#4</a>）</td><td><span class="badge b-fixed">確定</span></td><td class="src">ya.yu</td></tr>
             <tr><td>それ以外のすべて</td><td class="reset">リセット</td><td>各 Area の周回の進行・Soil / Tear・装備（Battle の装備を含む）・Prestige 倍率・到達深度・試練の進行など。具体リストは <a href="#open">#9</a></td><td><span class="badge b-fixed">確定</span> <span class="badge b-open">未決</span></td><td class="src">ya.yu</td></tr>
           </tbody>
@@ -369,11 +377,13 @@
         <li>感度: Box 率 1〜6%、移動 0.5〜2 秒で振っても、<strong>指数（底 ≥ 1.5）なら潜行が必ず勝つ</strong>。線形・二乗は条件によらずループが勝つ</li>
       </ul>
 
-      <h3>底の候補 <span class="badge b-adopt">採用候補</span></h3>
+      <h3>底 <span class="badge b-fixed">確定</span></h3>
       <ul>
-        <li>ya.yu 案: <strong>9.25^Lv</strong>。1 レベルで約 9 倍なので、「Forge が足りないと買えない」をそのまま値段で表せる（底が大きいほど値段がレベルの関門になる）</li>
-        <li>Claude 案: 2^Lv。桁が穏やかで、Tier 間の値段の膨らみも 2 倍ずつ</li>
-        <li>どちらもループには勝つ。違いは「値段が関門になる強さ」と「桁の大きさ」</li>
+        <li><strong>1 ブロック = 9.25^(Lv − 1)</strong>（Lv1 で 1、Lv25 で 1.6e24、Lv38 で 5.6e35）</li>
+        <li>1 レベルで約 9 倍。「Forge が足りないと買えない」を値段で表せる</li>
+        <li>見るのは壊した装備本体（Mattock / Pickaxe / Sledgehammer / ピコピコ）の Lv。エンチャントは見ない。最後の一撃の装備</li>
+        <li>オフラインは離席時点の装備 Lv × 予測ブロック数。Poisson は廃止</li>
+        <li>試練の盤面では出ない（Soul と同じく本編だけ）</li>
       </ul>
       <div class="tablewrap">
         <table>
@@ -405,9 +415,11 @@
 
       <h3>バザーの品揃え <span class="badge b-idea">案</span></h3>
       <ul>
-        <li>Geode で買える商品。露店と同じ骨格（棚 8 枠・毎日 4 時に仕入れ・大きさ 3 段階）</li>
-        <li>効能の強弱は値段で表す。効き目は共通（露店の原則を踏襲）</li>
-        <li>ボトル（%）と一点物（買い切り）は枠を分ける</li>
+        <li>Geode で買える商品</li>
+        <li><strong>商品ごとにレベルを持ち、値段はそのレベルで上がる</strong>（9.25 倍ずつ）。必要な装備 Lv が値段から逆算できる。Forge Level は値段の計算に直接使わない（9/24 確定）</li>
+        <li>Soul 獲得量は倍率（露店のボトルと同じ <code>1 + 合計%</code>）</li>
+        <li>装備の持ち越しは<strong>外す</strong>（Lv38 を持ち越したループが潜行を上回る）</li>
+        <li>棚（毎日仕入れ・大きさ 3 段階）にするか、Relic のような固定の一覧にするかは未決</li>
       </ul>
       <div class="cards">
         <div class="card fixed">
@@ -458,11 +470,10 @@
           <ul><li>ブロックを壊したとき、0.0001% 程度で盤面を一掃</li><li>演出が最も映える</li></ul>
           <div class="card-foot">盤面 · Poedel</div>
         </div>
-        <div class="card">
-          <div class="card-head"><span class="card-kind">一点物</span><span class="badge b-idea">案</span></div>
+        <div class="card dropped">
+          <div class="card-head"><span class="card-kind">外した</span></div>
           <div class="card-title">装備の持ち越し</div>
-          <ul><li>Prestige で装備を失わない確率</li><li>弱い版は Lv20 → Lv10 に落として残す（レア度で段階）</li></ul>
-          <div class="card-foot">Prestige · Poedel</div>
+          <ul><li>Lv38 を持ち越したループが潜行を上回るため（9/24）</li></ul>
         </div>
         <div class="card dropped">
           <div class="card-head"><span class="card-kind">外した</span></div>
@@ -623,10 +634,10 @@
         <table>
           <thead><tr><th class="num">#</th><th>項目</th><th>選択肢 / 仮の推奨</th></tr></thead>
           <tbody>
-            <tr><td class="num">1</td><td>Box の表示名との重複</td><td>通知で Box も「Geode」と出る（<code>notification.currency.geode</code>）。Box 側を「Box」に統一するか、新通貨の表記を変えるか</td></tr>
+            <tr><td class="num">1</td><td>Master の段の名前</td><td>試練の Tier と衝突する。候補: ランク / 階級 / 位</td></tr>
             <tr><td class="num">1.5</td><td>Tier の上げ方</td><td>1 Master = 1 Tier か、条件（ボス数など）で複数 Tier 上がるか。3〜4 日で Tier がいくつ進むか</td></tr>
             <tr><td class="num">1.6</td><td>Soul 獲得 Upgrade の効き方</td><td>倍率か固定加算か。Tier が進むほど要求 Soul が増えるので、追いつく曲線を決める</td></tr>
-            <tr><td class="num">2</td><td>レベル倍率の確定</td><td>9.25^(Lv−1)（ya.yu 案）か 2^(Lv−1)。値段を Tier ごとに底の倍にする。「装備の持ち越し」を外すか</td></tr>
+            <tr><td class="num">2</td><td>バザーの器</td><td>毎日仕入れの棚か、レベル付きの固定一覧か。商品のレベルの初期値と上限</td></tr>
             <tr><td class="num">3</td><td>バザーの商品の値段と出現率</td><td>品揃えは上の表。レア度ごとの値段（Geode 何個）と、棚に並ぶ確率を決める</td></tr>
             <tr><td class="num">4</td><td>MaxLevel の上げ方</td><td>バザーのアイテムだけか、Master 回数でも上がるか。1 回の Master で上げられる上限を置くか</td></tr>
             <tr><td class="num">5</td><td>「Trade」が指す機能</td><td>露店（NetherCream の売り場）か、別の機能か</td></tr>
