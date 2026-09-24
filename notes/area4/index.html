@@ -151,7 +151,7 @@
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
     <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Forge Level を伸ばし続けるための仕組みで、Area4 のボスコンテンツとセットで考える。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-25 (13)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-09-25 (14)</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <div class="purpose">
@@ -208,6 +208,7 @@
         <li>Area4 のボスへの攻撃力は、<strong>装備の由来 Area ごとに ×5</strong>（Nether の 100^worldIndex と同じ形。バランスの基準は Area3 の装備）</li>
         <li>Forge Level は <strong>Soul</strong> で買う。上限が上がっても Soul が無ければ上げられない</li>
         <li>新しいバザーに <strong>Soul 獲得量を上げる Upgrade</strong> を置く（Geode で買う）</li>
+        <li><strong>9/25 Unity 配線</strong>: フェーズ 1（束縛・Geode の HUD とオフライン行・Box の通知名・Master 後の保存と MainScene 読み直し）と フェーズ 2（Area4 シーン ＝ Nether の複製、WorldSelection の 4 つ目、入口・ボス戦・結果・エンディング・Master ボタン）が入った（IdleMinertia <code>b0a48ac39</code>）。<strong>Unity での動作確認は未</strong>。バザー画面は <strong>Relic シーンの露店の隣のタブ</strong>（決定）。新しい文言は Terms …116〜141 / Templates 22・24（取り込みは手動、文言はユーザーが後で直す）</li>
         <li><strong>9/25 Domain 実装済み</strong>（<code>area4-master-prestige</code>、CubeTest 884 件）: Geode ／ Master の Root と生涯記録 ／ Root ごとのリセット ／ 到達報酬と記録画面の生涯記録対応 ／ <strong>ボス</strong>（<code>Games/Area4/</code>）／ <strong>バザー</strong>（<code>Games/GeodeBazaar/</code>）。残りは Unity 側の配線と画面</li>
         <li><strong>9/25 バザーの初回商品</strong>: <strong>NetherCream 獲得量</strong>（Lv 制）／<strong>空飛ぶ宝箱の出現率</strong>（Lv 制）／<strong>空飛ぶ宝箱の自動取得</strong>（一点物。無料回数の範囲だけ自動で取り、広告分は手で取る）。値段は Lv1 ＝ 9.25^17 × 10 万ブロック ≈ 2.7e21、9.25 倍/Lv ／ ボスの Domain 実装に着手</li>
         <li><strong>9/25 リセット実装後の判断</strong>: MilestoneV3 の周回内報酬（BattleStats）は通常 Prestige と同じく再び出る ／ <strong>CaveDepthMilestone（深度の到達報酬）は再発火させず、効果も下げない</strong>（生涯記録の深度で判定。Biome の解禁だけは今の周回の深度） ／ GemCollectionMission ＝ Trade なので<strong>残す</strong></li>
