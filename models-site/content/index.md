@@ -11,7 +11,7 @@ YayuProjects の開発の拠り所となる**抽象的デザインモデル**と
 | 範囲 | ページ |
 | --- | --- |
 | 全体（今後のプロジェクトも含む、すべての開発プロジェクト） | [[全体/index\|全体]] |
-| Idle MInertia | [[Idle MInertia/index\|Idle MInertia]] |
+| Idle MInertia | [[idle-minertia/index\|Idle MInertia]] |
 
 - グループ（例: 放置ゲーム）は、2つ以上のプロジェクトで同じ性質が必要になったときに作る。
 
