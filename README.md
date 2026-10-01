@@ -24,7 +24,7 @@ dist/           ビルド中間物（gitignore 済み）
 yayu_portfolio/ ← ビルド成果物（コミット対象）
 notes/          ← ビルド成果物（コミット対象。Actions からも書き込まれる）
 models-site/    Quartz 本体。content/ がデザインモデルの正本
-models/         ← Quartz の成果物（コミット対象。.github/workflows/models.yml が作り直す）
+models/         ← Quartz の成果物（Actions だけがコミットする。手元でビルドした models/ はコミットしない）
 admin/          Sveltia CMS（index.html と config.yml）
 .nojekyll       Jekyll を止める（消さないこと）
 ```
