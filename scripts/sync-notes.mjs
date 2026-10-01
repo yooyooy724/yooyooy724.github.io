@@ -13,9 +13,10 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = dirname(dirname(fileURLToPath(import.meta.url)));
+// このリポジトリは boku-no-sekai/ の中へ移す予定。移動の前後どちらでも IdleMinertia を見つけられるよう両方を試す。
 const source = process.env.DESIGN_NOTES
   ? process.env.DESIGN_NOTES
-  : join(repoRoot, "..", "IdleMinertia", "DesignNotes");
+  : [join(repoRoot, "..", "IdleMinertia", "DesignNotes"), join(repoRoot, "..", "..", "IdleMinertia", "DesignNotes")].find(existsSync) ?? join(repoRoot, "..", "..", "IdleMinertia", "DesignNotes");
 const dest = join(repoRoot, "public", "notes");
 
 if (!existsSync(source)) {

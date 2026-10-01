@@ -10,6 +10,8 @@
 | `https://yooyooy724.github.io/` | **何も置かない**（404） |
 | `https://yooyooy724.github.io/yayu_portfolio/` | ポートフォリオ |
 | `https://yooyooy724.github.io/notes/` | Design Notes（DesignNotes から生成） |
+| `https://yooyooy724.github.io/models/` | デザインモデル・リスク（`models-site/content/` から Quartz で生成） |
+| `https://yooyooy724.github.io/admin/` | デザインモデルの編集画面（Sveltia CMS。保存すると main へ直接コミット） |
 
 ## 構成
 
@@ -21,6 +23,9 @@ dist/           ビルド中間物（gitignore 済み）
 
 yayu_portfolio/ ← ビルド成果物（コミット対象）
 notes/          ← ビルド成果物（コミット対象。Actions からも書き込まれる）
+models-site/    Quartz 本体。content/ がデザインモデルの正本
+models/         ← Quartz の成果物（コミット対象。.github/workflows/models.yml が作り直す）
+admin/          Sveltia CMS（index.html と config.yml）
 .nojekyll       Jekyll を止める（消さないこと）
 ```
 

@@ -1,0 +1,55 @@
+name: models
+
+# デザインモデル（models-site/content/）が変わったら、Quartz で /models/ を作り直してコミットする。
+# 編集画面（/admin/ の Sveltia CMS）からの保存もここを通る。
+# GITHUB_TOKEN で積んだコミットは workflow を再起動しないので、ループはしない。
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "models-site/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: models
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # 更新日を git 履歴から取るため
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Quartz の準備
+        working-directory: models-site
+        run: |
+          npm ci
+          npx quartz plugin install --from-config
+
+      - name: ビルド
+        working-directory: models-site
+        run: npx quartz build -o ../models
+
+      - name: コミット
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add models/
+          if git diff --cached --quiet; then
+            echo "変更なし"
+            exit 0
+          fi
+          git commit -m "models: 再ビルド (${GITHUB_SHA::7})"
+          git pull --rebase origin main
+          git push origin HEAD:main

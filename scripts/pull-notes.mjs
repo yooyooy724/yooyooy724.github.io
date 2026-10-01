@@ -13,9 +13,10 @@ import { emptyFeedback, mergeEvents, mergeFeedback } from "./notes-merge.mjs";
 
 const repoRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const notes = join(repoRoot, "notes");
+// このリポジトリは boku-no-sekai/ の中へ移す予定。移動の前後どちらでも IdleMinertia を見つけられるよう両方を試す。
 const source = process.env.DESIGN_NOTES
   ? process.env.DESIGN_NOTES
-  : join(repoRoot, "..", "IdleMinertia", "DesignNotes");
+  : [join(repoRoot, "..", "IdleMinertia", "DesignNotes"), join(repoRoot, "..", "..", "IdleMinertia", "DesignNotes")].find(existsSync) ?? join(repoRoot, "..", "..", "IdleMinertia", "DesignNotes");
 
 if (!existsSync(source)) {
   console.warn(`[pull-notes] 取り込み先が見つかりません: ${source}`);

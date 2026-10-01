@@ -1,0 +1,66 @@
+# デザインモデル・リスク・グループの編集画面（https://yooyooy724.github.io/admin/）。
+# 正本は models-site/content/。保存すると main に直接コミットされ、
+# .github/workflows/models.yml が Quartz で /models/ を作り直す。
+# 欄の意味は models-site/content/運用.md を参照。
+backend:
+  name: github
+  repo: yooyooy724/yooyooy724.github.io
+  branch: main
+  commit_messages:
+    create: "models: {{slug}} を作成"
+    update: "models: {{slug}} を更新"
+    delete: "models: {{slug}} を削除"
+
+media_folder: models-site/content/attachments
+public_folder: /models/attachments
+
+site_url: https://yooyooy724.github.io/models/
+
+collections:
+  - name: models
+    label: デザインモデル
+    label_singular: ページ
+    folder: models-site/content
+    extension: md
+    format: frontmatter
+    create: true
+    nested:
+      depth: 3
+      subfolders: false
+    meta:
+      path:
+        widget: string
+        label: 置き場所
+        index_file: index
+    summary: "{{title}}（{{type}}・{{status}}）"
+    fields:
+      - { name: title, label: タイトル }
+      - name: type
+        label: 種類
+        widget: select
+        options: [地図, 範囲, モデル, リスク]
+      - name: kind
+        label: 範囲の種類（範囲ページだけ）
+        widget: select
+        options: [全体, グループ, プロジェクト]
+        required: false
+      - name: groups
+        label: 属するグループ（プロジェクトの範囲ページだけ）
+        widget: relation
+        collection: models
+        value_field: title
+        search_fields: [title]
+        display_fields: [title]
+        multiple: true
+        required: false
+      - name: category
+        label: カテゴリ（モデルページだけ）
+        widget: select
+        options: [世界観, ゲームデザイン, 開発方針, ビジネス]
+        required: false
+      - name: status
+        label: 状態
+        widget: select
+        options: [提案, 確定]
+        default: 提案
+      - { name: body, label: 本文, widget: markdown }
