@@ -19,26 +19,27 @@ configuration:
       body: Noto Sans JP
       code: IBM Plex Mono
     colors:
+      # ポートフォリオ（src/globals.css）の配色に揃える。ダークモードは持たず、両方とも同じ紙の色にする
       lightMode:
-        light: "#faf8f8"
-        lightgray: "#e5e5e5"
-        gray: "#b8b8b8"
-        darkgray: "#4e4e4e"
-        dark: "#2b2b2b"
-        secondary: "#284b63"
-        tertiary: "#84a59d"
-        highlight: rgba(143, 159, 169, 0.15)
-        textHighlight: "#fff23688"
+        light: "#f2efe7"
+        lightgray: "#cbc8bf"
+        gray: "#757a74"
+        darkgray: "#2a2f2b"
+        dark: "#151a17"
+        secondary: "#151a17"
+        tertiary: "#f06b45"
+        highlight: rgba(184, 222, 80, 0.22)
+        textHighlight: "#b8de5088"
       darkMode:
-        light: "#161618"
-        lightgray: "#393639"
-        gray: "#646464"
-        darkgray: "#d4d4d4"
-        dark: "#ebebec"
-        secondary: "#7b97aa"
-        tertiary: "#84a59d"
-        highlight: rgba(143, 159, 169, 0.15)
-        textHighlight: "#b3aa0288"
+        light: "#f2efe7"
+        lightgray: "#cbc8bf"
+        gray: "#757a74"
+        darkgray: "#2a2f2b"
+        dark: "#151a17"
+        secondary: "#151a17"
+        tertiary: "#f06b45"
+        highlight: rgba(184, 222, 80, 0.22)
+        textHighlight: "#b8de5088"
 plugins:
   - source: "@quartz-community/created-modified-date"
     enabled: true
@@ -162,7 +163,7 @@ plugins:
       position: left
       priority: 50
   - source: "@quartz-community/graph"
-    enabled: true
+    enabled: false
     layout:
       position: right
       priority: 10
@@ -200,13 +201,13 @@ plugins:
       position: left
       priority: 10
   - source: "@quartz-community/darkmode"
-    enabled: true
+    enabled: false
     layout:
       position: left
       priority: 30
       group: toolbar
   - source: "@quartz-community/reader-mode"
-    enabled: true
+    enabled: false
     layout:
       position: left
       priority: 35

@@ -40,18 +40,13 @@ collections:
         widget: select
         options: [地図, 範囲, モデル, リスク]
       - name: kind
-        label: 範囲の種類（範囲ページだけ）
+        label: 範囲の種類（全体・グループの index.md だけ）
         widget: select
-        options: [全体, グループ, プロジェクト]
+        options: [全体, グループ]
         required: false
-      - name: groups
-        label: 属するグループ（プロジェクトの範囲ページだけ）
-        widget: relation
-        collection: models
-        value_field: title
-        search_fields: [title]
-        display_fields: [title]
-        multiple: true
+      - name: members
+        label: 属するプロジェクト（グループの index.md だけ）
+        widget: list
         required: false
       - name: category
         label: カテゴリ（モデルページだけ）

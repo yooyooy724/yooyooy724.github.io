@@ -1,3 +1,257 @@
 @use "./variables.scss" as *;
 
-// put your custom CSS here!
+// ポートフォリオ（../../src/globals.css）の見た目に寄せる。
+// 色は quartz.config.yaml の colors、ここでは書体・余白・表・見出しを整える。
+
+:root {
+  --orange: #f06b45;
+  --green: #b8de50;
+  --muted-strong: #5f645e;
+  --note: #e5e2d9;
+  --font-jp: "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", "Meiryo", sans-serif;
+  --font-display: Arial, Helvetica, sans-serif;
+}
+
+body,
+.page,
+input,
+button {
+  font-family: var(--font-jp);
+}
+
+body {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+// ---------- 本文 ----------
+
+article {
+  max-width: 900px;
+}
+
+article p,
+article li {
+  line-height: 1.9;
+}
+
+article li {
+  margin: 0.25rem 0;
+}
+
+article ul,
+article ol {
+  padding-left: 1.4rem;
+}
+
+// 箇条書きの子（補足）は一段薄くして、主張と補足の差を見せる
+article li > ul > li {
+  color: var(--muted-strong);
+  font-size: 0.95em;
+}
+
+// リンクは色を変えず、オレンジの下線で示す（ポートフォリオの genre-note と同じ）
+article a.internal,
+article a.external {
+  background: none;
+  border-bottom: 1px solid rgba(240, 107, 69, 0.55);
+  border-radius: 0;
+  color: var(--dark);
+  font-weight: 500;
+  padding: 0;
+  transition: border-color 160ms ease, color 160ms ease;
+
+  &:hover {
+    border-bottom-color: var(--orange);
+    color: var(--orange);
+  }
+}
+
+// ---------- 見出し ----------
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-jp);
+  color: var(--dark);
+  letter-spacing: -0.01em;
+}
+
+h1.article-title {
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.3;
+  margin: 0.5rem 0 1.2rem;
+}
+
+// 章見出しはポートフォリオの「■ 経歴」と同じく、オレンジの四角を前に置く
+article h2 {
+  align-items: center;
+  border-bottom: 1px solid var(--lightgray);
+  display: flex;
+  font-size: 1.35rem;
+  font-weight: 700;
+  gap: 0.6rem;
+  margin: 3rem 0 1rem;
+  padding-bottom: 0.6rem;
+
+  &::before {
+    background: var(--orange);
+    border-radius: 3px;
+    content: "";
+    flex: none;
+    height: 0.8em;
+    width: 0.8em;
+  }
+}
+
+article h3 {
+  font-size: 1.08rem;
+  font-weight: 700;
+  margin: 2rem 0 0.6rem;
+}
+
+// ---------- 表 ----------
+
+.table-container {
+  border: 1px solid var(--lightgray);
+  border-radius: 16px;
+  margin: 1.2rem 0 1.6rem;
+  overflow-x: auto;
+}
+
+article table {
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  margin: 0;
+  min-width: 100%;
+  width: 100%;
+}
+
+article th {
+  background: var(--note);
+  color: var(--dark);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.7rem 1rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+article td {
+  border-top: 1px solid var(--lightgray);
+  line-height: 1.75;
+  padding: 0.75rem 1rem;
+  vertical-align: top;
+}
+
+// 1列目は「原則」の名前。太字にして、行の見出しとして読めるようにする
+article td:first-child {
+  color: var(--dark);
+  font-weight: 700;
+  min-width: 9em;
+}
+
+article tr:hover td {
+  background: rgba(184, 222, 80, 0.12);
+}
+
+// ---------- 注記・コード ----------
+
+// 囲み（callout）はポートフォリオの genre-note と同じ角丸の傍注にする
+.callout {
+  background: var(--note);
+  border: none;
+  border-radius: 20px;
+  padding: 1rem 1.4rem;
+}
+
+pre {
+  background: var(--note) !important;
+  border: none;
+  border-radius: 14px;
+}
+
+code {
+  font-size: 0.88em;
+}
+
+// ---------- 左右の欄 ----------
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.3;
+
+  a {
+    color: var(--dark);
+  }
+}
+
+// 欄の見出し（目次・エクスプローラー・バックリンク）だけをポートフォリオのラベル風にする。
+// サイト名やフォルダ名（作品名）は大文字化しない
+.sidebar {
+  .toc-header h3,
+  .title-button h2,
+  .backlinks > h3 {
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  a,
+  li {
+    font-size: 0.86rem;
+  }
+}
+
+.toc ul li a {
+  color: var(--muted-strong);
+  opacity: 1;
+
+  &.in-view {
+    color: var(--orange);
+  }
+}
+
+.breadcrumb-element p,
+.breadcrumb-element a {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+}
+
+.content-meta {
+  color: var(--gray);
+  font-size: 0.78rem;
+}
+
+.search .search-button {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--lightgray);
+  border-radius: 999px;
+}
+
+// ---------- 狭い画面 ----------
+
+@media all and #{$mobile} {
+  body {
+    font-size: 15px;
+  }
+
+  article h2 {
+    font-size: 1.2rem;
+  }
+
+  article th,
+  article td {
+    padding: 0.6rem 0.8rem;
+  }
+}
