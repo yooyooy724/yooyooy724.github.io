@@ -43,6 +43,7 @@ jobs:
         # Quartz は出力先を空にしないので、前回の生成物（大文字・小文字だけ違う古いページなど）を先に消す
         run: |
           rm -rf ../models
+          node scripts/tag-matrix.mjs
           npx quartz build -o ../models
 
       - name: コミット

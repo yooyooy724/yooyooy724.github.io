@@ -2,7 +2,7 @@
 title: "Unity 層はドメインをビルド済み DLL で参照する"
 type: モデル
 category: 開発方針
-tags: [Idle-MInertia]
+tags: [Idle-MInertia, 設計構造]
 status: 提案
 description: "Unity 層はドメインをビルド済み DLL で参照する。画面は UXML/USS が持つ"
 ---

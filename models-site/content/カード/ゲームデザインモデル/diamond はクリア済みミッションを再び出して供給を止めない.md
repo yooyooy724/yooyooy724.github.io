@@ -2,7 +2,7 @@
 title: "Diamond はクリア済みミッションを再び出して供給を止めない"
 type: モデル
 category: ゲームデザインモデル
-tags: [Idle-MInertia]
+tags: [Idle-MInertia, 通貨, 報酬]
 status: 提案
 description: "Diamond は供給を止めないよう、クリア済みミッションを再び出す"
 ---

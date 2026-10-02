@@ -2,7 +2,7 @@
 title: "リリース前に lint・翻訳漏れ・ストア要件の関門を通す"
 type: モデル
 category: 開発方針
-tags: [Idle-MInertia]
+tags: [Idle-MInertia, 品質管理]
 status: 提案
 description: "リリース前に厳格な lint・翻訳漏れの検査・ストア要件の実測を通す"
 ---

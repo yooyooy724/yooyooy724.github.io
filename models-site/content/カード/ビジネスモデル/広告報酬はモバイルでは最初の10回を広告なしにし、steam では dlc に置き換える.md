@@ -2,7 +2,7 @@
 title: "広告報酬はモバイルでは最初の10回を広告なしにし、Steam では DLC に置き換える"
 type: モデル
 category: ビジネスモデル
-tags: [Idle-MInertia]
+tags: [Idle-MInertia, 収益化, 報酬]
 status: 提案
 description: "モバイルは空飛ぶ宝箱の最初の10回を広告なしに、Steam は広告をやめ DLC に置き換える"
 ---

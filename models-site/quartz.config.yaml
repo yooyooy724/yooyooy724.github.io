@@ -41,6 +41,10 @@ configuration:
         highlight: rgba(184, 222, 80, 0.22)
         textHighlight: "#b8de5088"
 plugins:
+  # 各ページの先頭に「このページを編集」ボタンを置く自作プラグイン
+  - source: ./plugins/edit-link
+    enabled: true
+    order: 95
   - source: "@quartz-community/created-modified-date"
     enabled: true
     options:
@@ -191,7 +195,7 @@ plugins:
       position: beforeBody
       priority: 20
   - source: "@quartz-community/tag-list"
-    enabled: false
+    enabled: true
     layout:
       position: beforeBody
       priority: 30

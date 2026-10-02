@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "plugins": {
+    "edit-link": {
+      "source": "./plugins/edit-link",
+      "resolved": "C:\\Users\\yooyo\\YayuProjects\\boku-no-sekai\\yooyooy724.github.io\\models-site\\plugins\\edit-link",
+      "commit": "local",
+      "installedAt": "2026-10-02T01:20:27.984Z"
+    }
+  }
+}

@@ -2,7 +2,7 @@
 title: "共通部品は外部の FP ライブラリをやめ自前の最小限にする"
 type: モデル
 category: 開発方針
-tags: [Idle-MInertia]
+tags: [Idle-MInertia, 設計構造]
 status: 提案
 description: "共通部品は外部の FP ライブラリをやめ、自前の最小限のものにする"
 ---

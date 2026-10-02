@@ -2,7 +2,7 @@
 title: "販促は発信（X）とは目的を分け、まず効果を測れる状態を作る"
 type: モデル
 category: ビジネスモデル
-tags: [Idle-MInertia]
+tags: [Idle-MInertia, 販促, 数字の見方]
 status: 提案
 description: "販促は発信（X）とは目的を分け、まず効果を測れる状態を作る"
 ---

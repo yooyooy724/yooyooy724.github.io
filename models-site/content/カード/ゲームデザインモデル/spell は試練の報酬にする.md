@@ -2,7 +2,7 @@
 title: "Spell は試練の報酬にする"
 type: モデル
 category: ゲームデザインモデル
-tags: [Idle-MInertia]
+tags: [Idle-MInertia, 報酬, 公平さ]
 status: 提案
 description: "Spell は試練の報酬。シード固定で抽選し、効果は純粋なプラスだけ"
 ---

@@ -2,7 +2,7 @@
 title: "Cave は掘り進める放置の芯にする"
 type: モデル
 category: ゲームデザインモデル
-tags: [Idle-MInertia]
+tags: [Idle-MInertia, 進行]
 status: 提案
 description: "Cave（本編）は掘り進める放置の芯。エリアは配列で持ち、後から増やせる"
 ---
