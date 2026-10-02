@@ -8,6 +8,10 @@
   --green: #b8de50;
   --muted-strong: #5f645e;
   --note: #e5e2d9;
+  --card-bg: #f8f6f0;
+  --header-bg: rgba(242, 239, 231, 0.88);
+  --chip-bg: rgba(255, 255, 255, 0.5);
+  --accent: var(--orange); // リンク下線・見出しの四角・ラベル
   --font-jp: "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", "Meiryo", sans-serif;
   --font-display: Arial, Helvetica, sans-serif;
 }
@@ -234,7 +238,7 @@ code {
 }
 
 .search .search-button {
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--chip-bg);
   border: 1px solid var(--lightgray);
   border-radius: 999px;
 }
@@ -269,7 +273,7 @@ code {
 }
 
 a.bases-card {
-  background: #f8f6f0;
+  background: var(--card-bg);
   border: 1px solid var(--lightgray);
   border-bottom: 1px solid var(--lightgray);
   border-radius: 18px;
@@ -379,7 +383,7 @@ body {
 .sidebar.left {
   align-items: center;
   backdrop-filter: blur(14px);
-  background: rgba(242, 239, 231, 0.88);
+  background: var(--header-bg);
   border-bottom: 1px solid var(--lightgray);
   display: flex !important;
   flex-direction: row !important;
@@ -527,7 +531,7 @@ a.yy-edit {
   padding: 0;
 
   a.tag-link {
-    background: #f8f6f0;
+    background: var(--card-bg);
     border: 1px solid var(--lightgray);
     border-radius: 999px;
     color: var(--dark);
@@ -544,5 +548,34 @@ a.yy-edit {
       border-color: var(--orange);
       color: var(--orange);
     }
+  }
+}
+
+// ---------- ダークモード ----------
+// ポートフォリオの .dark セクションと同じく、墨の地に紙色の文字。差し色はオレンジのまま、選択中・タグの記号は緑
+:root[saved-theme="dark"] {
+  --muted-strong: #b4b7b0;
+  --note: #232925;
+  --card-bg: #1c211e;
+  --header-bg: rgba(21, 26, 23, 0.88);
+  --chip-bg: rgba(242, 239, 231, 0.06);
+
+  .bases-card-row:nth-child(2) .bases-card-value .bases-text {
+    background: var(--green);
+    border-color: var(--green);
+    color: #151a17;
+  }
+
+  a.yy-edit:hover {
+    background: var(--green) !important;
+    color: #151a17 !important;
+  }
+
+  .toc ul li a.in-view {
+    color: var(--green);
+  }
+
+  img {
+    opacity: 0.92;
   }
 }

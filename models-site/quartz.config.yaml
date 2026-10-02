@@ -19,7 +19,7 @@ configuration:
       body: Noto Sans JP
       code: IBM Plex Mono
     colors:
-      # ポートフォリオ（src/globals.css）の配色に揃える。ダークモードは持たず、両方とも同じ紙の色にする
+      # ポートフォリオ（src/globals.css）の配色に揃える。ダークはポートフォリオの .dark（墨の地・紙色の文字・緑の差し色）
       lightMode:
         light: "#f2efe7"
         lightgray: "#cbc8bf"
@@ -31,15 +31,15 @@ configuration:
         highlight: rgba(184, 222, 80, 0.22)
         textHighlight: "#b8de5088"
       darkMode:
-        light: "#f2efe7"
-        lightgray: "#cbc8bf"
-        gray: "#757a74"
-        darkgray: "#2a2f2b"
-        dark: "#151a17"
-        secondary: "#151a17"
-        tertiary: "#f06b45"
-        highlight: rgba(184, 222, 80, 0.22)
-        textHighlight: "#b8de5088"
+        light: "#151a17"
+        lightgray: "#3a403c"
+        gray: "#8e928b"
+        darkgray: "#dcd8ce"
+        dark: "#f2efe7"
+        secondary: "#f2efe7"
+        tertiary: "#b8de50"
+        highlight: rgba(184, 222, 80, 0.14)
+        textHighlight: "#b8de5055"
 plugins:
   # 各ページの先頭に「このページを編集」ボタンを置く自作プラグイン
   - source: ./plugins/edit-link
@@ -205,7 +205,7 @@ plugins:
       position: left
       priority: 10
   - source: "@quartz-community/darkmode"
-    enabled: false
+    enabled: true
     layout:
       position: left
       priority: 30
