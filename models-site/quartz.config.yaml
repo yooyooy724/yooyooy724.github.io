@@ -250,7 +250,7 @@ plugins:
     options: {}
     order: 50
   - source: "@quartz-community/note-properties"
-    enabled: false
+    enabled: true
     options:
       includeAll: false
       includedProperties:
@@ -258,7 +258,7 @@ plugins:
         - tags
         - aliases
       excludedProperties: []
-      hidePropertiesView: false
+      hidePropertiesView: true # フロントマターの読み取りには必要。英語の Properties 欄だけ隠す
       delimiters: ---
       language: yaml
     order: 5

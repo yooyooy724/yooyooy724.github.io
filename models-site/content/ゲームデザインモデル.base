@@ -1,8 +1,8 @@
 # ゲームデザインモデル のカード一覧。カードの実体は カード/ゲームデザインモデル/ にある（1枚＝1ファイル）。
-# タブで範囲を切り替える。範囲はカードの tags（全体 / Idle-MInertia）。
+# フォルダではなく category 欄で集める（パスの比較は環境で揺れるため）。タブで範囲を切り替える。範囲はカードの tags（全体 / Idle-MInertia）。
 filters:
   and:
-    - file.inFolder("カード/ゲームデザインモデル")
+    - note.category == "ゲームデザインモデル"
     - note.type == "モデル"
 formulas:
   scope: if(file.hasTag("全体"), "全体", if(file.hasTag("Idle-MInertia"), "Idle MInertia", "その他"))
