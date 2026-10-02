@@ -151,7 +151,7 @@
     <div class="label">Idle Minertia / Design Notes / Area4</div>
     <h1>Area4 / マスタープレステージ 仕様</h1>
     <p class="lede">エンディング後に任意で行う、ゲーム全体の大きな周回。Forge Level を伸ばし続けるための仕組みで、Area4 のボスコンテンツとセットで考える。確定したことと、まだ案のことを分けて持つ。</p>
-    <div class="meta"><span>更新 2026-09-26</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-10-02</span><span>正本: 決まり次第 IdeaBoard へ</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <div class="purpose">
@@ -208,6 +208,15 @@
         <li>Area4 のボスへの攻撃力は、<strong>装備の由来 Area ごとに ×5</strong>（Nether の 100^worldIndex と同じ形。バランスの基準は Area3 の装備）</li>
         <li>Forge Level は <strong>Soul</strong> で買う。上限が上がっても Soul が無ければ上げられない</li>
         <li>新しいバザーに <strong>Soul 獲得量を上げる Upgrade</strong> を置く（Geode で買う）</li>
+        <li><strong>10/2 ボスと ForgeLevel</strong>:
+          <ul>
+            <li>ボスの基準 道具 ItemLevel・EnchantLevel の表は<strong>画面に出る ItemLevel</strong>（13 / 8 …）。内部の Lv は 1 引いた値（12 / 7）</li>
+            <li>ボスに挑む条件として ForgeLevel の下限を置く。値は「Box 5000 個程度で基準 ItemLevel に届く」から逆算する（ボス 1 ＝ 11、2 ＝ 19、3 ＝ 27、4 ＝ 35）</li>
+            <li>ForgeLevel +1 で Box の装備の ItemLevel は +0.26 しか上がらない（<code>EquipmentItemLevelProvider.UpdateLevelOptions</code>）。以前の「ForgeLevel ＝ ItemLevel」の計算は誤り</li>
+            <li><strong>ForgeLevel の上限は層ごとに +1 のまま</strong>。ボス 4 以降で足りない攻撃力は<strong>別のコンテンツで補う</strong>（+4/層 はボス 1 体ごとに Soul 400〜1,900 で重すぎる）</li>
+            <li>ブロックの固さを層で上げる案は見送り（深い宝石と未達成の到達報酬が遠のき、早く Master した人ほど不利になるため）</li>
+          </ul>
+        </li>
         <li><strong>9/26 改名</strong>: 通貨 Geode を <strong>Shard（かけら）</strong> に改名（ユーザー決定）。内部 ID は <code>Shard</code>、コード名は <code>ShardBazaar*</code>、キーは <code>currency.shard</code> / <code>shard_bazaar.*</code>。Box の通知名「Box」はそのまま。以下の本文の「Geode」は Shard と読み替える</li>
         <li><strong>9/25 Unity 配線</strong>: フェーズ 1（束縛・Geode の HUD とオフライン行・Box の通知名・Master 後の保存と MainScene 読み直し）と フェーズ 2（Area4 シーン ＝ Nether の複製、WorldSelection の 4 つ目、入口・ボス戦・結果・エンディング・Master ボタン）が入った（IdleMinertia <code>b0a48ac39</code>）。<strong>Unity での動作確認は未</strong>。バザー画面は <strong>Relic シーンの露店の隣のタブ</strong>（決定）。新しい文言は Terms …116〜141 / Templates 22・24（取り込みは手動、文言はユーザーが後で直す）</li>
         <li><strong>9/25 Domain 実装済み</strong>（<code>area4-master-prestige</code>、CubeTest 884 件）: Geode ／ Master の Root と生涯記録 ／ Root ごとのリセット ／ 到達報酬と記録画面の生涯記録対応 ／ <strong>ボス</strong>（<code>Games/Area4/</code>）／ <strong>バザー</strong>（<code>Games/GeodeBazaar/</code>）。残りは Unity 側の配線と画面</li>
