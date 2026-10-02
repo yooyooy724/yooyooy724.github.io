@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr"><head><title>ゲームデザイン（Idle MInertia）</title><meta charset="utf-8"/><link rel="preload" href="../index-70cc9057.css" as="style"/><link rel="preload" href="../prescript-e3b0c442.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto Sans JP:wght@400;700&amp;family=Noto Sans JP:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="Yayu デザインモデル"/><meta property="og:title" content="ゲームデザイン（Idle MInertia）"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="ゲームデザイン（Idle MInertia）"/><meta name="twitter:description" content="Idle MInertia の遊びの構成。全体の原則（全体/ゲームデザイン）を、この作品の各コンテンツでどう具体化しているかをまとめた提案。 コンテンツの構成 コンテンツ役割決まっていることCave（本編）掘り進める放置の芯エリアは配列で持ち、後から増やせる。進行の壁は階層の解放の瞬間に置き、解放後は楽にするBattle本編と並ぶもう1つの成長軸ECS 型のタワーディフェンスNether決まった周期で開く期間イベント装備を送り込んで挑む。挑戦回数は買い切りで増やせるNether Companion腕前に関係なく参加できる協力他プレイヤーの装備を借りる非同期協力。候補は Nether の期間ごと..."/><meta property="og:description" content="Idle MInertia の遊びの構成。全体の原則（全体/ゲームデザイン）を、この作品の各コンテンツでどう具体化しているかをまとめた提案。 コンテンツの構成 コンテンツ役割決まっていることCave（本編）掘り進める放置の芯エリアは配列で持ち、後から増やせる。進行の壁は階層の解放の瞬間に置き、解放後は楽にするBattle本編と並ぶもう1つの成長軸ECS 型のタワーディフェンスNether決まった周期で開く期間イベント装備を送り込んで挑む。挑戦回数は買い切りで増やせるNether Companion腕前に関係なく参加できる協力他プレイヤーの装備を借りる非同期協力。候補は Nether の期間ごと..."/><meta property="og:image:alt" content="Idle MInertia の遊びの構成。全体の原則（全体/ゲームデザイン）を、この作品の各コンテンツでどう具体化しているかをまとめた提案。 コンテンツの構成 コンテンツ役割決まっていることCave（本編）掘り進める放置の芯エリアは配列で持ち、後から増やせる。進行の壁は階層の解放の瞬間に置き、解放後は楽にするBattle本編と並ぶもう1つの成長軸ECS 型のタワーディフェンスNether決まった周期で開く期間イベント装備を送り込んで挑む。挑戦回数は買い切りで増やせるNether Companion腕前に関係なく参加できる協力他プレイヤーの装備を借りる非同期協力。候補は Nether の期間ごと..."/><meta property="twitter:domain" content="yooyooy724.github.io/models"/><meta property="og:url" content="https://yooyooy724.github.io/models/idle-minertia/ゲームデザイン"/><meta property="twitter:url" content="https://yooyooy724.github.io/models/idle-minertia/ゲームデザイン"/><link rel="icon" href="../static/icon.png"/><meta name="description" content="Idle MInertia の遊びの構成。全体の原則（全体/ゲームデザイン）を、この作品の各コンテンツでどう具体化しているかをまとめた提案。 コンテンツの構成 コンテンツ役割決まっていることCave（本編）掘り進める放置の芯エリアは配列で持ち、後から増やせる。進行の壁は階層の解放の瞬間に置き、解放後は楽にするBattle本編と並ぶもう1つの成長軸ECS 型のタワーディフェンスNether決まった周期で開く期間イベント装備を送り込んで挑む。挑戦回数は買い切りで増やせるNether Companion腕前に関係なく参加できる協力他プレイヤーの装備を借りる非同期協力。候補は Nether の期間ごと..."/><meta name="generator" content="Quartz"/><link href="../index-70cc9057.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-7262b5a7.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../prescript-e3b0c442.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://yooyooy724.github.io/models/idle-minertia/ゲームデザイン-og-image.webp"/><meta property="og:image:url" content="https://yooyooy724.github.io/models/idle-minertia/ゲームデザイン-og-image.webp"/><meta name="twitter:image" content="https://yooyooy724.github.io/models/idle-minertia/ゲームデザイン-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="idle-minertia/ゲームデザイン" data-basepath="/models"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="..">Yayu デザインモデル</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="検索" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>検索</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="何かを検索..." placeholder="何かを検索..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-0" aria-label="エクスプローラー"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>エクスプローラー</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-0" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../idle-minertia/">idle-minertia</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>ゲームデザイン（Idle MInertia）</a></div></nav><h1 class="article-title">ゲームデザイン（Idle MInertia）</h1><p show-comma="true" class="content-meta"><time datetime="2026-10-02T00:36:56.000Z">2026年10月02日</time><span>5 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><p>Idle MInertia の遊びの構成。全体の原則（<a href="../全体/ゲームデザイン" class="internal internal-link alias" data-slug="全体/ゲームデザイン">全体/ゲームデザイン</a>）を、この作品の各コンテンツでどう具体化しているかをまとめた提案。</p>
+<h2 id="コンテンツの構成">コンテンツの構成<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#コンテンツの構成" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>コンテンツ</th><th>役割</th><th>決まっていること</th></tr></thead><tbody><tr><td>Cave（本編）</td><td>掘り進める放置の芯</td><td>エリアは配列で持ち、後から増やせる。進行の壁は階層の解放の瞬間に置き、解放後は楽にする</td></tr><tr><td>Battle</td><td>本編と並ぶもう1つの成長軸</td><td>ECS 型のタワーディフェンス</td></tr><tr><td>Nether</td><td>決まった周期で開く期間イベント</td><td>装備を送り込んで挑む。挑戦回数は買い切りで増やせる</td></tr><tr><td>Nether Companion</td><td>腕前に関係なく参加できる協力</td><td>他プレイヤーの装備を借りる非同期協力。候補は Nether の期間ごとに固定し、引き直しは回数制</td></tr><tr><td>祠の試練（Challenge）</td><td>本編の味変</td><td>本編 Cave に縛りを加えて作る。共通の4段 Tier で倍率の無効化を重ね、報酬は Tier ごとの Spell</td></tr><tr><td>Spell</td><td>試練の報酬</td><td>Slay the Spire の Relic 風。シード固定で抽選し、効果は純粋なプラスだけ</td></tr><tr><td>露店（Relic）</td><td>恒久的な強化</td><td>効果は Battle と掛け算。支払いは NetherCream だけ</td></tr><tr><td>釣り</td><td>低確率・高効果の味変</td><td>マイナスのない作りにし、報酬は Loot の一本に絞る</td></tr><tr><td>ジオード</td><td>断続的な報酬</td><td>開ける前に当たりを予告しない</td></tr><tr><td>マスタープレステージ</td><td>長期の目標</td><td>目的は Forge Level を伸ばし続けることに絞る。リセットで残すものを Root ごとに明示する</td></tr></tbody></table></div>
+<h2 id="通貨">通貨<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#通貨" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>通貨</th><th>決まっていること</th></tr></thead><tbody><tr><td>Diamond</td><td>供給を止めないよう、クリア済みミッションを再び出す。釣り合いはコストではなく入手量で取る</td></tr><tr><td>NetherCream</td><td>露店の支払いにだけ使う</td></tr><tr><td>新しい希少通貨</td><td>プレステージの周回で稼げない形にする</td></tr></tbody></table></div>
+<h2 id="自動化">自動化<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#自動化" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li>自動化は Relic の購入で解禁し、コストは「何日分の進行か」で決める。</li>
+<li>自動化の設定は実体を1つにし、どの画面から触っても同じものを変える。</li>
+<li>自動マージは、1回でできるものをまとめて行う。</li>
+<li>変換の行き先指定はいったんやめ、選べる権利を Spell の報酬として返す。</li>
+</ul>
+<h2 id="見せ方と知らせ方">見せ方と知らせ方<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#見せ方と知らせ方" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>対象</th><th>決まっていること</th></tr></thead><tbody><tr><td>獲得の通知</td><td>獲得のたびのポップアップをやめ、図鑑の Index と赤い点で知らせる</td></tr><tr><td>レア度</td><td>色相ではなく点の数と明るさで伝える。開放音は段ごとに音程を上げる</td></tr><tr><td>統計画面</td><td>独自デザインをやめ、既存の画面に揃える</td></tr><tr><td>宝石</td><td>最後のバイオームの宝石は、既存と重ならないよう色と形の並びを見て決める</td></tr></tbody></table></div>
+<h2 id="公平さ">公平さ<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#公平さ" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li>値下げしたら、払いすぎた分を各自に正確に返す。</li>
+<li>難しいミッションは、出ることではなく居座り続けることを直す。</li>
+<li>放置中のオフライン報酬は、実測の速さだけに頼らず期待値で下限を保証する。</li>
+</ul>
+<h2 id="関連">関連<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#関連" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><a href="../全体/ゲームデザイン" class="internal internal-link alias" data-slug="全体/ゲームデザイン">全体/ゲームデザイン</a></li>
+<li><a href="../idle-minertia/世界観" class="internal internal-link alias" data-slug="idle-minertia/世界観">idle-minertia/世界観</a></li>
+<li><a href="../idle-minertia/ビジネス" class="internal internal-link alias" data-slug="idle-minertia/ビジネス">idle-minertia/ビジネス</a></li>
+</ul></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="toc"><button type="button" class="toc-header" aria-controls="toc-0" aria-expanded="true"><h3>目次</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#コンテンツの構成" data-for="コンテンツの構成">コンテンツの構成</a></li><li class="depth-0"><a href="#通貨" data-for="通貨">通貨</a></li><li class="depth-0"><a href="#自動化" data-for="自動化">自動化</a></li><li class="depth-0"><a href="#見せ方と知らせ方" data-for="見せ方と知らせ方">見せ方と知らせ方</a></li><li class="depth-0"><a href="#公平さ" data-for="公平さ">公平さ</a></li><li class="depth-0"><a href="#関連" data-for="関連">関連</a></li><li class="overflow-end"></li></ul></div><div class="backlinks"><h3>バックリンク</h3><ul id="list-0" class="overflow"><li><a href="../idle-minertia/ビジネス" class="internal">ビジネス（Idle MInertia）</a></li><li><a href="../idle-minertia/世界観" class="internal">世界観（Idle MInertia）</a></li><li><a href="../idle-minertia/開発方針" class="internal">開発方針（Idle MInertia）</a></li><li><a href="../" class="internal">Yayu デザインモデル</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>作成 <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="/admin/">編集画面</a></li><li><a href="/yayu_portfolio/">ポートフォリオ</a></li></ul></footer></div></div></body><script src="../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../postscript-35b69d86.js" type="module" data-persist="true"></script></html>

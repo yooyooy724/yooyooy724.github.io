@@ -6,65 +6,65 @@
       <description>Last 10 notes on Yayu デザインモデル</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
+    <title>idle-minertia</title>
+    <link>https://yooyooy724.github.io/models/idle-minertia/</link>
+    <guid>https://yooyooy724.github.io/models/idle-minertia/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Fri, 02 Oct 2026 00:37:13 GMT</pubDate>
+  </item><item>
     <title>タグ一覧</title>
     <link>https://yooyooy724.github.io/models/tags/</link>
     <guid>https://yooyooy724.github.io/models/tags/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Thu, 01 Oct 2026 10:39:31 GMT</pubDate>
+    <pubDate>Fri, 02 Oct 2026 00:37:13 GMT</pubDate>
   </item><item>
-    <title>Idle MInertia</title>
-    <link>https://yooyooy724.github.io/models/idle-minertia/</link>
-    <guid>https://yooyooy724.github.io/models/idle-minertia/</guid>
-    <description><![CDATA[ リリース済みの放置ゲーム Idle MInertia に固有のモデル。全体のモデル（全体）を前提に、それと異なる点・具体化した点だけを書く。 カテゴリ カテゴリページ世界観idle-minertia/世界観ゲームデザイン未作成（現状の原則は 全体/ゲームデザイン にまとめている）開発方針未作成（同上 全体/開発方針）ビジネス未作成（同上 全体/ビジネス） ページは書く内容が出てきたときに作る。 過去の決定の多くは Idle MInertia で生まれたが、他の作品でも当てはまるものは全体に置いた。 . ]]></description>
-    <pubDate>Thu, 01 Oct 2026 10:39:12 GMT</pubDate>
+    <title>ゲームデザイン（Idle MInertia）</title>
+    <link>https://yooyooy724.github.io/models/idle-minertia/%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%87%E3%82%B6%E3%82%A4%E3%83%B3</link>
+    <guid>https://yooyooy724.github.io/models/idle-minertia/%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%87%E3%82%B6%E3%82%A4%E3%83%B3</guid>
+    <description><![CDATA[ Idle MInertia の遊びの構成。全体の原則（全体/ゲームデザイン）を、この作品の各コンテンツでどう具体化しているかをまとめた提案。 コンテンツの構成 コンテンツ役割決まっていることCave（本編）掘り進める放置の芯エリアは配列で持ち、後から増やせる。進行の壁は階層の解放の瞬間に置き、解放後は楽にするBattle本編と並ぶもう1つの成長軸ECS 型のタワーディフェンスNether決まった周期で開く期間イベント装備を送り込んで挑む。挑戦回数は買い切りで増やせるNether Companion腕前に関係なく参加できる協力他プレイヤーの装備を借りる非同期協力。候補は Nether の期間ごと... ]]></description>
+    <pubDate>Fri, 02 Oct 2026 00:36:56 GMT</pubDate>
+  </item><item>
+    <title>ビジネス（Idle MInertia）</title>
+    <link>https://yooyooy724.github.io/models/idle-minertia/%E3%83%93%E3%82%B8%E3%83%8D%E3%82%B9</link>
+    <guid>https://yooyooy724.github.io/models/idle-minertia/%E3%83%93%E3%82%B8%E3%83%8D%E3%82%B9</guid>
+    <description><![CDATA[ Idle MInertia の届け方と売り方。全体の原則（全体/ビジネス）を、この作品でどう具体化しているかをまとめた提案。 出す場所 場所決まっていることモバイル（iOS・Android）本線。Apple サインインは iOS だけに出し、同期できる範囲を画面で明示するSteam期限を切らず、全部入りで Windows と Mac に同時に出す。基本無料Web（WebGL）ゲームサイト向けに試作した 収益の導線 導線モバイルSteam広告報酬空飛ぶ宝箱は最初の10回を広告なしで受け取れる広告はやめ、DLC に置き換えるDiamond販売する販売しない買い切りNether の挑戦回数を増やすD... ]]></description>
+    <pubDate>Fri, 02 Oct 2026 00:36:56 GMT</pubDate>
   </item><item>
     <title>世界観（Idle MInertia）</title>
     <link>https://yooyooy724.github.io/models/idle-minertia/%E4%B8%96%E7%95%8C%E8%A6%B3</link>
     <guid>https://yooyooy724.github.io/models/idle-minertia/%E4%B8%96%E7%95%8C%E8%A6%B3</guid>
     <description><![CDATA[ Idle MInertia に固有の世界観。全体の原則（全体/世界観）のうち「1つの法則で筋を通す」「物語の芯は問いに置く」「主観の声で書く」を、この作品で具体化したもの。 物語の芯 要素中身問い「意思とは何か」を探求する物語にする宝石・資源物語の目的ではなく、探求を進める燃料 根拠: 「物語の芯を意思とは何かの探求に置く」（2026-06） 世界の法則 — すべてはベクトル 世界のふるまいを、1つの物理（ベクトル）で一貫させる。 道具がひとりでに動くのは、質量を運動に変えるベクトルとして説明する。 プレステージ（周回のやり直し）にも、同じ法則の中で意味を与える。 根拠: 「世界観をベクトルの... ]]></description>
-    <pubDate>Thu, 01 Oct 2026 10:39:12 GMT</pubDate>
+    <pubDate>Fri, 02 Oct 2026 00:36:56 GMT</pubDate>
+  </item><item>
+    <title>開発方針（Idle MInertia）</title>
+    <link>https://yooyooy724.github.io/models/idle-minertia/%E9%96%8B%E7%99%BA%E6%96%B9%E9%87%9D</link>
+    <guid>https://yooyooy724.github.io/models/idle-minertia/%E9%96%8B%E7%99%BA%E6%96%B9%E9%87%9D</guid>
+    <description><![CDATA[ Idle MInertia の作り方。全体の原則（全体/開発方針）を、この作品の構成でどう具体化しているかをまとめた提案。 構成 層決まっていることドメイン（GamesDomain）ゲームのルールを Unity から切り離した別リポジトリ。実装後の仕様の正本Unity 層ドメインをビルド済み DLL で参照する。画面は UXML/USS が持ち、View の C# で要素を組まない試作ドメインは Blazor につないで、画面なしで試せる共通部品外部の FP ライブラリはやめ、自前の最小限のものにする。毎フレームの処理はゼロアロケーション（StructLinq を自作） ワールド エリアはワー... ]]></description>
+    <pubDate>Fri, 02 Oct 2026 00:36:56 GMT</pubDate>
   </item><item>
     <title>Yayu デザインモデル</title>
     <link>https://yooyooy724.github.io/models/</link>
     <guid>https://yooyooy724.github.io/models/</guid>
-    <description><![CDATA[ YayuProjects の開発の拠り所となる抽象的デザインモデルとリスクをまとめたサイト。YayuProjects 開発サイクルの「解釈」で育て、「翻訳」「適応」で開発に戻す。 範囲 範囲ページ全体（今後のプロジェクトも含む、すべての開発プロジェクト）全体Idle MInertiaIdle MInertia グループ（例: 放置ゲーム）は、2つ以上のプロジェクトで同じ性質が必要になったときに作る。 カテゴリ カテゴリ中身世界観作品世界の前提・象徴・トーンゲームデザイン遊びの核、成長・報酬の設計原則開発方針作り方・判断の仕方・自動化ビジネス収益・販促・運営の考え方 リスク リスク — 遊び手・... ]]></description>
-    <pubDate>Thu, 01 Oct 2026 10:39:12 GMT</pubDate>
+    <description><![CDATA[ YayuProjects の開発の拠り所となる抽象的デザインモデルとリスクをまとめたサイト。YayuProjects 開発サイクルの「解釈」で育て、「翻訳」「適応」で開発に戻す。 範囲 範囲世界観ゲームデザイン開発方針ビジネス全体世界観ゲームデザイン開発方針ビジネスIdle MInertia世界観ゲームデザイン開発方針ビジネス 全体は、今後のプロジェクトも含むすべての開発プロジェクトに当てはまる。プロジェクトのページは、全体と異なる点・具体化した点だけを書く。 グループ（例: 放置ゲーム）は、2つ以上のプロジェクトで同じ性質が必要になったときに作る。 カテゴリ カテゴリ中身世界観作品世界の前提... ]]></description>
+    <pubDate>Fri, 02 Oct 2026 00:36:56 GMT</pubDate>
   </item><item>
     <title>リスク</title>
     <link>https://yooyooy724.github.io/models/%E3%83%AA%E3%82%B9%E3%82%AF</link>
     <guid>https://yooyooy724.github.io/models/%E3%83%AA%E3%82%B9%E3%82%AF</guid>
-    <description><![CDATA[ 遊び手または開発者が遭遇しうる、事前に避けるべき事項の一覧。開発方針のページから参照される。過去の意思決定（遡及ADR）で繰り返し起きた問題から抜き出した。 書き方 1項目につき1行。範囲はリンクで書く。 - **内容** — 範囲: [[全体/index|全体]] ／ 遭遇者: 遊び手 or 開発者 ／ 状況: いつ起きるか ／ 回避: どう避けるか ／ 出典: 統計・ADR など 遊び手が遭遇するリスク セーブの互換が壊れ、進行が消える・食い違う — 範囲: 全体 ／ 遭遇者: 遊び手 ／ 状況: 保存キーの改名、データ構造の変更、リリース後の仕様変更 ／ 回避: セーブ互換を全更新の約束... ]]></description>
-    <pubDate>Thu, 01 Oct 2026 10:39:12 GMT</pubDate>
+    <description><![CDATA[ 遊び手または開発者が遭遇しうる、事前に避けるべき事項の一覧。開発方針のページから参照される。過去の意思決定（遡及ADR）で繰り返し起きた問題から抜き出した。 遊び手が遭遇するリスク リスク範囲いつ起きるか避け方出典セーブの互換が壊れ、進行が消える・食い違う全体保存キーの改名、データ構造の変更、リリース後の仕様変更セーブ互換を全更新の約束にし、派生する状態は毎回作り直すADR「既存セーブを壊さないことを全更新の約束にする」「所持 Spell は起動のたびに受領記録から作り直す」クラウドセーブや課金でデータを失う・二重に付与する全体複数端末、購入直後のクラウドロード、課金の復元衝突を世代とプレイ時... ]]></description>
+    <pubDate>Fri, 02 Oct 2026 00:36:56 GMT</pubDate>
+  </item><item>
+    <title>運用</title>
+    <link>https://yooyooy724.github.io/models/%E9%81%8B%E7%94%A8</link>
+    <guid>https://yooyooy724.github.io/models/%E9%81%8B%E7%94%A8</guid>
+    <description><![CDATA[ このサイトの編集規則。人は 編集画面 から編集する。Claude は提案だけを書く。 編集画面へのログイン 編集画面 を開く 「Sign In with Token」を選ぶ GitHub の Personal Access Token（このリポジトリの Contents: Read and write 権限）を貼る 保存すると GitHub に直接コミットされ、数分後にこのサイトへ反映される。 ページの欄 欄値意味type地図 / 範囲 / モデル / リスクページの種類kind全体 / グループ範囲ページ（全体・グループの index.md）だけmembersプロジェクトの表示名グループの範... ]]></description>
+    <pubDate>Fri, 02 Oct 2026 00:36:56 GMT</pubDate>
   </item><item>
     <title>世界観（全体）</title>
     <link>https://yooyooy724.github.io/models/%E5%85%A8%E4%BD%93/%E4%B8%96%E7%95%8C%E8%A6%B3</link>
     <guid>https://yooyooy724.github.io/models/%E5%85%A8%E4%BD%93/%E4%B8%96%E7%95%8C%E8%A6%B3</guid>
     <description><![CDATA[ すべての開発プロジェクトに共通する、作品世界とその手触りの拠り所。過去の意思決定（遡及ADR）から繰り返し現れる考え方を抜き出した提案。 遊びが届けるもの 原則中身根拠となった決定孤独を豊かにする遊びは孤独を埋めるものではなく、ひとりの時間をより豊かにするもの「目的はより多くの時間をより豊かな孤独にすること」（2026-08）人と人が出会う場をつくる違うものが集まる場所で、自分とは違う誰かに出会う体験をつくる「作りたいのは生活文化が東京のように集まる世界」（2026-07）、「これからのゲームは人と人がつながる場を提供する」（2026-09）自分を投影できる対象を置くプレイヤーが自分を重ねられ... ]]></description>
     <pubDate>Thu, 01 Oct 2026 10:39:12 GMT</pubDate>
-  </item><item>
-    <title>運用</title>
-    <link>https://yooyooy724.github.io/models/%E9%81%8B%E7%94%A8</link>
-    <guid>https://yooyooy724.github.io/models/%E9%81%8B%E7%94%A8</guid>
-    <description><![CDATA[ このサイトの編集規則。人は 編集画面 から編集する。Claude は提案だけを書く。 編集画面へのログイン 編集画面 を開く 「Sign In with Token」を選ぶ GitHub の Personal Access Token（このリポジトリの Contents: Read and write 権限）を貼る 保存すると GitHub に直接コミットされ、数分後にこのサイトへ反映される。 ページの欄 欄値意味type地図 / 範囲 / モデル / リスクページの種類kind全体 / グループ / プロジェクト範囲ページだけgroupsグループの範囲ページ名プロジェクトの範囲ページだけ。属... ]]></description>
-    <pubDate>Thu, 01 Oct 2026 10:39:12 GMT</pubDate>
-  </item><item>
-    <title>ゲームデザイン（全体）</title>
-    <link>https://yooyooy724.github.io/models/%E5%85%A8%E4%BD%93/%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%87%E3%82%B6%E3%82%A4%E3%83%B3</link>
-    <guid>https://yooyooy724.github.io/models/%E5%85%A8%E4%BD%93/%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%87%E3%82%B6%E3%82%A4%E3%83%B3</guid>
-    <description><![CDATA[ すべての開発プロジェクトに共通する、遊びの設計原則。過去の意思決定（遡及ADR）のうち、複数のコンテンツや作品で繰り返し現れたものを抜き出した提案。 放置ゲームの定義 放置ゲームらしさは「ログインの間隔」と「1回のプレイ時間」で決まる。 高リスク・高リターンの選択は、システムが押し付けずプレイヤーに持たせる。 根拠: 「次回作はプレイヤーが自分を投影できる対象を持たせる」（2026-04） 報酬 原則中身根拠となった決定損したかもを混ぜない報酬は純粋なプラスにする。押さなくても安全で、押せば得るものは減らない「Spell 報酬は純粋なプラスだけにする」（2026-09）、「釣りはマイナスのない... ]]></description>
-    <pubDate>Thu, 01 Oct 2026 10:37:33 GMT</pubDate>
-  </item><item>
-    <title>ビジネス（全体）</title>
-    <link>https://yooyooy724.github.io/models/%E5%85%A8%E4%BD%93/%E3%83%93%E3%82%B8%E3%83%8D%E3%82%B9</link>
-    <guid>https://yooyooy724.github.io/models/%E5%85%A8%E4%BD%93/%E3%83%93%E3%82%B8%E3%83%8D%E3%82%B9</guid>
-    <description><![CDATA[ すべての開発プロジェクトに共通する、売り方・届け方の拠り所。過去の意思決定（遡及ADR）から繰り返し現れる考え方を抜き出した提案。 出し方 原則中身根拠となった決定1つのコードから複数の場所へ同じ作品を、モバイル・Steam・Web ゲームサイトに展開する「Steam とモバイルを同じコードから出す」（2024-10）、WebGL 版の決定（2025-07）期限より品質スケジュールを理由にスコープを削らない「Steam 版は期限を置かず品質を優先する」（2026-07〜08）未完成は約束つきで先に見せる開発中のものはテスターに先行公開し、消える範囲を先に約束する開発中エリアのテスター公開（20... ]]></description>
-    <pubDate>Thu, 01 Oct 2026 10:37:33 GMT</pubDate>
-  </item><item>
-    <title>開発方針（全体）</title>
-    <link>https://yooyooy724.github.io/models/%E5%85%A8%E4%BD%93/%E9%96%8B%E7%99%BA%E6%96%B9%E9%87%9D</link>
-    <guid>https://yooyooy724.github.io/models/%E5%85%A8%E4%BD%93/%E9%96%8B%E7%99%BA%E6%96%B9%E9%87%9D</guid>
-    <description><![CDATA[ すべての開発プロジェクトに共通する作り方。前半は過去の意思決定（遡及ADR）から繰り返し現れる原則、後半は開発サイクルの自動化の提案。 設計の原則 原則中身根拠となった決定ルールを表示から切り離すゲームのルール（ドメイン）を Unity から切り離し、別の画面（モバイル・Web・ECS）につなぎ直せるようにする「ドメインから永続化を外しアセンブリで層を分ける」（2024-02）、「ドメインを別リポジトリに出す」（2025-03）、Blazor での試作（2025-03）コードを仕様の正本にする実装した後の仕様の正本は、ドメインの C# コードにする「実装後の仕様の正本はドメインの C# コード... ]]></description>
-    <pubDate>Thu, 01 Oct 2026 10:37:33 GMT</pubDate>
   </item>
     </channel>
   </rss>
