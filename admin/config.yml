@@ -1,4 +1,4 @@
-# デザインモデル・リスク・グループの編集画面（https://yooyooy724.github.io/admin/）。
+# デザインモデルのカード・リスクの編集画面（https://yooyooy724.github.io/admin/）。
 # 正本は models-site/content/。保存すると main に直接コミットされ、
 # .github/workflows/models.yml が Quartz で /models/ を作り直す。
 # 欄の意味は models-site/content/運用.md を参照。
@@ -17,45 +17,49 @@ public_folder: /models/attachments
 site_url: https://yooyooy724.github.io/models/
 
 collections:
-  - name: models
-    label: デザインモデル
-    label_singular: ページ
-    folder: models-site/content
+  # デザインモデルのカード。1枚＝1ファイル。カテゴリのフォルダに置く
+  - name: cards
+    label: カード
+    label_singular: カード
+    folder: models-site/content/カード
     extension: md
     format: frontmatter
     create: true
     nested:
-      depth: 3
+      depth: 2
       subfolders: false
     meta:
       path:
         widget: string
-        label: 置き場所
+        label: 置き場所（カテゴリのフォルダ名/題）
         index_file: index
-    summary: "{{title}}（{{type}}・{{status}}）"
+    summary: "{{title}}（{{category}}・{{status}}）"
     fields:
-      - { name: title, label: タイトル }
+      - { name: title, label: 題（原則を短く言い切る） }
       - name: type
         label: 種類
-        widget: select
-        options: [地図, 範囲, モデル, リスク]
-      - name: kind
-        label: 範囲の種類（全体・グループの index.md だけ）
-        widget: select
-        options: [全体, グループ]
-        required: false
-      - name: members
-        label: 属するプロジェクト（グループの index.md だけ）
-        widget: list
-        required: false
+        widget: hidden
+        default: モデル
       - name: category
-        label: カテゴリ（モデルページだけ）
+        label: カテゴリ
         widget: select
-        options: [世界観, ゲームデザイン, 開発方針, ビジネス]
-        required: false
+        options: [世界観モデル, ゲームデザインモデル, 開発方針, ビジネスモデル]
+      - name: tags
+        label: 範囲（全体 / Idle-MInertia / グループ名）
+        widget: list
+        default: [全体]
       - name: status
         label: 状態
         widget: select
         options: [提案, 確定]
         default: 提案
+      - { name: description, label: 要約（カード一覧に出す1文）, required: false }
       - { name: body, label: 本文, widget: markdown }
+
+  # カード以外のページ（地図・リスク・運用）
+  - name: pages
+    label: ページ
+    files:
+      - { name: index, label: 地図（トップ）, file: models-site/content/index.md, fields: [{ name: title, label: タイトル }, { name: type, widget: hidden }, { name: status, widget: hidden }, { name: body, label: 本文, widget: markdown }] }
+      - { name: risk, label: リスク, file: models-site/content/リスク.md, fields: [{ name: title, label: タイトル }, { name: type, widget: hidden }, { name: status, label: 状態, widget: select, options: [提案, 確定] }, { name: body, label: 本文, widget: markdown }] }
+      - { name: ops, label: 運用, file: models-site/content/運用.md, fields: [{ name: title, label: タイトル }, { name: type, widget: hidden }, { name: status, widget: hidden }, { name: body, label: 本文, widget: markdown }] }

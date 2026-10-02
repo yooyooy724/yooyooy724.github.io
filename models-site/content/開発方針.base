@@ -1,0 +1,46 @@
+# 開発方針 のカード一覧。カードの実体は カード/開発方針/ にある（1枚＝1ファイル）。
+# タブで範囲を切り替える。範囲はカードの tags（全体 / Idle-MInertia）。
+filters:
+  and:
+    - file.inFolder("カード/開発方針")
+    - note.type == "モデル"
+formulas:
+  scope: if(file.hasTag("全体"), "全体", if(file.hasTag("Idle-MInertia"), "Idle MInertia", "その他"))
+properties:
+  note.description:
+    displayName: 要約
+  formula.scope:
+    displayName: 範囲
+  note.status:
+    displayName: 状態
+views:
+  - type: cards
+    name: すべて
+    order:
+      - file.name
+      - note.description
+      - formula.scope
+      - note.status
+    sort:
+      - property: formula.scope
+        direction: DESC
+  - type: cards
+    name: 全体
+    filters:
+      and:
+        - file.hasTag("全体")
+    order:
+      - file.name
+      - note.description
+      - formula.scope
+      - note.status
+  - type: cards
+    name: Idle MInertia
+    filters:
+      and:
+        - file.hasTag("Idle-MInertia")
+    order:
+      - file.name
+      - note.description
+      - formula.scope
+      - note.status

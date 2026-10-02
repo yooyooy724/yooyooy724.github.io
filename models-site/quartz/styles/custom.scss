@@ -255,3 +255,105 @@ code {
     padding: 0.6rem 0.8rem;
   }
 }
+
+// ---------- カード一覧（カテゴリのページ = .base） ----------
+
+.bases-view-meta {
+  display: none; // 「Showing N of N entries」は英語で読みにくいので出さない
+}
+
+.bases-cards {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+a.bases-card {
+  background: #f8f6f0;
+  border: 1px solid var(--lightgray);
+  border-bottom: 1px solid var(--lightgray);
+  border-radius: 18px;
+  box-shadow: none;
+  color: var(--dark);
+  padding: 0;
+  transition: border-color 160ms ease, transform 160ms ease;
+
+  &:hover {
+    border-color: var(--orange);
+    transform: translateY(-2px);
+  }
+}
+
+.bases-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  padding: 18px 20px;
+}
+
+.bases-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.55;
+}
+
+.bases-card-meta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+}
+
+// 1行目は要約。ラベルを出さず、本文として読ませる
+.bases-card-row:first-child {
+  display: block;
+
+  .bases-card-label {
+    display: none;
+  }
+
+  .bases-card-value {
+    color: var(--muted-strong);
+    font-size: 0.86rem;
+    line-height: 1.75;
+    text-align: left;
+  }
+}
+
+// 2行目以降（範囲・状態）は札にして下端に並べる
+.bases-card-row:not(:first-child) {
+  display: inline-flex;
+
+  .bases-card-label {
+    display: none;
+  }
+
+  .bases-card-value .bases-text {
+    border: 1px solid var(--lightgray);
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 10px;
+  }
+}
+
+.bases-card-row:nth-child(2) {
+  .bases-card-value .bases-text {
+    background: var(--dark);
+    border-color: var(--dark);
+    color: var(--light);
+  }
+}
+
+.bases-card-meta {
+  align-content: flex-start;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  .bases-card-row:first-child {
+    flex-basis: 100%;
+  }
+}
