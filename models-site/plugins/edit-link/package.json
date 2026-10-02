@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "各ページの先頭に、編集画面（/admin/ の Sveltia CMS）で開くボタンを置く",
   "type": "module",
-  "main": "./dist/index.js",
-  "exports": { ".": { "import": "./dist/index.js" }, "./package.json": "./package.json" },
+  "main": "./index.js",
+  "exports": { ".": { "import": "./index.js" }, "./package.json": "./package.json" },
   "quartz": {
     "name": "edit-link",
     "displayName": "Edit Link",
