@@ -40,7 +40,10 @@ jobs:
 
       - name: ビルド
         working-directory: models-site
-        run: npx quartz build -o ../models
+        # Quartz は出力先を空にしないので、前回の生成物（大文字・小文字だけ違う古いページなど）を先に消す
+        run: |
+          rm -rf ../models
+          npx quartz build -o ../models
 
       - name: コミット
         run: |
