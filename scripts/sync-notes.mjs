@@ -80,6 +80,16 @@ const SITES = [
     files: ["index.html", "feedback.json"],
     dirs: [],
   },
+  {
+    dir: "hint",
+    from: "HintSite",
+    label: "Hint",
+    title: "ヒント設計",
+    desc: "コンテンツの画面（区画）ごとの要素と説明、Tutorial との関係。",
+    can: "ヒントを実装する前の棚卸し。章ごとに書き込めます。",
+    files: ["index.html", "feedback.json"],
+    dirs: [],
+  },
 ];
 
 const NOINDEX = '<meta name="robots" content="noindex,nofollow">';

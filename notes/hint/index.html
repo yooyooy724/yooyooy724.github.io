@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MINERTIA ヒント設計</title>
+<style>
+  /* 配色・字組みは他のノート (PromotionSite 等) と同じく、ポートフォリオ (src/globals.css) に合わせる。
+     紙のような淡色地 + ink/orange/green/blue の4色だけで組む。 */
+  :root{
+    --ink:#151a17;
+    --paper:#f2efe7;
+    --card:#e5e2d9;
+    --muted:#757a74;
+    --muted-strong:#5f645e;
+    --line:#cbc8bf;
+    --green:#b8de50;
+    --orange:#f06b45;
+    --blue:#a7c6f1;
+    --font-jp:"Yu Gothic","Hiragino Kaku Gothic ProN",sans-serif;
+    --font-display:Arial,Helvetica,sans-serif;
+    --mono:Consolas,"Courier New",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--font-jp);line-height:1.9;font-size:15px;padding-inline:16px;padding-block:0 64px}
+  a{color:inherit}
+  .label{font-family:var(--font-display);font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+
+  .wrap{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:200px minmax(0,1fr);gap:40px}
+  @media (max-width:800px){.wrap{grid-template-columns:minmax(0,1fr);gap:0}}
+
+  header.top{grid-column:1/-1;padding-block:40px 10px;border-bottom:1px solid var(--line);margin-bottom:24px}
+  header.top .label{color:var(--muted-strong)}
+  h1{font-family:var(--font-display);font-size:clamp(24px,4vw,36px);line-height:1.25;margin:8px 0 10px;letter-spacing:.01em}
+  .lede{color:var(--muted-strong);max-width:62ch}
+  .meta{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:12px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+  nav.toc{position:sticky;top:0;align-self:start;padding-top:4px}
+  nav.toc ol{list-style:none;display:grid;gap:2px}
+  nav.toc a{display:block;padding:4px 10px;border-left:2px solid var(--line);color:var(--muted-strong);text-decoration:none;font-size:13px}
+  nav.toc a:hover,nav.toc a:focus-visible{color:var(--ink);border-left-color:var(--orange);outline:none}
+  @media (max-width:800px){nav.toc{position:static;margin-bottom:20px}nav.toc ol{display:flex;flex-wrap:wrap;gap:6px}nav.toc a{border:1px solid var(--line);border-radius:999px;padding:2px 10px}}
+
+  main{min-width:0}
+  section{margin-bottom:44px}
+  h2{font-family:var(--font-display);font-size:20px;margin:0 0 12px;padding-bottom:6px;border-bottom:2px solid var(--card);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  h3{font-family:var(--font-display);font-size:15px;margin:22px 0 8px}
+  p{margin:0 0 10px;max-width:70ch}
+  ul,ol{margin:0 0 10px;padding-left:1.4em;max-width:72ch}
+  li{margin-bottom:3px}
+  code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:1px 5px;border-radius:3px}
+  strong{font-weight:700}
+
+  .badge{display:inline-block;font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.06em;padding:0 8px;border-radius:999px;line-height:1.8;vertical-align:middle;white-space:nowrap;color:var(--ink)}
+  .b-fixed{background:var(--green)}
+  .b-adopt{background:var(--orange);color:#fff}
+  .b-idea{background:var(--blue)}
+  .b-open{background:transparent;border:1px solid var(--muted);color:var(--muted-strong)}
+  .src{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:8px 18px;padding:12px 16px;background:var(--card);border-radius:6px;font-size:13px;margin-bottom:10px}
+  .legend .badge{margin-right:4px}
+
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:#fff;margin:8px 0 14px}
+  table{border-collapse:collapse;width:100%;font-size:13.5px}
+  th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+  th{font-family:var(--font-display);font-size:12px;letter-spacing:.04em;color:var(--muted-strong);background:var(--card);white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  td.num,th.num{font-family:var(--mono);white-space:nowrap}
+  td.keep{color:#4a7a1e;font-weight:700;white-space:nowrap}
+  td.grow{color:#b3491f;font-weight:700;white-space:nowrap}
+  td.reset{color:var(--muted-strong);font-weight:700;white-space:nowrap}
+
+  .callout{border-left:3px solid var(--orange);background:#fff;padding:10px 14px;border-radius:0 6px 6px 0;margin:10px 0 14px;max-width:72ch}
+  .callout.note{border-left-color:var(--blue)}
+  .callout ul{margin:0;padding-left:1.3em}
+  .callout ul:last-child{margin-bottom:0}
+  .quote{font-size:13px;color:var(--muted-strong);border-left:2px solid var(--line);padding-left:10px;margin:6px 0 10px;max-width:70ch}
+  .flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0 14px;font-size:13.5px}
+  .flow .step{background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 12px}
+  .flow .arrow{color:var(--muted);font-family:var(--mono)}
+  .layers{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:10px 0 14px}
+  .layer{background:#fff;border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+  .layer .name{font-family:var(--font-display);font-weight:700;font-size:15px}
+  .layer .axis{font-family:var(--mono);font-size:12px;color:var(--muted-strong);margin-bottom:6px}
+  .layer dl{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:13px}
+  .layer dt{color:var(--muted)}
+  .num-list{counter-reset:q;list-style:none;padding:0}
+  .num-list li{position:relative;padding-left:2.2em}
+  .num-list li::before{counter-increment:q;content:counter(q);position:absolute;left:0;top:.2em;font-family:var(--font-display);font-size:11px;font-weight:700;color:var(--ink);background:var(--green);border-radius:999px;width:1.7em;height:1.7em;display:grid;place-items:center}
+  footer{grid-column:1/-1;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:14px;font-family:var(--mono)}
+  a:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+  /* ---- カード ---- */
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin:10px 0 14px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+  .card.fixed{border-color:var(--ink);border-width:2px}
+  .card.dropped{opacity:.55;background:var(--card)}
+  .card-head{display:flex;justify-content:space-between;align-items:center}
+  .card-kind{font-family:var(--font-display);font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--muted-strong)}
+  .card-title{font-family:var(--font-display);font-weight:700;font-size:15px}
+  .card ul{margin:0;padding-left:1.2em;font-size:13px;max-width:none}
+  .card-foot{margin-top:auto;font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+  /* ---- ページ先頭の目的 ---- */
+  .purpose{grid-column:1/-1;background:#fff;border:2px solid var(--ink);border-radius:8px;
+    padding:18px 20px;margin-bottom:28px}
+  .purpose .label{color:var(--orange);margin-bottom:6px}
+  .purpose h2{font-family:var(--font-display);font-size:19px;margin:0 0 8px;padding:0;border:0}
+  .purpose p{margin:0 0 8px;max-width:64ch}
+  .purpose .nums{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+  .purpose .num{background:var(--card);border-radius:6px;padding:8px 14px;min-width:132px}
+  .purpose .num .k{font-family:var(--font-display);font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--muted-strong)}
+  .purpose .num .v{font-family:var(--mono);font-size:19px;line-height:1.4}
+  .purpose .num .u{font-size:11.5px;color:var(--muted)}
+
+  /* ---- 章ごとの書き込み ---- */
+  .cmt{margin-top:16px;border-top:1px dashed var(--line);padding-top:10px}
+  .cmt .cmt-head{font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
+  .cmt ul{list-style:none;padding:0;margin:0 0 8px;display:grid;gap:6px}
+  .cmt li{background:#fff;border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:13.5px;line-height:1.7}
+  .cmt li.is-pending{border-color:var(--orange)}
+  .cmt .cmt-text{white-space:pre-wrap;word-break:break-word}
+  .cmt .cmt-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:4px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .cmt .cmt-meta button{background:none;border:0;padding:0;font:inherit;color:var(--muted-strong);cursor:pointer;text-decoration:underline}
+  .cmt .cmt-meta button:hover{color:var(--orange)}
+  .cmt form{display:grid;gap:6px}
+  .cmt textarea{width:100%;min-height:62px;resize:vertical;font-family:var(--font-jp);font-size:13.5px;line-height:1.7;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink)}
+  .cmt .cmt-actions{display:flex;gap:8px;align-items:center}
+  .cmt .btn{font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:.04em;padding:5px 14px;border:1px solid var(--ink);border-radius:999px;background:var(--green);color:var(--ink);cursor:pointer}
+  .cmt .btn.ghost{background:transparent;border-color:var(--line);color:var(--muted-strong)}
+  .cmt .btn:disabled{opacity:.45;cursor:default}
+  .cmt .hint{font-size:11.5px;color:var(--muted)}
+
+  /* ---- 状態バー ---- */
+  #noteBar{position:fixed;right:16px;bottom:16px;z-index:10;display:flex;gap:8px;align-items:center;
+    background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:6px 12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.12);font-size:12px;font-family:var(--mono)}
+  #noteBar .dot{width:8px;height:8px;border-radius:999px;background:var(--muted)}
+  #noteBar.live .dot{background:var(--green)}
+  #noteBar.propose .dot{background:var(--blue)}
+  #noteBar button{font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.04em;
+    padding:3px 12px;border:1px solid var(--ink);border-radius:999px;background:var(--orange);color:#fff;cursor:pointer}
+  @media (max-width:800px){#noteBar{right:10px;bottom:10px;font-size:11px}}
+  td.el{font-weight:700;min-width:9em;width:28%}
+  td.el + td{min-width:14em}
+  .muted{color:var(--muted)}
+  h3 .sub{font-family:var(--font-jp);font-size:12px;font-weight:400;color:var(--muted-strong);margin-left:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="label">Idle Minertia / Design Notes / Hint</div>
+    <h1>ヒント設計 — 画面ごとの要素</h1>
+    <p class="lede">ヒントを実装する前の棚卸し。コンテンツごとに「画面」（区画）を分け、そこに並ぶ要素と、その説明を書き出した。Tutorial がどの区画で何を説明しているかも並べる。</p>
+    <div class="meta"><span>更新 2026-10-06</span><span>元: Unity の UXML・ローカライズ CSV・TutorialDomain.cs</span><span><a href="../">ノート一覧へ</a></span></div>
+  </header>
+
+  <div class="purpose">
+    <div class="label">Purpose</div>
+    <h2>ヒントの単位は「区画」</h2>
+    <ul>
+      <li>区画 = 1 つのコンテンツの中で、見え方がまとまっている場所。例: Equipment は <strong>上部の装備を入れ替える画面＋下の 3 タブ = 4 区画</strong></li>
+      <li>各区画の表は「要素 / 説明 / Tutorial との関係」。説明は今の UI の文言とコードから書いた（文言の案ではない）</li>
+      <li>Tutorial の説明ポップアップは<strong>一度確認すると二度と開けない</strong>。ヒントはその読み直しを兼ねられる</li>
+      <li>解禁前の区画にはヒントを出せない。区画ごとに解禁のタイミングを書いた（分からないものは「要確認」）</li>
+    </ul>
+    <div class="nums">
+      <div class="num"><div class="k">コンテンツ</div><div class="v">8 <span class="u">つ</span></div></div>
+      <div class="num"><div class="k">区画</div><div class="v">34 <span class="u">か所</span></div></div>
+      <div class="num"><div class="k">Tutorial のステップ</div><div class="v">24 <span class="u">個</span></div></div>
+    </div>
+  </div>
+
+  <nav class="toc" aria-label="目次">
+    <ol>
+      <li><a href="#tutorial">1. Tutorial と既存の説明</a></li>
+      <li><a href="#cave">2. Cave（洞窟）</a></li>
+      <li><a href="#equipment">3. Equipment（装備）</a></li>
+      <li><a href="#prestige">4. Prestige（プレステージ）</a></li>
+      <li><a href="#battle">5. Battle（バトル）</a></li>
+      <li><a href="#relic">6. Relic（レリック）</a></li>
+      <li><a href="#popups">7. どの画面からも開くもの</a></li>
+      <li><a href="#nether">8. Nether（ネザー）</a></li>
+      <li><a href="#shop">9. Shop（ショップ）</a></li>
+      <li><a href="#landscape">10. 横長（Steam）での違い</a></li>
+      <li><a href="#open">11. 論点</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <section id="tutorial">
+      <h2>1. Tutorial と既存の説明</h2>
+      <p>ステップ番号は <code>TutorialDomain.cs</code> の <code>stepId</code>。区画の列は、このページの各章の番号（例: Equipment ① = 上部の装備を入れ替える画面）。</p>
+      <h3>Tutorial の流れ</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>ステップ</th><th>区画</th><th>すること</th><th>説明ポップアップ / 出てくるもの</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1000</td><td>盤面</td><td>最初のアイテムを拾う</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="num">2000</td><td>下部バー</td><td>Equipment を開く</td><td>Equipment ボタンを強調</td></tr>
+          <tr><td class="num">3000</td><td>Equipment ①</td><td>装備の説明を読む</td><td>Equipment_EquipExplain</td></tr>
+          <tr><td class="num">4000</td><td>Equipment ①</td><td>最初のアイテムを装備する</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="num">5000</td><td>下部バー</td><td>Cave を開く</td><td>アップグレード・深度の位置を指す</td></tr>
+          <tr><td class="num">6000</td><td>Cave ④</td><td>アップグレードの説明を読む</td><td>Cave_UpgradeExplain</td></tr>
+          <tr><td class="num">7000</td><td>Cave ④</td><td>アップグレードを 1 つ買う</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="num">8000</td><td>下部バー</td><td>Equipment を開く</td><td>Soil の箱を強調</td></tr>
+          <tr><td class="num">9000〜13000</td><td>Equipment ②</td><td>アイテムを 5 個作る</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="num">14000</td><td>Equipment ①</td><td>通常マージの説明を読む</td><td>Equipment_NormalMergeExplain</td></tr>
+          <tr><td class="num">15000</td><td>Equipment ①</td><td>通常アイテムを重ねる</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="num">15500</td><td>Equipment ②</td><td>もう 1 つ作る</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="num">16000</td><td>Equipment ①</td><td>エンチャントの説明を読む</td><td>Equipment_EnchantMergeExplain。ここでスロット拡張・ミッション・Battle ボタンが出る</td></tr>
+          <tr><td class="num">16200</td><td>Equipment ①</td><td>エンチャントを重ねる</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="num">16500</td><td>下部バー</td><td>Battle を開く</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="num">17000</td><td>Battle ①</td><td>バトルを始める</td><td>Tear の箱が出る</td></tr>
+          <tr><td class="num">18000</td><td>Battle ②</td><td>バトルの説明を読む</td><td>Battle_BattleExplain。Cave の進捗・ブースター・マップが出る</td></tr>
+          <tr><td class="num">19000</td><td>下部バー</td><td>Cave を開く</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="num">20000</td><td>Cave ①</td><td>バトル報酬の説明を読む</td><td>Cave_BattleRewardExplain。Prestige ボタンが出る</td></tr>
+          <tr><td class="num">20100</td><td>下部バー</td><td>Prestige を開く</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="num">20200</td><td>Prestige ①</td><td>Prestige の説明を読む</td><td>Prestige_PrestigeExplain</td></tr>
+          <tr><td class="num">21000</td><td>Prestige ②</td><td>最初の Prestige をする</td><td>Relic ボタンが出る</td></tr>
+          <tr><td class="num">23000</td><td>Battle ③</td><td>バトル装備セットを押す</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="num">24000</td><td>Battle ③</td><td>バトル装備セットの説明を読む</td><td>Battle_E2BExplain</td></tr>
+        </tbody>
+      </table></div>
+      <h3>すでにある「説明」の UI</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>もの</th><th>性質</th><th>場所</th></tr></thead>
+        <tbody>
+          <tr><td class="el">Tutorial の説明ポップアップ（8 種）</td><td>各画面の上に重なり、ページ送り（前へ / 次へ）と確認ボタンを持つ。確認でステップが進み、<strong>二度と開けない</strong></td><td>Equipment_EquipExplain / Equipment_NormalMergeExplain / Equipment_EnchantMergeExplain / Cave_UpgradeExplain / Cave_BattleRewardExplain / Battle_BattleExplain / Battle_E2BExplain / Prestige_PrestigeExplain（Cave_TITLE は止めてある）</td></tr>
+          <tr><td class="el">Battle のステータス説明（StatsHint）</td><td>いつでも開ける。ステータス 11 項目それぞれの説明</td><td><code>PopUpContainer_StatsHint</code></td></tr>
+          <tr><td class="el">Cave のステータス内訳（StatsPanel）</td><td>いつでも開ける。採掘力などがどこから来ているか</td><td><code>PopUpContainer_StatsPanel</code></td></tr>
+          <tr><td class="el">Equipment の詳細パネル</td><td>アイテムを押すと出る。効果と数値</td><td><code>DetailPanel</code></td></tr>
+          <tr><td class="el">Prestige の倍率の説明</td><td>画面に常に出ている 1 文</td><td><code>MulExplain</code></td></tr>
+          <tr><td class="el">未解禁の表示</td><td>Battle "3 - 1" / Prestige "6 - 1" / Relic "10 - 1" の錠前、Relic のバトルタブ「Area 2 で解禁」など</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="cave">
+      <h2>2. Cave（洞窟） <span class="badge b-open">解禁: 最初から</span></h2>
+      <p>採掘の本画面。上から「情報」「盤面」「ジェムリスト」「アップグレード」「下部ボタン」の順に並ぶ。ポップアップが 5 つある。</p>
+      <h3>① 上部の情報 <span class="sub">解禁: 最初から（進捗は T19000 から）</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">深度（Depth）</td><td>今いる層と、層の中でどこまで掘ったか。次の層へ行くとバトルステータスが増える</td><td><code>T5000</code> で深度の位置を指し、<code>T20000</code> Cave_BattleRewardExplain で「左上を見て」と説明</td></tr>
+          <tr><td class="el">掘削の進捗（CaveProgress）</td><td>層の最後まであとどれだけか</td><td><code>T19000</code> で表示が始まる</td></tr>
+          <tr><td class="el">通貨</td><td>Soil / Tear / Onies / NetherCream など、いま持っている量</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">獲得ログ</td><td>直近に手に入れた通貨が流れる。倍率やドレインの印つき</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">大量発生イベント</td><td>一時的に出現が増えるイベントの表示</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">マイルストーンのゲージ</td><td>次の深度の報酬までの進み</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>② 盤面 <span class="sub">解禁: 最初から</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">ブロック</td><td>時間で自動的に砕ける。砕くと Soil が手に入る。最初のアイテム（FirstItem）もここから出る</td><td><code>T1000</code> で最初のアイテムを拾う</td></tr>
+          <tr><td class="el">視点の切り替え（CameraModeChangeButton）</td><td>盤面を押すと斜め / 正面を切り替える</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">釣り・ジオード</td><td>釣り箱・ジオード箱が出たときに開くポップアップの入口</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>③ ジェムリスト <span class="sub">解禁: 要確認</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">ジェムリスト（Panel_GemList）</td><td>集めた宝石の一覧。開閉できる。未開封の箱があると印が付く</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">ジェムパワー</td><td>宝石の数から決まる Prestige の倍率の素</td><td>Prestige_PrestigeExplain（<code>T20200</code>）でジェムパワーを説明</td></tr>
+          <tr><td class="el">INDEX の入口</td><td>図鑑（INDEX）を開く。新しく見つけたものがあると赤い印</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">Spell の入口</td><td>持っている Spell の一覧を開く</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">試練の進行（ChallengeProgress）</td><td>試練に挑戦中のときだけ出る。条件と進み</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>④ アップグレード <span class="sub">解禁: T5000（Soil）/ Tear は要確認</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">Soil Upgrade タブ</td><td>Soil を払って採掘を強くする。押すたびに 1 段上がる</td><td><code>T6000</code> Cave_UpgradeExplain「アップグレードを購入」、<code>T7000</code> で 1 つ買わせる</td></tr>
+          <tr><td class="el">Tear Upgrade タブ</td><td>Tear を払う別系統のアップグレード</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">購入数の切り替え</td><td>1 回 / 10 回 / 最大 など、一度に買う数</td><td>Cave_UpgradeExplain の 2 ページ目「購入数を変更」</td></tr>
+          <tr><td class="el">詳細</td><td>アップグレードの効果の中身</td><td>Cave_UpgradeExplain の「詳細を開く」</td></tr>
+          <tr><td class="el">未解禁（UpgradeAreaLocked）</td><td>解禁前に出る覆い</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>⑤ 下部のボタン <span class="sub">解禁: T16000（ミッション）/ T18000（ブースター・マップ）</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">デイリーミッションのゲージ</td><td>今日のミッション（またはジェムのトレード）の進み。押すと一覧</td><td><code>T16000</code> で表示が始まる</td></tr>
+          <tr><td class="el">ブースター</td><td>攻撃力などを一時的に上げる。受け取れるものがあると赤い印</td><td><code>T18000</code> で表示が始まる</td></tr>
+          <tr><td class="el">マップ</td><td>地層・ワールドを選ぶ。Nether / イベントの印</td><td><code>T18000</code> で表示が始まる</td></tr>
+        </tbody>
+      </table></div>
+      <h3>⑥ ポップアップ <span class="sub">解禁: それぞれ</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">ステータス（StatsPanel）</td><td>採掘力・クリティカル・Soil 獲得量が、どこから何倍になっているかの内訳</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">釣り箱 / 釣りの確率</td><td>釣り箱の中身を順に開ける。確率表</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">ジオード箱 / ジオードの確率</td><td>ジオードの中身と段（レア度）。確率表</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">Prestige 待機</td><td>自動 Prestige の待ち時間中に出る</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="equipment">
+      <h2>3. Equipment（装備） <span class="badge b-open">解禁: T2000（最初のアイテムを拾った後）</span></h2>
+      <p>上部の「装備を入れ替える画面」と、下の 3 タブ（生成・スロット・変換）の計 4 区画。説明ポップアップの数が一番多い画面。</p>
+      <h3>① 上部: 装備を入れ替える画面 <span class="sub">解禁: T2000</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">装備スロット（Slots）</td><td>いま装備しているアイテム。採掘やバトルに効く</td><td><code>T3000</code> Equipment_EquipExplain「アイテムを装備」、<code>T4000</code> で装備させる</td></tr>
+          <tr><td class="el">倉庫（Storage）</td><td>持っているアイテム。同じものを重ねるとレベルが上がる</td><td><code>T14000</code> Equipment_NormalMergeExplain「通常アイテムは 3 つ重ねるとレベルが上がる」</td></tr>
+          <tr><td class="el">エンチャント</td><td>レアなアイテム。4 つでレベルが上がり、特殊効果を持つ</td><td><code>T16000</code> Equipment_EnchantMergeExplain</td></tr>
+          <tr><td class="el">詳細パネル（DetailPanel）</td><td>アイテムの効果と数値</td><td>Equipment_NormalMergeExplain の「詳しい情報を確認できます」</td></tr>
+          <tr><td class="el">強化パネル（UpgradePanel）</td><td>アイテムを強化する</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">削除の確認</td><td>まとめて削除する前の確認</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">自動化の設定（PopUpContainer_Automation）</td><td>アイテム生成・マージ・オート装備の自動化の ON/OFF と設定。Relic で買ったものだけ出る</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>② 生成タブ（Forge） <span class="sub">解禁: T7000（Soil の箱）/ T17000（Tear の箱）</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">Soil の箱（SoilBoxOpener）</td><td>Box を払ってアイテムを作る</td><td><code>T7000</code> で強調表示、<code>T9000</code>〜13000 で 5 個作らせる</td></tr>
+          <tr><td class="el">Tear の箱（TearBoxOpener）</td><td>Tear 系の箱。よりよいアイテムが出る（要確認）</td><td><code>T17000</code> で表示が始まる</td></tr>
+        </tbody>
+      </table></div>
+      <h3>③ スロットタブ（Slot） <span class="sub">解禁: T16000</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">スロット数の拡張</td><td>装備スロットを増やす（ダイヤ）</td><td><code>T16000</code> で表示が始まる</td></tr>
+          <tr><td class="el">倉庫の容量の拡張</td><td>倉庫を +6 ずつ広げる（ダイヤ）</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>④ 変換タブ（Convert） <span class="sub">解禁: 要確認</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">エネルギー（5 つ）</td><td>変換に使う回数。4 時に戻る</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">種類の選択</td><td>マトック / つるはし / ハンマー / エンチャントのどれに変えるか</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">変換ボタン（SwapButton）</td><td>アイテムの種類を変える</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">補充（RefillPanel）</td><td>エネルギーを補充する。次の更新までの時間</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="prestige">
+      <h2>4. Prestige（プレステージ） <span class="badge b-open">解禁: T20000（"6 - 1" で解禁）</span></h2>
+      <p>上部の「ジェムパワーと倍率」と、Soil / Tear の 2 タブ。</p>
+      <h3>① ジェムパワーと倍率 <span class="sub">解禁: T20100</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">ジェムパワー</td><td>集めた宝石の力。Prestige の効果を強める</td><td><code>T20200</code> Prestige_PrestigeExplain「ジェムパワー」</td></tr>
+          <tr><td class="el">今の倍率 → 次の倍率</td><td>Prestige すると Soil / Tear の獲得倍率がどれだけ上がるか</td><td>Prestige_PrestigeExplain「ソイル獲得倍率が上がる」</td></tr>
+          <tr><td class="el">倍率の説明（MulExplain）</td><td>倍率の仕組みを一文で</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>② Soil タブ <span class="sub">解禁: T20100</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">Soil Prestige</td><td>Soil の獲得量を上げる代わりに、Soil アップグレードの進行などを失う</td><td>Prestige_PrestigeExplain「プレステージすると多くの進行を失う」、<code>T21000</code> で初回の Prestige</td></tr>
+          <tr><td class="el">失うもの</td><td>リセットされる項目の一覧</td><td>同上</td></tr>
+        </tbody>
+      </table></div>
+      <h3>③ Tear タブ <span class="sub">解禁: 姫路の深度 10</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">Tear Prestige</td><td>Tear の獲得量を上げる。Soil の Prestige も同時に走る</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">失うもの</td><td>リセットされる項目の一覧</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="battle">
+      <h2>5. Battle（バトル） <span class="badge b-open">解禁: T16500（"3 - 1" で解禁）</span></h2>
+      <p>「ステージ選択」「戦闘」「下部ボタン」「結果」と、ポップアップ 5 つ。ステータスの説明（StatsHint）はすでにヒントに近い形で存在する。</p>
+      <h3>① ステージ選択 <span class="sub">解禁: T16500</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">ステージ一覧</td><td>挑むステージ。到達したウェーブなど</td><td><code>T17000</code> でバトルを始めさせる</td></tr>
+          <tr><td class="el">開始ウェーブの選択</td><td>何ウェーブ目から始めるか</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>② 戦闘 <span class="sub">解禁: T17000</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">ウェーブの情報 / 命中率</td><td>今のウェーブと命中率</td><td><code>T18000</code> Battle_BattleExplain「バトル」</td></tr>
+          <tr><td class="el">コンボ</td><td>連続で倒すと上がる</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">味方と装備</td><td>戦っているキャラと装備</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">ステータス（OpenButton_StatsHint）</td><td>攻撃・クリティカル・命中などの説明を開く</td><td>Battle_BattleExplain「ステータスは最初は 2 つ。洞窟で集められる」</td></tr>
+          <tr><td class="el">缶の列（have-bp など）</td><td>落とした缶の数。中身は採掘力・クリティカル・Prestige 速度など Cave に効く報酬</td><td>Battle_BattleExplain「缶を集める」</td></tr>
+          <tr><td class="el">戦利品パネル</td><td>手に入れたもの。詳細の開閉</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">バトル終了</td><td>途中でやめる</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>③ 下部のボタン <span class="sub">解禁: 要確認</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">DPS</td><td>味方ごとの与ダメージ</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">バトル装備セット（OpenButton_EtB）</td><td>育てたアイテムをバトルで使う</td><td><code>T23000</code> で表示、<code>T24000</code> Battle_E2BExplain「プレステージすると育てたアイテムがバトルで使える」</td></tr>
+          <tr><td class="el">ウェーブ選択（OpenButton_WS）</td><td>次に始めるウェーブを決める</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">ウェーブのマイルストーン</td><td>到達ウェーブごとの報酬。受け取れると印</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>④ 結果 <span class="sub">解禁: T17000</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">結果</td><td>クリアウェーブ数・討伐数・入手したもの</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">自動で次へ</td><td>次のバトルまでの時間</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">次のバトル / ステージ選択へ</td><td>続けるか戻るか</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>⑤ ポップアップ <span class="sub">解禁: それぞれ</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">バトル装備セット（EtB）</td><td>バトルで使う装備を選ぶ。新しいセットの通知</td><td>Battle_E2BExplain</td></tr>
+          <tr><td class="el">報酬獲得（Loot）</td><td>缶の回収。広告で +50%</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">ステータス（StatsHint）</td><td>各ステータスの説明（再生・攻撃範囲・クリティカル・命中・コンボ ほか 11 項目）</td><td>既存のヒントに最も近い</td></tr>
+          <tr><td class="el">ウェーブのマイルストーン</td><td>到達ウェーブの報酬の一覧</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">目標（Achievement）</td><td>達成目標と報酬</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="relic">
+      <h2>6. Relic（レリック） <span class="badge b-open">解禁: T21000（"10 - 1" で解禁）</span></h2>
+      <p>上部の通貨と、4 タブ（自動化・装備・バトル・露店）。横長ではタブを隠し、右列のボタンで選ぶ。</p>
+      <h3>① 上部の通貨 <span class="sub">解禁: T21000</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">Diamond / Onies / Box / NetherCream</td><td>Relic の支払いに使う通貨</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>② 自動化タブ <span class="sub">解禁: T21000（カテゴリごとに追加の解禁あり）</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">Soil Upgrade の自動化</td><td>Soil アップグレードを自動で買う。解禁と ON/OFF。一括 ON/OFF</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">Tear Upgrade の自動化</td><td>Tear アップグレードを自動で買う</td><td>Area2 入場後に出る</td></tr>
+          <tr><td class="el">装備の自動化</td><td>オート装備と対象の種別</td><td>Area3 で出る</td></tr>
+          <tr><td class="el">マージの自動化</td><td>自動マージと対象 Lv、Lv の解放</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">アイテム生成の自動化</td><td>箱を自動で開ける。ボックスを使用</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">Prestige の自動化</td><td>Soil / Tear の自動 Prestige、時間 / 深度の条件、クールタイム短縮</td><td>Area3 で出る</td></tr>
+          <tr><td class="el">カテゴリの開閉</td><td>見出しを押すと中身を開閉する</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>③ 装備タブ（工房） <span class="sub">解禁: T21000</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">工房のカード（4 種）</td><td>マトック / つるはし / ハンマー / エンチャントの Forge Level と、出るアイテムの Lv の確率</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">LEVEL UP（Onies / Diamond）</td><td>Forge Level を上げる。回数の上限あり</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>④ バトルタブ <span class="sub">解禁: Area2 入場</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">Battle Loot</td><td>戦利品の上限などを上げる</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">炭鉱（Mineshaft）</td><td>バトルを途中のウェーブから始められるようにする</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">Battle Stats</td><td>HP・攻撃範囲・クリティカル・命中・再生を上げる</td><td>NetherCream を得るまで隠れる</td></tr>
+          <tr><td class="el">未解禁（BattleLockedPanel）</td><td>「Area 2 で解禁」</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>⑤ 露店タブ（Bazaar） <span class="sub">解禁: Area3</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">次の入荷</td><td>棚が入れ替わるまでの時間</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">リロール</td><td>棚を入れ替える</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">棚</td><td>ボトル（強化）を買う</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">ステータス</td><td>露店で上がった値の一覧</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="popups">
+      <h2>7. どの画面からも開くもの <span class="badge b-open">解禁: それぞれ</span></h2>
+      <p>PopupScene に置いてある、画面をまたいで開くもの。</p>
+      <h3>① マップ（地層の選択） <span class="sub">解禁: T18000</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">地層の一覧</td><td>掘る地層を選ぶ。解放条件</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">移動の確認</td><td>移動すると Soil アップグレードを失う</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">マイルストーン</td><td>深度の報酬</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">ワールドの選択</td><td>Area1 / 2 / 3、Nether、イベント</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">Prestige 待機中の表示</td><td>待機中は移動できない</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>② ブースター <span class="sub">解禁: T18000</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">Cave / Battle / 時間 の ATK ブースター</td><td>それぞれの攻撃力を一定時間上げる。効果時間</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">一括の切り替え</td><td>まとめて ON/OFF</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>③ デイリーミッション <span class="sub">解禁: T16000</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">デイリータブ</td><td>今日のミッションと報酬</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">ジェムタブ（トレード）</td><td>指定の宝石を集める</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">ジェムの詳細</td><td>宝石の名前と出どころ</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>④ INDEX <span class="sub">解禁: 要確認</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">インデックス</td><td>見つけた宝石・アイテム・鉱石の図鑑。詳細</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">記録</td><td>これまでのプレイの記録（プレイ時間・最深部・バトル・試練・装備）</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>⑤ 試練（Challenge）と Spell <span class="sub">解禁: 要確認</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">試練の一覧</td><td>難易度（Normal / Hard / Expert）と報酬で絞り込む</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">試練の詳細</td><td>条件・報酬・開始 / 再開 / 中断</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">やり直しの確認</td><td>最初からやり直す前の確認</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">結果</td><td>到達 Tier と報酬</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">Spell の一覧</td><td>持っている Spell</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="nether">
+      <h2>8. Nether（ネザー） <span class="badge b-open">解禁: 要確認</span></h2>
+      <p>探索の本画面と、入力・結果・コンパニオンの画面。</p>
+      <h3>① 探索 <span class="sub">解禁: 要確認</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">深さの列</td><td>どこまで潜ったか</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">通貨</td><td>Onies / NetherCream / ジオード</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">ゲームの情報 / 使っているアイテム</td><td>いまの状況</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">ステータス</td><td>Nether のステータスの内訳</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>② 入力・結果 <span class="sub">解禁: 要確認</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">入力画面</td><td>挑戦の準備。戻る</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">結果</td><td>挑戦の結果</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>③ コンパニオン <span class="sub">解禁: 要確認</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">一覧</td><td>他のプレイヤーのビルド。ログインと共有の同意が要る</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">名前の入力 / 詳細 / 通報</td><td><span class="muted">—</span></td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">スナップショット</td><td>ビルドを保存する（Spell で解禁）</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="shop">
+      <h2>9. Shop（ショップ） <span class="badge b-open">解禁: 要確認</span></h2>
+      <p>通貨と、買い切り・DLC・毎日の広告ボーナス・タイムブースト・ダイヤ。</p>
+      <h3>① 上部</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">通貨</td><td>SP / Box / BlueBox / タイムブースト</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>② 買い切り</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">広告の除去</td><td>広告を見ずに報酬を得る</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">ブースター PLUS</td><td>永久にブースト</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">ネザー PLUS</td><td>挑戦回数・お気に入り枠</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">ボーナス倍率パック</td><td>Prestige・オフライン・戦利品の報酬</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">補給 PLUS</td><td>1 日に受け取れる補給の回数</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">DLC（Steam）</td><td>Steam 版の DLC 4 件</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>③ 毎日・消耗品</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>要素</th><th>説明</th><th>Tutorial との関係</th></tr></thead>
+        <tbody>
+          <tr><td class="el">補給（広告ボーナス）</td><td>広告を見て受け取る</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">タイムブースト</td><td>時間を進める</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">ダイヤ</td><td>初回限定セールあり</td><td><span class="muted">—</span></td></tr>
+          <tr><td class="el">復元</td><td>購入の復元</td><td><span class="muted">—</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="landscape">
+      <h2>10. 横長（Steam）での違い</h2>
+      <p>区画の中身は同じだが、置き場所が変わる。ヒントの出し口（例: ? ボタン）は縦と横の UXML それぞれに置く必要がある。</p>
+      <ul>
+        <li>画面の切り替えは<strong>右端の縦の列</strong>。Cave / Upgrade / Equipment / Prestige / Battle / Relic ×4 / Shop / Booster / Map / INDEX / 記録 / Spell</li>
+        <li>Upgrade・Equipment・Prestige は別画面ではなく、<strong>Cave の右パネル</strong>に出る。Cave ボタンは右パネルを閉じた全画面</li>
+        <li>INDEX と記録、Relic の 4 タブは、画面のタブを隠して右列のボタンで選ぶ</li>
+        <li>Relic の Prestige 自動化の設定は、ポップアップではなく自動化タブの中に常に出ている</li>
+      </ul>
+    </section>
+
+    <section id="open">
+      <h2>11. 論点 <span class="badge b-open">未決</span></h2>
+      <ol class="num-list">
+        <li><strong>ヒントの粒度</strong>: 1 区画に 1 つか、要素ごとか。このページの表は要素ごとに書いてあるので、どちらにも使える</li>
+        <li><strong>出し方</strong>: 区画ごとの ? ボタン / 初めて開いたときに 1 回出す / Tutorial の説明ポップアップをもう一度開けるようにする</li>
+        <li><strong>Tutorial との重複</strong>: 説明ポップアップがある区画（Equipment ①・Cave ①④・Battle ②③・Prestige ①②）は、その文言（UI_Tutorial）をそのまま使うか、書き直すか</li>
+        <li><strong>解禁前の扱い</strong>: 解禁前の区画のヒントは出さない。Tutorial の表示制御・未解禁の錠前と同じ条件にそろえる</li>
+        <li><strong>文言の置き場</strong>: 新しいテーブル（例: UI_Hint）を作るか、UI_Tutorial に足すか。14 言語</li>
+        <li><strong>既読の持ち方</strong>: 「見た」をセーブに載せるか、端末（PlayerPrefs）に置くか</li>
+        <li><strong>要確認の解禁</strong>: Tear Upgrade・変換タブ・ジェムリスト・INDEX・試練・Nether・Shop がいつ出るか</li>
+      </ol>
+    </section>
+  </main>
+</div>
+<script>
+/* =========================================================
+   ヒント設計 ノート — 章ごとの書き込み
+
+   保存先は3通り。データの形は他のノートサイトと同じ feedback.json。
+     - start_site.bat 起動中 … feedback.json へ自動保存 (live)
+     - GitHub Pages(静的)   … 読み取り + 提案モード(Issue で送る) (propose)
+     - どちらでもない        … このブラウザの localStorage だけ
+
+   書き込み1件 = comments['hint-<章のid>'] の1要素 {text, ts}。
+   マージ規則(和集合・後勝ち、鍵は ts+text)は scripts/notes-merge.mjs と共通なので、
+   ページ側に新しいデータ形式を持ち込まずに済む。
+   編集は「消して入れ直す」。本文を変えたら必ず新しい ts を振る (でないと旧本文と同一視されない)。
+   ========================================================= */
+(function(){
+  const SITE='hint';
+  const LS_KEY='minertia_hint_note_v1';
+  const PEND_KEY='minertia_hint_pending_v1';
+  const GH_ISSUE='https://github.com/yooyooy724/yooyooy724.github.io/issues/new';
+  // http/https で開いていれば同じ場所の /api/feedback を叩く。file:// のときだけローカルサーバーを指す。
+  const API=(location.protocol==='http:'||location.protocol==='https:')?'':'http://localhost:8141';
+
+  let SERVER=false;   // サーバー接続中。feedback.json へ自動保存
+  let PROPOSE=false;  // 静的配信。手元に溜めて Issue で送る
+
+  const emptyFb=()=>({comments:{},reactions:{},choices:{}});
+  let STORE=emptyFb();    // 表示用(公開分 + 未送信分)
+  let BASE=emptyFb();     // 公開されている分
+  let PENDING=emptyFb();  // まだ送っていない分
+  let editing=null;       // 編集中の書き込み '<id>#<ts>|<text>'
+
+  try{const v=localStorage.getItem(LS_KEY); if(v)STORE=Object.assign(emptyFb(),JSON.parse(v));}catch(e){}
+
+  const pendCount=()=>Object.values(PENDING.comments).reduce((n,a)=>n+a.length,0);
+  const savePending=()=>{try{localStorage.setItem(PEND_KEY,JSON.stringify(PENDING));}catch(e){}};
+
+  let postTimer=null;
+  function save(){
+    if(PROPOSE){savePending();return;}
+    try{localStorage.setItem(LS_KEY,JSON.stringify(STORE));}catch(e){}
+    if(SERVER){
+      clearTimeout(postTimer);
+      postTimer=setTimeout(()=>{
+        fetch(API+'/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(STORE)})
+          .catch(()=>{SERVER=false;renderBar();});
+      },250);
+    }
+  }
+
+  // 和集合・後勝ち。scripts/notes-merge.mjs と同じ規則。
+  function mergeFb(base,patch){
+    const out=emptyFb();
+    const ids=new Set(Object.keys(base.comments||{}).concat(Object.keys(patch.comments||{})));
+    for(const id of ids){
+      const seen=new Set(); const arr=[];
+      for(const c of ((base.comments||{})[id]||[]).concat((patch.comments||{})[id]||[])){
+        if(!c||typeof c.text!=='string')continue;
+        const k=c.ts+'|'+c.text;
+        if(seen.has(k))continue;
+        seen.add(k); arr.push(c);
+      }
+      arr.sort((a,b)=>String(a.ts).localeCompare(String(b.ts)));
+      if(arr.length)out.comments[id]=arr;
+    }
+    out.reactions=Object.assign({},base.reactions,patch.reactions);
+    out.choices=Object.assign({},base.choices,patch.choices);
+    return out;
+  }
+
+  async function connect(){
+    try{
+      const r=await fetch(API+'/api/feedback',{cache:'no-store'});
+      if(!r.ok)throw 0;
+      STORE=mergeFb(STORE,await r.json()); // 過去分(ファイル)とこのブラウザ分を統合
+      SERVER=true;
+      save();                              // 統合結果をファイルへ書き戻す
+      return;
+    }catch(e){SERVER=false;}
+    // サーバーが無ければ、同じ場所の feedback.json を静的に読む(GitHub Pages 配信)。
+    try{
+      const r=await fetch('feedback.json',{cache:'no-store'});
+      if(!r.ok)throw 0;
+      const remote=await r.json();
+      if(!remote||typeof remote!=='object')throw 0;
+      BASE={comments:remote.comments||{},reactions:remote.reactions||{},choices:remote.choices||{}};
+      PROPOSE=true;
+      try{const v=localStorage.getItem(PEND_KEY); if(v)PENDING=Object.assign(emptyFb(),JSON.parse(v));}catch(e){}
+      reconcile();
+      STORE=mergeFb(BASE,PENDING);
+    }catch(e){}
+  }
+
+  // 公開データに既に載った分を未送信リストから外す。申告ではなく実データで判定する。
+  function reconcile(){
+    for(const id of Object.keys(PENDING.comments)){
+      const seen=new Set((BASE.comments[id]||[]).map(c=>c.ts+'|'+c.text));
+      const rest=PENDING.comments[id].filter(c=>!seen.has(c.ts+'|'+c.text));
+      if(rest.length)PENDING.comments[id]=rest; else delete PENDING.comments[id];
+    }
+    savePending();
+  }
+
+  // 未送信分を Issue の本文に載せて GitHub を開く。ページ側に認証情報は持たない。
+  function submit(){
+    const n=pendCount();
+    if(!n){alert('未送信の書き込みはありません。');return;}
+    const payload=Object.assign({site:SITE,at:new Date().toISOString()},PENDING);
+    const body='### notes-inbox\n\nこの Issue は自動処理されます。内容を編集しないでください。\n\n```json\n'
+      +JSON.stringify(payload)+'\n```\n';
+    const title='[notes-inbox] '+SITE+' '+n+'件';
+    const url=GH_ISSUE+'?title='+encodeURIComponent(title)+'&body='+encodeURIComponent(body);
+    if(url.length>7500){
+      // URL が長すぎるとブラウザ/GitHub 側で切られる。手貼りに切り替える。
+      navigator.clipboard.writeText(body).then(
+        ()=>{alert('量が多いため本文をクリップボードにコピーしました。\n開いた画面のタイトルを「'+title+'」にして、本文に貼り付けてください。');
+             window.open(GH_ISSUE,'_blank');},
+        ()=>prompt('この本文をコピーして、新規 Issue に貼り付けてください（タイトル: '+title+'）',body));
+      return;
+    }
+    window.open(url,'_blank');
+    alert('GitHub の画面が開きます。内容を確認して「Submit new issue」を押してください。\n反映されるとこのページに載ります（1分ほど）。');
+  }
+
+  /* ---------- 操作 ---------- */
+  const idOf=section=>'hint-'+section;
+  const listOf=id=>(STORE.comments[id]||[]).slice().sort((a,b)=>String(a.ts).localeCompare(String(b.ts)));
+  const isPending=(id,c)=>(PENDING.comments[id]||[]).some(x=>x.ts===c.ts&&x.text===c.text);
+
+  function add(id,text){
+    text=String(text||'').trim();
+    if(!text)return;
+    const c={text:text,ts:new Date().toISOString()};
+    (STORE.comments[id]=STORE.comments[id]||[]).push(c);
+    if(PROPOSE)(PENDING.comments[id]=PENDING.comments[id]||[]).push(c);
+    save();
+    if(SERVER){
+      fetch(API+'/api/log',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({site:SITE,id:id,text:c.text,ts:c.ts})}).catch(()=>{});
+    }
+  }
+  function remove(id,c){
+    STORE.comments[id]=(STORE.comments[id]||[]).filter(x=>!(x.ts===c.ts&&x.text===c.text));
+    if(!STORE.comments[id].length)delete STORE.comments[id];
+    if(PENDING.comments[id]){
+      PENDING.comments[id]=PENDING.comments[id].filter(x=>!(x.ts===c.ts&&x.text===c.text));
+      if(!PENDING.comments[id].length)delete PENDING.comments[id];
+    }
+    save();
+  }
+
+  /* ---------- 描画 ---------- */
+  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const linkify=s=>s.replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+  function stamp(iso){
+    const d=new Date(iso); if(isNaN(d))return iso;
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')
+      +' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  }
+
+  function renderBar(){
+    const bar=document.getElementById('noteBar');
+    if(!bar)return;
+    bar.className=SERVER?'live':(PROPOSE?'propose':'');
+    const n=pendCount();
+    const mode=SERVER?'保存中 (feedback.json)':(PROPOSE?'公開版 — 提案モード':'このブラウザにだけ保存');
+    bar.innerHTML='<span class="dot"></span><span>'+esc(mode)+'</span>'
+      +(PROPOSE?'<span>未送信 '+n+'</span><button type="button" id="noteSend">送信</button>':'');
+    const send=document.getElementById('noteSend');
+    if(send)send.addEventListener('click',submit);
+  }
+
+  function renderSection(section){
+    const box=section.querySelector('.cmt');
+    if(!box)return;
+    const id=idOf(section.id);
+    const items=listOf(id);
+    const ul=box.querySelector('ul');
+    ul.innerHTML='';
+    for(const c of items){
+      const key=id+'#'+c.ts+'|'+c.text;
+      const li=document.createElement('li');
+      if(isPending(id,c))li.className='is-pending';
+      li.innerHTML='<div class="cmt-text">'+linkify(esc(c.text))+'</div>'
+        +'<div class="cmt-meta"><span>'+esc(stamp(c.ts))+'</span>'
+        +(isPending(id,c)?'<span>未送信</span>':'')
+        +'<button type="button" data-act="edit">編集</button>'
+        +'<button type="button" data-act="del">削除</button></div>';
+      li.querySelector('[data-act="edit"]').addEventListener('click',()=>{
+        editing=key;
+        const ta=box.querySelector('textarea');
+        ta.value=c.text; ta.focus();
+        renderAll();
+      });
+      li.querySelector('[data-act="del"]').addEventListener('click',()=>{
+        if(!confirm('この書き込みを削除しますか？'))return;
+        if(editing===key)editing=null;
+        remove(id,c); renderAll();
+      });
+      ul.appendChild(li);
+    }
+    box.querySelector('.cmt-head').textContent='この章への書き込み'+(items.length?'（'+items.length+'）':'');
+    const editingHere=editing&&editing.startsWith(id+'#');
+    box.querySelector('.cmt-cancel').style.display=editingHere?'':'none';
+    box.querySelector('.cmt-submit').textContent=editingHere?'書き換える':'書き込む';
+  }
+
+  function renderAll(){
+    document.querySelectorAll('main section[id]').forEach(renderSection);
+    renderBar();
+  }
+
+  function build(){
+    document.querySelectorAll('main section[id]').forEach(section=>{
+      const id=idOf(section.id);
+      const box=document.createElement('div');
+      box.className='cmt';
+      box.innerHTML='<div class="cmt-head">この章への書き込み</div><ul></ul>'
+        +'<form><textarea placeholder="決めたこと・気になったことを書く（1行目が見出しになります）"></textarea>'
+        +'<div class="cmt-actions"><button type="submit" class="btn cmt-submit">書き込む</button>'
+        +'<button type="button" class="btn ghost cmt-cancel" style="display:none">やめる</button>'
+        +'<span class="hint">Ctrl+Enter でも書き込めます</span></div></form>';
+      const form=box.querySelector('form');
+      const ta=box.querySelector('textarea');
+      form.addEventListener('submit',e=>{
+        e.preventDefault();
+        const text=ta.value.trim();
+        if(!text)return;
+        // 編集は「消して入れ直す」。本文を変えたら新しい ts になるので、旧本文と別物として扱われる。
+        if(editing&&editing.startsWith(id+'#')){
+          const rest=editing.slice((id+'#').length);
+          const i=rest.indexOf('|');
+          remove(id,{ts:rest.slice(0,i),text:rest.slice(i+1)});
+          editing=null;
+        }
+        add(id,text);
+        ta.value='';
+        renderAll();
+      });
+      ta.addEventListener('keydown',e=>{
+        if((e.ctrlKey||e.metaKey)&&e.key==='Enter')form.requestSubmit();
+      });
+      box.querySelector('.cmt-cancel').addEventListener('click',()=>{
+        editing=null; ta.value=''; renderAll();
+      });
+      section.appendChild(box);
+    });
+
+    const bar=document.createElement('div');
+    bar.id='noteBar';
+    document.body.appendChild(bar);
+  }
+
+  build();
+  renderAll();
+  connect().then(renderAll);
+})();
+</script>
+</body>
+</html>
