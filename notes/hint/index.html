@@ -147,6 +147,26 @@
   td.el + td{min-width:14em}
   .muted{color:var(--muted)}
   h3 .sub{font-family:var(--font-jp);font-size:12px;font-weight:400;color:var(--muted-strong);margin-left:8px}
+
+  /* ---- 表の編集 ---- */
+  td.is-edited{box-shadow:inset 3px 0 0 var(--orange)}
+  tr.is-added td:first-child{box-shadow:inset 3px 0 0 var(--green)}
+  tr.is-deleted{display:none}
+  body.editing tr.is-deleted{display:table-row;opacity:.45}
+  body.editing tr.is-deleted td{text-decoration:line-through}
+  body.editing main td[contenteditable]{outline:1px dashed var(--line);outline-offset:-3px;cursor:text}
+  body.editing main td[contenteditable]:focus{outline:2px solid var(--blue);background:#f7fbff;white-space:pre-wrap;font-family:var(--mono);font-weight:400}
+  th.row-ctl,td.row-ctl{display:none;width:1%;white-space:nowrap}
+  body.editing th.row-ctl,body.editing td.row-ctl{display:table-cell}
+  td.row-ctl button,.row-add{font-family:var(--font-display);font-size:11px;font-weight:700;padding:2px 9px;margin:0 2px 2px 0;
+    border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--muted-strong);cursor:pointer}
+  td.row-ctl button:hover,.row-add:hover{border-color:var(--ink);color:var(--ink)}
+  .row-add{display:none;margin:-8px 0 14px}
+  body.editing .row-add{display:inline-block}
+  .edit-guide{display:none;margin:0 0 14px;padding:8px 12px;border:1px solid var(--blue);border-radius:6px;background:#f7fbff;font-size:12.5px;line-height:1.7}
+  body.editing .edit-guide{display:block}
+  #noteBar button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+  #noteBar button.on{background:var(--blue);color:var(--ink)}
 </style>
 </head>
 <body>
@@ -644,6 +664,14 @@
    マージ規則(和集合・後勝ち、鍵は ts+text)は scripts/notes-merge.mjs と共通なので、
    ページ側に新しいデータ形式を持ち込まずに済む。
    編集は「消して入れ直す」。本文を変えたら必ず新しい ts を振る (でないと旧本文と同一視されない)。
+
+   表の編集（右下の「表を編集」）も同じ comments に相乗りする。新しいデータ形式は足さない。
+     - セル 1 つ = comments['hint-cell:<表>|<行>|<列番号>']。1件 = 書き換えた文言。最新の ts が勝つ。
+       '@@original@@' は「元の文言に戻す」。
+     - 行の出し入れ = comments['hint-rows:<表>']。1件 = 'add\n<行>' / 'del\n<行>' / 'undel\n<行>'。行ごとに最新の ts が勝つ。
+     - <表> は「章の id|表の上の見出し」、元からある行の <行> は「1 列目の元の文言」。
+       HTML の表を書き直すときは、見出しと 1 列目を変えると書き換えが外れるので注意。
+     - セルの文言は素の文字。`code` と **太字** だけ書ける（HTML は通さない。公開版の Issue 経由でも安全なように）。
    ========================================================= */
 (function(){
   const SITE='hint';
@@ -797,9 +825,230 @@
     const n=pendCount();
     const mode=SERVER?'保存中 (feedback.json)':(PROPOSE?'公開版 — 提案モード':'このブラウザにだけ保存');
     bar.innerHTML='<span class="dot"></span><span>'+esc(mode)+'</span>'
+      +'<button type="button" id="tableEdit" class="'+(EDITING?'on':'ghost')+'">'+(EDITING?'編集を終える':'表を編集')+'</button>'
+      +'<button type="button" id="tableExport" class="ghost">書き出し</button>'
       +(PROPOSE?'<span>未送信 '+n+'</span><button type="button" id="noteSend">送信</button>':'');
     const send=document.getElementById('noteSend');
     if(send)send.addEventListener('click',submit);
+    document.getElementById('tableEdit').addEventListener('click',()=>setEditing(!EDITING));
+    document.getElementById('tableExport').addEventListener('click',exportMarkdown);
+  }
+
+  /* ---------- 表の編集 ---------- */
+  const ORIGINAL='@@original@@';
+  let EDITING=false;
+  const TABLES=[]; // {key, table, cols, rows: Map<行, {tr, cells:[{td, orig}]}>}
+
+  const cellId=(t,r,c)=>'hint-cell:'+t+'|'+r+'|'+c;
+  const rowsId=t=>'hint-rows:'+t;
+  const latestOf=id=>{const a=listOf(id); return a.length?a[a.length-1]:null;};
+
+  // セルの HTML を、編集できる素の文字へ。`code` と **太字** だけ残す。
+  function toMarkup(node){
+    let s='';
+    node.childNodes.forEach(n=>{
+      if(n.nodeType===3){s+=n.textContent.replace(/\s+/g,' ');return;}
+      if(n.nodeType!==1)return;
+      const tag=n.tagName;
+      if(tag==='BR')s+='\n';
+      else if(tag==='CODE')s+='`'+n.textContent+'`';
+      else if(tag==='STRONG'||tag==='B')s+='**'+toMarkup(n)+'**';
+      else s+=toMarkup(n);
+    });
+    return s;
+  }
+  // 素の文字を表示用の HTML へ。HTML は通さない。
+  function fromMarkup(text){
+    const t=String(text).trim();
+    if(t===''||t==='—')return '<span class="muted">—</span>';
+    return esc(t).replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  }
+
+  // 行ごとの出し入れ。行ごとに最新の操作が勝つ。追加した行は足した順に並べる。
+  function rowOps(tableKey){
+    const state=new Map(); const added=[];
+    for(const c of listOf(rowsId(tableKey))){
+      const i=c.text.indexOf('\n'); if(i<0)continue;
+      const op=c.text.slice(0,i), row=c.text.slice(i+1);
+      if(op==='add'&&!added.includes(row))added.push(row);
+      state.set(row,op);
+    }
+    return {added, isDeleted:row=>state.get(row)==='del'};
+  }
+
+  function currentText(t,rowKey,col,orig){
+    const c=latestOf(cellId(t.key,rowKey,col));
+    return (!c||c.text===ORIGINAL)?orig:c.text;
+  }
+
+  function wireCell(td,t,rowKey,col,orig){
+    td.dataset.cell=cellId(t.key,rowKey,col);
+    td.addEventListener('focus',()=>{td.textContent=currentText(t,rowKey,col,orig);});
+    td.addEventListener('blur',()=>{
+      if(!EDITING)return;
+      const next=td.innerText.replace(/ /g,' ').replace(/\n+$/,'').trim();
+      const now=currentText(t,rowKey,col,orig);
+      if(next!==now.trim())add(cellId(t.key,rowKey,col),next===orig.trim()?ORIGINAL:(next||'—'));
+      setTimeout(renderAll,0); // フォーカスが移り切ってから描き直す（書いている最中のセルは描き直さないため）
+    });
+    td.addEventListener('keydown',e=>{
+      if(e.key==='Escape'){td.textContent=currentText(t,rowKey,col,orig);td.blur();}
+      else if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();td.blur();}
+    });
+  }
+
+  function rowControls(t,rowKey,deleted,isAdded){
+    const td=document.createElement('td');
+    td.className='row-ctl';
+    const del=document.createElement('button');
+    del.type='button';
+    del.textContent=deleted?'戻す':'行を消す';
+    del.addEventListener('click',()=>{
+      if(!deleted&&!confirm('この行を消しますか？（あとで「戻す」で戻せます）'))return;
+      add(rowsId(t.key),(deleted?'undel':'del')+'\n'+rowKey);
+      renderAll();
+    });
+    td.appendChild(del);
+    if(!isAdded){
+      const edited=[...Array(t.cols).keys()].some(c=>{const x=latestOf(cellId(t.key,rowKey,c));return x&&x.text!==ORIGINAL;});
+      if(edited){
+        const rev=document.createElement('button');
+        rev.type='button'; rev.textContent='元の文言';
+        rev.addEventListener('click',()=>{
+          if(!confirm('この行の書き換えをやめて、元の文言に戻しますか？'))return;
+          for(let c=0;c<t.cols;c++){const x=latestOf(cellId(t.key,rowKey,c)); if(x&&x.text!==ORIGINAL)add(cellId(t.key,rowKey,c),ORIGINAL);}
+          renderAll();
+        });
+        td.appendChild(rev);
+      }
+    }
+    return td;
+  }
+
+  function renderCell(td,t,rowKey,col,orig){
+    if(document.activeElement===td)return; // 書いている最中は触らない
+    const c=latestOf(cellId(t.key,rowKey,col));
+    const edited=!!c&&c.text!==ORIGINAL;
+    td.innerHTML=fromMarkup(edited?c.text:orig);
+    td.classList.toggle('is-edited',edited);
+    td.title=edited?'書き換え '+stamp(c.ts):'';
+    if(EDITING)td.setAttribute('contenteditable','plaintext-only'); else td.removeAttribute('contenteditable');
+  }
+
+  function renderTable(t){
+    const ops=rowOps(t.key);
+    for(const [rowKey,row] of t.rows){
+      const deleted=ops.isDeleted(rowKey);
+      row.tr.classList.toggle('is-deleted',deleted);
+      row.cells.forEach((x,col)=>renderCell(x.td,t,rowKey,col,x.orig));
+      row.tr.querySelector('td.row-ctl')?.remove();
+      row.tr.appendChild(rowControls(t,rowKey,deleted,false));
+    }
+    const body=t.table.tBodies[0];
+    if(EDITING&&body.contains(document.activeElement)&&document.activeElement.closest('tr.is-added'))return;
+    body.querySelectorAll('tr.is-added').forEach(tr=>tr.remove());
+    for(const rowKey of ops.added){
+      const deleted=ops.isDeleted(rowKey);
+      const tr=document.createElement('tr');
+      tr.className='is-added'+(deleted?' is-deleted':'');
+      for(let col=0;col<t.cols;col++){
+        const td=document.createElement('td');
+        if(col===0)td.className='el';
+        wireCell(td,t,rowKey,col,'');
+        tr.appendChild(td);
+        renderCell(td,t,rowKey,col,'');
+      }
+      tr.appendChild(rowControls(t,rowKey,deleted,true));
+      body.appendChild(tr);
+    }
+  }
+
+  function renderTables(){
+    document.body.classList.toggle('editing',EDITING);
+    TABLES.forEach(renderTable);
+  }
+
+  function setEditing(on){
+    if(!on&&document.activeElement&&document.activeElement.matches('td[contenteditable]'))document.activeElement.blur();
+    EDITING=on;
+    renderAll();
+  }
+
+  function buildTables(){
+    const used=new Set();
+    document.querySelectorAll('main section[id]').forEach(section=>{
+      section.querySelectorAll('table').forEach((table,i)=>{
+        if(!table.tHead||!table.tBodies[0])return;
+        // 表の名前 = 章の id + 表の直前の見出し（無ければ番号）
+        let h=table.closest('.tablewrap')||table, title='';
+        for(let p=h.previousElementSibling;p;p=p.previousElementSibling){
+          if(p.tagName==='H3'){const c=p.cloneNode(true);c.querySelectorAll('.sub').forEach(s=>s.remove());title=c.textContent.trim();break;}
+          if(p.tagName==='H2')break;
+        }
+        let key=section.id+'|'+(title||('表'+(i+1)));
+        while(used.has(key))key+='+';
+        used.add(key);
+        const headRow=table.tHead.rows[0];
+        const cols=headRow.cells.length;
+        const ctlTh=document.createElement('th'); ctlTh.className='row-ctl'; headRow.appendChild(ctlTh);
+        const t={key,table,cols,title,section,rows:new Map()};
+        const seen=new Map();
+        [...table.tBodies[0].rows].forEach(tr=>{
+          if(tr.cells.length!==cols)return;
+          let rowKey=tr.cells[0].textContent.replace(/\s+/g,' ').trim();
+          const n=(seen.get(rowKey)||0)+1; seen.set(rowKey,n);
+          if(n>1)rowKey+='#'+n;
+          const cells=[...tr.cells].map((td,col)=>{
+            const orig=toMarkup(td).trim();
+            wireCell(td,t,rowKey,col,orig);
+            return {td,orig};
+          });
+          t.rows.set(rowKey,{tr,cells});
+        });
+        const addBtn=document.createElement('button');
+        addBtn.type='button'; addBtn.className='row-add'; addBtn.textContent='＋ 行を足す';
+        addBtn.addEventListener('click',()=>{
+          const rowKey='new-'+Date.now().toString(36);
+          add(rowsId(t.key),'add\n'+rowKey);
+          renderAll();
+          const tr=[...t.table.tBodies[0].rows].pop();
+          tr&&tr.cells[0]&&tr.cells[0].focus();
+        });
+        (table.closest('.tablewrap')||table).after(addBtn);
+        TABLES.push(t);
+      });
+    });
+    const guide=document.createElement('div');
+    guide.className='edit-guide';
+    guide.innerHTML='<strong>表の編集中</strong>　セルを押すと書き換えられます。離れると保存（Esc でやめる / Ctrl+Enter で確定）。'
+      +'<code>`名前`</code> でコード、<code>**強調**</code> で太字。書き換えたセルは左端がオレンジ、足した行は緑。';
+    document.querySelector('main').prepend(guide);
+  }
+
+  // 今の表（書き換え込み）を Markdown にしてクリップボードへ。ヒントの実装に渡す用。
+  function exportMarkdown(){
+    const cell=s=>String(s).replace(/\n/g,'<br>').replace(/\|/g,'\\|');
+    let md='# ヒント設計 — 画面ごとの要素（書き換え込み）\n';
+    let lastSection=null;
+    for(const t of TABLES){
+      if(t.section!==lastSection){
+        lastSection=t.section;
+        md+='\n## '+t.section.querySelector('h2').textContent.replace(/\s+/g,' ').trim()+'\n';
+      }
+      if(t.title)md+='\n### '+t.title+'\n';
+      const heads=[...t.table.tHead.rows[0].cells].filter(th=>!th.classList.contains('row-ctl')).map(th=>th.textContent.trim());
+      md+='\n| '+heads.join(' | ')+' |\n|'+heads.map(()=>'---').join('|')+'|\n';
+      const ops=rowOps(t.key);
+      const keys=[...t.rows.keys()].concat(ops.added);
+      for(const rowKey of keys){
+        if(ops.isDeleted(rowKey))continue;
+        const row=t.rows.get(rowKey);
+        const vals=[...Array(t.cols).keys()].map(c=>currentText(t,rowKey,c,row?row.cells[c].orig:''));
+        md+='| '+vals.map(cell).join(' | ')+' |\n';
+      }
+    }
+    const done=()=>alert('表を Markdown でクリップボードにコピーしました。');
+    navigator.clipboard.writeText(md).then(done,()=>prompt('この Markdown をコピーしてください',md));
   }
 
   function renderSection(section){
@@ -839,6 +1088,7 @@
 
   function renderAll(){
     document.querySelectorAll('main section[id]').forEach(renderSection);
+    renderTables();
     renderBar();
   }
 
@@ -883,6 +1133,7 @@
     document.body.appendChild(bar);
   }
 
+  buildTables();
   build();
   renderAll();
   connect().then(renderAll);
