@@ -90,6 +90,16 @@ const SITES = [
     files: ["index.html", "feedback.json"],
     dirs: [],
   },
+  {
+    dir: "flavor",
+    from: "FlavorSite",
+    label: "Flavor",
+    title: "図鑑のフレーバーテキスト",
+    desc: "道具 Lv1〜12 の一言と、宝石 78 種の小ネタの候補。",
+    can: "候補から選んで決める。文言は表の上で直せます。",
+    files: ["index.html", "feedback.json", "data.js"],
+    dirs: ["images"],
+  },
 ];
 
 const NOINDEX = '<meta name="robots" content="noindex,nofollow">';

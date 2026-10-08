@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MINERTIA 図鑑フレーバー</title>
+<style>
+  :root{
+    --ink:#151a17; --paper:#f2efe7; --card:#e5e2d9; --muted:#757a74; --muted-strong:#5f645e; --line:#cbc8bf;
+    --green:#b8de50; --orange:#f06b45; --blue:#a7c6f1;
+    --font-jp:"Yu Gothic","Hiragino Kaku Gothic ProN",sans-serif; --font-display:Arial,Helvetica,sans-serif; --mono:Consolas,"Courier New",monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-jp);font-size:14px;line-height:1.75}
+  a{color:inherit}
+  .wrap{max-width:1100px;margin:0 auto;padding:28px 20px 120px}
+  .label{font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  h1{font-size:28px;margin:6px 0 10px;line-height:1.3}
+  h2{font-size:21px;margin:44px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--ink)}
+  h3{font-size:16px;margin:26px 0 8px}
+  h3 .sub{font-size:12px;font-weight:400;color:var(--muted-strong);margin-left:8px}
+  .lede{font-size:15px;max-width:72ch;color:var(--muted-strong)}
+  .meta{display:flex;flex-wrap:wrap;gap:14px;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  .callout{border-left:3px solid var(--orange);background:#fff;padding:10px 14px;border-radius:0 6px 6px 0;margin:10px 0 14px;max-width:72ch}
+  .callout.note{border-left-color:var(--blue)}
+  .callout ul{margin:0;padding-left:1.3em}
+  .badge{display:inline-block;font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.06em;padding:0 8px;border-radius:999px;line-height:1.8;vertical-align:middle;white-space:nowrap;color:var(--ink)}
+  .b-fixed{background:var(--green)} .b-idea{background:var(--blue)} .b-open{background:transparent;border:1px solid var(--muted);color:var(--muted-strong)}
+  nav.toc ol{display:flex;flex-wrap:wrap;gap:6px 18px;padding-left:1.2em;margin:14px 0 0}
+  .muted{color:var(--muted)}
+  code{font-family:var(--mono);font-size:.92em;background:#fff;padding:0 4px;border-radius:3px}
+
+  /* ---- 道具 ---- */
+  .tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+  .tool{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px;display:grid;grid-template-columns:64px 1fr;gap:10px}
+  .tool img{width:64px;height:120px;object-fit:contain;image-rendering:auto;background:var(--card);border-radius:6px}
+  .tool .lv{font-family:var(--font-display);font-weight:700;font-size:12px;color:var(--muted-strong);display:flex;gap:8px;align-items:center}
+  .cell{margin-top:4px;padding:5px 8px;border:1px dashed var(--line);border-radius:5px;min-height:2.2em;white-space:pre-wrap;word-break:break-word}
+  .cell.ja{font-size:14px}
+  .cell.en{font-size:12.5px;color:var(--muted-strong);font-family:var(--font-display)}
+  .cell[contenteditable]{cursor:text}
+  .cell[contenteditable]:focus{outline:2px solid var(--blue);background:#f7fbff}
+  .cell.is-edited{border-style:solid;border-left:3px solid var(--orange)}
+  .cell.is-fixed{border-style:solid;background:var(--card);cursor:default}
+  .tool .cmeta{font-family:var(--mono);font-size:10.5px;color:var(--muted);display:flex;gap:8px;margin-top:3px}
+  .tool .cmeta button{background:none;border:0;padding:0;font:inherit;color:var(--muted-strong);cursor:pointer;text-decoration:underline}
+
+  /* ---- 宝石 ---- */
+  .progress{display:flex;gap:16px;align-items:center;font-family:var(--mono);font-size:12px;color:var(--muted-strong);margin:8px 0 14px}
+  .bar{flex:1;height:8px;background:var(--card);border-radius:999px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--green);width:0}
+  .gems{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px}
+  .gem{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+  .gem.is-decided{border-color:var(--green);box-shadow:inset 3px 0 0 var(--green)}
+  .gem .head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .gem .sw{width:22px;height:22px;border-radius:50%;border:1px solid rgba(0,0,0,.25);flex-shrink:0}
+  .gem .name{font-weight:700}
+  .gem .idx{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .gem label{display:grid;grid-template-columns:18px 1fr;gap:8px;align-items:start;padding:5px 6px;border-radius:5px;cursor:pointer;font-size:13.5px}
+  .gem label:hover{background:#f7f5ef}
+  .gem label.on{background:#eef7d8}
+  .gem input[type=radio]{margin:4px 0 0}
+  .gem .custom{margin-top:4px}
+  .gem .custom textarea{width:100%;min-height:44px;resize:vertical;font-family:var(--font-jp);font-size:13.5px;line-height:1.6;padding:6px 8px;border:1px solid var(--line);border-radius:5px}
+  .gem .reco{font-family:var(--font-display);font-size:10px;font-weight:700;color:var(--muted-strong);margin-left:6px}
+
+  /* ---- 状態バー ---- */
+  #noteBar{position:fixed;right:16px;bottom:16px;z-index:10;display:flex;gap:8px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:6px 12px;box-shadow:0 2px 10px rgba(0,0,0,.12);font-size:12px;font-family:var(--mono)}
+  #noteBar .dot{width:8px;height:8px;border-radius:999px;background:var(--muted)}
+  #noteBar.live .dot{background:var(--green)} #noteBar.propose .dot{background:var(--blue)}
+  #noteBar button{font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.04em;padding:3px 12px;border:1px solid var(--ink);border-radius:999px;background:var(--orange);color:#fff;cursor:pointer}
+  #noteBar button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+  @media (max-width:800px){#noteBar{right:10px;bottom:10px;font-size:11px}.wrap{padding:20px 14px 120px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="label">Idle Minertia / Design Notes / Flavor</div>
+    <h1>図鑑のフレーバーテキスト</h1>
+    <p class="lede">図鑑（INDEX）で項目を開くと出る一言。道具は Lv ごとに 1 文（絵本のように 12 ページ）、宝石は実在の宝石の小ネタ。ここで候補から選び、文言を直して確定する。</p>
+    <div class="meta"><span>更新 2026-10-08</span><span>元: Resources/picker の画像・GemTableRepository.cs・Templates.csv</span><span><a href="../">ノート一覧へ</a></span></div>
+  </header>
+
+  <div class="callout note">
+    <ul>
+      <li><strong>道具</strong>: 画像を見て「素材・重さ」を書いた案。文言はそのまま押して書き換えられる（離れると保存）。Lv1 は実装済みで変えない</li>
+      <li><strong>宝石</strong>: 候補のどれかを選ぶ。合うものが無ければ「自分で書く」に書く。産地・土地の名前は書かない（ゲームの舞台とぶれるため）</li>
+      <li>決まった文言は「書き出し」で CSV にして、<code>Templates.csv</code>（<code>collectionindex.flavor.*</code>）へ入れる。翻訳はそのあと</li>
+    </ul>
+  </div>
+
+  <nav class="toc" aria-label="目次"><ol>
+    <li><a href="#tools">1. 道具（Lv1〜12 × 3 種）</a></li>
+    <li><a href="#gems">2. 宝石（78 種）</a></li>
+  </ol></nav>
+
+  <main>
+    <section id="tools">
+      <h2>1. 道具 <span class="badge b-idea">下書き</span></h2>
+      <p class="muted">Lv13 以降は見た目と同じ 12 周期で本文も使い回す（<code>CollectionIndexViewModel.NormalItemFlavor</code>）。</p>
+      <div id="toolsRoot"></div>
+    </section>
+
+    <section id="gems">
+      <h2>2. 宝石 <span class="badge b-idea">候補から選ぶ</span></h2>
+      <div class="progress"><span>決定 <b id="gemDone">0</b> / <span id="gemTotal">0</span></span><div class="bar"><i id="gemBar"></i></div></div>
+      <div id="gemsRoot"></div>
+    </section>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script>
+/* =========================================================
+   図鑑フレーバー ノート
+
+   保存先は他のノートと同じ feedback.json（live / propose / localStorage の 3 通り）。
+     - 道具の文言:   comments['flavor-tool:<kind>:<lv>:<ja|en>'] の最新 1 件が勝つ。'@@original@@' は案に戻す
+     - 宝石の選択:   choices['flavor-gem:<id>'] = 候補の番号 ('0'..) か 'custom'
+     - 宝石の自作文: comments['flavor-gem-custom:<id>'] の最新 1 件
+   新しいデータ形式は足していない（scripts/notes-merge.mjs の規則どおり: comments は和集合、choices は後勝ち）。
+   ========================================================= */
+(function(){
+  const D=window.FLAVOR_DATA;
+  const SITE='flavor';
+  const LS_KEY='minertia_flavor_note_v1';
+  const PEND_KEY='minertia_flavor_pending_v1';
+  const GH_ISSUE='https://github.com/yooyooy724/yooyooy724.github.io/issues/new';
+  const API=(location.protocol==='http:'||location.protocol==='https:')?'':'http://localhost:8142';
+  const ORIGINAL='@@original@@';
+
+  let SERVER=false, PROPOSE=false;
+  const emptyFb=()=>({comments:{},reactions:{},choices:{}});
+  let STORE=emptyFb(), BASE=emptyFb(), PENDING=emptyFb();
+  try{const v=localStorage.getItem(LS_KEY); if(v)STORE=Object.assign(emptyFb(),JSON.parse(v));}catch(e){}
+
+  const pendCount=()=>Object.values(PENDING.comments).reduce((n,a)=>n+a.length,0)+Object.keys(PENDING.choices).length;
+  const savePending=()=>{try{localStorage.setItem(PEND_KEY,JSON.stringify(PENDING));}catch(e){}};
+  let postTimer=null;
+  function save(){
+    if(PROPOSE){savePending();return;}
+    try{localStorage.setItem(LS_KEY,JSON.stringify(STORE));}catch(e){}
+    if(SERVER){clearTimeout(postTimer);postTimer=setTimeout(()=>{
+      fetch(API+'/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(STORE)}).catch(()=>{SERVER=false;renderBar();});
+    },250);}
+  }
+  function mergeFb(base,patch){
+    const out=emptyFb();
+    const ids=new Set(Object.keys(base.comments||{}).concat(Object.keys(patch.comments||{})));
+    for(const id of ids){const seen=new Set();const arr=[];
+      for(const c of ((base.comments||{})[id]||[]).concat((patch.comments||{})[id]||[])){if(!c||typeof c.text!=='string')continue;const k=c.ts+'|'+c.text;if(seen.has(k))continue;seen.add(k);arr.push(c);}
+      arr.sort((a,b)=>String(a.ts).localeCompare(String(b.ts)));if(arr.length)out.comments[id]=arr;}
+    out.reactions=Object.assign({},base.reactions,patch.reactions);
+    out.choices=Object.assign({},base.choices,patch.choices);
+    return out;
+  }
+  async function connect(){
+    try{const r=await fetch(API+'/api/feedback',{cache:'no-store'});if(!r.ok)throw 0;STORE=mergeFb(STORE,await r.json());SERVER=true;save();return;}catch(e){SERVER=false;}
+    try{const r=await fetch('feedback.json',{cache:'no-store'});if(!r.ok)throw 0;const remote=await r.json();if(!remote||typeof remote!=='object')throw 0;
+      BASE={comments:remote.comments||{},reactions:remote.reactions||{},choices:remote.choices||{}};PROPOSE=true;
+      try{const v=localStorage.getItem(PEND_KEY);if(v)PENDING=Object.assign(emptyFb(),JSON.parse(v));}catch(e){}
+      reconcile();STORE=mergeFb(BASE,PENDING);}catch(e){}
+  }
+  function reconcile(){
+    for(const id of Object.keys(PENDING.comments)){const seen=new Set((BASE.comments[id]||[]).map(c=>c.ts+'|'+c.text));const rest=PENDING.comments[id].filter(c=>!seen.has(c.ts+'|'+c.text));if(rest.length)PENDING.comments[id]=rest;else delete PENDING.comments[id];}
+    for(const k of Object.keys(PENDING.choices)){if(BASE.choices[k]===PENDING.choices[k])delete PENDING.choices[k];}
+    savePending();
+  }
+  function submit(){
+    const n=pendCount(); if(!n){alert('未送信の変更はありません。');return;}
+    const payload=Object.assign({site:SITE,at:new Date().toISOString()},PENDING);
+    const body='### notes-inbox\n\nこの Issue は自動処理されます。内容を編集しないでください。\n\n```json\n'+JSON.stringify(payload)+'\n```\n';
+    const title='[notes-inbox] '+SITE+' '+n+'件';
+    const url=GH_ISSUE+'?title='+encodeURIComponent(title)+'&body='+encodeURIComponent(body);
+    if(url.length>7500){navigator.clipboard.writeText(body).then(()=>{alert('量が多いため本文をクリップボードにコピーしました。\n開いた画面のタイトルを「'+title+'」にして、本文に貼り付けてください。');window.open(GH_ISSUE,'_blank');},()=>prompt('この本文をコピーして、新規 Issue に貼り付けてください（タイトル: '+title+'）',body));return;}
+    window.open(url,'_blank');
+    alert('GitHub の画面が開きます。内容を確認して「Submit new issue」を押してください。\n反映されるとこのページに載ります（1分ほど）。');
+  }
+
+  /* ---------- 読み書き ---------- */
+  const listOf=id=>(STORE.comments[id]||[]).slice().sort((a,b)=>String(a.ts).localeCompare(String(b.ts)));
+  const latestOf=id=>{const a=listOf(id);return a.length?a[a.length-1]:null;};
+  function addComment(id,text){
+    const c={text:String(text),ts:new Date().toISOString()};
+    (STORE.comments[id]=STORE.comments[id]||[]).push(c);
+    if(PROPOSE)(PENDING.comments[id]=PENDING.comments[id]||[]).push(c);
+    save();
+    if(SERVER)fetch(API+'/api/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:SITE,id:id,text:c.text,ts:c.ts})}).catch(()=>{});
+  }
+  function setChoice(key,value){
+    STORE.choices[key]=value;
+    if(PROPOSE)PENDING.choices[key]=value;
+    save();
+  }
+  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const stamp=iso=>{const d=new Date(iso);if(isNaN(d))return iso;return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');};
+
+  /* ---------- 道具 ---------- */
+  const toolKey=(kind,lv,lang)=>'flavor-tool:'+kind+':'+lv+':'+lang;
+  function toolText(kind,level,lang){
+    if(level.fixed)return level[lang];
+    const c=latestOf(toolKey(kind,level.lv,lang));
+    return (!c||c.text===ORIGINAL)?level[lang]:c.text;
+  }
+  function toolEdited(kind,level,lang){const c=latestOf(toolKey(kind,level.lv,lang));return !!c&&c.text!==ORIGINAL;}
+
+  function buildTools(){
+    const root=document.getElementById('toolsRoot');
+    for(const kind of Object.keys(D.tools)){
+      const t=D.tools[kind];
+      const h=document.createElement('h3');h.innerHTML=esc(t.label)+'<span class="sub">'+esc(t.note)+'</span>';root.appendChild(h);
+      const grid=document.createElement('div');grid.className='tools';
+      for(const level of t.levels){
+        const card=document.createElement('div');card.className='tool';card.dataset.kind=kind;card.dataset.lv=level.lv;
+        card.innerHTML='<img src="images/'+kind+level.lv+'.png" alt="">'
+          +'<div><div class="lv">Lv.'+level.lv+(level.fixed?' <span class="badge b-fixed">実装済み</span>':'')+'</div>'
+          +'<div class="cell ja" data-lang="ja"></div><div class="cell en" data-lang="en"></div><div class="cmeta"></div></div>';
+        for(const cell of card.querySelectorAll('.cell')){
+          const lang=cell.dataset.lang;
+          if(level.fixed){cell.classList.add('is-fixed');continue;}
+          cell.setAttribute('contenteditable','plaintext-only');
+          cell.addEventListener('focus',()=>{cell.textContent=toolText(kind,level,lang);});
+          cell.addEventListener('blur',()=>{
+            const next=cell.innerText.replace(/ /g,' ').trim();
+            const now=toolText(kind,level,lang).trim();
+            if(next&&next!==now)addComment(toolKey(kind,level.lv,lang),next===level[lang].trim()?ORIGINAL:next);
+            setTimeout(renderAll,0);
+          });
+          cell.addEventListener('keydown',e=>{if(e.key==='Escape'){cell.textContent=toolText(kind,level,lang);cell.blur();}else if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();cell.blur();}});
+        }
+        grid.appendChild(card);
+      }
+      root.appendChild(grid);
+    }
+  }
+  function renderTools(){
+    document.querySelectorAll('.tool').forEach(card=>{
+      const kind=card.dataset.kind, lv=+card.dataset.lv;
+      const level=D.tools[kind].levels.find(l=>l.lv===lv);
+      let edited=false;
+      for(const cell of card.querySelectorAll('.cell')){
+        if(document.activeElement===cell)continue;
+        const lang=cell.dataset.lang;
+        cell.textContent=toolText(kind,level,lang);
+        const e=!level.fixed&&toolEdited(kind,level,lang);
+        cell.classList.toggle('is-edited',e); edited=edited||e;
+        cell.title=e?'書き換え '+stamp(latestOf(toolKey(kind,lv,lang)).ts):'';
+      }
+      const meta=card.querySelector('.cmeta');meta.innerHTML='';
+      if(edited){const b=document.createElement('button');b.type='button';b.textContent='案に戻す';b.addEventListener('click',()=>{for(const lang of ['ja','en'])if(toolEdited(kind,level,lang))addComment(toolKey(kind,lv,lang),ORIGINAL);renderAll();});meta.appendChild(b);}
+    });
+  }
+
+  /* ---------- 宝石 ---------- */
+  const gemKey=id=>'flavor-gem:'+id;
+  const customKey=id=>'flavor-gem-custom:'+id;
+  function gemChoice(g){const v=STORE.choices[gemKey(g.id)];return v===undefined||v===null?'':String(v);}
+  function gemChosenText(g){const v=gemChoice(g);if(v==='custom'){const c=latestOf(customKey(g.id));return c?c.text:'';}if(v==='')return '';return g.candidates[+v]||'';}
+
+  function buildGems(){
+    const root=document.getElementById('gemsRoot');
+    document.getElementById('gemTotal').textContent=D.gems.length;
+    for(const b of D.biomes){
+      const h=document.createElement('h3');h.textContent=b.name;root.appendChild(h);
+      const grid=document.createElement('div');grid.className='gems';
+      D.gems.filter(g=>g.biome===b.key).forEach((g,i)=>{
+        const card=document.createElement('div');card.className='gem';card.dataset.id=g.id;
+        let html='<div class="head"><span class="sw" style="background:#'+g.color+'"></span><span class="name">'+esc(g.name)+'</span><span class="idx">#'+(i+1)+'</span></div>';
+        g.candidates.forEach((t,k)=>{html+='<label data-v="'+k+'"><input type="radio" name="g-'+g.id+'" value="'+k+'"><span>'+esc(t)+(k===0?'<span class="reco">推奨</span>':'')+'</span></label>';});
+        html+='<label data-v="custom"><input type="radio" name="g-'+g.id+'" value="custom"><span>自分で書く</span></label>'
+          +'<div class="custom" style="display:none"><textarea placeholder="この宝石の一言"></textarea></div>';
+        card.innerHTML=html;
+        card.querySelectorAll('input[type=radio]').forEach(r=>r.addEventListener('change',()=>{setChoice(gemKey(g.id),r.value);renderAll();if(r.value==='custom')card.querySelector('textarea').focus();}));
+        const ta=card.querySelector('textarea');
+        ta.addEventListener('blur',()=>{const next=ta.value.trim();const now=(latestOf(customKey(g.id))||{}).text||'';if(next!==now)addComment(customKey(g.id),next);renderAll();});
+        ta.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();ta.blur();}});
+        grid.appendChild(card);
+      });
+      root.appendChild(grid);
+    }
+  }
+  function renderGems(){
+    let done=0;
+    document.querySelectorAll('.gem').forEach(card=>{
+      const g=D.gems.find(x=>x.id===card.dataset.id);
+      const v=gemChoice(g);
+      card.querySelectorAll('label').forEach(l=>{const on=l.dataset.v===v;l.classList.toggle('on',on);l.querySelector('input').checked=on;});
+      const box=card.querySelector('.custom');box.style.display=v==='custom'?'':'none';
+      const ta=card.querySelector('textarea');if(document.activeElement!==ta)ta.value=(latestOf(customKey(g.id))||{}).text||'';
+      const decided=gemChosenText(g).trim().length>0;card.classList.toggle('is-decided',decided);if(decided)done++;
+    });
+    document.getElementById('gemDone').textContent=done;
+    document.getElementById('gemBar').style.width=(100*done/D.gems.length)+'%';
+  }
+
+  /* ---------- 書き出し ---------- */
+  function exportCsv(){
+    const q=s=>'"'+String(s).replace(/"/g,'""')+'"';
+    let out='key,ja,en\n';
+    for(const kind of Object.keys(D.tools))for(const l of D.tools[kind].levels)out+=['collectionindex.flavor.'+kind+l.lv,toolText(kind,l,'ja'),toolText(kind,l,'en')].map(q).join(',')+'\n';
+    for(const g of D.gems){const t=gemChosenText(g);if(t)out+=[ 'collectionindex.flavor.gem.'+g.id,t,'' ].map(q).join(',')+'\n';}
+    const undecided=D.gems.filter(g=>!gemChosenText(g).trim());
+    const note=undecided.length?'\n（未決の宝石 '+undecided.length+' 件: '+undecided.map(g=>g.name).join(', ')+'）':'';
+    navigator.clipboard.writeText(out).then(()=>alert('道具 36 行と、決まった宝石の文言を CSV でコピーしました。'+note),()=>prompt('この CSV をコピーしてください',out));
+  }
+
+  /* ---------- 状態バー ---------- */
+  function renderBar(){
+    let bar=document.getElementById('noteBar');
+    if(!bar){bar=document.createElement('div');bar.id='noteBar';document.body.appendChild(bar);}
+    bar.className=SERVER?'live':(PROPOSE?'propose':'');
+    const mode=SERVER?'保存中 (feedback.json)':(PROPOSE?'公開版 — 提案モード':'このブラウザにだけ保存');
+    bar.innerHTML='<span class="dot"></span><span>'+esc(mode)+'</span><button type="button" id="exportBtn" class="ghost">書き出し</button>'
+      +(PROPOSE?'<span>未送信 '+pendCount()+'</span><button type="button" id="noteSend">送信</button>':'');
+    document.getElementById('exportBtn').addEventListener('click',exportCsv);
+    const send=document.getElementById('noteSend');if(send)send.addEventListener('click',submit);
+  }
+  function renderAll(){renderTools();renderGems();renderBar();}
+
+  buildTools();buildGems();renderAll();
+  connect().then(renderAll);
+})();
+</script>
+</body>
+</html>
