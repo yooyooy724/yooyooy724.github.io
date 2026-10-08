@@ -146,6 +146,8 @@
   td.el{font-weight:700;min-width:9em;width:28%}
   td.el + td{min-width:14em}
   .muted{color:var(--muted)}
+  h4{font-family:var(--font-display);font-size:13px;margin:16px 0 6px}
+  details summary{cursor:pointer;color:var(--muted-strong);font-size:12px;margin:12px 0 6px}
   h3 .sub{font-family:var(--font-jp);font-size:12px;font-weight:400;color:var(--muted-strong);margin-left:8px}
 
   /* ---- ヒントの文案の表: 文言の列を読める幅に ---- */
@@ -739,8 +741,75 @@
         </tbody>
       </table></div>
 
-      <h3>Prestige <span class="sub">文案は名前が決まってから</span></h3>
-      <p>Prestige という名前を、このコンテンツの考え方が伝わる言葉に変えたい。考え方は「今の掘り進みと道具を手放して地上へ戻り、集めた宝石の力（ジェムパワー）で、次からの Soil / Tear の稼ぎを永く上げる」。</p>
+      <h3>Prestige → Resurface（浮上） <span class="sub">名前は決定（10-08）</span></h3>
+      <p>Prestige という名前を、このコンテンツの考え方が伝わる言葉に変えたい。考え方は「今の掘り進みと道具を手放して地上へ戻り、集めた宝石の力（ジェムパワー）で、次からの Soil / Tear の稼ぎを永く上げる」。<strong>Resurface（浮上）に決定。</strong>開発名 <code>Prestige</code> はコードと Localization Key に残す。</p>
+      <p>宝石の一覧の見出しは<strong>「奉納された宝石」（Offered Gems）</strong>に決定（実装済み）。「地下で掘る → 宝石を奉納する → 地上へ浮上する → 次の採掘が速くなる」という一つの流れで、Cave の「深度」ともつながる。</p>
+
+      <h4>言い回しの方針</h4>
+      <p>「ソイル浮上速度」のように、既存の文に「プレステージ」を機械的に「浮上」へ置き換えると意味がずれる。<strong>浮上は行為（地上へ戻ること）にだけ使い、浮上で得るものは既存の言葉で呼ぶ。</strong></p>
+      <ol class="num-list">
+        <li><strong>浮上 = 行為・出来事。</strong>「浮上する」「浮上すると」「前回の浮上」「浮上の自動化」「浮上のクールダウン」のように使う</li>
+        <li><strong>浮上で得る倍率は「ソイル獲得倍率」「ティア獲得倍率」</strong>（Tutorial の既存の言葉）。「浮上倍率」「浮上ボーナス」のような新語は作らない</li>
+        <li><strong>「〜速度」「〜倍率」の複合語に 浮上 を押し込まない。</strong>缶の効果（spp / tpp）は「浮上の速さ」ではなく「次回の獲得倍率が育つ速さ」なので、そう書く</li>
+        <li><strong>Soil / Tear の 2 種類は「ソイル浮上」「ティア浮上」</strong>（見出し・ボタン・自動化の名前だけ。文の中では「ソイルの浮上」）。Relic の名前は既存の「自動アップグレード：ソイル倍率」に合わせて「自動浮上：ソイル」</li>
+        <li><strong>英語は Resurface（名詞・動詞）/ Resurfacing / Resurfaced。</strong>Tutorial の説明文は「地上へ戻る」「持ち帰る」の絵が立つように少し書き直す</li>
+        <li>ついでに直す: クールタイム / クールダウンの混在 → <strong>クールダウン</strong>。英語で途切れている文（<code>TearSoilPrestigeReset</code> / <code>TeaaUnlockKey</code>）も直す</li>
+      </ol>
+
+      <h4>文言の案（日本語 / 英語）</h4>
+      <p>「今」は Steam ブランチの CSV の値。14 言語の残りは、この案が決まってから各言語の「浮上」（fr Remontée / de Auftauchen / es Resurgir / pt Emersão / it Riemersione / ru Всплытие / ko 부상 / zh 浮上 / id Muncul ke permukaan / ar الصعود）で揃える。</p>
+      <div class="tablewrap"><table class="copy">
+        <thead><tr><th>キー</th><th>出る場所</th><th>今（ja / en）</th><th>案（ja / en）</th><th>備考</th></tr></thead>
+        <tbody>
+          <tr><td class="el">UI_Prestige / Prestige</td><td>Prestige 画面のボタン（開く・実行）</td><td>プレステージ / Prestige</td><td><strong>浮上 / Resurface</strong></td><td>ボタン。2 文字 / 9 文字</td></tr>
+          <tr><td class="el">UI_Prestige / IncreaseSoilGainPrestige</td><td>Soil パネルの見出し</td><td>プレステージ / Increase Soil Gain Prestige</td><td><strong>ソイル浮上 / Soil Resurface</strong></td><td>英語は長いので短くする</td></tr>
+          <tr><td class="el">UI_Prestige / IncreaseTearGainPrestige</td><td>Tear パネルの見出し</td><td>ティアプレステージ / Increase Tear Gain Prestige</td><td><strong>ティア浮上 / Tear Resurface</strong></td><td>同上</td></tr>
+          <tr><td class="el">UI_Prestige / PrestigeDescription</td><td>パネルの説明文（Soil / Tear 共通）</td><td>現在の進行状況をリセットして、代わりに強力なボーナスを獲得。 / Reset your current progress in exchange for powerful bonuses.</td><td><strong>地上へ浮上して進行をリセットし、代わりに強力なボーナスを獲得。 / Return to the surface: reset your progress in exchange for powerful bonuses.</strong></td><td>「浮上 = 地上へ戻る」を最初に見る文で言う</td></tr>
+          <tr><td class="el">UI_Prestige / TearSoilPrestigeReset</td><td>Tear パネルの注意</td><td>ソイルのプレステージも同時に実行される。 / The "Increase Soil Gain" prestige's targets</td><td><strong>ソイルの浮上も同時に行われます。 / Soil Resurface happens at the same time.</strong></td><td>英語は途切れているので直す</td></tr>
+          <tr><td class="el">UI_Prestige / TeaaUnlockKey</td><td>Tear の錠前</td><td>姫路の深度10に到達で解放 / Depth reached in Himeji reaches 10</td><td>（ja そのまま） / <strong>Unlocks at Depth 10 in Himeji</strong></td><td>英語だけ直す</td></tr>
+          <tr><td class="el">UI_Prestige / SoilPrestigeTitle・TearPrestigeTitle・PrestigeResetTarget・Next:</td><td>Prestige 画面</td><td>ソイルの獲得量Up / あなたが失うもの / 次回：</td><td>（そのまま）</td><td>浮上の語を含まない。変えない</td></tr>
+          <tr><td class="el">Templates / notification.prestige</td><td>画面上の通知</td><td>プレステージ / PRESTIGE</td><td><strong>浮上 / RESURFACE</strong></td><td>—</td></tr>
+          <tr><td class="el">Templates / notification.prestige_description</td><td>通知の本文</td><td>進行をリセットして強力な永続ボーナスを獲得しよう。 / Reset your progress to gain powerful permanent bonuses.</td><td><strong>地上へ浮上して、強力な永続ボーナスを手に入れよう。 / Resurface to claim powerful permanent bonuses.</strong></td><td>—</td></tr>
+          <tr><td class="el">Terms / battlelootdescription.spp・UI_Battle / sppDescription</td><td>バトルの缶（SPP）の説明・戦利品</td><td>ソイルプレステージ速度 / Soil gain prestige speed</td><td><strong>ソイル獲得倍率の成長速度 / Soil gain multiplier growth</strong></td><td>「浮上速度」にしない（方針 3）。短くするなら「次回ソイル倍率の成長」</td></tr>
+          <tr><td class="el">Terms / battlelootdescription.tpp・UI_Battle / tppDescription</td><td>バトルの缶（TPP）の説明・戦利品</td><td>ティアプレステージ速度 / Tear gain prestige speed</td><td><strong>ティア獲得倍率の成長速度 / Tear gain multiplier growth</strong></td><td>同上</td></tr>
+          <tr><td class="el">Terms / challenge.automation_only.rule</td><td>試練のルール</td><td>アイテム生成・合成・装備変更・プレステージは手動では行えません。すべて自動で行う必要があります。 / Items cannot be generated, merged, equipped, or Prestiged manually. …</td><td><strong>アイテム生成・合成・装備変更・浮上は手動では行えません。すべて自動で行う必要があります。 / Items cannot be generated, merged, equipped, or resurfaced manually. These actions must be automated.</strong></td><td>—</td></tr>
+          <tr><td class="el">Terms / challenge.handicap.no_prestige</td><td>試練の制約</td><td>プレステージ倍率無効 / Prestige multipliers disabled</td><td><strong>浮上で得た倍率無効 / Resurface multipliers disabled</strong></td><td>「浮上倍率」にしない（方針 2）。短くするなら「浮上の倍率無効」</td></tr>
+          <tr><td class="el">Terms / challenge.handicap.no_prestige_battle</td><td>試練の制約</td><td>プレステージ倍率・バトル倍率無効 / Prestige and battle multipliers disabled</td><td><strong>浮上で得た倍率・バトル倍率無効 / Resurface and battle multipliers disabled</strong></td><td>同上</td></tr>
+          <tr><td class="el">Terms / spell.prestige_delay_half.desc</td><td>Spell「急がばせっかち」の効果</td><td>プレステージのクールタイムが半分になります / Prestige cooldown is halved.</td><td><strong>浮上のクールダウンが半分になります。 / Resurface cooldown is halved.</strong></td><td>クールタイム → クールダウン（方針 6）</td></tr>
+          <tr><td class="el">UI_Cave / PrestigeProgressTitle</td><td>浮上したときの記録ポップアップの題</td><td>プレステージの進捗 / Prestige Progress</td><td><strong>浮上の記録 / Resurface Record</strong></td><td>中は「リザルト」「今回の採掘記録」</td></tr>
+          <tr><td class="el">UI_Cave / PrestigeRecordPeriodText</td><td>同ポップアップの期間</td><td>前回のプレステージから今回まで / Since the previous Prestige</td><td><strong>前回の浮上から今回まで / Since the last Resurface</strong></td><td>—</td></tr>
+          <tr><td class="el">UI_Relic / relic.popup.prestige.title</td><td>Relic 自動化タブの見出し</td><td>プレステージ自動化 / Prestige Automation</td><td><strong>浮上の自動化 / Resurface Automation</strong></td><td>—</td></tr>
+          <tr><td class="el">UI_Relic / relic.au_soilprestige.title</td><td>Relic 自動化の項目</td><td>ソイルプレステージ自動化 / Auto Soil Prestige</td><td><strong>自動浮上：ソイル / Auto Resurface : Soil</strong></td><td>「自動アップグレード：ソイル倍率」と同じ形（方針 4）</td></tr>
+          <tr><td class="el">UI_Relic / relic.au_soilprestige.explain</td><td>同項目の説明</td><td>ソイルプレステージを自動で実行します。 / Automatically performs Soil Prestige.</td><td><strong>ソイルの浮上を自動で行います。 / Automatically performs Soil Resurface.</strong></td><td>—</td></tr>
+          <tr><td class="el">UI_Relic / relic.au_tearprestige.title</td><td>Relic 自動化の項目</td><td>ティアプレステージ自動化 / Auto Tear Prestige</td><td><strong>自動浮上：ティア / Auto Resurface : Tear</strong></td><td>—</td></tr>
+          <tr><td class="el">UI_Relic / relic.au_tearprestige.explain</td><td>同項目の説明</td><td>ティアプレステージを自動で実行します。 / Automatically performs Tear Prestige.</td><td><strong>ティアの浮上を自動で行います。 / Automatically performs Tear Resurface.</strong></td><td>—</td></tr>
+          <tr><td class="el">UI_Relic / relic.prestige_delay_onies.title・relic.prestige_delay_mc.title</td><td>Relic の効果名</td><td>プレステージクールダウン / Prestige Cooldown</td><td><strong>浮上のクールダウン / Resurface Cooldown</strong></td><td>—</td></tr>
+          <tr><td class="el">UI_Relic / relic.prestige_delay_onies.explain・relic.prestige_delay_mc.explain</td><td>Relic の効果の説明</td><td>プレステージのクールダウンを3分短縮します。 / Reduces the Prestige cooldown by 3 minutes.</td><td><strong>浮上のクールダウンを3分短縮します。 / Reduces the Resurface cooldown by 3 minutes.</strong></td><td>—</td></tr>
+          <tr><td class="el">UI_Setting / Stats_Sec_Prestige</td><td>記録画面の節の名前</td><td>プレステージ / Prestige</td><td><strong>浮上 / Resurface</strong></td><td>—</td></tr>
+          <tr><td class="el">UI_Shop / BonusMultiplierExplain1</td><td>ボーナス倍率パックの説明</td><td>プレステージの報酬 / Prestige reward</td><td><strong>浮上の報酬 / Resurface rewards</strong></td><td>—</td></tr>
+          <tr><td class="el">UI_Start / TesterBody2</td><td>スタート画面（テスター向け）</td><td>プレステージとケイブの進捗はリセットされます。そして、感謝としてソウルを3つ追加しました。 / Prestige and Cave progress have been reset. …</td><td><strong>浮上とケイブの進捗はリセットされます。そして、感謝としてソウルを3つ追加しました。 / Resurface and Cave progress have been reset. As a token of our gratitude, we have added 3 Soul.</strong></td><td>—</td></tr>
+          <tr><td class="el">UI_Tutorial / prestige_gemPower_explain</td><td>Prestige ①（T20200）1 ページ目</td><td>集めた宝石はプレステージの効果を強めます。 / Collected gems boost your Prestige effects.</td><td><strong>集めた宝石を奉納するほど、浮上で持ち帰る倍率が大きくなります。 / The more gems you offer, the bigger the bonus you bring back when you resurface.</strong></td><td>「奉納」と「浮上」をここで結ぶ</td></tr>
+          <tr><td class="el">UI_Tutorial / prestige_mul</td><td>Prestige ① 2 ページ目</td><td>ジェムパワーによってソイル獲得倍率が上がっていきます。プレステージで入手できます。 / Gem Power slowly increases your Soil gain multiplier. Prestiging lets you claim that bonus.</td><td><strong>ジェムパワーによってソイル獲得倍率が育っていきます。浮上すると、その倍率を持ち帰れます。 / Gem Power slowly raises your Soil gain multiplier. Resurface to bring that bonus back with you.</strong></td><td>「育つ」は缶（spp）の説明と同じ言葉</td></tr>
+          <tr><td class="el">UI_Tutorial / prestige_resetTarget</td><td>Prestige ① 3 ページ目</td><td>ただし！プレステージすると多くの進行を失います。 / But! Prestiging resets most progress.</td><td><strong>ただし！浮上すると多くの進行を失います。 / But! Resurfacing resets most progress.</strong></td><td>—</td></tr>
+          <tr><td class="el">UI_Tutorial / battle_e2b</td><td>Battle ③（E2B）の見出し</td><td>プレステージおめでとう！ / Prestiged Items</td><td><strong>浮上おめでとう！ / Welcome Back to the Surface!</strong></td><td>英語も祝辞に揃える</td></tr>
+          <tr><td class="el">UI_Tutorial / battle_e2b_explain</td><td>Battle ③ の説明</td><td>プレステージすると育てたアイテムがバトルで使えるようになります。 / Prestiged items can now be used in battle.</td><td><strong>浮上前に育てたアイテムが、バトルで使えるようになります。 / The items you raised before resurfacing can now be used in battle.</strong></td><td>—</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Prestige のヒント（下書き）</h4>
+      <p>Hint ボタン: Prestige 画面の右上。Tutorial の Prestige ①（T20200）とは別に、いつでも読み返せるもの。</p>
+      <div class="tablewrap"><table class="copy">
+        <thead><tr><th>ページ</th><th>見せる UI</th><th>文言</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td><span class="muted">—</span></td><td>浮上は、いまの採掘を手放して地上へ戻ることです。</td></tr>
+          <tr><td class="num">2</td><td>奉納された宝石の一覧</td><td>集めた宝石は奉納され、ジェムパワーになります。ジェムパワーが多いほど、次回の獲得倍率が速く育ちます。</td></tr>
+          <tr><td class="num">3</td><td>次回：x2</td><td>浮上すると、育った倍率を持ち帰れます。倍率はソイル（ティア）の獲得量にずっと効きます。</td></tr>
+          <tr><td class="num">4</td><td>あなたが失うもの</td><td>代わりに、アップグレードの進行と全てのアイテムを失います。装備は浮上前に育てた分がバトルで使えます。</td></tr>
+          <tr><td class="num">5</td><td>Tear タブ</td><td>ティアの浮上はソイルの浮上も同時に行います。失うものが増える分、ティアの獲得倍率も育ちます。</td></tr>
+        </tbody>
+      </table></div>
+
+      <details><summary>名前の候補（決定前の比較）</summary>
       <div class="tablewrap"><table>
         <thead><tr><th>候補</th><th>日本語</th><th>伝わること</th><th>気になる点</th></tr></thead>
         <tbody>
@@ -752,6 +821,7 @@
           <tr><td class="el">Offering</td><td>奉納</td><td>宝石の力を捧げて、恩恵（倍率）を受ける</td><td>宗教色が出る</td></tr>
         </tbody>
       </table></div>
+      </details>
     </section>
 
     <section id="open">
@@ -1099,7 +1169,7 @@
         // 表の名前 = 章の id + 表の直前の見出し（無ければ番号）
         let h=table.closest('.tablewrap')||table, title='';
         for(let p=h.previousElementSibling;p;p=p.previousElementSibling){
-          if(p.tagName==='H3'){const c=p.cloneNode(true);c.querySelectorAll('.sub').forEach(s=>s.remove());title=c.textContent.trim();break;}
+          if(p.tagName==='H3'||p.tagName==='H4'){const c=p.cloneNode(true);c.querySelectorAll('.sub').forEach(s=>s.remove());title=c.textContent.trim();break;}
           if(p.tagName==='H2')break;
         }
         let key=section.id+'|'+(title||('表'+(i+1)));
