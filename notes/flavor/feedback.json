@@ -1,5 +1,91 @@
 {
-  "comments": {},
+  "comments": {
+    "flavor-gem-custom:padparadschasapphire": [
+      {
+        "text": "サファイアの中でいちばん珍しい色のひとつ。",
+        "ts": "2026-10-08T10:24:40.577Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-gem-custom:rubelite": [
+      {
+        "text": "赤はマンガンの色。ルビー少し柔らかい。",
+        "ts": "2026-10-08T10:26:10.479Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-gem-custom:aquamarine": [
+      {
+        "text": "船乗りのお守りだった。",
+        "ts": "2026-10-08T10:26:52.794Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-gem-custom:tsavorite": [
+      {
+        "text": "緑のガーネット。",
+        "ts": "2026-10-08T10:31:00.113Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-gem-custom:rosequartz": [
+      {
+        "text": "色の原因は今も議論が続いている。",
+        "ts": "2026-10-08T10:31:26.196Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-gem-custom:demantoid": [
+      {
+        "text": "宝石にしては柔らかい。",
+        "ts": "2026-10-08T10:33:06.856Z",
+        "author": "yooyooy724"
+      },
+      {
+        "text": "これも緑のガーネット。宝石にしては柔らかい。",
+        "ts": "2026-10-08T10:33:36.909Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-gem-custom:bluequartz": [
+      {
+        "text": "空が青いのと同じ仕組み。",
+        "ts": "2026-10-08T10:33:45.223Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-gem-custom:crystalopal": [
+      {
+        "text": "乾くとひびが入る。たまに水をあげて。",
+        "ts": "2026-10-08T10:35:27.628Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-gem-custom:phantomquartz": [
+      {
+        "text": "影の層は休んで、また育った証。",
+        "ts": "2026-10-08T10:37:30.358Z",
+        "author": "yooyooy724"
+      }
+    ]
+  },
   "reactions": {},
-  "choices": {}
+  "choices": {
+    "flavor-gem:quartz": "0",
+    "flavor-gem:amethyst": "1",
+    "flavor-gem:morganite": "0",
+    "flavor-gem:amazonite": "0",
+    "flavor-gem:padparadschasapphire": "custom",
+    "flavor-gem:paraibatourmaline": "0",
+    "flavor-gem:moonstone": "2",
+    "flavor-gem:rubelite": "custom",
+    "flavor-gem:aquamarine": "custom",
+    "flavor-gem:catseyequartz": "1",
+    "flavor-gem:tsavorite": "custom",
+    "flavor-gem:rosequartz": "custom",
+    "flavor-gem:demantoid": "custom",
+    "flavor-gem:bluequartz": "custom",
+    "flavor-gem:crystalopal": "custom",
+    "flavor-gem:phantomquartz": "custom"
+  }
 }
