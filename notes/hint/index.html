@@ -148,6 +148,12 @@
   .muted{color:var(--muted)}
   h3 .sub{font-family:var(--font-jp);font-size:12px;font-weight:400;color:var(--muted-strong);margin-left:8px}
 
+  /* ---- ヒントの文案の表: 文言の列を読める幅に ---- */
+  table.copy{table-layout:fixed}
+  table.copy th:first-child{width:3.8em}
+  table.copy th:nth-child(2){width:28%}
+  table.copy th.row-ctl{width:7em}
+
   /* ---- 表の編集 ---- */
   td.is-edited{box-shadow:inset 3px 0 0 var(--orange)}
   tr.is-added td:first-child{box-shadow:inset 3px 0 0 var(--green)}
@@ -175,7 +181,7 @@
     <div class="label">Idle Minertia / Design Notes / Hint</div>
     <h1>ヒント設計 — 画面ごとの要素</h1>
     <p class="lede">ヒントを実装する前の棚卸し。コンテンツごとに「画面」（区画）を分け、そこに並ぶ要素と、その説明を書き出した。Tutorial がどの区画で何を説明しているかも並べる。</p>
-    <div class="meta"><span>更新 2026-10-06</span><span>元: Unity の UXML・ローカライズ CSV・TutorialDomain.cs</span><span><a href="../">ノート一覧へ</a></span></div>
+    <div class="meta"><span>更新 2026-10-08</span><span>元: Unity の UXML・ローカライズ CSV・TutorialDomain.cs</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <div class="purpose">
@@ -206,7 +212,9 @@
       <li><a href="#nether">8. Nether（ネザー）</a></li>
       <li><a href="#shop">9. Shop（ショップ）</a></li>
       <li><a href="#landscape">10. 横長（Steam）での違い</a></li>
-      <li><a href="#open">11. 論点</a></li>
+      <li><a href="#delivery">11. ヒントの出し方</a></li>
+      <li><a href="#hints">12. ヒントの文案</a></li>
+      <li><a href="#open">13. 論点</a></li>
     </ol>
   </nav>
 
@@ -637,11 +645,120 @@
       </ul>
     </section>
 
+    <section id="delivery">
+      <h2>11. ヒントの出し方 <span class="badge b-fixed">決定 2026-10-08</span></h2>
+      <div class="callout">
+        <ul>
+          <li>ヒントは <strong>Tutorial としては出さない</strong>。区画に <strong>Hint ボタン</strong>を置き、押したらヒントのポップアップを出す</li>
+          <li>見る経路は 2 つ。どちらも同じポップアップを開く</li>
+        </ul>
+      </div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>経路</th><th>出し方</th><th>消え方</th></tr></thead>
+        <tbody>
+          <tr><td class="el">① 画面の Hint ボタン</td><td>区画の右端に置く（置き場所は下の各ヒントの表）</td><td>一度ヒントを開き、<strong>OK</strong> を押すと、そのボタンは<strong>二度と出ない</strong></td></tr>
+          <tr><td class="el">② Option のヒントボタン</td><td>Option（設定）にヒントボタンを置く。押すと<strong>ヒントの一覧</strong>が出て、そこから各ヒントを開く</td><td>消えない。いつでも読み返せる</td></tr>
+        </tbody>
+      </table></div>
+      <h3>実装で決めること</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>論点</th><th>案</th></tr></thead>
+        <tbody>
+          <tr><td class="el">OK を押した記録</td><td>ヒントごとに「OK 済み」を持つ。端末を替えても再表示しないなら、セーブに載せる</td></tr>
+          <tr><td class="el">一覧に出すヒント</td><td>解禁前の区画のヒントは一覧に出さない（区画の解禁条件にそろえる）</td></tr>
+          <tr><td class="el">横長（Steam）</td><td>Hint ボタンは縦と横の UXML の両方に置く</td></tr>
+          <tr><td class="el">文言の置き場</td><td>新しい String Table（例: UI_Hint）。14 言語</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="hints">
+      <h2>12. ヒントの文案 <span class="badge b-idea">下書き</span></h2>
+      <p>1 つのヒントは数ページ。各ページは「見せる UI（画像）」と「文言」の組。表を編集すれば文言を直せる。</p>
+
+      <h3>Soil Upgrade / Tear Upgrade <span class="sub">Hint ボタン: Upgrade の右端</span></h3>
+      <div class="tablewrap"><table class="copy">
+        <thead><tr><th>ページ</th><th>見せる UI</th><th>文言</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td><span class="muted">—</span></td><td>アップグレードでアイテムの強化しましょう。アップグレードは全てのアイテムに適応されます。</td></tr>
+          <tr><td class="num">2</td><td>購入数切替ボタン</td><td>購入数を切り替えをすると一度にまとめてアップグレードができます。</td></tr>
+          <tr><td class="num">3</td><td>詳細ボタン</td><td>統計ボタンを開くと今、どれだけ効果を得られているかが確認できます。</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Booster <span class="sub">Hint ボタン: ブースターパネルの右端</span></h3>
+      <div class="tablewrap"><table class="copy">
+        <thead><tr><th>ページ</th><th>見せる UI</th><th>文言</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td><span class="muted">—</span></td><td>ブースターでは、一時的な効果を受け取ることができます。上位のブースターを獲得して初めて下位のブースターを使うことができます。</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Map <span class="sub">Hint ボタン: マップパネルの右端</span></h3>
+      <div class="tablewrap"><table class="copy">
+        <thead><tr><th>ページ</th><th>見せる UI</th><th>文言</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td><span class="muted">—</span></td><td>マップから別の洞窟にトラベルできます。</td></tr>
+          <tr><td class="num">2</td><td>イベントのアイコン</td><td>それぞれの洞窟ではたまに大量発生イベントが発生します。</td></tr>
+          <tr><td class="num">3</td><td>Battle Stats 報酬</td><td>それぞれの洞窟では特有のバトルステータス報酬があります。この報酬は周回ごとに深度が X-1 に到達したタイミングで獲得できます。</td></tr>
+          <tr><td class="num">4</td><td>＋ボタン</td><td>そして、各洞窟には達成目標があり、達成目標をクリアしていくことで次の洞窟が開放されたり、特定の効果を獲得できます。</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Equipment の操作方法 <span class="sub">Hint ボタン: Equipment 画面の上部の右端</span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>操作</th><th>対象</th><th>やり方</th><th>今の実装</th></tr></thead>
+        <tbody>
+          <tr><td class="el">移動方法 1</td><td>共通</td><td>ドラッグアンドドロップ</td><td>あり（モバイル・PC 共通）。5px 以上・0.1 秒以上でドラッグ開始。中身は「選択→クリック」の流用（<code>ItemDragHandler.cs</code>）</td></tr>
+          <tr><td class="el">移動方法 2</td><td>共通</td><td>移動するアイテムをクリックして、移動先のスロットをクリック</td><td>あり（共通）。2 回目のクリック先がマージできる相手ならマージ、それ以外は入れ替え（<code>CrusherEquipmentViewModel.OnItemSelected</code>）</td></tr>
+          <tr><td class="el">詳細の表示</td><td>モバイル</td><td>ダブルクリック</td><td>あり。ただし PC でも同じくダブルクリックで詳細が開く（<code>CrusherItemSlotView.cs:123</code>）</td></tr>
+          <tr><td class="el">詳細の表示</td><td>PC</td><td>右クリック</td><td><strong>なし</strong>。右クリックの判定がどこにも無い。右クリックでも選択が走る可能性が高い</td></tr>
+          <tr><td class="el">取り込みマージ</td><td>PC</td><td>ダブルクリック</td><td><strong>未接続</strong>。Domain に <code>ExecuteChainMerge</code>（PC のダブルクリック用）はあるが Unity から呼んでいない。ダブルクリックは今は詳細表示</td></tr>
+          <tr><td class="el">エンチャントを外す</td><td>PC</td><td>右ダブルクリック</td><td><strong>なし</strong>。今は詳細画面の解除ボタンだけ</td></tr>
+          <tr><td class="el">お気に入り</td><td>共通（モバイルも）</td><td>Delete と同じ方法に切り替える</td><td>今は 1 個選んで「お気に入り」ボタンで切り替え。削除はモード式（入る→複数選ぶ→確定）。リロールと同じ仕組み（<code>DeletionModeManager</code>）でお気に入りモードを足せる</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout note"><ul><li>この表のとおりになっていない操作は実装する（ヒントの実装と同じタスク）</li></ul></div>
+
+      <h3>Equipment スロットタブ <span class="sub">Hint ボタン: Equipment 画面の下部のスロットタブの右端</span></h3>
+      <div class="tablewrap"><table class="copy">
+        <thead><tr><th>ページ</th><th>見せる UI</th><th>文言</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td><span class="muted">—</span></td><td>ここでは装備スロットとストレージのスロットを拡張できます。</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Equipment 変換タブ <span class="sub">Hint ボタン: Equipment 画面の下部の変換タブの右端（要確認: 下書きでは「スロットタブの右端」）</span></h3>
+      <div class="tablewrap"><table class="copy">
+        <thead><tr><th>ページ</th><th>見せる UI</th><th>文言</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td><span class="muted">—</span></td><td>ここではアイテムの振り直しができます。</td></tr>
+          <tr><td class="num">2</td><td>4 つのアイテム種類ボタン</td><td>まず振りなおすアイテムの種類を選択します。</td></tr>
+          <tr><td class="num">3</td><td>変換ボタン</td><td>そして、変換ボタンを押すとランダムで別のアイテムに振り直されます。</td></tr>
+          <tr><td class="num">4</td><td>回数の点（Dot）</td><td>一日にできる回数が決まっているのでご注意。</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Prestige <span class="sub">文案は名前が決まってから</span></h3>
+      <p>Prestige という名前を、このコンテンツの考え方が伝わる言葉に変えたい。考え方は「今の掘り進みと道具を手放して地上へ戻り、集めた宝石の力（ジェムパワー）で、次からの Soil / Tear の稼ぎを永く上げる」。</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>候補</th><th>日本語</th><th>伝わること</th><th>気になる点</th></tr></thead>
+        <tbody>
+          <tr><td class="el">Resurface</td><td>浮上</td><td>掘った分を手放して地上へ戻り、宝石の力を持ち帰って次の掘削を速くする。「戻る」と「強くなる」が一語で伝わる</td><td>戻る＝損に見えるかもしれない</td></tr>
+          <tr><td class="el">Momentum</td><td>勢い</td><td>惑星ミナーシャ（慣性）にかかる。戻るたびに勢いが増して速く掘れる</td><td>「一度手放す」ことは伝わりにくい</td></tr>
+          <tr><td class="el">Rebore</td><td>掘り直し</td><td>同じ鉱脈を一から掘り直す。採掘のゲームらしい</td><td>英語は造語寄り</td></tr>
+          <tr><td class="el">Refine</td><td>精錬</td><td>掘った土を宝石の力で精錬し、純度（倍率）を上げる</td><td>何を失うかが伝わりにくい</td></tr>
+          <tr><td class="el">Temper</td><td>焼き戻し</td><td>道具を一度冷まして鍛え直す。手放して強くなる</td><td>言葉がやや難しい</td></tr>
+          <tr><td class="el">Offering</td><td>奉納</td><td>宝石の力を捧げて、恩恵（倍率）を受ける</td><td>宗教色が出る</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
     <section id="open">
-      <h2>11. 論点 <span class="badge b-open">未決</span></h2>
+      <h2>13. 論点 <span class="badge b-open">未決</span></h2>
       <ol class="num-list">
         <li><strong>ヒントの粒度</strong>: 1 区画に 1 つか、要素ごとか。このページの表は要素ごとに書いてあるので、どちらにも使える</li>
-        <li><strong>出し方</strong>: 区画ごとの ? ボタン / 初めて開いたときに 1 回出す / Tutorial の説明ポップアップをもう一度開けるようにする</li>
+        <li><strong>出し方</strong>: <span class="badge b-fixed">決定</span> 区画の Hint ボタン（OK で消える）と、Option のヒント一覧の 2 経路。→ 11 章</li>
         <li><strong>Tutorial との重複</strong>: 説明ポップアップがある区画（Equipment ①・Cave ①④・Battle ②③・Prestige ①②）は、その文言（UI_Tutorial）をそのまま使うか、書き直すか</li>
         <li><strong>解禁前の扱い</strong>: 解禁前の区画のヒントは出さない。Tutorial の表示制御・未解禁の錠前と同じ条件にそろえる</li>
         <li><strong>文言の置き場</strong>: 新しいテーブル（例: UI_Hint）を作るか、UI_Tutorial に足すか。14 言語</li>
