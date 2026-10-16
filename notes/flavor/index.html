@@ -43,8 +43,14 @@
   .cell[contenteditable]:focus{outline:2px solid var(--blue);background:#f7fbff}
   .cell.is-edited{border-style:solid;border-left:3px solid var(--orange)}
   .cell.is-fixed{border-style:solid;background:var(--card);cursor:default}
-  .tool .cmeta{font-family:var(--mono);font-size:10.5px;color:var(--muted);display:flex;gap:8px;margin-top:3px}
-  .tool .cmeta button{background:none;border:0;padding:0;font:inherit;color:var(--muted-strong);cursor:pointer;text-decoration:underline}
+  .tools.pick{grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr))}
+  .tool.is-decided{border-color:var(--green);box-shadow:inset 3px 0 0 var(--green)}
+  .tool label{display:grid;grid-template-columns:18px 1fr;gap:8px;align-items:start;padding:4px 6px;border-radius:5px;cursor:pointer;font-size:13.5px}
+  .tool label:hover{background:#f7f5ef}
+  .tool label.on{background:#eef7d8}
+  .tool label .en{display:block;font-size:11.5px;color:var(--muted-strong);font-family:var(--font-display)}
+  .tool input[type=radio]{margin:4px 0 0}
+  .tool .custom textarea{width:100%;min-height:36px;resize:vertical;font-family:var(--font-jp);font-size:13px;line-height:1.5;padding:5px 8px;border:1px solid var(--line);border-radius:5px;margin-top:3px}
 
   /* ---- 宝石 ---- */
   .progress{display:flex;gap:16px;align-items:center;font-family:var(--mono);font-size:12px;color:var(--muted-strong);margin:8px 0 14px}
@@ -111,13 +117,15 @@
   </main>
 </div>
 
-<script src="data.js?v=20261011-3"></script>
+<script src="data.js?v=20261016-1"></script>
 <script>
 /* =========================================================
    図鑑フレーバー ノート
 
    保存先は他のノートと同じ feedback.json（live / propose / localStorage の 3 通り）。
-     - 道具の文言:   comments['flavor-tool:<kind>:<lv>:<ja|en>'] の最新 1 件が勝つ。'@@original@@' は案に戻す
+     - 道具の選択:   choices['flavor-tool-pick:<kind>:<lv>'] = 候補の番号 ('0'..'2') か 'custom'
+     - 道具の自作文: comments['flavor-tool-custom:<kind>:<lv>:<ja|en>'] の最新 1 件
+       （2026-10-16 に案を白紙から作り直したので、旧キー flavor-tool:<kind>:<lv>:<lang> の書き換えは読まない）
      - 宝石の選択:   choices['flavor-gem:<id>'] = 候補の番号 ('0'..) か 'custom'
      - 宝石の自作文: comments['flavor-gem-custom:<id>'] の最新 1 件
    新しいデータ形式は足していない（scripts/notes-merge.mjs の規則どおり: comments は和集合、choices は後勝ち）。
@@ -198,38 +206,42 @@
   const stamp=iso=>{const d=new Date(iso);if(isNaN(d))return iso;return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');};
 
   /* ---------- 道具 ---------- */
-  const toolKey=(kind,lv,lang)=>'flavor-tool:'+kind+':'+lv+':'+lang;
+  const toolPickKey=(kind,lv)=>'flavor-tool-pick:'+kind+':'+lv;
+  const toolCustomKey=(kind,lv,lang)=>'flavor-tool-custom:'+kind+':'+lv+':'+lang;
+  function toolChoice(kind,level){const v=STORE.choices[toolPickKey(kind,level.lv)];return v===undefined||v===null?'':String(v);}
   function toolText(kind,level,lang){
     if(level.fixed)return level[lang];
-    const c=latestOf(toolKey(kind,level.lv,lang));
-    return (!c||c.text===ORIGINAL)?level[lang]:c.text;
+    const v=toolChoice(kind,level);
+    if(v==='custom'){const c=latestOf(toolCustomKey(kind,level.lv,lang));return c?c.text:'';}
+    if(v==='')return '';
+    const c=level.candidates[+v];return c?c[lang]:'';
   }
-  function toolEdited(kind,level,lang){const c=latestOf(toolKey(kind,level.lv,lang));return !!c&&c.text!==ORIGINAL;}
 
   function buildTools(){
     const root=document.getElementById('toolsRoot');
     for(const kind of Object.keys(D.tools)){
       const t=D.tools[kind];
       const h=document.createElement('h3');h.innerHTML=esc(t.label)+'<span class="sub">'+esc(t.note)+'</span>';root.appendChild(h);
-      const grid=document.createElement('div');grid.className='tools';
+      const grid=document.createElement('div');grid.className='tools pick';
       for(const level of t.levels){
         const card=document.createElement('div');card.className='tool';card.dataset.kind=kind;card.dataset.lv=level.lv;
-        card.innerHTML='<img src="images/'+kind+level.lv+'.png" alt="">'
-          +'<div><div class="lv">Lv.'+level.lv+(level.fixed?' <span class="badge b-fixed">実装済み</span>':'')+'</div>'
-          +'<div class="cell ja" data-lang="ja"></div><div class="cell en" data-lang="en"></div><div class="cmeta"></div></div>';
-        for(const cell of card.querySelectorAll('.cell')){
-          const lang=cell.dataset.lang;
-          if(level.fixed){cell.classList.add('is-fixed');continue;}
-          cell.setAttribute('contenteditable','plaintext-only');
-          cell.addEventListener('focus',()=>{cell.textContent=toolText(kind,level,lang);});
-          cell.addEventListener('blur',()=>{
-            const next=cell.innerText.replace(/ /g,' ').trim();
-            const now=toolText(kind,level,lang).trim();
-            if(next&&next!==now)addComment(toolKey(kind,level.lv,lang),next===level[lang].trim()?ORIGINAL:next);
-            setTimeout(renderAll,0);
-          });
-          cell.addEventListener('keydown',e=>{if(e.key==='Escape'){cell.textContent=toolText(kind,level,lang);cell.blur();}else if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();cell.blur();}});
+        let html='<img src="images/'+kind+level.lv+'.png" alt="">'
+          +'<div><div class="lv">Lv.'+level.lv+(level.fixed?' <span class="badge b-fixed">実装済み</span>':'')+'</div>';
+        if(level.fixed){
+          html+='<div class="cell ja is-fixed">'+esc(level.ja)+'</div><div class="cell en is-fixed">'+esc(level.en)+'</div></div>';
+          card.innerHTML=html;grid.appendChild(card);continue;
         }
+        const name='t-'+kind+'-'+level.lv;
+        level.candidates.forEach((c,k)=>{html+='<label data-v="'+k+'"><input type="radio" name="'+name+'" value="'+k+'"><span>'+esc(c.ja)+'<span class="en">'+esc(c.en)+'</span></span></label>';});
+        html+='<label data-v="custom"><input type="radio" name="'+name+'" value="custom"><span>自分で書く</span></label>'
+          +'<div class="custom" style="display:none"><textarea data-lang="ja" placeholder="日本語"></textarea><textarea data-lang="en" placeholder="English"></textarea></div></div>';
+        card.innerHTML=html;
+        card.querySelectorAll('input[type=radio]').forEach(r=>r.addEventListener('change',()=>{setChoice(toolPickKey(kind,level.lv),r.value);renderAll();if(r.value==='custom')card.querySelector('textarea').focus();}));
+        card.querySelectorAll('textarea').forEach(ta=>{
+          const key=toolCustomKey(kind,level.lv,ta.dataset.lang);
+          ta.addEventListener('blur',()=>{const next=ta.value.trim();const now=(latestOf(key)||{}).text||'';if(next!==now)addComment(key,next);renderAll();});
+          ta.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();ta.blur();}});
+        });
         grid.appendChild(card);
       }
       root.appendChild(grid);
@@ -239,17 +251,12 @@
     document.querySelectorAll('.tool').forEach(card=>{
       const kind=card.dataset.kind, lv=+card.dataset.lv;
       const level=D.tools[kind].levels.find(l=>l.lv===lv);
-      let edited=false;
-      for(const cell of card.querySelectorAll('.cell')){
-        if(document.activeElement===cell)continue;
-        const lang=cell.dataset.lang;
-        cell.textContent=toolText(kind,level,lang);
-        const e=!level.fixed&&toolEdited(kind,level,lang);
-        cell.classList.toggle('is-edited',e); edited=edited||e;
-        cell.title=e?'書き換え '+stamp(latestOf(toolKey(kind,lv,lang)).ts):'';
-      }
-      const meta=card.querySelector('.cmeta');meta.innerHTML='';
-      if(edited){const b=document.createElement('button');b.type='button';b.textContent='案に戻す';b.addEventListener('click',()=>{for(const lang of ['ja','en'])if(toolEdited(kind,level,lang))addComment(toolKey(kind,lv,lang),ORIGINAL);renderAll();});meta.appendChild(b);}
+      if(level.fixed)return;
+      const v=toolChoice(kind,level);
+      card.querySelectorAll('label').forEach(l=>{const on=l.dataset.v===v;l.classList.toggle('on',on);l.querySelector('input').checked=on;});
+      card.querySelector('.custom').style.display=v==='custom'?'':'none';
+      card.querySelectorAll('textarea').forEach(ta=>{if(document.activeElement!==ta)ta.value=(latestOf(toolCustomKey(kind,lv,ta.dataset.lang))||{}).text||'';});
+      card.classList.toggle('is-decided',toolText(kind,level,'ja').trim().length>0);
     });
   }
 
@@ -303,7 +310,7 @@
     for(const g of D.gems){const t=gemChosenText(g);if(t)out+=[ 'collectionindex.flavor.gem.'+g.id,t,'' ].map(q).join(',')+'\n';}
     const undecided=D.gems.filter(g=>!gemChosenText(g).trim());
     const note=undecided.length?'\n（未決の宝石 '+undecided.length+' 件: '+undecided.map(g=>g.name).join(', ')+'）':'';
-    navigator.clipboard.writeText(out).then(()=>alert('道具 36 行と、決まった宝石の文言を CSV でコピーしました。'+note),()=>prompt('この CSV をコピーしてください',out));
+    navigator.clipboard.writeText(out).then(()=>alert('道具の選んだ文言と、決まった宝石の文言を CSV でコピーしました。'+note),()=>prompt('この CSV をコピーしてください',out));
   }
 
   /* ---------- 状態バー ---------- */

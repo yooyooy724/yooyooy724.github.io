@@ -1,50 +1,182 @@
 // 図鑑のフレーバーテキストの候補（2026-10-08 下書き）。
-// 道具: Lv1 は実装済みの文言（変えない）。Lv2〜12 は見た目には書かず、成分・重さ・硬さなど見てもわからない性質を客観的に書く。数字は使わない（2026-10-11 書き直し）。
+// 道具: Lv1 は実装済みの文言（変えない）。Lv2〜12 は 2026-10-16 に白紙から書き直した。世界観（ベクトル・質量→運動）に沿った主人公の声で、短く。1 段に 3 案。
 // 宝石: 実在の宝石の小ネタ。産地・土地の名前は書かない（ゲームの舞台とぶれるため）。
-// 候補の採用は feedback.json の choices に、文言の手直しは comments に入る（index.html を参照）。
+// 候補の採用は feedback.json の choices（道具は flavor-tool-pick:<kind>:<lv>、宝石は flavor-gem:<id>）に、自作の文言は comments に入る（index.html を参照）。
 window.FLAVOR_DATA = {
   tools: {
     mattock: { label: 'Mattock（マトック）', note: '片側が平刃のつるはし', levels: [
       { lv: 1, fixed: true, ja: 'コツコツコツ', en: 'Tap, tap, tap.' },
-      { lv: 2, ja: '鉄製。叩くと少し曲がる。', en: 'Iron. Bends slightly when struck.' },
-      { lv: 3, ja: '炭素を含む鋼。鉄より硬い。', en: 'Carbon steel. Harder than iron.' },
-      { lv: 4, ja: '焼き入れした鋼。表面が硬い。', en: 'Quenched steel. Hard surface.' },
-      { lv: 5, ja: 'クロムを加えた鋼。錆びにくい。', en: 'Chromium steel. Resists rust.' },
-      { lv: 6, ja: 'チタン合金。鋼より軽い。', en: 'Titanium alloy. Lighter than steel.' },
-      { lv: 7, ja: 'ニッケルを加えた合金。衝撃で割れにくい。', en: 'Nickel alloy. Resists cracking under impact.' },
-      { lv: 8, ja: '高クロム鋼。摩耗に強い。', en: 'High-chromium steel. Resists wear.' },
-      { lv: 9, ja: 'モリブデンを加えた鋼。粘りがある。', en: 'Molybdenum steel. Tough.' },
-      { lv: 10, ja: 'コバルト合金。高温でも軟らかくならない。', en: 'Cobalt alloy. Stays hard at high temperatures.' },
-      { lv: 11, ja: '銅とアルミニウムの合金。海水でも錆びない。', en: 'Copper-aluminum alloy. Does not corrode in seawater.' },
-      { lv: 12, ja: '刃先は炭化ケイ素。ダイヤモンドに次ぐ硬さ。', en: 'Silicon carbide edge. Second only to diamond in hardness.' },
+      { lv: 2, candidates: [
+        { ja: '木の柄に鉄の頭。まずはここから。', en: 'Iron head, wooden haft. A place to start.' },
+        { ja: '石をひと削りするたび、ちょっとだけ前に進む。', en: 'Every scrape of stone pushes it forward a little.' },
+        { ja: 'コツコツが、ザクザクになった。', en: 'Tap, tap became scrape, scrape.' },
+      ]},
+      { lv: 3, candidates: [
+        { ja: '柄まで鋼。しならないぶん、力がまっすぐ届く。', en: 'Steel all the way down. No flex, so the force goes straight in.' },
+        { ja: '削った石のぶんだけ、次の一振りが軽い。', en: 'The stone it scrapes away makes the next swing lighter.' },
+        { ja: 'ザクッ。手ごたえが一段重い。', en: 'Shk. The bite feels heavier.' },
+      ]},
+      { lv: 4, candidates: [
+        { ja: '柄の溝が手に吸いつく。', en: 'The grooves on the haft cling to my hand.' },
+        { ja: 'すべらないから、力がにげない。', en: 'No slipping, so no force goes to waste.' },
+        { ja: '握りなおす回数が減った。', en: 'I regrip it less often now.' },
+      ]},
+      { lv: 5, candidates: [
+        { ja: '曲がった柄。妙に振りやすい。', en: 'A bent haft. Oddly easy to swing.' },
+        { ja: '力の向きが、刃の先に集まる形。', en: 'Shaped so every vector gathers at the edge.' },
+        { ja: 'オレンジの差し色がちょっとうれしい。', en: 'The orange accent makes me a little happy.' },
+      ]},
+      { lv: 6, candidates: [
+        { ja: '紫の握り。見た目より手になじむ。', en: 'A purple grip. Fits better than it looks.' },
+        { ja: '軽くなったぶん、手数が増えた。', en: 'Lighter, so it swings more often.' },
+        { ja: 'ひと振りがひとつのベクトル。並べると止まらない。', en: 'Each swing is one vector. Line them up and it never stops.' },
+      ]},
+      { lv: 7, candidates: [
+        { ja: '手首の輪っか。もう取り落とさない。', en: 'A wrist loop. No more dropping it.' },
+        { ja: '赤いのは速そうだから。たぶん。', en: 'It\'s red because red looks fast. Probably.' },
+        { ja: '振り抜いた勢いが、そのまま次へつながる。', en: 'The follow-through carries right into the next swing.' },
+      ]},
+      { lv: 8, candidates: [
+        { ja: '黒くて重い。でも、よく削れる。', en: 'Black and heavy. But it digs well.' },
+        { ja: '重さは、そのまま押しこむ力になる。', en: 'Weight turns straight into pushing force.' },
+        { ja: 'ガリッ。岩のほうが先に音をあげる。', en: 'Grrk. The rock gives up first.' },
+      ]},
+      { lv: 9, candidates: [
+        { ja: '青い筋が一本。目印みたいなもの。', en: 'One blue stripe. Like a marker.' },
+        { ja: '刃が石の目をなぞっていく。', en: 'The blade follows the grain of the stone.' },
+        { ja: '削るというより、ほどいていく感じ。', en: 'Less scraping, more unraveling.' },
+      ]},
+      { lv: 10, candidates: [
+        { ja: '赤い線が走ってる。止まって見えても、きっと速い。', en: 'Red lines run along it. Fast even standing still.' },
+        { ja: '石の質量が、どんどん勢いに化けていく。', en: 'The stone\'s mass keeps turning into momentum.' },
+        { ja: 'ザッ、ザッ。リズムが崩れない。', en: 'Shk, shk. The rhythm never breaks.' },
+      ]},
+      { lv: 11, candidates: [
+        { ja: '黄緑の刃。洞くつの中でもよく目立つ。', en: 'A yellow-green blade. Easy to spot in the cave.' },
+        { ja: '白い刃先は欠けにくい。', en: 'The white edge hardly chips.' },
+        { ja: '石くずがきれいに飛ぶ。', en: 'The grit flies off clean.' },
+      ]},
+      { lv: 12, candidates: [
+        { ja: '青緑に光る刃先。宝石みたいだけど、宝石じゃない。', en: 'A teal edge that shines like a gem. It isn\'t one.' },
+        { ja: '均衡のぎりぎり手前で、岩を割る。', en: 'It splits rock right at the edge of equilibrium.' },
+        { ja: 'マトックの行きつく先。たぶん。', en: 'Where mattocks end up. Probably.' },
+      ]},
     ]},
     pickaxe: { label: 'Pickaxe（ピッケル）', note: '両側が尖ったつるはし', levels: [
       { lv: 1, fixed: true, ja: 'カッカッカッ', en: 'Clink, clink, clink.' },
-      { lv: 2, ja: '鉄製。刃先が欠けやすい。', en: 'Iron. The tip chips easily.' },
-      { lv: 3, ja: '炭素を含む鋼。鉄より硬い。', en: 'Carbon steel. Harder than iron.' },
-      { lv: 4, ja: '鍛造した鋼。内部に気泡が少ない。', en: 'Forged steel. Few internal voids.' },
-      { lv: 5, ja: 'マンガンを加えた鋼。叩くほど表面が硬くなる。', en: 'Manganese steel. The surface hardens with each strike.' },
-      { lv: 6, ja: 'バナジウムを加えた鋼。粘りがあり折れにくい。', en: 'Vanadium steel. Tough and hard to snap.' },
-      { lv: 7, ja: 'アルミニウム製。軽く、錆びにくい。', en: 'Aluminum. Light and rust-resistant.' },
-      { lv: 8, ja: '主成分はベリル。水晶より硬い。', en: 'Mainly beryl. Harder than quartz.' },
-      { lv: 9, ja: '主成分は酸化アルミニウム。ダイヤモンドの次に硬い鉱物。', en: 'Mainly aluminum oxide. The hardest mineral after diamond.' },
-      { lv: 10, ja: 'ニオブを加えた鋼。低温でも割れにくい。', en: 'Niobium steel. Resists cracking in the cold.' },
-      { lv: 11, ja: 'イリジウムを含む合金。酸に溶けない。', en: 'Iridium alloy. Does not dissolve in acid.' },
-      { lv: 12, ja: 'オスミウムを含む合金。非常に重い。', en: 'Osmium alloy. Extremely heavy.' },
+      { lv: 2, candidates: [
+        { ja: '木の柄に鉄の頭。基本のかたち。', en: 'Iron head, wooden haft. The basic shape.' },
+        { ja: 'とがった先に、力が一点に集まる。', en: 'All the force gathers at one sharp point.' },
+        { ja: 'カッカッが、カンカンになった。', en: 'Clink, clink became clang, clang.' },
+      ]},
+      { lv: 3, candidates: [
+        { ja: '柄まで鋼。振ると、ちょっと冷たい音がする。', en: 'Steel all the way down. It rings a little cold.' },
+        { ja: '一点に、もっと強く。', en: 'One point, harder.' },
+        { ja: '刺さってから割れるまでが早い。', en: 'From bite to break, it\'s quicker now.' },
+      ]},
+      { lv: 4, candidates: [
+        { ja: '首の金具。ぐらつきが止まった。', en: 'Metal bands at the neck. No more wobble.' },
+        { ja: 'つなぎ目がしっかりすると、力がもれない。', en: 'A tight joint lets no force leak out.' },
+        { ja: '何度振っても、頭がずれない。', en: 'Swing after swing, the head stays put.' },
+      ]},
+      { lv: 5, candidates: [
+        { ja: '頭にちいさな宝石。飾り……じゃないかも。', en: 'A small gem in the head. Maybe not just for show.' },
+        { ja: 'ひとかけらの均衡が、先端を重くする。', en: 'A sliver of equilibrium weighs down the tip.' },
+        { ja: 'キラッ、カン。', en: 'Glint, clang.' },
+      ]},
+      { lv: 6, candidates: [
+        { ja: '片側だけの刃。そのぶん鋭い。', en: 'A blade on one side only. Sharper for it.' },
+        { ja: '柄に宝石がふたつ。なにかの印？', en: 'Two gems on the haft. Some kind of mark?' },
+        { ja: '向きを決めて、まっすぐ打つ。', en: 'Pick a direction. Strike straight.' },
+      ]},
+      { lv: 7, candidates: [
+        { ja: '……標識？ ウメダ方面。', en: '...A road sign? This way to Umeda.' },
+        { ja: '拾ったものでも、ちゃんと掘れる。', en: 'Found on the street, but it digs just fine.' },
+        { ja: '道案内もできる。たぶん。', en: 'It gives directions too. Probably.' },
+      ]},
+      { lv: 8, candidates: [
+        { ja: '緑の結晶の頭。割れないか、ちょっと心配。', en: 'A green crystal head. I worry it\'ll crack.' },
+        { ja: '結晶と結晶。勝つのはどっち。', en: 'Crystal against crystal. Which one wins?' },
+        { ja: 'キンッ。音が高くなった。', en: 'Kinng. The pitch went up.' },
+      ]},
+      { lv: 9, candidates: [
+        { ja: '氷みたいな青。触ると冷たい気がする。', en: 'Blue like ice. It feels cold to the touch.' },
+        { ja: '冷たい頭で、熱い岩を割る。', en: 'A cold head to split hot rock.' },
+        { ja: 'キンッ。高い音が洞くつに響く。', en: 'Kinng. A high note echoes through the cave.' },
+      ]},
+      { lv: 10, candidates: [
+        { ja: '青い頭に布巻きの柄。手が痛くならない。', en: 'Blue head, cloth-wrapped haft. Easy on the hands.' },
+        { ja: '長く振るための道具。', en: 'A tool made for long hours.' },
+        { ja: 'ガツン。重さが芯まで届く。', en: 'Thunk. The weight reaches the core.' },
+      ]},
+      { lv: 11, candidates: [
+        { ja: '紫の頭に金の石。ちょっと派手。', en: 'A gold stone in a purple head. A bit flashy.' },
+        { ja: '石の中のベクトルが、こっちを向く気がする。', en: 'The vectors in the stone seem to turn toward me.' },
+        { ja: 'ひと振りで、岩がほどける。', en: 'One swing and the rock comes undone.' },
+      ]},
+      { lv: 12, candidates: [
+        { ja: '黒い頭に金の目。こっちを見てる？', en: 'A gold eye in a black head. Is it looking at me?' },
+        { ja: '刺した先から、岩が勢いに変わっていく。', en: 'Wherever it bites, rock turns into momentum.' },
+        { ja: 'ピッケルの行きつく先。たぶん。', en: 'Where pickaxes end up. Probably.' },
+      ]},
     ]},
     sledgehammer: { label: 'Sledgehammer（ハンマー）', note: '大槌', levels: [
       { lv: 1, fixed: true, ja: 'ゴンゴンゴン', en: 'Thud, thud, thud.' },
-      { lv: 2, ja: '鉄製。打面がへこみやすい。', en: 'Iron. The striking face dents easily.' },
-      { lv: 3, ja: '炭素を含む鋼。鉄より硬い。', en: 'Carbon steel. Harder than iron.' },
-      { lv: 4, ja: '焼きなました鋼。衝撃で欠けにくい。', en: 'Annealed steel. Resists chipping under impact.' },
-      { lv: 5, ja: '中心まで焼き入れした鋼。内側まで硬い。', en: 'Through-hardened steel. Hard all the way through.' },
-      { lv: 6, ja: 'クロムモリブデン鋼。強く、粘りがある。', en: 'Chromium-molybdenum steel. Strong and tough.' },
-      { lv: 7, ja: '頭部の内部は空洞。見た目より軽い。', en: 'Hollow inside the head. Lighter than it looks.' },
-      { lv: 8, ja: '鋳鋼。型に流し込んで作る。', en: 'Cast steel. Made by pouring into a mold.' },
-      { lv: 9, ja: '高速度鋼。熱を持っても硬さを保つ。', en: 'High-speed steel. Stays hard even when hot.' },
-      { lv: 10, ja: 'マルエージング鋼。引っ張りに強い。', en: 'Maraging steel. High tensile strength.' },
-      { lv: 11, ja: 'ニッケル基合金。高温でも強度を保つ。', en: 'Nickel-based superalloy. Keeps its strength at high temperatures.' },
-      { lv: 12, ja: 'タングステン合金。鉄よりはるかに密度が高い。', en: 'Tungsten alloy. Far denser than iron.' },
+      { lv: 2, candidates: [
+        { ja: '木の柄に鉄の頭。重い。', en: 'Iron head, wooden haft. Heavy.' },
+        { ja: '重さは、そのまま壊す力。', en: 'Weight is breaking power, plain and simple.' },
+        { ja: 'ゴンゴンが、ドンドンになった。', en: 'Thud, thud became boom, boom.' },
+      ]},
+      { lv: 3, candidates: [
+        { ja: '柄まで鋼。もっと重い。', en: 'Steel all the way down. Even heavier.' },
+        { ja: '振り下ろせば、あとは重さが仕事をする。', en: 'Bring it down and the weight does the rest.' },
+        { ja: 'ドンッ。足もとまで響く。', en: 'Boom. I feel it in my feet.' },
+      ]},
+      { lv: 4, candidates: [
+        { ja: '握りに布。手がしびれにくい。', en: 'Cloth on the grip. My hands don\'t go numb.' },
+        { ja: '重いぶん、握りは大事。', en: 'The heavier it is, the more the grip matters.' },
+        { ja: '何十回振っても、まだ握れる。', en: 'Dozens of swings, and I can still hold on.' },
+      ]},
+      { lv: 5, candidates: [
+        { ja: '頭がひとまわり大きい。', en: 'The head got bigger.' },
+        { ja: '大きい頭は、大きい質量を喰う。', en: 'A bigger head devours more mass.' },
+        { ja: 'ドゴッ。岩が一発で黙る。', en: 'Doom. The rock goes quiet in one hit.' },
+      ]},
+      { lv: 6, candidates: [
+        { ja: '黒い頭に黄色い石。', en: 'A yellow stone in a black head.' },
+        { ja: '真ん中に、ひと粒の均衡。', en: 'One grain of equilibrium, right at the center.' },
+        { ja: '重さの芯が、真ん中にある。', en: 'The weight sits dead center.' },
+      ]},
+      { lv: 7, candidates: [
+        { ja: '頭に穴。そのぶん軽い。', en: 'A hole in the head. Lighter for it.' },
+        { ja: '軽くても、勢いがあれば同じこと。', en: 'Lighter or not, momentum makes up for it.' },
+        { ja: '欠けてるのは、使いこんだ証拠。', en: 'The chips are proof it\'s been used.' },
+      ]},
+      { lv: 8, candidates: [
+        { ja: '片側がとがってる。砕くか、刺すか。', en: 'One side is pointed. Smash or pierce.' },
+        { ja: 'ハンマーとピッケルのいいとこ取り。', en: 'The best of a hammer and a pickaxe.' },
+        { ja: '柄の先までとがってる。', en: 'Even the end of the haft is pointed.' },
+      ]},
+      { lv: 9, candidates: [
+        { ja: '片側が刃。割って、削る。', en: 'A blade on one side. Split, then scrape.' },
+        { ja: 'ひとつの頭に、ふたつの向き。', en: 'Two directions in one head.' },
+        { ja: 'ズバン。音が変わった。', en: 'Thwack. The sound changed.' },
+      ]},
+      { lv: 10, candidates: [
+        { ja: '両側が打面。向きを気にしなくていい。', en: 'Striking faces on both sides. Either way works.' },
+        { ja: 'トゲの数だけ、岩の割れ目が増える。', en: 'More spikes, more cracks in the rock.' },
+        { ja: 'ゴンッ、ゴンッ。往復で叩ける。', en: 'Bong, bong. It hits on the way back too.' },
+      ]},
+      { lv: 11, candidates: [
+        { ja: '飾りの冠。王さまの持ち物みたい。', en: 'A crown ornament. Fit for a king.' },
+        { ja: '重さも見た目も一級品。', en: 'First-rate in weight and looks.' },
+        { ja: 'ドンッ。冠がちょっと揺れる。', en: 'Boom. The crown wobbles a little.' },
+      ]},
+      { lv: 12, candidates: [
+        { ja: '黒に紫の石が三つ。いちばん重い。', en: 'Three purple stones in black. The heaviest yet.' },
+        { ja: '三つの均衡を、ひと振りにのせる。', en: 'Three equilibria, riding on one swing.' },
+        { ja: 'ハンマーの行きつく先。たぶん。', en: 'Where hammers end up. Probably.' },
+      ]},
     ]},
   },
   biomes: [
