@@ -6,7 +6,10 @@ filters:
     - note.type == "モデル"
 formulas:
   scope: if(file.hasTag("全体"), "全体", if(file.hasTag("Idle-MInertia"), "Idle MInertia", "その他"))
+  evidence: if(note.adrs, note.adrs.length, 0)
 properties:
+  formula.evidence:
+    displayName: 根拠
   note.description:
     displayName: 要約
   formula.scope:
@@ -20,6 +23,7 @@ views:
       - file.name
       - note.description
       - formula.scope
+      - formula.evidence
       - note.status
     sort:
       - property: formula.scope
@@ -33,6 +37,7 @@ views:
       - file.name
       - note.description
       - formula.scope
+      - formula.evidence
       - note.status
   - type: cards
     name: Idle MInertia
@@ -43,4 +48,5 @@ views:
       - file.name
       - note.description
       - formula.scope
+      - formula.evidence
       - note.status
