@@ -16,7 +16,7 @@
     <p class="lead">
       デイリーダイヤ付与型 DLC を本線として、広告に依存しない商品構成を作る。
     </p>
-    <p class="meta">最終更新: 2026-08-19　／　担当: Model 中心（商品定義・付与ロジック）</p>
+    <p class="meta">最終更新: 2026-10-18　／　担当: Model 中心（商品定義・付与ロジック）</p>
 
     <div class="summary">
       <strong>成否の基準</strong>
@@ -120,6 +120,138 @@
         <li>Steam の審査でゲーム内通貨販売が拒否されたとき（<b>そこから先の作り直し方はあなたと相談して決める</b>）</li>
       </ul>
     </section>
+    <section id="card-copy" data-comment-id="guide-monetize-card-copy" data-comment-title="売り場カードの説明文の改善案">
+      <h2>4. 売り場カードの説明文の改善案（2026-10-18・提案）</h2>
+      <p class="lead">
+        売り場の 5 枚のカード（広告除去・Booster +Plus・Nether +Plus・Bonus Multiplier Pack・Supply +Plus）は、
+        それぞれ説明が分かりにくい。何が分かりにくいかと、書き直し案をカードごとに並べる。
+        文言は <code>Localization/LocalizeCSV/UI_Shop.csv</code>、数字は <code>Shop/UIToolkit/ShopUXML.uxml</code> に直書き。
+      </p>
+
+      <h3>共通の問題</h3>
+      <ul>
+        <li><b>回数にも倍率にも同じ「x」を使っている。</b>「x3 → x5」が「3回が5回になる」なのか「3倍が5倍になる」なのか読めない</li>
+        <li><b>説明が名詞で止まっている。</b>「Permanent boost」「Supply claims」は、買うと自分の遊びがどう変わるかが書かれていない</li>
+        <li><b>開発側の呼び名で書いている。</b>「companion favorite slots」「Presents」は、画面で見ている言葉と一致しない</li>
+        <li><b>所有済みの覆いで説明が読めない。</b>買った後に「何を持っているか」を見返せない（Nether +Plus のスクリーンショットで確認）</li>
+        <li><b>数字が UXML に直書き。</b>バランスを変えると説明だけ古くなる（x2.5、x5、∞ など）</li>
+      </ul>
+
+      <h3>書き方の決まり（案）</h3>
+      <ul>
+        <li><b>1 行目は「買うと何が変わるか」を一言で。</b>名詞ではなく、プレイヤーの体験で書く</li>
+        <li><b>2 行目以降は「対象: 今 → 買った後」。</b>単位を必ず付ける（回・倍・枠）。回数は「3回 → 5回」、倍率は「×2」</li>
+        <li><b>ボタンを押して得るものは「ボタン」と書く。</b>常時かかる効果と区別する（Bonus Multiplier Pack）</li>
+        <li><b>Steam だけの行も同じ形で足す。</b>今の BoosterExplain3 の位置に、同じ書き方で</li>
+        <li><b>所有済みの覆いは「Purchased!」の帯だけにして、説明は読めるままにする</b></li>
+      </ul>
+
+      <h3>カードごとの案</h3>
+
+      <h4>広告を全て除去（モバイルのみ）</h4>
+      <table>
+        <thead><tr><th>今</th><th>問題</th><th>案（日本語）</th><th>案（英語）</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Get all rewards without watching ads<br>広告を見ずに報酬を得ることができます。</td>
+            <td>「全ての報酬」が誇張。実際は広告ボタンの報酬が広告なしで受け取れる</td>
+            <td>広告ボタンの報酬を、広告を見ずに受け取れる</td>
+            <td>Ad rewards without the ads</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4>Booster +Plus</h4>
+      <table>
+        <thead><tr><th>今</th><th>問題</th><th>案（日本語）</th><th>案（英語）</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Permanent boost<br>永久的にブーストできる。</td>
+            <td>「効果が永久に続く」とも「買い切り」とも読める。実態は「ブースターの残り時間が減らなくなる」</td>
+            <td><b>ブースターがかかりっぱなしになる</b>（1 行目）<br>残り時間: 減る → 減らない</td>
+            <td><b>Boosters never run out</b><br>Timer: counts down → never</td>
+          </tr>
+          <tr>
+            <td>Booster effect x2 → x2.5<br>ブースターの効果 x2 → x2.5</td>
+            <td>意味は通るが、他の行と形を揃える</td>
+            <td>効果: ×2 → ×2.5</td>
+            <td>Effect: ×2 → ×2.5</td>
+          </tr>
+          <tr>
+            <td>（Steam のみ）No diamond cost, no daily limit<br>ダイヤ消費なし・回数制限なし</td>
+            <td>未所有のときにダイヤと回数の縛りがあることを、売り場では初めて知る。何が「なし」になるのか分からない</td>
+            <td>かけるたびのダイヤ: 30 → 0<br>1 日にかけられる回数: 6回 → 無制限</td>
+            <td>Diamonds per use: 30 → 0<br>Uses per day: 6 → unlimited</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4>Nether +Plus</h4>
+      <table>
+        <thead><tr><th>今</th><th>問題</th><th>案（日本語）</th><th>案（英語）</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Increase the number of attempts ♥x3 → ♥x5<br>挑戦回数が増える。</td>
+            <td>何の回数か（ネザー）が書かれていない。ハートの絵と「x3」が重なって読めない</td>
+            <td><b>ネザーに挑める回数が増える</b>（1 行目）<br>挑戦回数: 3回 → 5回</td>
+            <td><b>More Nether runs</b><br>Attempts: 3 → 5</td>
+          </tr>
+          <tr>
+            <td>Increase companion favorite slots x1 → x2<br>お気に入り枠が増える。</td>
+            <td>何のお気に入りか分からない。「x1」が倍率に見える</td>
+            <td>相棒のお気に入り: 1枠 → 2枠</td>
+            <td>Companion favorites: 1 slot → 2 slots</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4>Bonus Multiplier Pack（Steam のみ）</h4>
+      <table>
+        <thead><tr><th>今</th><th>問題</th><th>案（日本語）</th><th>案（英語）</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Prestige reward x1 → x2<br>Offline reward x1 → x2<br>Battle loot +50%</td>
+            <td>常時 2 倍に読めるが、実際は受け取るときに押す「×2 ボタン」が使えるようになる。<br>行ごとに書き方が違う（× と +%）</td>
+            <td><b>受け取るときに押すと報酬が増える</b>（1 行目）<br>プレステージ報酬: ×2 ボタン<br>オフライン報酬: ×2 ボタン<br>戦利品: ×1.5 ボタン</td>
+            <td><b>Bonus buttons on every reward</b><br>Prestige reward: ×2 button<br>Offline reward: ×2 button<br>Battle loot: ×1.5 button</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4>Supply +Plus（Steam のみ）</h4>
+      <table>
+        <thead><tr><th>今</th><th>問題</th><th>案（日本語）</th><th>案（英語）</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Supply claims x2 → x5<br>補給を受け取れる回数 x2 → x5</td>
+            <td>「x2」が倍率に見える。1 日あたりだと書かれていない</td>
+            <td><b>毎日の補給とプレゼントが増える</b>（1 行目）<br>補給の受け取り: 1日2回 → 5回</td>
+            <td><b>More Supply and presents every day</b><br>Supply claims: 2/day → 5/day</td>
+          </tr>
+          <tr>
+            <td>Presents per day x3 → ∞<br>1日に受け取れるプレゼント x3 → ∞</td>
+            <td>「プレゼント」が洞窟を飛ぶプレゼントのことだと分からない</td>
+            <td>飛んでくるプレゼント: 1日3回 → 無制限</td>
+            <td>Flying presents: 3/day → unlimited</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>実装メモ</h3>
+      <ul>
+        <li>文言の差し替えは <code>UI_Shop.csv</code> の既存キーを書き換えるだけ。キーは増やさない（Id は一意、CSV は完全な正本）</li>
+        <li>1 行目を足すカードは、UXML に <code>*Explain0</code> の行を 1 本足し、<code>ShopLocalizeView</code> に同期を 1 行足す</li>
+        <li>数字は <code>SteamEntitlementApplier</code> の定数（ダイヤ 30・1 日 6 回）とドメインの値から組み立て、UXML の直書きをやめる。
+          未所有のブースターボタンが「30 6/6」を出しているのと同じ出どころにする</li>
+        <li>所有済みの覆い（<code>*_IsPurchased</code>）は全面の半透明をやめ、帯だけにする。UXML の 4 枚とも同じ構造なので 1 か所の USS で済む</li>
+        <li>モバイルの見た目を変える変更（覆い・1 行目）は、モバイルでも同じ文言で出る。モバイルの仕様は変えないが、説明の書き方はモバイルも直してよいか判断が要る</li>
+      </ul>
+
+      <p class="note">
+        採用・却下はこの章のコメントで。採用分は <code>docs/steam-release/07_DLC_Implementation_Plan.md</code> の工程 5（ローカライズ）へ追記する。
+      </p>
+    </section>
+
   </main>
 
   <footer>
