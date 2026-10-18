@@ -139,104 +139,146 @@
       </ul>
     </section>
     <section id="candidates" data-comment-id="guide-features-candidates" data-comment-title="実績の候補（2026-10-18）">
-      <h2>5. 実績の候補（2026-10-18・承認待ち）</h2>
+      <h2>5. 実績の候補（2026-10-18・ブレスト中）</h2>
       <p>
         3 章の「お願い 1」の候補一覧。デザインモデルのカード
         <a href="https://yooyooy724.github.io/models/%E3%82%AB%E3%83%BC%E3%83%89/%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%87%E3%82%B6%E3%82%A4%E3%83%B3%E3%83%A2%E3%83%87%E3%83%AB/%E5%AE%9F%E7%B8%BE%E3%81%AF%E9%81%93%E3%81%97%E3%82%8B%E3%81%B9%E3%81%A8%E6%9C%80%E7%B5%82%E3%82%B4%E3%83%BC%E3%83%AB%E3%82%92%E5%AE%9A%E3%82%81%E3%82%8B">「実績のゲームデザイン」</a>
-        （ADR-0418 / 0419）に従って、10-08 の 30 件を 20 件に組み直した。
-        件数は Idle Sphere 管理者の「20 個くらい厳選」に合わせてある。
-        判定に使う値の正本は <code>GamesDomain/docs/steam-release/Memo/Achievements_Proposal.md</code>。
+        （ADR-0418 / 0419）に従う。判定に使う値の正本は <code>GamesDomain/docs/steam-release/Memo/Achievements_Proposal.md</code>。
       </p>
+
+      <h3>決まったこと（2026-10-18）</h3>
+      <ul>
+        <li><b>序盤の 5 件の目標は確定</b>（下の表の #1〜5）</li>
+        <li><b>タイトルはすべて Minecraft の実績を元にする</b>（ワードの適当さ・言葉遊び。説明文は目標だけを平文で）</li>
+        <li>今はブレストの段階。カードの各観点（進行の節目 / 上限達成 / 十分な進度 / 腕前の証明 / 世界観）ごとに広く出す</li>
+        <li><b>実績に合わせてゲームシステムを変えることもあり得る</b>（回数カウンタの追加、エンディングの追加など。7 章）</li>
+      </ul>
 
       <h3>カードから引いた決め方</h3>
       <ul>
-        <li>全項目が<b>道しるべ</b>（作り手が想定したプレイングを順に示す）。終盤の項目で<b>最終ゴール</b>（どこまで遊べば十分か）を規定する</li>
-        <li>想定プレイングは <b>進行の節目</b> / <b>上限達成</b> / <b>十分な進度</b> の 3 種だけ使う。<b>腕前の証明</b>は Idle と相性が悪いので置かない</li>
+        <li>全項目が<b>道しるべ</b>。終盤の項目で<b>最終ゴール</b>（どこまで遊べば十分か）を規定する</li>
         <li>十分な進度は「無謀な数値」「進行を表さない数値」を避ける。Idle では<b>通貨の桁</b>は進行を表すので可</li>
-        <li><b>起動回数・プレイ時間はプレイングを定義しないので置かない</b>（旧「永久運動」100 時間を外した理由）</li>
-        <li>説明文は<b>目標だけを平文で 1 文</b>。世界観・ユーモアはタイトルとアイコンで担う</li>
-        <li>祝いの演出は Steam に任せ、追加報酬は置かない</li>
-        <li>隠すのはネタバレ防止のときだけ。ジオードとインセインの存在は解禁して初めて分かるので、この 2 件だけ隠す</li>
+        <li>腕前の証明は Idle と相性が悪いので、置くなら 1〜2 件</li>
+        <li><b>起動回数・プレイ時間は置かない</b>。祝いの追加報酬は置かない。隠すのはネタバレ防止のときだけ</li>
+        <li>10-08 の前提はそのまま: セーブに残る値で判定し、起動時に遡り解除 ／ 課金・DLC・ダイヤは使わない ／ 中身の上限を超えない</li>
       </ul>
+
+      <h3>本命（20 件・タイトルは Minecraft 元ネタ付き）</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>タイトル ／ 元ネタ</th><th>説明文（目標だけ）</th><th>種類</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><b>Oh Shiny</b><br><small>おっ、光りもの ／ 元: ピグリンに金を渡す</small></td><td>宝石を 5 種類集める</td><td>進行の節目（確定）</td></tr>
+            <tr><td>2</td><td><b>The End?</b><br><small>終わり？ ／ 元: エンドに入る</small></td><td>初めてプレステージする</td><td>進行の節目（確定）</td></tr>
+            <tr><td>3</td><td><b>Monster Hunter</b><br><small>モンスターハンター ／ 元: 敵を倒す</small></td><td>炭鉱でウェーブ 10 に到達する</td><td>進行の節目（確定）</td></tr>
+            <tr><td>4</td><td><b>Cheating Death</b><br><small>死を欺く ／ 元: 不死のトーテムを使う</small></td><td>初めて Tear プレステージする</td><td>進行の節目（確定）</td></tr>
+            <tr><td>5</td><td><b>Caves &amp; Cliffs</b><br><small>洞窟と崖 ／ 元: 最高所から最深部へ落ちて生き残る</small></td><td>Area 2 に入る</td><td>進行の節目（確定）</td></tr>
+            <tr><td>6</td><td><b>Rainbow Collection</b><br><small>虹色コレクション ／ 元: 羊毛 16 色を集める</small></td><td>1 つの坑道の宝石 13 種をすべて手に入れる</td><td>上限達成</td></tr>
+            <tr><td>7</td><td><b>Remote Getaway</b><br><small>離れた隠れ家 ／ 元: エンドゲートウェイをくぐる</small></td><td>Area 3 に入る</td><td>進行の節目</td></tr>
+            <tr><td>8</td><td><b>Adventuring Time</b><br><small>冒険の時間 ／ 元: 全バイオームを訪れる</small></td><td>6 つの坑道すべてに入る</td><td>上限達成</td></tr>
+            <tr><td>9</td><td><b>We Need to Go Deeper</b><br><small>もっと深くへ ／ 元: ネザーに入る</small></td><td>Nether に入る</td><td>進行の節目</td></tr>
+            <tr><td>10</td><td><b>Hidden in the Depths</b><br><small>深層に隠されたもの ／ 元: 古代の残骸を手に入れる</small></td><td>ジオードを 1 つ見つける（<b>隠し</b>）</td><td>進行の節目</td></tr>
+            <tr><td>11</td><td><b>Me Gold!</b><br><small>俺の金だ！ ／ 元: 金を 1 スタック集める（Legacy）</small></td><td>Soil を累計で 1e__ 集める（桁は実データで決める）</td><td>十分な進度（通貨の桁）</td></tr>
+            <tr><td>12</td><td><b>Over-Overkill</b><br><small>オーバーオーバーキル ／ 元: 一撃で 50 ダメージ</small></td><td>1 回のバトルでウェーブ 100 を越える（閾値は実データで決める）</td><td>十分な進度</td></tr>
+            <tr><td>13</td><td><b>Serious Dedication</b><br><small>真剣な献身 ／ 元: ネザライトのクワを作る</small></td><td>ハードの試練 16 段をすべて越える</td><td>上限達成</td></tr>
+            <tr><td>14</td><td><b>Taking Inventory</b><br><small>インベントリ ／ 元: インベントリを開く（Legacy）</small></td><td>アビリティ枠を 10 にする</td><td>上限達成</td></tr>
+            <tr><td>15</td><td><b>Hot Tourist Destinations</b><br><small>人気の観光地 ／ 元: ネザーの全バイオームを訪れる</small></td><td>バトルの 6 ステージすべてを開く</td><td>上限達成</td></tr>
+            <tr><td>16</td><td><b>Smithing with Style</b><br><small>スタイリッシュな鍛冶 ／ 元: 鍛冶型をすべて使う</small></td><td>工房の強化を 1 種類で 20 段まで上げる</td><td>上限達成</td></tr>
+            <tr><td>17</td><td><b>A Furious Cocktail</b><br><small>猛烈なカクテル ／ 元: 全ポーション効果を同時に受ける</small></td><td>Spell 14 個をすべて手に入れる</td><td>上限達成</td></tr>
+            <tr><td>18</td><td><b>Cover Me with Diamonds</b><br><small>ダイヤモンドで覆って ／ 元: ダイヤ防具一式</small></td><td>宝石 78 種をすべて手に入れる</td><td>上限達成</td></tr>
+            <tr><td>19</td><td><b>How Did We Get Here?</b><br><small>どうやってここまで来たんだ？ ／ 元: 全ステータス効果を同時に受ける</small></td><td>インセインの試練 8 段をすべて越える（<b>隠し</b>）</td><td>上限達成</td></tr>
+            <tr><td>20</td><td><b>The City at the End of the Game</b><br><small>ゲームの終わりの街 ／ 元: エンドシティに入る</small></td><td>6 つの坑道すべてで第 50 層に到達する</td><td><b>最終ゴール</b></td></tr>
+          </tbody>
+        </table>
+      </div>
       <p class="note">
-        10-08 の前提はそのまま: セーブに残る値で判定し、起動時に全条件をなぞって遡り解除する ／
-        課金・DLC・ダイヤは使わない ／ 中身の上限を超えない。
+        元ネタをそのまま使うか、もじるかは決めどころ（短い題名に著作権は無いが、そっくり並ぶと「借り物」に見える）。
+        日本語題は Minecraft 日本語版の調子に寄せてある。
       </p>
 
-      <h3>一覧（20 件）</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>#</th><th>タイトル ／ API Name</th><th>説明文（目標だけ）</th><th>種類</th></tr></thead>
-          <tbody>
-            <tr><td>1</td><td><b>第十層</b><br><small>Into the Deep</small><br><code>ACH_STRATUM_10</code></td><td>最初の坑道で第 10 層に到達する</td><td>進行の節目</td></tr>
-            <tr><td>2</td><td><b>均衡を借りて</b><br><small>Borrowed Balance</small><br><code>ACH_PRESTIGE_SOIL</code></td><td>初めてプレステージする</td><td>進行の節目</td></tr>
-            <tr><td>3</td><td><b>手を離す</b><br><small>Hands Off</small><br><code>ACH_AUTOMATION</code></td><td>自動化を 1 つ買う</td><td>進行の節目</td></tr>
-            <tr><td>4</td><td><b>涙を留めて</b><br><small>Tears Made Still</small><br><code>ACH_PRESTIGE_TEAR</code></td><td>初めて Tear プレステージする</td><td>進行の節目</td></tr>
-            <tr><td>5</td><td><b>第二の鉱区</b><br><small>A New Seam</small><br><code>ACH_AREA2</code></td><td>Area 2 に入る</td><td>進行の節目</td></tr>
-            <tr><td>6</td><td><b>標本棚ひと段</b><br><small>Full Specimen Case</small><br><code>ACH_GEMS_BIOME</code></td><td>1 つの坑道の宝石 13 種をすべて手に入れる</td><td>上限達成</td></tr>
-            <tr><td>7</td><td><b>第三の鉱区</b><br><small>The Third Seam</small><br><code>ACH_AREA3</code></td><td>Area 3 に入る</td><td>進行の節目</td></tr>
-            <tr><td>8</td><td><b>すべての坑道</b><br><small>Every Bore</small><br><code>ACH_ALL_BIOMES</code></td><td>6 つの坑道すべてに入る</td><td>上限達成</td></tr>
-            <tr><td>9</td><td><b>底のさらに下</b><br><small>Below the Bottom</small><br><code>ACH_NETHER</code></td><td>Nether に入る</td><td>進行の節目</td></tr>
-            <tr><td>10</td><td><b>晶洞</b><br><small>Hollow Stone</small><br><code>ACH_GEODE</code></td><td>ジオードを 1 つ見つける（<b>隠し</b>）</td><td>進行の節目</td></tr>
-            <tr><td>11</td><td><b>桁違い</b><br><small>Orders of Magnitude</small><br><code>ACH_SOIL_DIGITS</code></td><td>Soil を累計で 1e__ 集める（桁は実データで決める）</td><td>十分な進度（通貨の桁）</td></tr>
-            <tr><td>12</td><td><b>持ちこたえる</b><br><small>Holding the Line</small><br><code>ACH_WAVE_100</code></td><td>1 回のバトルでウェーブ 100 を越える（閾値は実データで決める）</td><td>十分な進度</td></tr>
-            <tr><td>13</td><td><b>険しき試練</b><br><small>Hard-Won</small><br><code>ACH_TRIAL_HARD</code></td><td>ハードの試練 16 段をすべて越える</td><td>上限達成</td></tr>
-            <tr><td>14</td><td><b>満ちた器</b><br><small>Vessels Full</small><br><code>ACH_ABILITY_10</code></td><td>アビリティ枠を 10 にする</td><td>上限達成</td></tr>
-            <tr><td>15</td><td><b>坑道の底まで</b><br><small>Every Mineshaft</small><br><code>ACH_MINESHAFT_ALL</code></td><td>バトルの 6 ステージすべてを開く</td><td>上限達成</td></tr>
-            <tr><td>16</td><td><b>炉の限り</b><br><small>The Forge's Limit</small><br><code>ACH_FORGE_MAX</code></td><td>工房の強化を 1 種類で 20 段まで上げる</td><td>上限達成</td></tr>
-            <tr><td>17</td><td><b>呪文の蒐集家</b><br><small>Spellbound</small><br><code>ACH_SPELL_ALL</code></td><td>Spell 14 個をすべて手に入れる</td><td>上限達成</td></tr>
-            <tr><td>18</td><td><b>すべての均衡</b><br><small>Every Equilibrium</small><br><code>ACH_GEMS_ALL</code></td><td>宝石 78 種をすべて手に入れる</td><td>上限達成</td></tr>
-            <tr><td>19</td><td><b>狂気の先</b><br><small>Beyond Madness</small><br><code>ACH_TRIAL_EXPERT</code></td><td>インセインの試練 8 段をすべて越える（<b>隠し</b>）</td><td>上限達成</td></tr>
-            <tr><td>20</td><td><b>最後の道標</b><br><small>Last Milestone</small><br><code>ACH_STRATUM_50_ALL</code></td><td>6 つの坑道すべてで第 50 層に到達する</td><td><b>最終ゴール</b></td></tr>
-          </tbody>
-        </table>
-      </div>
+      <h3>本命から外したもの・補欠</h3>
       <ul>
-        <li>序盤 #1〜5 ／ 中盤 #6〜13 ／ 終盤 #14〜20</li>
-        <li><b>最終ゴールは #20。</b>6 つの坑道すべてで深度の道標（第 10〜50 層）を取り切った状態が「作り手の想定したクリア」。
-          宝石 index14〜16 を外した理由も、コンテンツ終端が第 50 層だから。#14〜19 の上限達成がそれを囲む</li>
-        <li>#11 はカードが Idle の例外として認めた「通貨の桁」。序盤に 1e__ を見せて Incremental 性への期待を作る。桁は上位の記録から外れ値を除いて決める（ADR-0301）</li>
-        <li>#12 は 1 回のバトルの最大ウェーブ。腕前の証明ではなく、育成が進めば必ず届く「十分な進度」として扱う。閾値は #11 と同じ手順</li>
+        <li>外した: 永久運動（100 時間）／ 自動化を 1 つ買う（序盤を上の 5 件に差し替え）／ 第十層（#3 と近い）／ 図鑑 100・宝石 39・アビリティ 5・第三坑道・六つの第十層（上限達成で足りる）／ 装備レベル 20（上限が無い）／ 最初の試練・最初の呪文（ほぼ同じ瞬間）／ ノーマル 12 段（ハード解禁は 9 段）</li>
+        <li>補欠: 最初の坑道で第 10 層 ／ 第 50 層 ／ 宝石 39 種 ／ ノーマル 12 段 ／ 自動化を 1 つ買う</li>
+      </ul>
+    </section>
+
+    <section id="brainstorm" data-comment-id="guide-features-brainstorm" data-comment-title="実績のブレスト（観点別）">
+      <h2>6. ブレスト（カードの観点別）</h2>
+      <p>
+        本命に入れていない案。観点ごとに広く出した。<b>「要: …」は、今のセーブに値が無く、ゲーム側に追加が要るもの</b>（7 章）。
+        採用するものにコメントで印を付けてほしい。
+      </p>
+
+      <h3>進行の節目（初めて触る・初めて届く）</h3>
+      <ul>
+        <li><b>Getting an Upgrade</b>（アップグレード ／ 石のツルハシ）── 工房で初めて強化する</li>
+        <li><b>Isn't It Iron Pick</b>（鉄のツルハシじゃないか）── ツルハシをレベル 10 にする</li>
+        <li><b>Enchanter</b>（エンチャントの使い手）── 初めてエンチャントを付ける</li>
+        <li><b>Dispense With This</b>（これで自動）── 自動化を 1 つ買う</li>
+        <li><b>Fishy Business</b>（釣りの生業）── 初めて釣る</li>
+        <li><b>Tactical Fishing</b>（戦術的な釣り）── 釣り竿の Spell を手に入れる</li>
+        <li><b>Local Brewery</b>（地元の醸造所）── Spell を初めて手に入れる</li>
+        <li><b>Voluntary Exile</b>（自主的な追放）── 試練を 1 段越える（自分で縛りを選ぶ、の意）</li>
+        <li><b>You've Got a Friend in Me</b>（君は友だち）── コンパニオンを連れて Nether に潜る</li>
+        <li><b>Sweet Dreams</b>（いい夢を）── オフライン報酬を初めて受け取る</li>
+        <li><b>What a Deal!</b>（いい取引！）── Bazaar で初めて交換する</li>
+        <li><b>Hot Stuff</b>（熱いもの）── Magma Cream を初めて手に入れる</li>
+        <li><b>Suit Up</b>（身支度）── 3 種の装備を同時に装着する</li>
+        <li><b>Stone Age</b>（石器時代）── 最初の坑道で第 10 層（補欠の言い換え）</li>
       </ul>
 
-      <h3>10-08 の 30 件から外したもの</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>旧名</th><th>理由</th></tr></thead>
-          <tbody>
-            <tr><td>オニース目覚める（バトルが開く）</td><td>#1 と同じ時点で解除される（ステージ 2 の解禁が最初の坑道の第 10 層）</td></tr>
-            <tr><td>六つの第十層</td><td>#8（全坑道に入る）と #20（全坑道で第 50 層）の間で冗長</td></tr>
-            <tr><td>最後の道標（最初の坑道だけ第 50 層）</td><td>#20 に広げた。最初の坑道だけでは最終ゴールにならない</td></tr>
-            <tr><td>色の半分（宝石 39 種）</td><td>13 種（#6）と 78 種（#18）で足りる</td></tr>
-            <tr><td>分厚い図鑑（100 項目）</td><td>図鑑の総数が決まっておらず「進行を表す数」になりにくい。宝石の収集で代替</td></tr>
-            <tr><td>五つの器（アビリティ枠 5）</td><td>上限の 10（#14）だけにする</td></tr>
-            <tr><td>第三坑道（ステージ 3 を開く）</td><td>全ステージ（#15）だけにする</td></tr>
-            <tr><td>鍛えられた道具（装備レベル 20）</td><td>装備レベルに上限が無く、「十分な進度」として置く根拠が弱い。上限がある工房（#16）に寄せる</td></tr>
-            <tr><td>最初の試練 ／ 最初の呪文</td><td>試練の 1 段目と Spell の初入手はほぼ同じ瞬間。#13 で代替</td></tr>
-            <tr><td>試練を歩む者（ノーマル 12 段）</td><td>ハード解禁がノーマル 9 段なので、ノーマル全段は通り道にならない。#13 に寄せる</td></tr>
-            <tr><td>永久運動（100 時間）</td><td><b>プレイ時間はプレイングを定義しない</b>（カードの原則・ADR-0418）</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h3>補欠（件数を足すならここから）</h3>
+      <h3>上限達成（集め切る・開き切る）</h3>
       <ul>
-        <li><code>ACH_TRIAL_FIRST</code> 最初の試練 ── 試練を 1 段越える（進行の節目・試練への導線）</li>
-        <li><code>ACH_STRATUM_50</code> 第五十層 ── 最初の坑道で第 50 層（進行の節目）</li>
-        <li><code>ACH_GEMS_HALF</code> 色の半分 ── 宝石 39 / 78 種（十分な進度）</li>
-        <li><code>ACH_TRIAL_NORMAL</code> 試練を歩む者 ── ノーマルの試練 12 段すべて（上限達成）</li>
+        <li><b>A Complete Catalogue</b>（完全なカタログ）── 図鑑をすべて埋める　<b>要: 図鑑の総数の確定と、運に寄る項目（ジオードの Fortune 等）の除外</b></li>
+        <li><b>A Balanced Diet</b>（バランスの取れた食事）── 9 種類の試練をすべて 1 段ずつ越える</li>
+        <li><b>Two by Two</b>（2 匹ずつ）── 3 種の装備すべてを工房で 20 段にする</li>
+        <li><b>Star Trader</b>（スタートレーダー）── Bazaar の全商品を 1 回ずつ交換する　要確認: 商品が固定か</li>
+        <li><b>I'm a Marine Biologist</b>（海洋生物学者）── 釣りの報酬 6 種をすべて釣る</li>
+        <li><b>Cover Me in Debris</b>（残骸で覆って）── Nether の最後のステージを開く　要確認: Nether の終端</li>
+        <li><b>Overpowered</b>（圧倒的な力）── アビリティ枠 10 をすべて埋める（#14 の言い換え）</li>
       </ul>
 
-      <h3>承認の前に残っていること</h3>
+      <h3>十分な進度（桁・回数。カウンタが要るものが多い）</h3>
       <ul>
-        <li>#11 の桁・#12 のウェーブ数を実データで決める（外れ値を除く: ADR-0301）</li>
-        <li>#17 の 14 個が全部入手できるか確かめる（モタメン限定 Tier4 の Spell が未定）</li>
-        <li>#16 は Area 3 で上限が 25 に伸びる。説明文は「20 段」で固定し、上限ではなく段数で判定する</li>
-        <li>承認後に <code>06_Steam_Features.md</code> と <code>AchievementIds.cs</code> へ移して実装し、Steamworks に登録する（登録は消せない）</li>
+        <li><b>Diamonds!</b>（ダイヤモンド！）── 宝石を累計で 1e__ 個集める（通貨の桁。実データで決める）</li>
+        <li><b>Iron Belly</b>（鉄の胃袋）── Soul を累計 100 集める</li>
+        <li><b>Not Quite "Nine" Lives</b>（まだ 9 つの命ではない）── プレステージを 9 回する　<b>要: 回数カウンタ</b></li>
+        <li><b>Return to Sender</b>（返送）── Tear プレステージを 9 回する　<b>要: 回数カウンタ</b></li>
+        <li><b>Into Fire</b>（火の中へ）── Nether に 50 回潜る　<b>要: 生涯回数</b>（今は周期ごとの AttemptsUsed だけ）</li>
+        <li><b>Bukkit Bukkit</b>（バケツバケツ）── ボックスを累計 1,000 個開ける　<b>要: 回数カウンタ</b></li>
+        <li><b>Time to Mine!</b>（採掘の時間だ！）── 掘った層の累計 1,000　<b>要: 累計の保存</b>（今は坑道ごとの最深だけ）</li>
+        <li><b>Hero of the Village</b>（村の英雄）── 自分のビルドが他の人に 10 回借りられる　<b>要: サーバー側の記録。オンライン依存なので悪例に当たる。見送り推奨</b></li>
+      </ul>
+
+      <h3>腕前の証明（Idle なので 1〜2 件まで。運に寄らないもの）</h3>
+      <ul>
+        <li><b>Who Needs Rockets?</b>（ロケットなんていらない）── コンパニオン無しで Nether の深度 N に届く（N は実データ）</li>
+        <li><b>Not Today, Thank You</b>（今日はやめておく）── Nether でゲームオーバーせずに N 回連続で帰る　<b>要: 連続記録</b></li>
+        <li><b>Sneak 100</b>（スニーク 100）── 試練の Tier 4 を 1 回のプレステージ内で越える　要確認: 判定できるか</li>
+      </ul>
+
+      <h3>世界観・ネタ（Optional。ネタがゲーム内で回収されること）</h3>
+      <ul>
+        <li><b>Passing the Time</b>（時間つぶし）── スクリーンセーバー中に敵を 100 体倒す（<code>ScreenSaveStats</code> に値あり。プレイ時間ではなく「スクリーンセーバーを使う」導線）</li>
+        <li><b>Crafting a New Look</b>（新しい見た目）── Nether の表示名を変える</li>
+        <li><b>Glow and Behold!</b>（光あれ）── ジオードで運（Fortune）を引く（0.01% なので運だけ。<b>見送り推奨</b>、載せるなら隠し）</li>
+        <li><b>The Lie</b>（嘘）── 地上の物語を最後まで見る　要確認: 物語の実装</li>
+      </ul>
+    </section>
+
+    <section id="system-changes" data-comment-id="guide-features-system-changes" data-comment-title="実績に合わせたシステム変更の候補">
+      <h2>7. 実績に合わせたシステム変更の候補</h2>
+      <ul>
+        <li><b>エンディングを付ける。</b>最終ゴール #20（6 つの坑道すべてで第 50 層）に、Minecraft の「The End.」と同じく一度だけの演出（クレジット等）を置く。カードの「ゲームクリアはリストの主役」を実体にする</li>
+        <li><b>生涯カウンタを足す。</b>プレステージ回数・Tear プレステージ回数・Nether の生涯回数・ボックスを開けた数・掘った層の累計。いずれもセーブ項目の追加（10-08 に「累計を保存する値が無い」として外した分）</li>
+        <li><b>図鑑の総数を固定する。</b>「完全なカタログ」を置くなら、運だけの項目を図鑑の必須から外す</li>
+        <li><b>Nether の終端を決める。</b>「最後のステージ」が無いなら上限達成の実績は置けない</li>
+        <li><b>Stats で進捗を見せる。</b>桁・ウェーブ・回数の実績は Steam の進捗バーに繋ぐ（06 で統計は必須）</li>
       </ul>
       <div class="warn">
-        <strong>この章へのコメントで 採用／却下／差し替え を書いてください。</strong>
-        承認したものが恒久になります。
+        <strong>この章と 6 章へのコメントで、採用する案と、変えてよいシステムを書いてください。</strong>
+        本命 20 件は 5 章にコメントを。
       </div>
     </section>
   </main>
