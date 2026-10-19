@@ -238,23 +238,26 @@
         </tbody>
       </table>
 
-      <h3>追加: 「画面の変化」の節（2026-10-19・採用済み）</h3>
-      <p>yooyo の指示「UI がどのように変化するかを、スペースを取ってもいいので説明に加える。スペースの問題はその後で取り組む」。
-        各カードの説明の下に見出し「画面の変化」を置き、買うと<b>どの画面の何が変わるか</b>を場所つきで書く。</p>
+      <h3>追加: 「画面の変化」は文章ではなく、実物の Before / After を左右に（2026-10-19・採用済み）</h3>
+      <p>最初は文章で「どの画面の何が変わるか」を書いた。yooyo の指摘「言葉で説明するんじゃなくて、実際に左右で Before/After を見せた方が何倍もいい」「プレイヤーへの親切心に欠ける」を受け、
+        文章をやめて<b>実物の部品を模した左右 2 枠</b>に置き換えた。見出しは「画面の変化」、枠の上に「今」「買うと」、枠の間に →。
+        参考にした形（Pinterest「before after comparison ui」）: 同じ大きさの 2 枠を左右に、上に見出し、間に矢印。</p>
       <table>
-        <thead><tr><th>カード</th><th>画面の変化（日本語）</th></tr></thead>
+        <thead><tr><th>カード</th><th>今（左）</th><th>買うと（右）</th></tr></thead>
         <tbody>
-          <tr><td>広告を全て除去</td><td>広告のボタン（×2 など）を押すと、広告なしですぐ報酬が入る</td></tr>
-          <tr><td>Booster +Plus</td><td>ブースターのボタンから残り時間が消え、ずっとかかった状態になる<br>ボタンの効果の表示が ×2 から ×2.5 になる<br>（Steam のみ）ボタンのダイヤの値段（30）と 1 日の残り回数（6/6）の表示が消える</td></tr>
-          <tr><td>Nether +Plus</td><td>ネザー画面のハートが 3 個 → 5 個になる<br>相棒の画面のお気に入りに、2 つ目の枠が出る</td></tr>
-          <tr><td>Bonus Multiplier Pack</td><td>プレステージの確認画面に ×2 ボタンが出る<br>オフライン報酬の画面に ×2 ボタンが出る（0.45 → 0.9）<br>バトルの戦利品の画面に ×1.5 ボタンが出る<br>その 3 つのボタンには、このカードと同じ DLC の印が付く</td></tr>
-          <tr><td>Supply +Plus</td><td>補給の 3 つのカード（ダイヤ・箱・青箱）が、1 日 2 回で止まらず 5 回まで受け取れる<br>飛んでくるプレゼントの「今日の残り回数」の表示が消え、何度でも飛んでくる</td></tr>
+          <tr><td>広告を全て除去</td><td>広告の絵つきの「受け取る ×2」ボタン</td><td>広告の絵が無い「受け取る ×2」ボタン</td></tr>
+          <tr><td>Booster +Plus</td><td>ブースターの枠（採掘力 x2、Duration 12m 34s とゲージ）。Steam では さらに ダイヤ 30 と Today 6/6</td><td>採掘力 x2.5、Duration ∞。ゲージも値段も無い</td></tr>
+          <tr><td>Nether +Plus</td><td>ハート 3 個 ／ お気に入りの枠 1 つ</td><td>ハート 5 個 ／ お気に入りの枠 2 つ</td></tr>
+          <tr><td>Bonus Multiplier Pack</td><td>「Prestige」だけ ／ 「受け取る」だけ ／ （戦利品のボタンなし）</td><td>「Prestige」＋「x2」（DLC の印） ／ 「受け取る」＋「受け取る ×2」（DLC の印） ／ 緑の「+50%」（DLC の印）</td></tr>
+          <tr><td>Supply +Plus</td><td>ダイヤの絵 5 つのうち 2 つが点灯 ／ プレゼントの絵と「3/3」</td><td>5 つ全部点灯 ／ プレゼントの絵と「∞」</td></tr>
         </tbody>
       </table>
       <ul>
-        <li>キー: 見出しは <code>UiChangesTitle</code> を 5 枚で共用。行は <code>RemoveAdsUi1</code> <code>BoosterUi1〜3</code> <code>NetherUi1〜2</code> <code>BonusMultiplierUi1〜4</code> <code>SupplyPlusUi1〜2</code>（14 言語）</li>
-        <li>Steam だけの行（<code>BoosterUi3</code>）は <code>BoosterExplain3/4</code> と同じく <code>RequiresAdView</code> が false のときだけ出す</li>
-        <li>縦に長くなる。カードの高さ・スクロールの問題は別に取り組む（この章の範囲外）</li>
+        <li>模型の文字は実画面と同じ翻訳キーに繋ぐ（<code>UI_OfflineBonus.X1ClaimButton</code> / <code>X2ClaimButton</code>、<code>UI_Prestige.Prestige</code>、<code>UI_Cave.CrushPowerTItle</code> / <code>DurationLabelTitle</code> / <code>InfinityDurationLabelTitle</code> / <code>Booster.PaidClaimToday</code>）。それ以外は数字と絵だけ</li>
+        <li>UI_Shop のキー: 文章の <code>*Ui1〜4</code> は削除。残すのは <code>UiChangesTitle</code>（画面の変化）と <code>BeforeLabel</code>（今）<code>AfterLabel</code>（買うと）</li>
+        <li>Steam の「今」のブースターにだけ、ダイヤ 30 と 6/6 を出す（<code>ShopView</code> が <code>RequiresAdView</code> false のとき <code>BoosterPreviewPaidRow</code> / <code>BoosterPreviewPriceRow</code> を表示）</li>
+        <li>すべて <code>ShopUXML.uxml</code> の中の静的な部品。実画面の UXML を読み込んでいるわけではないので、実画面の見た目を変えたら模型も直す</li>
+        <li>縦に長い。カードの高さ・スクロールの問題は別に取り組む（この章の範囲外）</li>
       </ul>
 
       <h3>実装メモ</h3>
