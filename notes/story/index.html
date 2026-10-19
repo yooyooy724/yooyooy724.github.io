@@ -64,13 +64,27 @@
   .scr-tabs button:hover{border-color:var(--accent)}
   .scr-tabs button.on{background:var(--ink);color:#1c1b18;border-color:var(--ink)}
   .scr-tabs button.add{border-style:dashed;color:var(--accent)}
+  .scr-tabs button.arc{opacity:.55;border-style:dotted}
+  .scr-tabs button.arc.on{opacity:1}
+  .scr-tabs button.arc-toggle{border:none;background:none;color:var(--sub);text-decoration:underline;padding:4px 6px}
+  .scr-tabs button.arc-toggle.on{color:var(--accent)}
   .scr-tabs button .n{font-size:10.5px;color:var(--sub);margin-left:5px}
   .scr-tabs button.on .n{color:#5c574c}
   .scr-title{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
   .scr-title h3{font-size:16px}
   .scr-title .k{font-size:11px;color:var(--sub)}
-  .scr-title .del{margin-left:auto;border:none;background:none;color:#7d7768;font-size:11px;cursor:pointer;font-family:inherit;padding:0}
-  .scr-title .del:hover{color:var(--warn)}
+  .scr-title .ops{margin-left:auto;display:flex;gap:12px}
+  .scr-title .ops button{border:none;background:none;color:#7d7768;font-size:11px;cursor:pointer;font-family:inherit;padding:0}
+  .scr-title .ops button:hover{color:var(--accent)}
+  .scr-title .ops button.del:hover{color:var(--warn)}
+  .cmsg .edit{display:flex;flex-direction:column;gap:6px;min-width:min(440px,70vw)}
+  .cmsg .edit select,.cmsg .edit textarea{background:#20242b;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-family:inherit;font-size:13px}
+  .cmsg .edit textarea{min-height:64px;line-height:1.7;resize:vertical}
+  .cmsg .edit select:focus,.cmsg .edit textarea:focus{outline:none;border-color:var(--accent)}
+  .cmsg .edit .btns{display:flex;gap:8px;justify-content:flex-end}
+  .cmsg .edit .btns button{border:1px solid var(--line);background:#2a2823;color:var(--ink);border-radius:8px;padding:4px 12px;font-size:12px;cursor:pointer;font-family:inherit}
+  .cmsg .edit .btns button.ok{background:var(--accent);color:#1c1b18;border-color:var(--accent);font-weight:600}
+  .cmsg .edit .hint{font-size:10px;color:#7d7768;text-align:right}
   .chat{background:#201e1a;border:1px solid var(--line);border-radius:10px;padding:16px 16px 6px;max-height:600px;overflow-y:auto}
   .cmsg{display:flex;gap:10px;margin-bottom:14px;align-items:flex-start}
   .cmsg .av{width:34px;height:34px;border-radius:50%;flex:none;object-fit:cover;object-position:top center;background:#33302a;border:1px solid var(--line)}
@@ -378,6 +392,12 @@ const DLGS=[
      comments['scr-hidden']  … 原稿の行を消した印。1件 = '<脚本ID>\n<消した本文>'
      comments['scr-del']     … 追記分を消した印。発言は '<脚本ID>\n<日時>\n<話者キー>\n<本文>'、
                                 脚本そのものは '<脚本ID>' だけ(目録から外す)
+     comments['scr-edit']    … 発言を書き換えた印。1件 = '<脚本ID>\n' + JSON({ts,from,to})
+                                追記分は ts+from で元の発言を指し、原稿の行は ts 無しで from=本文。
+                                to は '<話者キー>\n<本文>'。同じ発言に複数あれば、あとのものが勝つ。
+                                表示位置は元の発言のまま(足し直すと並びが崩れるので印にする)
+     comments['scr-archive'] … 脚本をアーカイブした印。1件 = '<脚本ID>'。戻すときは '<脚本ID>\n戻す'。
+                                あとのものが勝つ
 
    ID01〜11(コード内の DLGS)はコードにあるので書き換えられない。
    代わりに「消した印」を積んで隠す。行番号ではなく本文を鍵にしているので、
@@ -395,9 +415,18 @@ const SCR_SPEAKERS={
 const SCR_INDEX='scr-index';
 const SCR_HIDDEN='scr-hidden';
 const SCR_DEL='scr-del';
+const SCR_EDIT='scr-edit';
+const SCR_ARCHIVE='scr-archive';
 const scrKey=(id)=>'scr:'+id;
 const scrHidKey=(id,t)=>id+'\n'+t;
 const scrDelKey=(id,c)=>id+'\n'+c.ts+'\n'+c.text;   // 追記分の発言1件を指す印
+const scrEditText=(id,e)=>id+'\n'+JSON.stringify(e);
+// '<話者キー>\n<本文>' を {sp,t} に分ける。知らない話者はト書き扱い
+function scrSplit(text){
+ const at=text.indexOf('\n');
+ const sp=(at<0?text:text.slice(0,at)).trim();
+ return {sp:SCR_SPEAKERS[sp]?sp:'sys', t:at<0?'':text.slice(at+1)};
+}
 
 // この脚本で「消した」印がついている原稿の本文
 function scrHiddenSet(id){
@@ -425,14 +454,44 @@ function scrDelSet(id){
 function scrDelIdx(id,c){
  return (STORE.comments[SCR_DEL]||[]).findIndex(x=>x.text===scrDelKey(id,c));
 }
+// この脚本の書き換え印。鍵は追記分 '<日時>\n<元の本文>'、原稿 'b:<元の本文>'。あとのものが勝つ
+function scrEditMap(id){
+ const out=new Map();
+ for(const c of (STORE.comments[SCR_EDIT]||[])){
+   const at=c.text.indexOf('\n');
+   if(at<0||c.text.slice(0,at).trim()!==id)continue;
+   let e=null;try{e=JSON.parse(c.text.slice(at+1));}catch(x){}
+   if(!e||typeof e.from!=='string'||typeof e.to!=='string')continue;
+   out.set(e.ts?e.ts+'\n'+e.from:'b:'+e.from,e.to);
+ }
+ return out;
+}
+// アーカイブ済みの脚本 ID。'<ID>' で入れ、'<ID>\n戻す' で出す。あとのものが勝つ
+function scrArchivedIds(){
+ const out=new Set();
+ for(const c of (STORE.comments[SCR_ARCHIVE]||[])){
+   const at=c.text.indexOf('\n');
+   const id=(at<0?c.text:c.text.slice(0,at)).trim();
+   if(!id)continue;
+   if(at<0)out.add(id); else out.delete(id);
+ }
+ return out;
+}
 // 目録から外した脚本の ID。印に改行が無いものがそれ
 function scrRemovedIds(){
  return new Set((STORE.comments[SCR_DEL]||[]).map(c=>c.text.trim()).filter(t=>t&&t.indexOf('\n')<0));
 }
 // 原稿(DLGS)から、消されていない行だけを返す。モックの再生もこれに従う
 function dlgVisibleLines(d){
- const hid=scrHiddenSet(d.id);
- return d.lines.filter(l=>!hid.has(scrFromDlgLine(l).t));
+ const hid=scrHiddenSet(d.id),ed=scrEditMap(d.id);
+ return d.lines.filter(l=>!hid.has(scrFromDlgLine(l).t)).map(l=>{
+   const to=ed.get('b:'+scrFromDlgLine(l).t);
+   if(to===undefined)return l;
+   const s=scrSplit(to);
+   if(s.sp==='sys')return {sys:s.t};
+   if(s.sp==='narr'||!DLG_CHARS[s.sp])return {narr:s.t};   // 主人公は立ち絵が無いのでナレーション扱い
+   return {c:s.sp,t:s.t};
+ });
 }
 
 // DLGS の行を、チャットが扱う {sp,t} の形へ寄せる
@@ -457,49 +516,73 @@ function scrUserList(){
  }).filter(s=>s.id&&!gone.has(s.id));
 }
 function scrList(){
- return DLGS.map(d=>({id:d.id,title:d.title,builtin:true})).concat(scrUserList());
+ const arc=scrArchivedIds();
+ return DLGS.map(d=>({id:d.id,title:d.title,builtin:true})).concat(scrUserList())
+   .map(s=>Object.assign(s,{archived:arc.has(s.id)}));
 }
 // 原稿(あれば) + 追記分。どちらも「消した印」があれば hidden
 function scrLines(id){
  const d=DLGS.find(x=>x.id===id);
  const hid=d?scrHiddenSet(id):null;
+ const ed=scrEditMap(id);
  const out=d?d.lines.map((l,i)=>{
    const o=Object.assign(scrFromDlgLine(l),{builtin:true,bidx:i});
-   o.hidden=hid.has(o.t);
+   o.hidden=hid.has(o.t);                       // 印は元の本文が鍵なので、書き換えを当てる前に見る
+   const to=ed.get('b:'+o.t);
+   if(to!==undefined){Object.assign(o,scrSplit(to));o.edited=true;}
    return o;
  }):[];
  const del=scrDelSet(id);
  (STORE.comments[scrKey(id)]||[]).forEach((c,i)=>{
-   const at=c.text.indexOf('\n');
-   const sp=(at<0?c.text:c.text.slice(0,at)).trim();
-   out.push({sp:SCR_SPEAKERS[sp]?sp:'sys', t:at<0?'':c.text.slice(at+1), ts:c.ts, idx:i, builtin:false,
-             hidden:del.has(c.ts+'\n'+c.text)});
+   const o=Object.assign(scrSplit(c.text),{ts:c.ts, idx:i, builtin:false, hidden:del.has(c.ts+'\n'+c.text)});
+   const to=ed.get(c.ts+'\n'+c.text);
+   if(to!==undefined){Object.assign(o,scrSplit(to));o.edited=true;}
+   out.push(o);
  });
  return out;
 }
 // 行の下に出る小さな行(日時 / 原稿バッジ / 削除ボタン)
 function scrMetaHtml(id,l,canDel){
+ const edited=l.edited?'<span class="fixed-note">編集済み</span>':'';
+ const editBtn='<button onclick="scrEditStart(\''+id+'\','+(l.builtin?'true,'+l.bidx:'false,'+l.idx)+')">編集</button>';
  if(!l.builtin){
    if(l.hidden){
      return '<span>'+esc(l.ts||'')+'</span><span class="fixed-note gone">削除</span>'
        +(canDel?'<button onclick="scrUndel(\''+id+'\','+l.idx+')">元に戻す</button>':'');
    }
-   return '<span>'+esc(l.ts||'')+'</span>'
+   return '<span>'+esc(l.ts||'')+'</span>'+edited+editBtn
      +(canDel?'<button onclick="scrDel(\''+id+'\','+l.idx+')">削除</button>':'');
  }
  if(l.hidden){
    return '<span class="fixed-note gone">原稿 / 削除</span>'
      +(canDel?'<button onclick="scrUnhide(\''+id+'\','+l.bidx+')">元に戻す</button>':'');
  }
- return '<span class="fixed-note">原稿</span>'
+ return '<span class="fixed-note">原稿</span>'+edited+editBtn
    +(canDel?'<button onclick="scrHide(\''+id+'\','+l.bidx+')">削除</button>':'');
+}
+// 編集中の発言なら、本文の代わりに入力欄を出す
+function scrEditing(id,l){
+ const e=SCR_EDITING;
+ return !!e&&e.id===id&&e.builtin===l.builtin&&(l.builtin?e.bidx===l.bidx:e.idx===l.idx);
+}
+function scrEditorHtml(l){
+ return '<div class="edit">'
+   +'<select id="scr-e-sp">'
+   +Object.keys(SCR_SPEAKERS).map(k=>'<option value="'+k+'"'+(k===l.sp?' selected':'')+'>'+SCR_SPEAKERS[k].name+'</option>').join('')
+   +'</select>'
+   +'<textarea id="scr-e-t" onkeydown="scrEditKey(event)">'+esc(l.t)+'</textarea>'
+   +'<div class="btns"><button onclick="scrEditCancel()">キャンセル</button>'
+   +'<button class="ok" onclick="scrEditSave()">保存</button></div>'
+   +'<div class="hint">Ctrl+Enter で保存 / Esc で取り消し</div></div>';
 }
 function scrMsgHtml(id,l,canDel){
  const s=SCR_SPEAKERS[l.sp]||SCR_SPEAKERS.sys;
  const gone=l.hidden?' gone':'';
- const meta='<div class="meta">'+scrMetaHtml(id,l,canDel)+'</div>';
+ const editing=scrEditing(id,l);
+ const body=editing?scrEditorHtml(l):'<div class="txt">'+esc(l.t)+'</div>';
+ const meta=editing?'':'<div class="meta">'+scrMetaHtml(id,l,canDel)+'</div>';
  if(s.kind==='narr'||s.kind==='sys'){
-   return '<div class="cmsg '+s.kind+gone+'"><div class="bub"><div class="txt">'+esc(l.t)+'</div>'
+   return '<div class="cmsg '+s.kind+gone+'"><div class="bub">'+body
      +meta+'</div></div>';
  }
  const av=s.img
@@ -507,7 +590,7 @@ function scrMsgHtml(id,l,canDel){
    :'<div class="av txt" style="color:'+s.color+'">'+(s.mark||'●')+'</div>';
  return '<div class="cmsg'+(s.me?' me':'')+gone+'">'+av
    +'<div class="bub"><div class="who" style="color:'+s.color+'">'+s.name+'</div>'
-   +'<div class="txt">'+esc(l.t)+'</div>'
+   +body
    +meta+'</div></div>';
 }
 function scrChatHtml(id){
@@ -1399,14 +1482,14 @@ function submitToGitHub(){
 let curPage=location.hash?location.hash.slice(1):'home';
 let filter='all';
 function secTitle(id){for(const p of DB){for(const s of p.secs){if(s.id===id)return {page:p,sec:s};}}return null;}
-function isScrKey(k){return k===SCR_INDEX||k===SCR_HIDDEN||k===SCR_DEL||k.indexOf('scr:')===0;}
+function isScrKey(k){return k===SCR_INDEX||k===SCR_HIDDEN||k===SCR_DEL||k===SCR_EDIT||k===SCR_ARCHIVE||k.indexOf('scr:')===0;}
 function isTlKey(k){return k===TL_ORDER||k.indexOf('tl:')===0;}
 function isFlKey(k){return k.indexOf('fl:')===0;}
 function scrLineCount(){
-  const gone=scrRemovedIds();let n=0;
+  const gone=scrRemovedIds(),arc=scrArchivedIds();let n=0;   // アーカイブした脚本は数に入れない
   for(const k in STORE.comments){
     if(k.indexOf('scr:')!==0)continue;
-    const id=k.slice(4);if(gone.has(id))continue;
+    const id=k.slice(4);if(gone.has(id)||arc.has(id))continue;
     const del=scrDelSet(id);
     n+=STORE.comments[k].filter(c=>!del.has(c.ts+'\n'+c.text)).length;
   }
@@ -1613,12 +1696,12 @@ function buildMD(){
   if(scripts.length){
     md+='\n# 脚本\n\n';
     for(const s of scripts){
-      md+='## '+s.title+' ('+s.id+(s.builtin?' / 原稿あり':'')+')\n\n';
+      md+='## '+s.title+' ('+s.id+(s.builtin?' / 原稿あり':'')+(s.archived?' / アーカイブ':'')+')\n\n';
       for(const l of scrLines(s.id)){
         const sp=SCR_SPEAKERS[l.sp]||SCR_SPEAKERS.sys;
         const body=l.t.replace(/\n/g,' / ');
-        if(l.hidden){md+='~~'+body+'~~ `原稿から削除`\n\n';continue;}
-        md+=(sp.kind?'*'+body+'*':'**'+sp.name+'**「'+body+'」')+(l.builtin?'':' `'+l.ts+'`')+'\n\n';
+        if(l.hidden){md+='~~'+body+'~~ `'+(l.builtin?'原稿から削除':'削除')+'`\n\n';continue;}
+        md+=(sp.kind?'*'+body+'*':'**'+sp.name+'**「'+body+'」')+(l.builtin?'':' `'+l.ts+'`')+(l.edited?' `編集済み`':'')+'\n\n';
       }
     }
   }
@@ -1653,19 +1736,30 @@ function exportJSON(){
 /* ---------- 脚本チャット(ページ) ---------- */
 let SCR_CUR=null;   // 表示中の脚本
 let SCR_SP='naeka'; // 直前に選んだ話者。連続で書くとき毎回選び直さずに済む
-function nowStamp(){
+let SCR_EDITING=null;      // 編集中の発言 {id,builtin,idx|bidx}
+let SCR_SHOW_ARCHIVE=false; // アーカイブした脚本もタブに出す
+let SCR_PICKED=false;       // 自分で脚本を選んだか。選んでいなければ、アーカイブ済みには留まらない
+function nowStamp(withSec){
   const d=new Date(),p=(n)=>String(n).padStart(2,'0');
-  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())+(withSec?':'+p(d.getSeconds()):'');
 }
 function renderChat(el,p){
   const list=scrList();
-  if(!SCR_CUR||!list.some(s=>s.id===SCR_CUR))SCR_CUR=list.length?list[list.length-1].id:null;
+  const active=list.filter(s=>!s.archived);
+  if(SCR_CUR&&!SCR_PICKED){const c=list.find(s=>s.id===SCR_CUR);if(c&&c.archived)SCR_CUR=null;}
+  if(!SCR_CUR||!list.some(s=>s.id===SCR_CUR))SCR_CUR=active.length?active[active.length-1].id:null;
+  const nArc=list.length-active.length;
+  // アーカイブした脚本は普段は出さない。見ているものと、切り替えが ON のときだけ
+  const shown=list.filter(s=>!s.archived||SCR_SHOW_ARCHIVE||s.id===SCR_CUR);
 
   let html='<div class="phead"><h2>'+p.title+'</h2><p>'+p.desc+'</p></div>';
   html+='<div class="scr-tabs">'
-    +list.map(s=>'<button class="'+(s.id===SCR_CUR?'on':'')+'" onclick="scrSelect(\''+s.id+'\')">'
+    +shown.map(s=>'<button class="'+(s.id===SCR_CUR?'on':'')+(s.archived?' arc':'')+'" onclick="scrSelect(\''+s.id+'\')">'
         +esc(s.title)+'<span class="n">'+scrLines(s.id).filter(l=>!l.hidden).length+'</span></button>').join('')
-    +'<button class="add" onclick="scrNew()">＋ 新しい脚本</button></div>';
+    +'<button class="add" onclick="scrNew()">＋ 新しい脚本</button>'
+    +(nArc?'<button class="arc-toggle'+(SCR_SHOW_ARCHIVE?' on':'')+'" onclick="scrToggleArchive()">'
+        +(SCR_SHOW_ARCHIVE?'アーカイブを隠す':'アーカイブ '+nArc)+'</button>':'')
+    +'</div>';
 
   if(!SCR_CUR){
     el.innerHTML=html+'<div class="empty">脚本がありません。「＋ 新しい脚本」から作ってください。</div>';
@@ -1674,9 +1768,19 @@ function renderChat(el,p){
   const cur=list.find(s=>s.id===SCR_CUR);
   html+='<div class="scr-title"><h3>'+esc(cur.title)+'</h3>'
     +'<span class="k">'+(cur.builtin?'原稿 / ':'')+esc(cur.id)+'</span>'
+    +(cur.archived?'<span class="fixed-note gone">アーカイブ</span>':'')
+    +'<span class="ops">'
+    +(cur.archived
+      ?'<button onclick="scrUnarchive(\''+esc(cur.id)+'\')">戻す</button>'
+      :'<button onclick="scrArchive(\''+esc(cur.id)+'\')">アーカイブ</button>')
     +(cur.builtin?'':'<button class="del" onclick="scrRemove(\''+esc(cur.id)+'\')">この脚本を削除</button>')
-    +'</div>';
+    +'</span></div>';
   html+=scrChatHtml(SCR_CUR);
+  if(cur.archived){
+    el.innerHTML=html+'<p class="note">アーカイブした脚本です。書き足すには「戻す」を押してください。</p>';
+    const et=document.getElementById('scr-e-t');if(et)et.focus();
+    return;
+  }
   html+='<div class="compose"><div class="row">'
     +'<select id="scr-sp">'
     +Object.keys(SCR_SPEAKERS).map(k=>'<option value="'+k+'"'+(k===SCR_SP?' selected':'')+'>'
@@ -1691,14 +1795,69 @@ function renderChat(el,p){
   el.innerHTML=html;
 
   const box=el.querySelector('.chat');
-  if(box)box.scrollTop=box.scrollHeight;   // 最新の発言を出す
+  const et=document.getElementById('scr-e-t');
+  if(et){et.focus();et.setSelectionRange(et.value.length,et.value.length);}   // 編集中はそこへ
+  else if(box)box.scrollTop=box.scrollHeight;   // 最新の発言を出す
   const ta=document.getElementById('scr-t');
   if(ta){
     ta.addEventListener('keydown',(e)=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')scrSend();});
-    ta.focus();
+    if(!et)ta.focus();
   }
 }
-function scrSelect(id){SCR_CUR=id;render();}
+function scrSelect(id){SCR_CUR=id;SCR_PICKED=true;SCR_EDITING=null;render();}
+function scrToggleArchive(){SCR_SHOW_ARCHIVE=!SCR_SHOW_ARCHIVE;render();}
+// アーカイブは印を足すだけ。戻すときは、未送信の印なら取り下げ、公開済みなら「戻す」印を足す
+function scrArchive(id){
+  if(scrArchivedIds().has(id))return;
+  scrPush(SCR_ARCHIVE,id);
+  if(SCR_CUR===id)SCR_CUR=null;
+  save();render();
+}
+function scrUnarchive(id){
+  const arr=STORE.comments[SCR_ARCHIVE]||[];
+  let i=-1;for(let k=arr.length-1;k>=0;k--){if(arr[k].text.trim()===id){i=k;break;}}
+  if(i<0)return;
+  const c=arr[i];
+  const pending=!PROPOSE||(PENDING.comments[SCR_ARCHIVE]||[]).some(x=>x.ts===c.ts&&x.text===c.text);
+  if(pending){scrDropEntry(SCR_ARCHIVE,i,null);return;}
+  scrPush(SCR_ARCHIVE,id+'\n戻す');
+  save();render();
+}
+// 発言の編集。未送信の発言はそのまま書き換え、それ以外は書き換えた印を足す
+function scrEditStart(id,builtin,i){
+  SCR_EDITING=builtin?{id,builtin:true,bidx:i}:{id,builtin:false,idx:i};
+  render();
+}
+function scrEditCancel(){SCR_EDITING=null;render();}
+function scrEditKey(ev){
+  if((ev.ctrlKey||ev.metaKey)&&ev.key==='Enter'){ev.preventDefault();scrEditSave();}
+  else if(ev.key==='Escape'){ev.preventDefault();scrEditCancel();}
+}
+function scrEditSave(){
+  const e=SCR_EDITING;if(!e)return;
+  const sel=document.getElementById('scr-e-sp'),ta=document.getElementById('scr-e-t');
+  if(!sel||!ta)return;
+  const t=ta.value.trim();
+  if(!t){alert('本文が空です。消すなら「削除」を使ってください。');return;}
+  const to=sel.value+'\n'+t;
+  const cur=scrLines(e.id).find(l=>l.builtin===e.builtin&&(e.builtin?l.bidx===e.bidx:l.idx===e.idx));
+  if(!cur)return;
+  if(cur.sp+'\n'+cur.t===to){SCR_EDITING=null;render();return;}   // 変わっていない
+  if(e.builtin){
+    const from=scrBuiltinText(e.id,e.bidx);
+    if(from===null)return;
+    scrPush(SCR_EDIT,scrEditText(e.id,{from,to}));
+  }else{
+    const key=scrKey(e.id);
+    const c=(STORE.comments[key]||[])[e.idx];
+    if(!c)return;
+    const pc=PROPOSE?(PENDING.comments[key]||[]).find(x=>x.ts===c.ts&&x.text===c.text):null;
+    if(pc){pc.text=to;c.text=to;}
+    else scrPush(SCR_EDIT,scrEditText(e.id,{ts:c.ts,from:c.text,to}));
+  }
+  SCR_EDITING=null;
+  save();render();
+}
 function scrNew(){
   const t=prompt('新しい脚本のタイトル（例: 中盤 なえかとの再会）');
   if(t===null)return;
@@ -1707,7 +1866,7 @@ function scrNew(){
   const d=new Date(),p=(n)=>String(n).padStart(2,'0');
   const id='S'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds());
   scrPush(SCR_INDEX,id+'\n'+title);
-  SCR_CUR=id;
+  SCR_CUR=id;SCR_PICKED=true;
   save();render();
 }
 function scrSend(){
@@ -1722,7 +1881,10 @@ function scrSend(){
 }
 // comments/ への追記。提案モードでは未送信リストにも積む(他のコメントと同じ扱い)
 function scrPush(key,text){
-  const ts=nowStamp();
+  // 印は同じ分に同じ内容を何度も積むことがある(アーカイブ→戻す→アーカイブ)。
+  // 日時+本文が同じだと重複として落ちるので、印だけ秒まで入れて区別する
+  const isMark=key===SCR_HIDDEN||key===SCR_DEL||key===SCR_EDIT||key===SCR_ARCHIVE;
+  const ts=nowStamp(isMark);
   if(!STORE.comments[key])STORE.comments[key]=[];
   STORE.comments[key].push({text,ts});
   if(PROPOSE){
