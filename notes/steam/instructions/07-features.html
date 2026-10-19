@@ -147,7 +147,8 @@
       </p>
       <ul>
         <li>題は Minecraft の実績名をそのまま使わず、オリジナル（ADR 2026-10-19）</li>
-        <li>最後の #24 が<b>最終ゴール</b>（Area 4 の深淵のボスを倒すとエンディングが流れる）</li>
+        <li>最後の #24 が<b>最終ゴール</b>（Area 4 の深淵のボスを倒すとエンディングが流れる）。Steam の実績は後から足せるので、<b>最初の公開は #1〜23 の 23 件</b>にし、#24 は Area 4 を入れるアップデートで追加登録する</li>
+        <li><b>隠し実績は置かない</b>（10-19 決定）</li>
         <li>Nether とジオードは進行ではなく暦で開くので、たいていの人が最初に出会う位置に置いた</li>
       </ul>
 
@@ -168,7 +169,7 @@
             <tr><td>11</td><td><b>Natural toy capsules</b><br><small>天然のガチャポン</small></td><td>ジオードを見つける</td><td>オリジナル ── ジオードをカプセルトイの玉に見立てた</td></tr>
             <tr><td>12</td><td><b>Enchanter</b><br><small>エンチャンター</small></td><td>アイテムをレベル 13 にする</td><td>マイクラ ── レベル 13 でアイテムがエンチャントのように光る</td></tr>
             <tr><td>13</td><td><b>The Land That Tests You</b><br><small>試される大地</small></td><td>Area 3 に入る</td><td>北海道の旧キャッチコピー「試される大地」の英訳</td></tr>
-            <tr><td>14</td><td><b>Two Alpacas</b><br><small>アルパカ２匹</small></td><td>Bazaar で初めて交換する</td><td>マイクラ ── 商人がアルパカを 2 匹連れている</td></tr>
+            <tr><td>14</td><td><b>Two Llamas</b><br><small>ラマ２匹</small></td><td>Bazaar で初めて交換する</td><td>マイクラ ── 行商人がラマを 2 匹連れている</td></tr>
             <tr><td>15</td><td><b>’Cause little by little</b><br><small>ちりつも</small></td><td>Soil を累計で 1e50 集める</td><td>Oasis「Little by Little」の曲名から ／ 日本語はオリジナル</td></tr>
             <tr><td>16</td><td><b>Master’s in Anvilology</b><br><small>金床学研究科修士号</small></td><td>すべての Forge Level が 15 に到達</td><td>オリジナル ── 造語 “Anvilology”</td></tr>
             <tr><td>17</td><td><b>Fight for our existence</b><br><small>怖いものなし</small></td><td>3 つの炭鉱すべてでウェーブ 100 に到達する</td><td>Oasis「Little by Little」の歌詞から ／ 日本語はオリジナル</td></tr>
@@ -178,7 +179,7 @@
             <tr><td>21</td><td><b>PhD in Anvilology</b><br><small>金床学研究科博士号</small></td><td>すべての Forge Level が 30 に到達</td><td>オリジナル ── 造語 “Anvilology”</td></tr>
             <tr><td>22</td><td><b>Not you again!</b><br><small>また おまえかー？！</small></td><td>魚を 3 回釣る</td><td>どうぶつの森 ── スズキの 2 回目以降</td></tr>
             <tr><td>23</td><td><b>The wheels of your game have slowly fallen off</b><br><small>あの頃はなかったわ</small></td><td>ハードの試練をすべて達成</td><td>Oasis「Little by Little」の歌詞のもじり ／ 日本語はオリジナル</td></tr>
-            <tr><td>24</td><td><b>Free the Deep</b><br><small>深淵の解放</small></td><td>Area 4 の深淵をクリアする（<b>最終ゴール</b>）</td><td>マイクラ ── “Free the End”（エンドの解放）のもじり</td></tr>
+            <tr><td>24</td><td><b>Free the Deep</b><br><small>深淵の解放</small></td><td>Area 4 の深淵をクリアする（<b>最終ゴール</b>。Area 4 のアップデートで追加登録）</td><td>マイクラ ── “Free the End”（エンドの解放）のもじり</td></tr>
           </tbody>
         </table>
       </div>
@@ -197,12 +198,11 @@
     <section id="impl-notes" data-comment-id="guide-features-impl-notes" data-comment-title="実装の前に確かめること">
       <h2>6. 実装の前に確かめること</h2>
       <ul>
-        <li><b>#21 Forge 30</b>: Forge Level は Diamond の Relic（上限 5、Area 3 で +5）と Soul の Relic（上限 20、Area 3 で +5）と試練の報酬の合計。合計なら Area 3 で 30 に届く（最大 35）。<b>Soul の Relic だけで数えると 25 が上限で届かない</b>。合計で数える前提で実装する</li>
-        <li><b>#24 Free the Deep</b>: Area 4 は <code>GamesDomain-area4</code>（area4-master-prestige）にあり、Steam のブランチにはまだ無い。Steam 版に Area 4 を入れるまで、この実績は解除できない</li>
+        <li><b>#10 / #16 / #21 の Forge Level</b>: ハンマー・マトック・ピッケル・エンチャントの 4 種それぞれの<b>工房レベル（合計）</b>で判定する。Diamond と Soul の工房強化の購入回数に試練報酬を足した値で、正本は <code>ForgeLevelFormula.Resolve</code>。表示値（内部値 +1）で比べ、デバッグ上書きは数えない。用語集 <code>CONTEXT.md</code> の「工房レベル」に同じことを書いた</li>
+        <li><b>#24 Free the Deep</b>: Area 4 は <code>GamesDomain-area4</code>（area4-master-prestige）にあり、Steam のブランチにはまだ無い。Area 4 を入れるアップデートで Steamworks に追加登録する。登録の時点で、それまで 100% だった人は 23/24 に戻る</li>
         <li><b>#22 魚を 3 回</b>: 釣った回数の累計がセーブに無いなら追加が要る（遡り解除のため）</li>
         <li><b>#5 8 時間のオフライン</b>: 復帰の瞬間に判定する。セーブから遡っては判定できないので、モバイルから来た人は次の 8 時間オフラインで解除される</li>
         <li><b>#2 / #12 の位置</b>: ウェーブ 10 と、アイテムのレベル 13 に届く時期は推定。実機で順番が逆なら入れ替える</li>
-        <li><b>隠し実績</b>: 決定版では指定なし。隠すかどうかは未定</li>
       </ul>
       <div class="warn">
         <strong>並び順に違和感があればこの章にコメントを。</strong>
