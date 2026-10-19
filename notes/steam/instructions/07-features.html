@@ -138,140 +138,76 @@
         <li>統計と実績の進捗が食い違う設計になりそうなとき</li>
       </ul>
     </section>
-    <section id="candidates" data-comment-id="guide-features-candidates" data-comment-title="実績の候補（2026-10-19）">
-      <h2>5. 実績の候補（2026-10-19・ブレスト中）</h2>
+    <section id="candidates" data-comment-id="guide-features-candidates" data-comment-title="実績の一覧（2026-10-19 決定）">
+      <h2>5. 実績の一覧（2026-10-19 決定・24 件）</h2>
       <p>
-        3 章の「お願い 1」の候補一覧。デザインモデルのカード
+        3 章の「お願い 1」の答え。デザインモデルのカード
         <a href="https://yooyooy724.github.io/models/%E3%82%AB%E3%83%BC%E3%83%89/%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%87%E3%82%B6%E3%82%A4%E3%83%B3%E3%83%A2%E3%83%87%E3%83%AB/%E5%AE%9F%E7%B8%BE%E3%81%AF%E9%81%93%E3%81%97%E3%82%8B%E3%81%B9%E3%81%A8%E6%9C%80%E7%B5%82%E3%82%B4%E3%83%BC%E3%83%AB%E3%82%92%E5%AE%9A%E3%82%81%E3%82%8B">「実績のゲームデザイン」</a>
-        （ADR-0418 / 0419）に従う。判定に使う値の正本は <code>GamesDomain/docs/steam-release/Memo/Achievements_Proposal.md</code>。
+        （ADR-0418 / 0419）に従う。<b>中身はユーザーが決定。並び順だけ、ふつうに遊んだときに届く順へ調整した</b>（Steamworks の表示順にそのまま使う）。
       </p>
-
-      <h3>決まったこと</h3>
       <ul>
-        <li><b>序盤の 5 件の目標は確定</b>（下の表の #1〜5。10-18）</li>
-        <li><b>題はすべてオリジナル。</b><b>元ネタ</b>は、その実績の役どころを借りた Minecraft の実績名。題の言葉は借りず、慣用句・曲名のもじり、二重の意味、淡々とした一言で付け直す（10-19。実績名をそのまま使う案は「パクりすぎ」で撤回）</li>
-        <li>説明文は目標だけを平文で 1 文。ユーモアは題で担う</li>
-        <li>今はブレストの段階。カードの観点ごとに広く出す。<b>実績に合わせてゲームシステムを変えることもあり得る</b>（7 章）</li>
-        <li>件数は未定。20 件は Idle Sphere 管理者の「20 個くらい」に合わせた仮の枠で、カードは件数を決めていない</li>
+        <li>題は Minecraft の実績名をそのまま使わず、オリジナル（ADR 2026-10-19）</li>
+        <li>最後の #24 が<b>最終ゴール</b>（Area 4 の深淵のボスを倒すとエンディングが流れる）</li>
+        <li>Nether とジオードは進行ではなく暦で開くので、たいていの人が最初に出会う位置に置いた</li>
       </ul>
 
-      <h3>カードから引いた決め方</h3>
-      <ul>
-        <li>全項目が<b>道しるべ</b>。終盤の項目で<b>最終ゴール</b>（どこまで遊べば十分か）を規定する</li>
-        <li>十分な進度は「無謀な数値」「進行を表さない数値」を避ける。Idle では<b>通貨の桁</b>は進行を表すので可</li>
-        <li>腕前の証明は Idle と相性が悪いので、置くなら 1〜2 件</li>
-        <li><b>起動回数・プレイ時間は置かない</b>。祝いの追加報酬は置かない。隠すのはネタバレ防止のときだけ</li>
-        <li>10-08 の前提はそのまま: セーブに残る値で判定し、起動時に遡り解除 ／ 課金・DLC・ダイヤは使わない ／ 中身の上限を超えない</li>
-      </ul>
-
-      <h3>本命（20 件）</h3>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>#</th><th>英題 ／ 日本語題</th><th>条件</th><th>元ネタ（マイクラの実績名）</th></tr></thead>
+          <thead><tr><th>#</th><th>英題 ／ 日本語題</th><th>条件</th><th>元ネタ</th></tr></thead>
           <tbody>
-            <tr><td>1</td><td><b>Five a Day</b><br><small>一日五つ</small></td><td>宝石を 5 種類集める（確定）</td><td>Oh Shiny</td></tr>
-            <tr><td>2</td><td><b>Back to Square One</b><br><small>ふりだしに戻る</small></td><td>初めてプレステージする（確定）</td><td>The End?</td></tr>
-            <tr><td>3</td><td><b>Wave Hello</b><br><small>ウェーブで挨拶</small></td><td>炭鉱でウェーブ 10 に到達する（確定）</td><td>Monster Hunter</td></tr>
-            <tr><td>4</td><td><b>Cry Me a River</b><br><small>涙の川</small></td><td>初めて Tear プレステージする（確定）</td><td>Cheating Death</td></tr>
-            <tr><td>5</td><td><b>Second Helping</b><br><small>おかわり</small></td><td>Area 2 に入る（確定）</td><td>Caves &amp; Cliffs</td></tr>
-            <tr><td>6</td><td><b>Baker's Dozen</b><br><small>パン屋の 1 ダース</small></td><td>1 つの坑道の宝石 13 種をすべて手に入れる</td><td>Rainbow Collection</td></tr>
-            <tr><td>7</td><td><b>Third Time's the Charm</b><br><small>三度目の正直</small></td><td>Area 3 に入る</td><td>Remote Getaway</td></tr>
-            <tr><td>8</td><td><b>Been There, Dug That</b><br><small>ぜんぶ掘った</small></td><td>6 つの坑道すべてに入る</td><td>Adventuring Time</td></tr>
-            <tr><td>9</td><td><b>Sub-Basement</b><br><small>地下の地下</small></td><td>Nether に入る</td><td>We Need to Go Deeper</td></tr>
-            <tr><td>10</td><td><b>Crack Open a Cold One</b><br><small>ひとつ割ろうか</small></td><td>ジオードを 1 つ見つける（<b>隠し</b>）</td><td>Hidden in the Depths</td></tr>
-            <tr><td>11</td><td><b>Dirt Rich</b><br><small>土持ち</small></td><td>Soil を累計で 1e__ 集める（桁は実データ）</td><td>Me Gold!</td></tr>
-            <tr><td>12</td><td><b>Still Standing</b><br><small>まだ立ってる</small></td><td>1 回のバトルでウェーブ 100 を越える（閾値は実データ）</td><td>Over-Overkill</td></tr>
-            <tr><td>13</td><td><b>The Hard Way</b><br><small>茨の道</small></td><td>ハードの試練 16 段をすべて越える</td><td>Serious Dedication</td></tr>
-            <tr><td>14</td><td><b>Jack of All Trades</b><br><small>何でも屋</small></td><td>アビリティ枠を 10 にする</td><td>Taking Inventory</td></tr>
-            <tr><td>15</td><td><b>Grand Tour</b><br><small>坑道くまなく</small></td><td>バトルの 6 ステージすべてを開く</td><td>Hot Tourist Destinations</td></tr>
-            <tr><td>16</td><td><b>Hammer Time</b><br><small>ハンマータイム</small></td><td>工房の強化を 1 種類で 20 段まで上げる</td><td>Smithing with Style</td></tr>
-            <tr><td>17</td><td><b>Spellbound</b><br><small>呪文づくし</small></td><td>Spell 14 個をすべて手に入れる</td><td>A Furious Cocktail</td></tr>
-            <tr><td>18</td><td><b>The Whole Spectrum</b><br><small>全色そろい</small></td><td>宝石 78 種をすべて手に入れる</td><td>Cover Me with Diamonds</td></tr>
-            <tr><td>19</td><td><b>Why Would You Do That?</b><br><small>なんでそこまで</small></td><td>インセインの試練 8 段をすべて越える（<b>隠し</b>）</td><td>How Did We Get Here?</td></tr>
-            <tr><td>20</td><td><b>Rock Bottom</b><br><small>どん底</small></td><td>6 つの坑道すべてで第 50 層に到達する（<b>最終ゴール</b>）</td><td>The City at the End of the Game</td></tr>
+            <tr><td>1</td><td><b>Oh sparkly</b><br><small>キラッキラ</small></td><td>宝石を 5 種類集める</td><td>マイクラ ── Oh Shiny</td></tr>
+            <tr><td>2</td><td><b>Monster Hunter</b><br><small>モンスターハンター</small></td><td>炭鉱でウェーブ 10 に到達する</td><td>マイクラ ── 敵を倒す進捗</td></tr>
+            <tr><td>3</td><td><b>Start over?</b><br><small>ふりだしに戻る?</small></td><td>初めてプレステージする</td><td>オリジナル</td></tr>
+            <tr><td>4</td><td><b>A Miner Now</b><br><small>晴れてマイナー</small></td><td>チュートリアルを終える</td><td>オリジナル</td></tr>
+            <tr><td>5</td><td><b>“Mornin’, miner!”</b><br><small>「よくねれたぁぁ」</small></td><td>8 時間以上のオフラインから復帰し、報酬を受け取る</td><td>オリジナル ── ゲームが「よく寝れた」と言っている</td></tr>
+            <tr><td>6</td><td><b>Fading like the stars</b><br><small>身軽になろう</small></td><td>初めて Tear プレステージする</td><td>Oasis「Little by Little」の歌詞から ／ 日本語はオリジナル</td></tr>
+            <tr><td>7</td><td><b>Anyone Out There?</b><br><small>誰かいませんか？</small></td><td>Nether に入る</td><td>オリジナル ── 呼びかけの定番フレーズ</td></tr>
+            <tr><td>8</td><td><b>To another different world</b><br><small>また違う世界へ</small></td><td>Area 2 に入る</td><td>オリジナル</td></tr>
+            <tr><td>9</td><td><b>The IDLE Begins</b><br><small>IDLE, それはもう一つの始まり</small></td><td>Area 2 で開放される自動化をすべて手に入れる</td><td>オリジナル ── 映画の題風（ダークナイト ビギンズ）</td></tr>
+            <tr><td>10</td><td><b>Bachelor’s in Anvilology</b><br><small>金床学研究科学士号</small></td><td>すべての Forge Level が 5 に到達</td><td>オリジナル ── 造語 “Anvilology”</td></tr>
+            <tr><td>11</td><td><b>Natural toy capsules</b><br><small>天然のガチャポン</small></td><td>ジオードを見つける</td><td>オリジナル ── ジオードをカプセルトイの玉に見立てた</td></tr>
+            <tr><td>12</td><td><b>Enchanter</b><br><small>エンチャンター</small></td><td>アイテムをレベル 13 にする</td><td>マイクラ ── レベル 13 でアイテムがエンチャントのように光る</td></tr>
+            <tr><td>13</td><td><b>The Land That Tests You</b><br><small>試される大地</small></td><td>Area 3 に入る</td><td>北海道の旧キャッチコピー「試される大地」の英訳</td></tr>
+            <tr><td>14</td><td><b>Two Alpacas</b><br><small>アルパカ２匹</small></td><td>Bazaar で初めて交換する</td><td>マイクラ ── 商人がアルパカを 2 匹連れている</td></tr>
+            <tr><td>15</td><td><b>’Cause little by little</b><br><small>ちりつも</small></td><td>Soil を累計で 1e__ 集める（桁は実データ）</td><td>Oasis「Little by Little」の曲名から ／ 日本語はオリジナル</td></tr>
+            <tr><td>16</td><td><b>Master’s in Anvilology</b><br><small>金床学研究科修士号</small></td><td>すべての Forge Level が 15 に到達</td><td>オリジナル ── 造語 “Anvilology”</td></tr>
+            <tr><td>17</td><td><b>Fight for our existence</b><br><small>怖いものなし</small></td><td>3 つの炭鉱すべてでウェーブ 100 に到達する</td><td>Oasis「Little by Little」の歌詞から ／ 日本語はオリジナル</td></tr>
+            <tr><td>18</td><td><b>The IDLE, and All That Remains</b><br><small>IDLE、そして私たちに残されるのは</small></td><td>Area 3 で開放される自動化をすべて手に入れる</td><td>オリジナル ── 映画の題風（AI に何が残されるのか）</td></tr>
+            <tr><td>19</td><td><b>Solitude</b><br><small>ソリチュード</small></td><td>コンパニオン無しで Nether の深度 15 に届く</td><td>哲学 ── ティリッヒ「一人であることの栄光」</td></tr>
+            <tr><td>20</td><td><b>Tough Normal</b><br><small>並盛＜＜中盛</small></td><td>ノーマルの試練をすべて達成</td><td>オリジナル ── 「ノーマルなのに難しい」</td></tr>
+            <tr><td>21</td><td><b>PhD in Anvilology</b><br><small>金床学研究科博士号</small></td><td>すべての Forge Level が 30 に到達</td><td>オリジナル ── 造語 “Anvilology”</td></tr>
+            <tr><td>22</td><td><b>Not you again!</b><br><small>また おまえかー？！</small></td><td>魚を 3 回釣る</td><td>どうぶつの森 ── スズキの 2 回目以降</td></tr>
+            <tr><td>23</td><td><b>The wheels of your game have slowly fallen off</b><br><small>あの頃はなかったわ</small></td><td>ハードの試練をすべて達成</td><td>Oasis「Little by Little」の歌詞のもじり ／ 日本語はオリジナル</td></tr>
+            <tr><td>24</td><td><b>Free the Deep</b><br><small>深淵の解放</small></td><td>Area 4 の深淵をクリアする（<b>最終ゴール</b>）</td><td>マイクラ ── “Free the End”（エンドの解放）のもじり</td></tr>
           </tbody>
         </table>
       </div>
+
+      <h3>並べた根拠（解禁の順）</h3>
+      <ul>
+        <li>#1〜4: バトルは第 3 層で開き、プレステージのタブは第 6 層。チュートリアルは初プレステージの直後に終わる</li>
+        <li>#6: Tear プレステージは 2 つ目の坑道の第 7 層。#8 Area 2 はその先（3 つ目の坑道の第 10 層）</li>
+        <li>#9 / #18: 自動化は Area 2 に入ると Tear 系が、Area 3 でプレステージ自動化・自動装備が増える</li>
+        <li>#14: Bazaar は Area 3 から。#20 試練も Area 3 で入口が出る</li>
+        <li>#22: 釣りはインセインの「釣り」の試練から（ハード 12 段で解禁）。#23 ハード全 16 段より前に届く</li>
+        <li>#24: Area 4 はハードを全段越えると開き、深淵のボスを初めて倒すとエンディング</li>
+      </ul>
     </section>
 
-    <section id="brainstorm" data-comment-id="guide-features-brainstorm" data-comment-title="実績のブレスト（観点別）">
-      <h2>6. ブレスト（カードの観点別）</h2>
-      <p>
-        本命に入れていない案。<b>「要: …」は今のセーブに値が無く、ゲーム側に追加が要るもの</b>（7 章）。
-        採用するものにコメントで印を付けてほしい。書式は「英題（日本語題）── 条件 ／ 元ネタ」。
-      </p>
-
-      <h3>進行の節目</h3>
+    <section id="impl-notes" data-comment-id="guide-features-impl-notes" data-comment-title="実装の前に確かめること">
+      <h2>6. 実装の前に確かめること</h2>
       <ul>
-        <li><b>Sharpen Up</b>（研ぎ直し）── 工房で初めて強化する ／ 元ネタ: Getting an Upgrade</li>
-        <li><b>Pick of the Bunch</b>（えりすぐりのツルハシ）── ツルハシをレベル 10 にする ／ 元ネタ: Isn't It Iron Pick</li>
-        <li><b>Extra Sparkle</b>（ひと味ちがう）── 初めてエンチャントを付ける ／ 元ネタ: Enchanter</li>
-        <li><b>Look, No Hands</b>（ほら、手放し）── 自動化を 1 つ買う ／ 元ネタ: Dispense With This</li>
-        <li><b>Something's Biting</b>（当たりだ）── 初めて釣る ／ 元ネタ: Fishy Business</li>
-        <li><b>Reel Talk</b>（竿の本音）── 釣り竿の Spell を手に入れる ／ 元ネタ: Tactical Fishing</li>
-        <li><b>Abracadabra</b>（ちちんぷいぷい）── Spell を初めて手に入れる ／ 元ネタ: Local Brewery</li>
-        <li><b>Tied One Hand</b>（片手縛り）── 試練を 1 段越える ／ 元ネタ: Voluntary Exile</li>
-        <li><b>Plus One</b>（同伴者あり）── コンパニオンを連れて Nether に潜る ／ 元ネタ: You've Got a Friend in Me</li>
-        <li><b>Slept On It</b>（寝て待て）── オフライン報酬を初めて受け取る ／ 元ネタ: Sweet Dreams</li>
-        <li><b>Fair Trade</b>（等価交換）── Bazaar で初めて交換する ／ 元ネタ: What a Deal!</li>
-        <li><b>Hot Off the Press</b>（できたて）── Magma Cream を初めて手に入れる ／ 元ネタ: Hot Stuff</li>
-        <li><b>Full Kit</b>（一式そろい）── 3 種の装備を同時に装着する ／ 元ネタ: Suit Up</li>
-        <li><b>Scratching the Surface</b>（表面をかすめる）── 最初の坑道で第 10 層に到達する ／ 元ネタ: Stone Age</li>
-      </ul>
-
-      <h3>上限達成</h3>
-      <ul>
-        <li><b>Nothing Left to Find</b>（もう見つからない）── 図鑑をすべて埋める ／ 元ネタ: A Complete Catalogue　<b>要: 図鑑の総数の確定と、運だけの項目の除外</b></li>
-        <li><b>Sampler Platter</b>（盛り合わせ）── 9 種類の試練をすべて 1 段ずつ越える ／ 元ネタ: A Balanced Diet</li>
-        <li><b>Hat Trick</b>（ハットトリック）── 3 種の装備すべてを工房で 20 段にする ／ 元ネタ: Two by Two</li>
-        <li><b>Shop Till You Drop</b>（買い物三昧）── Bazaar の全商品を 1 回ずつ交換する ／ 元ネタ: Star Trader　要確認: 商品が固定か</li>
-        <li><b>Plenty of Fish</b>（魚はいくらでも）── 釣りの報酬 6 種をすべて釣る ／ 元ネタ: I'm a Marine Biologist</li>
-        <li><b>End of the Line</b>（終点）── Nether の最後のステージを開く ／ 元ネタ: Cover Me in Debris　要確認: Nether の終端</li>
-      </ul>
-
-      <h3>十分な進度</h3>
-      <ul>
-        <li><b>Rolling in Rocks</b>（石まみれ）── 宝石を累計で 1e__ 個集める ／ 元ネタ: Diamonds!</li>
-        <li><b>Heart and Soul</b>（身も心も）── Soul を累計 100 集める ／ 元ネタ: Iron Belly</li>
-        <li><b>Déjà Vu</b>（既視感）── プレステージを 9 回する ／ 元ネタ: Not Quite "Nine" Lives　<b>要: 回数カウンタ</b></li>
-        <li><b>Old Habits</b>（癖になる）── Tear プレステージを 9 回する ／ 元ネタ: Return to Sender　<b>要: 回数カウンタ</b></li>
-        <li><b>Frequent Flyer</b>（常連さん）── Nether に 50 回潜る ／ 元ネタ: Into Fire　<b>要: 生涯回数</b></li>
-        <li><b>Unboxing Day</b>（開封の日）── ボックスを累計 1,000 個開ける ／ 元ネタ: Bukkit Bukkit　<b>要: 回数カウンタ</b></li>
-        <li><b>Dig Deep</b>（底力）── 掘った層の累計 1,000 ／ 元ネタ: Time to Mine!　<b>要: 累計の保存</b></li>
-        <li><b>Lend a Hand</b>（手を貸す）── 自分のビルドが 10 回借りられる ／ 元ネタ: Hero of the Village　<b>オンライン依存なので見送り推奨</b></li>
-      </ul>
-
-      <h3>腕前の証明（Idle なので 1〜2 件まで）</h3>
-      <ul>
-        <li><b>Lone Wolf</b>（一匹狼）── コンパニオン無しで Nether の深度 N に届く ／ 元ネタ: Who Needs Rockets?</li>
-        <li><b>Clean Sheet</b>（無失点）── Nether でゲームオーバーせずに N 回連続で帰る ／ 元ネタ: Not Today, Thank You　<b>要: 連続記録</b></li>
-        <li><b>In One Go</b>（一気に）── 試練の Tier 4 を 1 回のプレステージ内で越える ／ 元ネタ: Sneak 100　要確認: 判定できるか</li>
-      </ul>
-
-      <h3>世界観・ネタ（Optional）</h3>
-      <ul>
-        <li><b>While You Were Out</b>（留守のあいだに）── スクリーンセーバー中に敵を 100 体倒す ／ 元ネタ: Passing the Time<code>ScreenSaveStats</code> に値あり）</li>
-        <li><b>What's in a Name?</b>（名前に何が）── Nether の表示名を変える ／ 元ネタ: Crafting a New Look</li>
-        <li><b>Against All Odds</b>（万に一つ）── ジオードで運（Fortune）を引く ／ 元ネタ: Glow and Behold!　<b>運だけなので見送り推奨</b></li>
-        <li><b>Happily Ever After</b>（めでたしめでたし）── 地上の物語を最後まで見る ／ 元ネタ: The Lie　要確認: 物語の実装</li>
-      </ul>
-      <p class="note">
-        題は Minecraft の実績名と重ならないことを確認済み。慣用句・曲名は一般語として使う（曲の歌詞は使わない）。
-      </p>
-    </section>
-
-    <section id="system-changes" data-comment-id="guide-features-system-changes" data-comment-title="実績に合わせたシステム変更の候補">
-      <h2>7. 実績に合わせたシステム変更の候補</h2>
-      <ul>
-        <li><b>エンディングを付ける。</b>最終ゴール #20（6 つの坑道すべてで第 50 層）に、Minecraft の「The End.」と同じく一度だけの演出（クレジット等）を置く。カードの「ゲームクリアはリストの主役」を実体にする</li>
-        <li><b>生涯カウンタを足す。</b>プレステージ回数・Tear プレステージ回数・Nether の生涯回数・ボックスを開けた数・掘った層の累計。いずれもセーブ項目の追加（10-08 に「累計を保存する値が無い」として外した分）</li>
-        <li><b>図鑑の総数を固定する。</b>「完全なカタログ」を置くなら、運だけの項目を図鑑の必須から外す</li>
-        <li><b>Nether の終端を決める。</b>「最後のステージ」が無いなら上限達成の実績は置けない</li>
-        <li><b>Stats で進捗を見せる。</b>桁・ウェーブ・回数の実績は Steam の進捗バーに繋ぐ（06 で統計は必須）</li>
+        <li><b>#21 Forge 30</b>: Forge Level は Diamond の Relic（上限 5、Area 3 で +5）と Soul の Relic（上限 20、Area 3 で +5）と試練の報酬の合計。合計なら Area 3 で 30 に届く（最大 35）。<b>Soul の Relic だけで数えると 25 が上限で届かない</b>。合計で数える前提で実装する</li>
+        <li><b>#24 Free the Deep</b>: Area 4 は <code>GamesDomain-area4</code>（area4-master-prestige）にあり、Steam のブランチにはまだ無い。Steam 版に Area 4 を入れるまで、この実績は解除できない</li>
+        <li><b>#22 魚を 3 回</b>: 釣った回数の累計がセーブに無いなら追加が要る（遡り解除のため）</li>
+        <li><b>#5 8 時間のオフライン</b>: 復帰の瞬間に判定する。セーブから遡っては判定できないので、モバイルから来た人は次の 8 時間オフラインで解除される</li>
+        <li><b>#15 Soil の桁</b>: 上位の記録から外れ値を除いて決める（ADR-0301）</li>
+        <li><b>#2 / #12 の位置</b>: ウェーブ 10 と、アイテムのレベル 13 に届く時期は推定。実機で順番が逆なら入れ替える</li>
+        <li><b>隠し実績</b>: 決定版では指定なし。隠すかどうかは未定</li>
       </ul>
       <div class="warn">
-        <strong>この章と 6 章へのコメントで、採用する案と、変えてよいシステムを書いてください。</strong>
-        本命 20 件は 5 章にコメントを。
+        <strong>並び順に違和感があればこの章にコメントを。</strong>
+        中身（題・条件）は決定済みとして扱う。
       </div>
     </section>
   </main>
