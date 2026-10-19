@@ -69,6 +69,8 @@
   .scr-title{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
   .scr-title h3{font-size:16px}
   .scr-title .k{font-size:11px;color:var(--sub)}
+  .scr-title .del{margin-left:auto;border:none;background:none;color:#7d7768;font-size:11px;cursor:pointer;font-family:inherit;padding:0}
+  .scr-title .del:hover{color:var(--warn)}
   .chat{background:#201e1a;border:1px solid var(--line);border-radius:10px;padding:16px 16px 6px;max-height:600px;overflow-y:auto}
   .cmsg{display:flex;gap:10px;margin-bottom:14px;align-items:flex-start}
   .cmsg .av{width:34px;height:34px;border-radius:50%;flex:none;object-fit:cover;object-position:top center;background:#33302a;border:1px solid var(--line)}
@@ -374,10 +376,14 @@ const DLGS=[
      comments['scr-index']   … 追加した脚本の目録。1件 = '<脚本ID>\n<タイトル>'
      comments['scr:<脚本ID>'] … その脚本の発言。1件 = '<話者キー>\n<本文>'
      comments['scr-hidden']  … 原稿の行を消した印。1件 = '<脚本ID>\n<消した本文>'
+     comments['scr-del']     … 追記分を消した印。発言は '<脚本ID>\n<日時>\n<話者キー>\n<本文>'、
+                                脚本そのものは '<脚本ID>' だけ(目録から外す)
 
    ID01〜11(コード内の DLGS)はコードにあるので書き換えられない。
    代わりに「消した印」を積んで隠す。行番号ではなく本文を鍵にしているので、
-   原稿が書き換わると印は自然に外れて行が戻る(消し間違いより復活を選ぶ)。 */
+   原稿が書き換わると印は自然に外れて行が戻る(消し間違いより復活を選ぶ)。
+   公開済みの追記分も同じ扱い。保存は和集合(足すだけ)で公開側のデータを消す手段が
+   ないので、印を足して隠す。未送信のものだけは印を使わず、送る前に取り下げる。 */
 const SCR_SPEAKERS={
  naeka :{name:'なえか',   img:'images/naeka.png', color:'#2e7f8f'},
  kosuke:{name:'コウスケ', img:'images/kosuke.png',color:'#6f7a4e'},
@@ -388,8 +394,10 @@ const SCR_SPEAKERS={
 };
 const SCR_INDEX='scr-index';
 const SCR_HIDDEN='scr-hidden';
+const SCR_DEL='scr-del';
 const scrKey=(id)=>'scr:'+id;
 const scrHidKey=(id,t)=>id+'\n'+t;
+const scrDelKey=(id,c)=>id+'\n'+c.ts+'\n'+c.text;   // 追記分の発言1件を指す印
 
 // この脚本で「消した」印がついている原稿の本文
 function scrHiddenSet(id){
@@ -403,6 +411,23 @@ function scrHiddenSet(id){
 }
 function scrHiddenIdx(id,t){
  return (STORE.comments[SCR_HIDDEN]||[]).findIndex(c=>c.text===scrHidKey(id,t));
+}
+// この脚本で「消した」印がついている追記分の発言。鍵は '<日時>\n<話者キー>\n<本文>'
+function scrDelSet(id){
+ const out=new Set();
+ for(const c of (STORE.comments[SCR_DEL]||[])){
+   const at=c.text.indexOf('\n');
+   if(at<0||c.text.slice(0,at).trim()!==id)continue;
+   out.add(c.text.slice(at+1));
+ }
+ return out;
+}
+function scrDelIdx(id,c){
+ return (STORE.comments[SCR_DEL]||[]).findIndex(x=>x.text===scrDelKey(id,c));
+}
+// 目録から外した脚本の ID。印に改行が無いものがそれ
+function scrRemovedIds(){
+ return new Set((STORE.comments[SCR_DEL]||[]).map(c=>c.text.trim()).filter(t=>t&&t.indexOf('\n')<0));
 }
 // 原稿(DLGS)から、消されていない行だけを返す。モックの再生もこれに従う
 function dlgVisibleLines(d){
@@ -418,18 +443,23 @@ function scrFromDlgLine(l){
  return {sp:l.c,t:l.t};
 }
 // 目録に載っている追加分の脚本
+function scrIndexId(c){
+ const i=c.text.indexOf('\n');
+ return c.text.slice(0,i<0?c.text.length:i).trim();
+}
 function scrUserList(){
+ const gone=scrRemovedIds();
  return (STORE.comments[SCR_INDEX]||[]).map(c=>{
    const i=c.text.indexOf('\n');
-   return {id:c.text.slice(0,i<0?c.text.length:i).trim(),
+   return {id:scrIndexId(c),
            title:(i<0?'':c.text.slice(i+1)).trim()||'(無題)',
            ts:c.ts, builtin:false};
- }).filter(s=>s.id);
+ }).filter(s=>s.id&&!gone.has(s.id));
 }
 function scrList(){
  return DLGS.map(d=>({id:d.id,title:d.title,builtin:true})).concat(scrUserList());
 }
-// 原稿(あれば) + 追記分。追記分は消す、原稿は隠す
+// 原稿(あれば) + 追記分。どちらも「消した印」があれば hidden
 function scrLines(id){
  const d=DLGS.find(x=>x.id===id);
  const hid=d?scrHiddenSet(id):null;
@@ -438,16 +468,22 @@ function scrLines(id){
    o.hidden=hid.has(o.t);
    return o;
  }):[];
+ const del=scrDelSet(id);
  (STORE.comments[scrKey(id)]||[]).forEach((c,i)=>{
    const at=c.text.indexOf('\n');
    const sp=(at<0?c.text:c.text.slice(0,at)).trim();
-   out.push({sp:SCR_SPEAKERS[sp]?sp:'sys', t:at<0?'':c.text.slice(at+1), ts:c.ts, idx:i, builtin:false});
+   out.push({sp:SCR_SPEAKERS[sp]?sp:'sys', t:at<0?'':c.text.slice(at+1), ts:c.ts, idx:i, builtin:false,
+             hidden:del.has(c.ts+'\n'+c.text)});
  });
  return out;
 }
 // 行の下に出る小さな行(日時 / 原稿バッジ / 削除ボタン)
 function scrMetaHtml(id,l,canDel){
  if(!l.builtin){
+   if(l.hidden){
+     return '<span>'+esc(l.ts||'')+'</span><span class="fixed-note gone">削除</span>'
+       +(canDel?'<button onclick="scrUndel(\''+id+'\','+l.idx+')">元に戻す</button>':'');
+   }
    return '<span>'+esc(l.ts||'')+'</span>'
      +(canDel?'<button onclick="scrDel(\''+id+'\','+l.idx+')">削除</button>':'');
  }
@@ -477,14 +513,14 @@ function scrMsgHtml(id,l,canDel){
 function scrChatHtml(id){
  const lines=scrLines(id);
  if(!lines.length)return '<div class="chat"><div class="empty">まだ発言がありません。下の欄から書いてください。</div></div>';
- const pend=PROPOSE?(PENDING.comments[scrKey(id)]||[]):[];
  const store=STORE.comments[scrKey(id)]||[];
  const hidPend=PROPOSE?(PENDING.comments[SCR_HIDDEN]||[]):[];
- // 公開済みのものは提案モードからは取り消せないので、ボタンも出さない。
- // 原稿を消すのは印を足すだけなので、いつでもできる。
+ const delPend=PROPOSE?(PENDING.comments[SCR_DEL]||[]):[];
+ // 消すのは印を足すだけなので、いつでもできる。
+ // 「元に戻す」は印を取り消すこと。公開済みの印は提案モードからは取り消せないので、ボタンも出さない。
  const canDel=(l)=>l.builtin
    ?(!l.hidden||!PROPOSE||hidPend.some(p=>p.text===scrHidKey(id,l.t)))
-   :(!PROPOSE||pend.some(p=>{const c=store[l.idx];return c&&p.ts===c.ts&&p.text===c.text;}));
+   :(!l.hidden||!PROPOSE||delPend.some(p=>{const c=store[l.idx];return c&&p.text===scrDelKey(id,c);}));
  return '<div class="chat">'+lines.map(l=>scrMsgHtml(id,l,canDel(l))).join('')+'</div>';
 }
 function dlgScriptHtml(d){
@@ -1363,10 +1399,19 @@ function submitToGitHub(){
 let curPage=location.hash?location.hash.slice(1):'home';
 let filter='all';
 function secTitle(id){for(const p of DB){for(const s of p.secs){if(s.id===id)return {page:p,sec:s};}}return null;}
-function isScrKey(k){return k===SCR_INDEX||k===SCR_HIDDEN||k.indexOf('scr:')===0;}
+function isScrKey(k){return k===SCR_INDEX||k===SCR_HIDDEN||k===SCR_DEL||k.indexOf('scr:')===0;}
 function isTlKey(k){return k===TL_ORDER||k.indexOf('tl:')===0;}
 function isFlKey(k){return k.indexOf('fl:')===0;}
-function scrLineCount(){let n=0;for(const k in STORE.comments)if(k.indexOf('scr:')===0)n+=STORE.comments[k].length;return n;}
+function scrLineCount(){
+  const gone=scrRemovedIds();let n=0;
+  for(const k in STORE.comments){
+    if(k.indexOf('scr:')!==0)continue;
+    const id=k.slice(4);if(gone.has(id))continue;
+    const del=scrDelSet(id);
+    n+=STORE.comments[k].filter(c=>!del.has(c.ts+'\n'+c.text)).length;
+  }
+  return n;
+}
 function pageCommentCount(p){
   if(p.flow)return 0;                // タイムラインにコメント欄は無い
   if(p.flavor)return 0;              // フレーバー編集はコメントではない
@@ -1628,7 +1673,9 @@ function renderChat(el,p){
   }
   const cur=list.find(s=>s.id===SCR_CUR);
   html+='<div class="scr-title"><h3>'+esc(cur.title)+'</h3>'
-    +'<span class="k">'+(cur.builtin?'原稿 / ':'')+esc(cur.id)+'</span></div>';
+    +'<span class="k">'+(cur.builtin?'原稿 / ':'')+esc(cur.id)+'</span>'
+    +(cur.builtin?'':'<button class="del" onclick="scrRemove(\''+esc(cur.id)+'\')">この脚本を削除</button>')
+    +'</div>';
   html+=scrChatHtml(SCR_CUR);
   html+='<div class="compose"><div class="row">'
     +'<select id="scr-sp">'
@@ -1639,7 +1686,7 @@ function renderChat(el,p){
     +'<button class="send" onclick="scrSend()">送信</button>'
     +'</div><div class="hint">'
     +(cur.builtin?'原稿の行も削除できます。原稿自体はコードにあるので、消したという印を残す形です(「元に戻す」で戻せます)。'
-                 :'書いた発言は他のコメントと同じ場所に保存されます。')
+                 :'書いた発言は他のコメントと同じ場所に保存されます。公開済みの発言を削除すると、消したという印を残す形になります(「元に戻す」で戻せます)。')
     +'</div></div>';
   el.innerHTML=html;
 
@@ -1705,34 +1752,68 @@ function scrUnhide(id,bidx){
   if(t===null)return;
   const i=scrHiddenIdx(id,t);
   if(i<0)return;
-  const c=STORE.comments[SCR_HIDDEN][i];
-  if(PROPOSE){
-    // 送信済みの削除はここからは取り消せない(取り消すならローカル版で)
-    const p=PENDING.comments[SCR_HIDDEN]||[];
-    const at=p.findIndex(x=>x.ts===c.ts&&x.text===c.text);
-    if(at<0){alert('送信済みの削除は、ここからは取り消せません。');return;}
-    p.splice(at,1);
-    if(!p.length)delete PENDING.comments[SCR_HIDDEN];
-  }
-  STORE.comments[SCR_HIDDEN].splice(i,1);
-  if(!STORE.comments[SCR_HIDDEN].length)delete STORE.comments[SCR_HIDDEN];
-  save();render();
+  scrDropEntry(SCR_HIDDEN,i,'送信済みの削除は、ここからは取り消せません。');
 }
-function scrDel(id,i){
-  const key=scrKey(id);
+// comments[key][i] を取り下げる。提案モードでは未送信のものしか取り下げられない
+// (公開側は足すだけで消せない)。取り下げられなければ msg を出して false
+function scrDropEntry(key,i,msg){
   const c=(STORE.comments[key]||[])[i];
-  if(!c)return;
-  if(!confirm('この発言を削除します。よろしいですか?'))return;
+  if(!c)return false;
   if(PROPOSE){
-    // 公開済みの発言はここからは消せない(消すならローカル版で)
     const p=PENDING.comments[key]||[];
     const at=p.findIndex(x=>x.ts===c.ts&&x.text===c.text);
-    if(at<0){alert('公開済みの発言は、ここからは削除できません。');return;}
+    if(at<0){if(msg)alert(msg);return false;}
     p.splice(at,1);
     if(!p.length)delete PENDING.comments[key];
   }
   STORE.comments[key].splice(i,1);
   if(!STORE.comments[key].length)delete STORE.comments[key];
+  save();render();
+  return true;
+}
+// 追記分の発言を消す。未送信なら取り下げ、公開済みなら消した印を足す
+function scrDel(id,i){
+  const key=scrKey(id);
+  const c=(STORE.comments[key]||[])[i];
+  if(!c||scrDelIdx(id,c)>=0)return;
+  const published=PROPOSE&&!(PENDING.comments[key]||[]).some(x=>x.ts===c.ts&&x.text===c.text);
+  if(!confirm(published?'この発言を削除します。あとで「元に戻す」で戻せます。よろしいですか?'
+                       :'この発言を削除します。よろしいですか?'))return;
+  if(published){scrPush(SCR_DEL,scrDelKey(id,c));save();render();return;}
+  scrDropEntry(key,i,null);
+}
+function scrUndel(id,i){
+  const c=(STORE.comments[scrKey(id)]||[])[i];
+  if(!c)return;
+  const at=scrDelIdx(id,c);
+  if(at<0)return;
+  scrDropEntry(SCR_DEL,at,'送信済みの削除は、ここからは取り消せません。');
+}
+// 追記した脚本を目録から外す。原稿(DLGS)は外せない
+function scrRemove(id){
+  const s=scrUserList().find(x=>x.id===id);
+  if(!s)return;
+  const n=scrLines(id).filter(l=>!l.hidden).length;
+  if(!confirm('脚本「'+s.title+'」を削除します'+(n?'(発言 '+n+' 件も見えなくなります)':'')+'。よろしいですか?'))return;
+  const c=(STORE.comments[SCR_INDEX]||[]).find(x=>scrIndexId(x)===id)||null;
+  const published=PROPOSE&&!(c&&(PENDING.comments[SCR_INDEX]||[]).some(x=>x.ts===c.ts&&x.text===c.text));
+  if(published){
+    scrPush(SCR_DEL,id);
+  }else{
+    // 手元だけにある脚本は、目録・発言・印をそのまま消す
+    for(const fb of (PROPOSE?[STORE,PENDING]:[STORE])){
+      if(fb.comments[SCR_INDEX]){
+        fb.comments[SCR_INDEX]=fb.comments[SCR_INDEX].filter(x=>scrIndexId(x)!==id);
+        if(!fb.comments[SCR_INDEX].length)delete fb.comments[SCR_INDEX];
+      }
+      delete fb.comments[scrKey(id)];
+      if(fb.comments[SCR_DEL]){
+        fb.comments[SCR_DEL]=fb.comments[SCR_DEL].filter(x=>x.text.indexOf(id+'\n')!==0);
+        if(!fb.comments[SCR_DEL].length)delete fb.comments[SCR_DEL];
+      }
+    }
+  }
+  if(SCR_CUR===id)SCR_CUR=null;
   save();render();
 }
 
