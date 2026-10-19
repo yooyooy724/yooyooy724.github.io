@@ -183,6 +183,7 @@
       <li><a href="#pvp">7. PvP 的要素</a></li>
       <li><a href="#infra">8. 既存の仕組み</a></li>
       <li><a href="#open">9. 未決</a></li>
+      <li><a href="#tester">10. テスター公開</a></li>
     </ol>
   </nav>
 
@@ -808,6 +809,97 @@
           </tbody>
         </table>
       </div>
+    </section>
+
+    <section id="tester">
+      <h2>10. テスター公開とテスト用セーブ <span class="badge b-idea">案</span></h2>
+      <div class="callout"><ul>
+        <li>目的: Area4（ザ・ディープ）をテスターに遊んでもらう。<strong>本編のセーブは一度も書き換えない</strong></li>
+        <li>代わりに、テスト期間中の進捗はテストが終わったら消える</li>
+      </ul></div>
+
+      <h3>いまのまま配った場合と、テスト用セーブを使う場合</h3>
+      <div class="cards">
+        <div class="card dropped">
+          <div class="card-head"><span class="card-kind">BEFORE</span><span class="badge b-open">危険</span></div>
+          <div class="card-title">テスト版が本編のセーブで動く</div>
+          <ul>
+            <li>テスト版（Steam 側を取り込んだ版）は、起動時に本編のセーブを<strong>暗号化された形へ移し替える</strong>。今のモバイル版へ戻すと読めない</li>
+            <li>保存項目が増えた版（形式 5）で上書きする。古い版はそれを読み飛ばして消す</li>
+            <li>マスタープレステージを押すと、22 の Root がリセットされる。戻す手段は無い</li>
+            <li>ボス撃破・エンディングの旗・バザーの購入は、一度立つと下りない</li>
+            <li>実績（Steam など）とクラウドへのアップロードにも残る</li>
+          </ul>
+        </div>
+        <div class="card fixed">
+          <div class="card-head"><span class="card-kind">AFTER</span><span class="badge b-idea">案</span></div>
+          <div class="card-title">テスト版はテスト用セーブだけで動く</div>
+          <ul>
+            <li>最初の起動で、本編のセーブ（<code>local_save</code>）をテスト用セーブ（<code>test_save</code>）へ<strong>写す</strong></li>
+            <li>以後の読み書きは <code>test_save</code> だけ。本編のセーブは読むだけ</li>
+            <li>本編へ戻るときは本番版を入れ直すだけ。本編はテスト前のまま残っている</li>
+            <li>画面の端に「TEST」の帯を常に出す（どちらのセーブで遊んでいるか一目で分かる）</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>流れ</h3>
+      <div class="flow">
+        <span class="step">テスト版を入れる</span><span class="arrow">→</span>
+        <span class="step">初回の起動で本編を写す</span><span class="arrow">→</span>
+        <span class="step">test_save で遊ぶ</span><span class="arrow">→</span>
+        <span class="step">テスト終了。本番版に戻す</span><span class="arrow">→</span>
+        <span class="step">本番版の次の更新で test_save を消す</span>
+      </div>
+
+      <h3>テスト版で止めるもの</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>止めるもの</th><th>理由</th><th>いまのコード</th></tr></thead>
+          <tbody>
+            <tr><td>本編のセーブの移し替え（暗号化）</td><td>今のモバイル版が読めなくなる</td><td class="src">SaveDataStorage.Resolve → SaveDataEncryptionMigration</td></tr>
+            <tr><td>クラウドへのアップロード（自動・手動）</td><td>アップロードは常に <code>local_save</code> 丸ごと。本番のクラウドを上書きしうる</td><td class="src">FirebaseRoot.StartUploadCloudSaveData</td></tr>
+            <tr><td>クラウドからの読み込みと <code>cloud_save</code> からの回復</td><td>テスト用セーブが壊れたときに本編のデータで埋めてしまう</td><td class="src">GetJsonPlayerData.Load の 3 段目</td></tr>
+            <tr><td>課金</td><td>買った物はテストの終わりに消える</td><td class="src">ストアの購入（IAP）の入口</td></tr>
+            <tr><td>実績の送信</td><td>Steam・Game Center の実績は取り消せない。起動時の遡り解除もある</td><td class="src">AchievementDomain.Start</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>テスト版の見分け方</h3>
+      <ul>
+        <li>ビルドの定義シンボル（例: <code>MINERTIA_TESTER</code>）で分ける。テスト版だけに入れる</li>
+        <li>アカウントで見分ける仕組み（FeatureAccessService、Area3 の前例）は、ログインが要る。Steam は発売前にログインが無いので使えない</li>
+        <li>セーブの置き場所は起動時の束縛（RepositoryRegister）で決まる。ここで <code>test_save</code> を返すだけで、各 Root は何も知らなくてよい</li>
+      </ul>
+
+      <h3>他の形との比較</h3>
+      <div class="cards">
+        <div class="card fixed">
+          <div class="card-head"><span class="card-kind">A</span><span class="badge b-idea">推奨</span></div>
+          <div class="card-title">テスト用セーブ（上の案）</div>
+          <ul><li>本編から写すので、すぐ Area4 まで届く</li><li>変えるのはセーブの置き場所と、止める 5 つだけ</li></ul>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-kind">B</span></div>
+          <div class="card-title">別アプリとして配る</div>
+          <ul><li>完全に分かれる</li><li>本編のセーブを写せないので、Area4 に届くまで遊び直しになる</li><li>ストアの登録がもう 1 つ要る</li></ul>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-kind">C</span></div>
+          <div class="card-title">本編のセーブの中に写しを持つ（試練と同じ形）</div>
+          <ul><li>ほぼ全部のリポジトリに手が入る</li><li>本編のファイルを書き換える点は変わらない</li></ul>
+        </div>
+      </div>
+
+      <h3>決めてほしいこと</h3>
+      <ol class="num-list">
+        <li><strong>配る先</strong>: モバイル（TestFlight / Google Play のクローズドテスト）を推奨。Steam なら beta ブランチ</li>
+        <li><strong>テスト用セーブの始まり</strong>: 本編を写す（推奨）/ まっさらから</li>
+        <li><strong>Area4 の解禁</strong>: テスト用セーブでは最初から解禁する（推奨。ボスを試すのが目的）/ 本編どおり（試練 Hard の制覇）</li>
+        <li><strong>やり直しボタン</strong>: テスト中に「本編から写し直す」を置く（推奨）/ 置かない</li>
+        <li><strong>本番版に戻ったときのオフライン報酬</strong>: テスト中の時間もオフラインとして数える（推奨。今の仕組みのまま。上限があるので増えすぎない）/ 数えない</li>
+      </ol>
     </section>
   </main>
 
