@@ -181,8 +181,8 @@
           <tr>
             <td>（Steam のみ）No diamond cost, no daily limit<br>ダイヤ消費なし・回数制限なし</td>
             <td>未所有のときにダイヤと回数の縛りがあることを、売り場では初めて知る。何が「なし」になるのか分からない</td>
-            <td>かけるたびのダイヤ: 30 → 0<br>1 日にかけられる回数: 6回 → 無制限</td>
-            <td>Diamonds per use: 30 → 0<br>Uses per day: 6 → unlimited</td>
+            <td>かけるたびのダイヤ: 15 → 0<br>1 日にかけられる回数: 6回 → 無制限</td>
+            <td>Diamonds per use: 15 → 0<br>Uses per day: 10 → unlimited</td>
           </tr>
         </tbody>
       </table>
@@ -246,7 +246,7 @@
         <thead><tr><th>カード</th><th>今（左）</th><th>買うと（右）</th></tr></thead>
         <tbody>
           <tr><td>広告を全て除去</td><td>広告の絵つきの「受け取る ×2」ボタン</td><td>広告の絵が無い「受け取る ×2」ボタン</td></tr>
-          <tr><td>Booster +Plus</td><td>ブースターの枠（採掘力 x2、Duration 12m 34s とゲージ）。Steam では さらに ダイヤ 30 と Today 6/6</td><td>採掘力 x2.5、Duration ∞。ゲージも値段も無い</td></tr>
+          <tr><td>Booster +Plus</td><td>ブースターの枠（採掘力 x2、Duration 12m 34s とゲージ）。Steam では さらに ダイヤ 15 と Today 10/10</td><td>採掘力 x2.5、Duration ∞。ゲージも値段も無い</td></tr>
           <tr><td>Nether +Plus</td><td>ハート 3 個 ／ お気に入りの枠 1 つ</td><td>ハート 5 個 ／ お気に入りの枠 2 つ</td></tr>
           <tr><td>Bonus Multiplier Pack</td><td>「Prestige」だけ ／ 「受け取る」だけ ／ （戦利品のボタンなし）</td><td>「Prestige」＋「x2」（DLC の印） ／ 「受け取る」＋「受け取る ×2」（DLC の印） ／ 緑の「+50%」（DLC の印）</td></tr>
           <tr><td>Supply +Plus</td><td>ダイヤの絵 5 つのうち 2 つが点灯 ／ プレゼントの絵と「3/3」</td><td>5 つ全部点灯 ／ プレゼントの絵と「∞」</td></tr>
@@ -255,7 +255,7 @@
       <ul>
         <li>模型の文字は実画面と同じ翻訳キーに繋ぐ（<code>UI_OfflineBonus.X1ClaimButton</code> / <code>X2ClaimButton</code>、<code>UI_Prestige.Prestige</code>、<code>UI_Cave.CrushPowerTItle</code> / <code>DurationLabelTitle</code> / <code>InfinityDurationLabelTitle</code> / <code>Booster.PaidClaimToday</code>）。それ以外は数字と絵だけ</li>
         <li>UI_Shop のキー: 文章の <code>*Ui1〜4</code> は削除。残すのは <code>UiChangesTitle</code>（画面の変化）と <code>BeforeLabel</code>（今）<code>AfterLabel</code>（買うと）</li>
-        <li>Steam の「今」のブースターにだけ、ダイヤ 30 と 6/6 を出す（<code>ShopView</code> が <code>RequiresAdView</code> false のとき <code>BoosterPreviewPaidRow</code> / <code>BoosterPreviewPriceRow</code> を表示）</li>
+        <li>Steam の「今」のブースターにだけ、ダイヤ 15 と 10/10 を出す（<code>ShopView</code> が <code>RequiresAdView</code> false のとき <code>BoosterPreviewPaidRow</code> / <code>BoosterPreviewPriceRow</code> を表示）</li>
         <li>すべて <code>ShopUXML.uxml</code> の中の静的な部品。実画面の UXML を読み込んでいるわけではないので、実画面の見た目を変えたら模型も直す</li>
         <li>縦に長い。カードの高さ・スクロールの問題は別に取り組む（この章の範囲外）</li>
       </ul>
