@@ -67,6 +67,334 @@
         "ts": "2026-10-08T10:37:30.358Z",
         "author": "yooyooy724"
       }
+    ],
+    "flavor-gem-custom:jasper": [
+      {
+        "text": "赤は鉄の色。",
+        "ts": "2026-10-08T10:38:35.010Z",
+        "author": "yooyooy724"
+      },
+      {
+        "text": "赤は鉄の色。磨くと鈍く光る。",
+        "ts": "2026-10-08T10:38:48.388Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-gem-custom:hessonite": [
+      {
+        "text": "橙色のガーネット。",
+        "ts": "2026-10-08T10:40:11.146Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-gem-custom:mandaringarnet": [
+      {
+        "text": "小粒でもよく光る。",
+        "ts": "2026-10-08T10:40:31.124Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-gem-custom:paraibatourmaline": [
+      {
+        "text": "ネオンのような青緑は銅の色。",
+        "ts": "2026-10-08T10:40:36.929Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-gem-custom:redspinel": [
+      {
+        "text": "長いあいだルビーと間違われてきた。",
+        "ts": "2026-10-08T10:43:38.921Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-gem-custom:rubyspinel": [
+      {
+        "text": "ルビーにいちばん近い赤のスピネル。",
+        "ts": "2026-10-08T10:44:00.569Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:mattock:2:ja": [
+      {
+        "text": "鉄のマトック",
+        "ts": "2026-10-23T09:02:18.859Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:mattock:3:ja": [
+      {
+        "text": "手がジンジンする",
+        "ts": "2026-10-23T09:03:17.590Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:mattock:4:ja": [
+      {
+        "text": "人間工学に基づいたハンドグリップ",
+        "ts": "2026-10-23T09:04:04.332Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:mattock:5:ja": [
+      {
+        "text": "体の重さも支えていられる",
+        "ts": "2026-10-23T09:04:37.175Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:mattock:6:ja": [
+      {
+        "text": "僕らは宇宙人",
+        "ts": "2026-10-23T09:05:34.536Z",
+        "author": "yooyooy724"
+      },
+      {
+        "text": "軽量で豪快に",
+        "ts": "2026-10-23T09:06:27.893Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:mattock:7:ja": [
+      {
+        "text": "素早く豪快に",
+        "ts": "2026-10-23T09:07:55.118Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:mattock:8:ja": [
+      {
+        "text": "内部にスプリングが仕込んである",
+        "ts": "2026-10-23T09:08:52.181Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:mattock:9:ja": [
+      {
+        "text": "マーク２",
+        "ts": "2026-10-23T09:09:27.161Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:mattock:10:ja": [
+      {
+        "text": "刃毀れしない新素材",
+        "ts": "2026-10-23T09:11:31.914Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:mattock:11:ja": [
+      {
+        "text": "無駄のない洗礼されたマトック",
+        "ts": "2026-10-23T09:12:07.348Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:mattock:12:ja": [
+      {
+        "text": "マーク５",
+        "ts": "2026-10-23T09:13:11.412Z",
+        "author": "yooyooy724"
+      },
+      {
+        "text": "マーク５が一番好き",
+        "ts": "2026-10-23T09:15:14.656Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:pickaxe:2:ja": [
+      {
+        "text": "鉄のピッケル",
+        "ts": "2026-10-23T09:19:15.547Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:pickaxe:3:ja": [
+      {
+        "text": "とにかく重い",
+        "ts": "2026-10-23T09:41:48.268Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:pickaxe:4:ja": [
+      {
+        "text": "より鋭く",
+        "ts": "2026-10-23T09:41:55.992Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:pickaxe:5:ja": [
+      {
+        "text": "宝石は均衡の証",
+        "ts": "2026-10-23T09:43:08.666Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:pickaxe:6:ja": [
+      {
+        "text": "高く上げて振り下ろすだけ",
+        "ts": "2026-10-23T09:43:49.064Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:pickaxe:7:ja": [
+      {
+        "text": "山育ち",
+        "ts": "2026-10-23T09:44:34.441Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:pickaxe:8:ja": [
+      {
+        "text": "結晶を持って結晶を制す",
+        "ts": "2026-10-23T09:45:53.287Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:pickaxe:9:ja": [
+      {
+        "text": "より固く鋭く",
+        "ts": "2026-10-23T09:46:02.800Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:pickaxe:10:ja": [
+      {
+        "text": "鋼が",
+        "ts": "2026-10-23T09:46:43.522Z",
+        "author": "yooyooy724"
+      },
+      {
+        "text": "構造色",
+        "ts": "2026-10-23T09:47:03.477Z",
+        "author": "yooyooy724"
+      },
+      {
+        "text": "構造色で青い",
+        "ts": "2026-10-23T14:54:59.117Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:pickaxe:11:ja": [
+      {
+        "text": "意思を",
+        "ts": "2026-10-23T14:56:07.114Z",
+        "author": "yooyooy724"
+      },
+      {
+        "text": "釣り合いを解くように",
+        "ts": "2026-10-23T14:57:15.402Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:pickaxe:12:ja": [
+      {
+        "text": "代謝",
+        "ts": "2026-10-23T15:02:43.248Z",
+        "author": "yooyooy724"
+      },
+      {
+        "text": "代謝持ち出した",
+        "ts": "2026-10-23T15:03:25.490Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:sledgehammer:2:ja": [
+      {
+        "text": "鉄のハンマー",
+        "ts": "2026-10-23T15:03:40.803Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:sledgehammer:3:ja": [
+      {
+        "text": "簡易的で使い勝手もいい",
+        "ts": "2026-10-23T15:08:33.648Z",
+        "author": "yooyooy724"
+      },
+      {
+        "text": "簡易的作れ、使い勝手もいい",
+        "ts": "2026-10-23T15:09:04.851Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:sledgehammer:4:ja": [
+      {
+        "text": "スレッジハンマー",
+        "ts": "2026-10-23T15:09:35.849Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:sledgehammer:5:ja": [
+      {
+        "text": "粉砕して岩は飛び散るので注意",
+        "ts": "2026-10-23T15:11:12.484Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:sledgehammer:6:ja": [
+      {
+        "text": "中心から力がこみ上げる",
+        "ts": "2026-10-23T15:12:25.366Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:sledgehammer:7:ja": [
+      {
+        "text": "凹凸によって内部から崩れる",
+        "ts": "2026-10-23T15:12:59.891Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:sledgehammer:8:ja": [
+      {
+        "text": "あらゆる使い方が出来るよう作られた",
+        "ts": "2026-10-23T15:14:39.143Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:sledgehammer:9:ja": [
+      {
+        "text": "改良版",
+        "ts": "2026-10-23T15:15:37.753Z",
+        "author": "yooyooy724"
+      },
+      {
+        "text": "多用途。改良版。",
+        "ts": "2026-10-23T15:17:22.537Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:sledgehammer:10:ja": [
+      {
+        "text": "重さと遠心力が岩を砕く",
+        "ts": "2026-10-23T15:16:21.444Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:sledgehammer:11:ja": [
+      {
+        "text": "鋼鉄",
+        "ts": "2026-10-23T15:19:19.037Z",
+        "author": "yooyooy724"
+      },
+      {
+        "text": "とてもじゃないが持てない",
+        "ts": "2026-10-23T15:21:49.322Z",
+        "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:sledgehammer:12:ja": [
+      {
+        "text": "引き寄せる",
+        "ts": "2026-10-23T15:26:07.581Z",
+        "author": "yooyooy724"
+      },
+      {
+        "text": "放射線を浴びて形態変化した",
+        "ts": "2026-10-23T15:27:22.742Z",
+        "author": "yooyooy724"
+      }
     ]
   },
   "reactions": {},
@@ -76,7 +404,7 @@
     "flavor-gem:morganite": "0",
     "flavor-gem:amazonite": "0",
     "flavor-gem:padparadschasapphire": "custom",
-    "flavor-gem:paraibatourmaline": "0",
+    "flavor-gem:paraibatourmaline": "custom",
     "flavor-gem:moonstone": "2",
     "flavor-gem:rubelite": "custom",
     "flavor-gem:aquamarine": "custom",
@@ -86,6 +414,45 @@
     "flavor-gem:demantoid": "custom",
     "flavor-gem:bluequartz": "custom",
     "flavor-gem:crystalopal": "custom",
-    "flavor-gem:phantomquartz": "custom"
+    "flavor-gem:phantomquartz": "custom",
+    "flavor-gem:jasper": "custom",
+    "flavor-gem:hessonite": "custom",
+    "flavor-gem:mandaringarnet": "custom",
+    "flavor-gem:aventurinequartz": "2",
+    "flavor-gem:redspinel": "custom",
+    "flavor-gem:rubyspinel": "custom",
+    "flavor-tool-pick:mattock:2": "custom",
+    "flavor-tool-pick:mattock:3": "custom",
+    "flavor-tool-pick:mattock:4": "custom",
+    "flavor-tool-pick:mattock:5": "custom",
+    "flavor-tool-pick:mattock:6": "custom",
+    "flavor-tool-pick:mattock:7": "custom",
+    "flavor-tool-pick:mattock:8": "custom",
+    "flavor-tool-pick:mattock:9": "custom",
+    "flavor-tool-pick:mattock:10": "custom",
+    "flavor-tool-pick:mattock:11": "custom",
+    "flavor-tool-pick:mattock:12": "custom",
+    "flavor-tool-pick:pickaxe:2": "custom",
+    "flavor-tool-pick:pickaxe:3": "custom",
+    "flavor-tool-pick:pickaxe:4": "custom",
+    "flavor-tool-pick:pickaxe:5": "custom",
+    "flavor-tool-pick:pickaxe:6": "custom",
+    "flavor-tool-pick:pickaxe:7": "custom",
+    "flavor-tool-pick:pickaxe:8": "custom",
+    "flavor-tool-pick:pickaxe:9": "custom",
+    "flavor-tool-pick:pickaxe:10": "custom",
+    "flavor-tool-pick:pickaxe:11": "custom",
+    "flavor-tool-pick:pickaxe:12": "custom",
+    "flavor-tool-pick:sledgehammer:2": "custom",
+    "flavor-tool-pick:sledgehammer:3": "custom",
+    "flavor-tool-pick:sledgehammer:4": "custom",
+    "flavor-tool-pick:sledgehammer:5": "custom",
+    "flavor-tool-pick:sledgehammer:6": "custom",
+    "flavor-tool-pick:sledgehammer:7": "custom",
+    "flavor-tool-pick:sledgehammer:8": "custom",
+    "flavor-tool-pick:sledgehammer:9": "custom",
+    "flavor-tool-pick:sledgehammer:10": "custom",
+    "flavor-tool-pick:sledgehammer:11": "custom",
+    "flavor-tool-pick:sledgehammer:12": "custom"
   }
 }
