@@ -3,7 +3,7 @@ title: "変更は YAGNI・KISS・DRY で最小にする"
 type: モデル
 category: 開発方針
 tags: [全体, 設計構造, 品質管理]
-status: 提案
+status: 確定
 description: "今要らないものは作らず（YAGNI）、差分にゴミを残さず（KISS）、コピペは使用頻度で判断する（DRY）。コードに限らず変更が加わる場面すべてに適用する"
 adrs: [25, 513]
 ---
