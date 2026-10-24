@@ -1,182 +1,52 @@
-// 図鑑のフレーバーテキストの候補（2026-10-08 下書き）。
-// 道具: Lv1 は実装済みの文言（変えない）。Lv2〜12 は 2026-10-16 に白紙から書き直した。世界観（ベクトル・質量→運動）に沿った主人公の声で、短く。1 段に 3 案。
-// 宝石: 実在の宝石の小ネタ。産地・土地の名前は書かない（ゲームの舞台とぶれるため）。
-// 候補の採用は feedback.json の choices（道具は flavor-tool-pick:<kind>:<lv>、宝石は flavor-gem:<id>）に、自作の文言は comments に入る（index.html を参照）。
+// 図鑑のフレーバーテキスト（2026-10-08 下書き、2026-10-24 道具の日本語が決まる）。
+// 道具: Lv1 は実装済みの文言（変えない）。Lv2〜12 の ja は 2026-10-23 に本人が決めた文（feedback.json の自作文と同じ）。
+//       en は 2026-10-24 の英訳の案。3 案から選ぶ形はやめた。
+// 宝石: 実在の宝石の小ネタ。産地・土地の名前は書かない（ゲームの舞台とぶれるため）。候補から選ぶ（最初の 1 つが推奨）。
+//       tr は決まった文（ja）とその英訳の案（en）。ja が今の文と違えば、訳は古いので使わない。
+// 採用・書き換えは feedback.json に入る（キーは index.html の冒頭を参照）。
 window.FLAVOR_DATA = {
   tools: {
     mattock: { label: 'Mattock（マトック）', note: '片側が平刃のつるはし', levels: [
       { lv: 1, fixed: true, ja: 'コツコツコツ', en: 'Tap, tap, tap.' },
-      { lv: 2, candidates: [
-        { ja: '木の柄に鉄の頭。まずはここから。', en: 'Iron head, wooden haft. A place to start.' },
-        { ja: '石をひと削りするたび、ちょっとだけ前に進む。', en: 'Every scrape of stone pushes it forward a little.' },
-        { ja: 'コツコツが、ザクザクになった。', en: 'Tap, tap became scrape, scrape.' },
-      ]},
-      { lv: 3, candidates: [
-        { ja: '柄まで鋼。しならないぶん、力がまっすぐ届く。', en: 'Steel all the way down. No flex, so the force goes straight in.' },
-        { ja: '削った石のぶんだけ、次の一振りが軽い。', en: 'The stone it scrapes away makes the next swing lighter.' },
-        { ja: 'ザクッ。手ごたえが一段重い。', en: 'Shk. The bite feels heavier.' },
-      ]},
-      { lv: 4, candidates: [
-        { ja: '柄の溝が手に吸いつく。', en: 'The grooves on the haft cling to my hand.' },
-        { ja: 'すべらないから、力がにげない。', en: 'No slipping, so no force goes to waste.' },
-        { ja: '握りなおす回数が減った。', en: 'I regrip it less often now.' },
-      ]},
-      { lv: 5, candidates: [
-        { ja: '曲がった柄。妙に振りやすい。', en: 'A bent haft. Oddly easy to swing.' },
-        { ja: '力の向きが、刃の先に集まる形。', en: 'Shaped so every vector gathers at the edge.' },
-        { ja: 'オレンジの差し色がちょっとうれしい。', en: 'The orange accent makes me a little happy.' },
-      ]},
-      { lv: 6, candidates: [
-        { ja: '紫の握り。見た目より手になじむ。', en: 'A purple grip. Fits better than it looks.' },
-        { ja: '軽くなったぶん、手数が増えた。', en: 'Lighter, so it swings more often.' },
-        { ja: 'ひと振りがひとつのベクトル。並べると止まらない。', en: 'Each swing is one vector. Line them up and it never stops.' },
-      ]},
-      { lv: 7, candidates: [
-        { ja: '手首の輪っか。もう取り落とさない。', en: 'A wrist loop. No more dropping it.' },
-        { ja: '赤いのは速そうだから。たぶん。', en: 'It\'s red because red looks fast. Probably.' },
-        { ja: '振り抜いた勢いが、そのまま次へつながる。', en: 'The follow-through carries right into the next swing.' },
-      ]},
-      { lv: 8, candidates: [
-        { ja: '黒くて重い。でも、よく削れる。', en: 'Black and heavy. But it digs well.' },
-        { ja: '重さは、そのまま押しこむ力になる。', en: 'Weight turns straight into pushing force.' },
-        { ja: 'ガリッ。岩のほうが先に音をあげる。', en: 'Grrk. The rock gives up first.' },
-      ]},
-      { lv: 9, candidates: [
-        { ja: '青い筋が一本。目印みたいなもの。', en: 'One blue stripe. Like a marker.' },
-        { ja: '刃が石の目をなぞっていく。', en: 'The blade follows the grain of the stone.' },
-        { ja: '削るというより、ほどいていく感じ。', en: 'Less scraping, more unraveling.' },
-      ]},
-      { lv: 10, candidates: [
-        { ja: '赤い線が走ってる。止まって見えても、きっと速い。', en: 'Red lines run along it. Fast even standing still.' },
-        { ja: '石の質量が、どんどん勢いに化けていく。', en: 'The stone\'s mass keeps turning into momentum.' },
-        { ja: 'ザッ、ザッ。リズムが崩れない。', en: 'Shk, shk. The rhythm never breaks.' },
-      ]},
-      { lv: 11, candidates: [
-        { ja: '黄緑の刃。洞くつの中でもよく目立つ。', en: 'A yellow-green blade. Easy to spot in the cave.' },
-        { ja: '白い刃先は欠けにくい。', en: 'The white edge hardly chips.' },
-        { ja: '石くずがきれいに飛ぶ。', en: 'The grit flies off clean.' },
-      ]},
-      { lv: 12, candidates: [
-        { ja: '青緑に光る刃先。宝石みたいだけど、宝石じゃない。', en: 'A teal edge that shines like a gem. It isn\'t one.' },
-        { ja: '均衡のぎりぎり手前で、岩を割る。', en: 'It splits rock right at the edge of equilibrium.' },
-        { ja: 'マトックの行きつく先。たぶん。', en: 'Where mattocks end up. Probably.' },
-      ]},
+      { lv: 2, ja: '鉄のマトック', en: 'An iron mattock.' },
+      { lv: 3, ja: '手がジンジンする', en: 'It leaves my hands tingling.' },
+      { lv: 4, ja: '人間工学に基づいたハンドグリップ', en: 'An ergonomic hand grip.' },
+      { lv: 5, ja: '体の重さも支えていられる', en: 'Sturdy enough to bear my whole weight.' },
+      { lv: 6, ja: '軽量で豪快に', en: 'Light and bold.' },
+      { lv: 7, ja: '素早く豪快に', en: 'Quick and bold.' },
+      { lv: 8, ja: '内部にスプリングが仕込んである', en: "There's a spring hidden inside." },
+      { lv: 9, ja: 'マーク２', en: 'Mark II.' },
+      { lv: 10, ja: '刃毀れしない新素材', en: 'A new material that never chips.' },
+      { lv: 11, ja: '無駄のない洗礼されたマトック', en: 'A refined mattock. Nothing wasted.' },
+      { lv: 12, ja: 'マーク５が一番好き', en: 'Mark V is my favorite.' },
     ]},
     pickaxe: { label: 'Pickaxe（ピッケル）', note: '両側が尖ったつるはし', levels: [
       { lv: 1, fixed: true, ja: 'カッカッカッ', en: 'Clink, clink, clink.' },
-      { lv: 2, candidates: [
-        { ja: '木の柄に鉄の頭。基本のかたち。', en: 'Iron head, wooden haft. The basic shape.' },
-        { ja: 'とがった先に、力が一点に集まる。', en: 'All the force gathers at one sharp point.' },
-        { ja: 'カッカッが、カンカンになった。', en: 'Clink, clink became clang, clang.' },
-      ]},
-      { lv: 3, candidates: [
-        { ja: '柄まで鋼。振ると、ちょっと冷たい音がする。', en: 'Steel all the way down. It rings a little cold.' },
-        { ja: '一点に、もっと強く。', en: 'One point, harder.' },
-        { ja: '刺さってから割れるまでが早い。', en: 'From bite to break, it\'s quicker now.' },
-      ]},
-      { lv: 4, candidates: [
-        { ja: '首の金具。ぐらつきが止まった。', en: 'Metal bands at the neck. No more wobble.' },
-        { ja: 'つなぎ目がしっかりすると、力がもれない。', en: 'A tight joint lets no force leak out.' },
-        { ja: '何度振っても、頭がずれない。', en: 'Swing after swing, the head stays put.' },
-      ]},
-      { lv: 5, candidates: [
-        { ja: '頭にちいさな宝石。飾り……じゃないかも。', en: 'A small gem in the head. Maybe not just for show.' },
-        { ja: 'ひとかけらの均衡が、先端を重くする。', en: 'A sliver of equilibrium weighs down the tip.' },
-        { ja: 'キラッ、カン。', en: 'Glint, clang.' },
-      ]},
-      { lv: 6, candidates: [
-        { ja: '片側だけの刃。そのぶん鋭い。', en: 'A blade on one side only. Sharper for it.' },
-        { ja: '柄に宝石がふたつ。なにかの印？', en: 'Two gems on the haft. Some kind of mark?' },
-        { ja: '向きを決めて、まっすぐ打つ。', en: 'Pick a direction. Strike straight.' },
-      ]},
-      { lv: 7, candidates: [
-        { ja: '……標識？ ウメダ方面。', en: '...A road sign? This way to Umeda.' },
-        { ja: '拾ったものでも、ちゃんと掘れる。', en: 'Found on the street, but it digs just fine.' },
-        { ja: '道案内もできる。たぶん。', en: 'It gives directions too. Probably.' },
-      ]},
-      { lv: 8, candidates: [
-        { ja: '緑の結晶の頭。割れないか、ちょっと心配。', en: 'A green crystal head. I worry it\'ll crack.' },
-        { ja: '結晶と結晶。勝つのはどっち。', en: 'Crystal against crystal. Which one wins?' },
-        { ja: 'キンッ。音が高くなった。', en: 'Kinng. The pitch went up.' },
-      ]},
-      { lv: 9, candidates: [
-        { ja: '氷みたいな青。触ると冷たい気がする。', en: 'Blue like ice. It feels cold to the touch.' },
-        { ja: '冷たい頭で、熱い岩を割る。', en: 'A cold head to split hot rock.' },
-        { ja: 'キンッ。高い音が洞くつに響く。', en: 'Kinng. A high note echoes through the cave.' },
-      ]},
-      { lv: 10, candidates: [
-        { ja: '青い頭に布巻きの柄。手が痛くならない。', en: 'Blue head, cloth-wrapped haft. Easy on the hands.' },
-        { ja: '長く振るための道具。', en: 'A tool made for long hours.' },
-        { ja: 'ガツン。重さが芯まで届く。', en: 'Thunk. The weight reaches the core.' },
-      ]},
-      { lv: 11, candidates: [
-        { ja: '紫の頭に金の石。ちょっと派手。', en: 'A gold stone in a purple head. A bit flashy.' },
-        { ja: '石の中のベクトルが、こっちを向く気がする。', en: 'The vectors in the stone seem to turn toward me.' },
-        { ja: 'ひと振りで、岩がほどける。', en: 'One swing and the rock comes undone.' },
-      ]},
-      { lv: 12, candidates: [
-        { ja: '黒い頭に金の目。こっちを見てる？', en: 'A gold eye in a black head. Is it looking at me?' },
-        { ja: '刺した先から、岩が勢いに変わっていく。', en: 'Wherever it bites, rock turns into momentum.' },
-        { ja: 'ピッケルの行きつく先。たぶん。', en: 'Where pickaxes end up. Probably.' },
-      ]},
+      { lv: 2, ja: '鉄のピッケル', en: 'An iron pickaxe.' },
+      { lv: 3, ja: 'とにかく重い', en: 'Heavy, if nothing else.' },
+      { lv: 4, ja: 'より鋭く', en: 'Sharper.' },
+      { lv: 5, ja: '宝石は均衡の証', en: 'A gem is proof of equilibrium.' },
+      { lv: 6, ja: '高く上げて振り下ろすだけ', en: "Raise it high. Bring it down. That's all." },
+      { lv: 7, ja: '山育ち', en: 'Raised in the mountains.' },
+      { lv: 8, ja: '結晶を持って結晶を制す', en: 'Fight crystal with crystal.' },
+      { lv: 9, ja: 'より固く鋭く', en: 'Harder. Sharper.' },
+      { lv: 10, ja: '構造色で青い', en: 'Blue from structural color.' },
+      { lv: 11, ja: '釣り合いを解くように', en: 'As if to unravel the equilibrium.' },
+      { lv: 12, ja: '代謝持ち出した', en: "It's started to metabolize." },
     ]},
     sledgehammer: { label: 'Sledgehammer（ハンマー）', note: '大槌', levels: [
       { lv: 1, fixed: true, ja: 'ゴンゴンゴン', en: 'Thud, thud, thud.' },
-      { lv: 2, candidates: [
-        { ja: '木の柄に鉄の頭。重い。', en: 'Iron head, wooden haft. Heavy.' },
-        { ja: '重さは、そのまま壊す力。', en: 'Weight is breaking power, plain and simple.' },
-        { ja: 'ゴンゴンが、ドンドンになった。', en: 'Thud, thud became boom, boom.' },
-      ]},
-      { lv: 3, candidates: [
-        { ja: '柄まで鋼。もっと重い。', en: 'Steel all the way down. Even heavier.' },
-        { ja: '振り下ろせば、あとは重さが仕事をする。', en: 'Bring it down and the weight does the rest.' },
-        { ja: 'ドンッ。足もとまで響く。', en: 'Boom. I feel it in my feet.' },
-      ]},
-      { lv: 4, candidates: [
-        { ja: '握りに布。手がしびれにくい。', en: 'Cloth on the grip. My hands don\'t go numb.' },
-        { ja: '重いぶん、握りは大事。', en: 'The heavier it is, the more the grip matters.' },
-        { ja: '何十回振っても、まだ握れる。', en: 'Dozens of swings, and I can still hold on.' },
-      ]},
-      { lv: 5, candidates: [
-        { ja: '頭がひとまわり大きい。', en: 'The head got bigger.' },
-        { ja: '大きい頭は、大きい質量を喰う。', en: 'A bigger head devours more mass.' },
-        { ja: 'ドゴッ。岩が一発で黙る。', en: 'Doom. The rock goes quiet in one hit.' },
-      ]},
-      { lv: 6, candidates: [
-        { ja: '黒い頭に黄色い石。', en: 'A yellow stone in a black head.' },
-        { ja: '真ん中に、ひと粒の均衡。', en: 'One grain of equilibrium, right at the center.' },
-        { ja: '重さの芯が、真ん中にある。', en: 'The weight sits dead center.' },
-      ]},
-      { lv: 7, candidates: [
-        { ja: '頭に穴。そのぶん軽い。', en: 'A hole in the head. Lighter for it.' },
-        { ja: '軽くても、勢いがあれば同じこと。', en: 'Lighter or not, momentum makes up for it.' },
-        { ja: '欠けてるのは、使いこんだ証拠。', en: 'The chips are proof it\'s been used.' },
-      ]},
-      { lv: 8, candidates: [
-        { ja: '片側がとがってる。砕くか、刺すか。', en: 'One side is pointed. Smash or pierce.' },
-        { ja: 'ハンマーとピッケルのいいとこ取り。', en: 'The best of a hammer and a pickaxe.' },
-        { ja: '柄の先までとがってる。', en: 'Even the end of the haft is pointed.' },
-      ]},
-      { lv: 9, candidates: [
-        { ja: '片側が刃。割って、削る。', en: 'A blade on one side. Split, then scrape.' },
-        { ja: 'ひとつの頭に、ふたつの向き。', en: 'Two directions in one head.' },
-        { ja: 'ズバン。音が変わった。', en: 'Thwack. The sound changed.' },
-      ]},
-      { lv: 10, candidates: [
-        { ja: '両側が打面。向きを気にしなくていい。', en: 'Striking faces on both sides. Either way works.' },
-        { ja: 'トゲの数だけ、岩の割れ目が増える。', en: 'More spikes, more cracks in the rock.' },
-        { ja: 'ゴンッ、ゴンッ。往復で叩ける。', en: 'Bong, bong. It hits on the way back too.' },
-      ]},
-      { lv: 11, candidates: [
-        { ja: '飾りの冠。王さまの持ち物みたい。', en: 'A crown ornament. Fit for a king.' },
-        { ja: '重さも見た目も一級品。', en: 'First-rate in weight and looks.' },
-        { ja: 'ドンッ。冠がちょっと揺れる。', en: 'Boom. The crown wobbles a little.' },
-      ]},
-      { lv: 12, candidates: [
-        { ja: '黒に紫の石が三つ。いちばん重い。', en: 'Three purple stones in black. The heaviest yet.' },
-        { ja: '三つの均衡を、ひと振りにのせる。', en: 'Three equilibria, riding on one swing.' },
-        { ja: 'ハンマーの行きつく先。たぶん。', en: 'Where hammers end up. Probably.' },
-      ]},
+      { lv: 2, ja: '鉄のハンマー', en: 'An iron hammer.' },
+      { lv: 3, ja: '簡易的作れ、使い勝手もいい', en: 'Easy to make, and easy to use.' },
+      { lv: 4, ja: 'スレッジハンマー', en: 'A sledgehammer.' },
+      { lv: 5, ja: '粉砕して岩は飛び散るので注意', en: 'Careful: smashed rock goes flying.' },
+      { lv: 6, ja: '中心から力がこみ上げる', en: 'Power wells up from the core.' },
+      { lv: 7, ja: '凹凸によって内部から崩れる', en: 'The ridges break it from the inside.' },
+      { lv: 8, ja: 'あらゆる使い方が出来るよう作られた', en: 'Built to do anything.' },
+      { lv: 9, ja: '多用途。改良版。', en: 'Multipurpose. Improved.' },
+      { lv: 10, ja: '重さと遠心力が岩を砕く', en: 'Weight and centrifugal force crush the rock.' },
+      { lv: 11, ja: 'とてもじゃないが持てない', en: "There's no way I can lift this." },
+      { lv: 12, ja: '放射線を浴びて形態変化した', en: 'Radiation changed its form.' },
     ]},
   },
   biomes: [
@@ -190,91 +60,113 @@ window.FLAVOR_DATA = {
   // candidates: 1 文ずつ。最初の 1 つが推奨。
   gems: [
     // ---- 1-1 Umecha ----
-    { biome: '1-1', id: 'quartz', name: 'Quartz', color: 'F5F5F5', candidates: [
+    { biome: '1-1', id: 'quartz', name: 'Quartz', color: 'F5F5F5',
+      tr: { ja: '地殻でいちばんありふれた宝石。砂浜の砂の多くはこの石のかけら。', en: "The most common gem in the Earth's crust. Most beach sand is bits of this stone." }, candidates: [
       '地殻でいちばんありふれた宝石。砂浜の砂の多くはこの石のかけら。',
       '押すと電気を生む。時計の中で時を刻んでいるのもこの石。',
       '名前は古い言葉で「硬い」。爪でも鉄でも傷がつかない。' ]},
-    { biome: '1-1', id: 'amethyst', name: 'Amethyst', color: '9966CC', candidates: [
+    { biome: '1-1', id: 'amethyst', name: 'Amethyst', color: '9966CC',
+      tr: { ja: '紫は、わずかな鉄に長い年月の放射線が当たってできた色。', en: 'Its purple comes from traces of iron, struck by radiation over the ages.' }, candidates: [
       '名前は古い言葉で「酔わない」。酒に酔わないお守りだった。',
       '紫は、わずかな鉄に長い年月の放射線が当たってできた色。',
       '熱すると黄色に変わる。市場の黄水晶の多くはこの石の変わり身。' ]},
-    { biome: '1-1', id: 'morganite', name: 'Morganite', color: 'F4A7B9', candidates: [
+    { biome: '1-1', id: 'morganite', name: 'Morganite', color: 'F4A7B9',
+      tr: { ja: 'エメラルドやアクアマリンと同じ家族。桃色はマンガンの仕業。', en: "Same family as emerald and aquamarine. The pink is manganese's doing." }, candidates: [
       'エメラルドやアクアマリンと同じ家族。桃色はマンガンの仕業。',
       '大きな結晶に育ちやすい。大粒でも値が落ちにくい珍しい宝石。',
       'ある宝石収集家の名前をもらった。桃色のベリル。' ]},
-    { biome: '1-1', id: 'amazonite', name: 'Amazonite', color: '66CCAA', candidates: [
+    { biome: '1-1', id: 'amazonite', name: 'Amazonite', color: '66CCAA',
+      tr: { ja: '緑青色の長石。白い細い筋が走っていることが多い。', en: 'A blue-green feldspar, often streaked with thin white lines.' }, candidates: [
       '緑青色の長石。白い細い筋が走っていることが多い。',
       '色のもとは、ごく微量の鉛と水。',
       '古くは護符として彫られた。月長石と同じ家族。' ]},
-    { biome: '1-1', id: 'padparadschasapphire', name: 'Padparadscha Sapphire', color: 'FF7F50', candidates: [
+    { biome: '1-1', id: 'padparadschasapphire', name: 'Padparadscha Sapphire', color: 'FF7F50',
+      tr: { ja: 'サファイアの中でいちばん珍しい色のひとつ。', en: 'One of the rarest colors a sapphire can be.' }, candidates: [
       '名前は古い言葉で「蓮の花」。桃色と橙色のちょうど間。',
       'サファイアの中でいちばん珍しい色のひとつ。鉄とクロムの絶妙な配分。',
       '桃色に寄っても橙色に寄っても、この名前は名乗れない。' ]},
-    { biome: '1-1', id: 'paraibatourmaline', name: 'Paraiba Tourmaline', color: '2ED9C3', candidates: [
+    { biome: '1-1', id: 'paraibatourmaline', name: 'Paraiba Tourmaline', color: '2ED9C3',
+      tr: { ja: 'ネオンのような青緑は銅の色。', en: 'That neon blue-green is the color of copper.' }, candidates: [
       'ネオンのような青緑は銅の色。1980年代に見つかった新しい宝石。',
       '暗い部屋でも光って見えるほど明るい。小粒でもとても高価。',
       'トルマリンは熱すると電気を帯びる。昔は灰を吸い寄せる石と呼ばれた。' ]},
-    { biome: '1-1', id: 'moonstone', name: 'Moonstone', color: 'EDEAE0', candidates: [
+    { biome: '1-1', id: 'moonstone', name: 'Moonstone', color: 'EDEAE0',
+      tr: { ja: '二種類の長石が、髪の毛より薄く重なってできている。', en: 'Two kinds of feldspar, layered thinner than a hair.' }, candidates: [
       '傾けると青白い光が中で揺れる。薄い層が光を散らしている。',
       '昔は月の光が固まったものと信じられた。6月の誕生石。',
       '二種類の長石が、髪の毛より薄く重なってできている。' ]},
-    { biome: '1-1', id: 'rubelite', name: 'Rubelite', color: 'C83060', candidates: [
+    { biome: '1-1', id: 'rubelite', name: 'Rubelite', color: 'C83060',
+      tr: { ja: '赤はマンガンの色。ルビー少し柔らかい。', en: 'The red is manganese. A little softer than ruby.' }, candidates: [
       '赤いトルマリン。どんな光の下でも赤く見える石だけがこう名乗れる。',
       '赤はマンガンの色。ルビーより軽く、少し柔らかい。',
       '熱すると電気を帯びる。磨いた後、ほこりを吸い寄せる。' ]},
-    { biome: '1-1', id: 'aquamarine', name: 'Aquamarine', color: '7FFFD4', candidates: [
+    { biome: '1-1', id: 'aquamarine', name: 'Aquamarine', color: '7FFFD4',
+      tr: { ja: '船乗りのお守りだった。', en: "Once a sailor's charm." }, candidates: [
       '名前は「海の水」。船乗りのお守りだった。',
       'エメラルドと同じ家族。青は鉄の色。',
       '傷がつきにくく、透明な大粒が採れやすい。3月の誕生石。' ]},
-    { biome: '1-1', id: 'catseyequartz', name: "Cat's Eye Quartz", color: 'D4AF37', candidates: [
+    { biome: '1-1', id: 'catseyequartz', name: "Cat's Eye Quartz", color: 'D4AF37',
+      tr: { ja: '猫の目の光は、半球に磨いて初めて現れる。', en: "The cat's-eye shine only appears once it's polished into a dome." }, candidates: [
       '細い針が無数に並んで、一本の光の筋を作る。石を回すと筋も動く。',
       '猫の目の光は、半球に磨いて初めて現れる。',
       '針の正体は繊維状の別の鉱物。石英がそれを抱き込んで育った。' ]},
-    { biome: '1-1', id: 'tsavorite', name: 'Tsavorite', color: '00A550', candidates: [
+    { biome: '1-1', id: 'tsavorite', name: 'Tsavorite', color: '00A550',
+      tr: { ja: '緑のガーネット。', en: 'A green garnet.' }, candidates: [
       '緑のガーネット。1960年代に見つかった、比較的新しい宝石。',
       '緑はバナジウムとクロム。加熱などの処理をほぼ必要としない。',
       'エメラルドより傷に強く、内包物が少ない。' ]},
-    { biome: '1-1', id: 'rosequartz', name: 'Rose Quartz', color: 'F7CAC9', candidates: [
+    { biome: '1-1', id: 'rosequartz', name: 'Rose Quartz', color: 'F7CAC9',
+      tr: { ja: '色の原因は今も議論が続いている。', en: 'What gives it its color is still debated.' }, candidates: [
       '淡い桃色の石英。色の原因は今も議論が続いている。',
       '大きな結晶はまれ。ほとんどは面のない塊で見つかる。',
       '「愛の石」と呼ばれてきた。磨くと柔らかく光る。' ]},
-    { biome: '1-1', id: 'demantoid', name: 'Demantoid', color: '7FFF00', candidates: [
+    { biome: '1-1', id: 'demantoid', name: 'Demantoid', color: '7FFF00',
+      tr: { ja: 'これも緑のガーネット。宝石にしては柔らかい。', en: 'Another green garnet. Soft, for a gem.' }, candidates: [
       '名前は「ダイヤモンドのような」。虹色の輝きはダイヤを超える。',
       '緑のガーネット。馬の尻尾のような内包物が入ると、むしろ値が上がる。',
       '宝石にしては柔らかい。指輪よりペンダント向き。' ]},
     // ---- 1-2 Himejine ----
-    { biome: '1-2', id: 'bluequartz', name: 'Blue Quartz', color: '5B8DB8', candidates: [
+    { biome: '1-2', id: 'bluequartz', name: 'Blue Quartz', color: '5B8DB8',
+      tr: { ja: '空が青いのと同じ仕組み。', en: 'Blue for the same reason the sky is.' }, candidates: [
       '微細な粒が青い光だけを散らす。空が青いのと同じ仕組み。',
       '石英に青い針状の鉱物が入り込んだもの。大きな結晶はまれ。' ]},
-    { biome: '1-2', id: 'crystalopal', name: 'Crystal Opal', color: 'D0E8F0', candidates: [
+    { biome: '1-2', id: 'crystalopal', name: 'Crystal Opal', color: 'D0E8F0',
+      tr: { ja: '乾くとひびが入る。たまに水をあげて。', en: 'It cracks when it dries out. Give it some water now and then.' }, candidates: [
       '透明な地の奥で色が泳ぐ。オパールは水を含んでいる。',
       '遊色の正体は、そろって並んだ小さな球。球の大きさで色が決まる。',
       '乾きすぎるとひびが入る。たまに水をあげるといい。' ]},
-    { biome: '1-2', id: 'phantomquartz', name: 'Phantom Quartz', color: 'D8D8D8', candidates: [
+    { biome: '1-2', id: 'phantomquartz', name: 'Phantom Quartz', color: 'D8D8D8',
+      tr: { ja: '影の層は休んで、また育った証。', en: 'Each ghostly layer marks a time it rested, then grew again.' }, candidates: [
       '結晶の中に、昔の自分の姿が影として残っている。',
       '一度成長が止まり、また始まった記録。石の成長日記。',
       '影の層の数だけ、休んで、また育った。' ]},
-    { biome: '1-2', id: 'jasper', name: 'Jasper', color: 'C1440E', candidates: [
+    { biome: '1-2', id: 'jasper', name: 'Jasper', color: 'C1440E',
+      tr: { ja: '赤は鉄の色。磨くと鈍く光る。', en: 'The red is iron. Polished, it gives a dull gleam.' }, candidates: [
       '名前は古い言葉で「まだらの石」。赤は鉄の色。',
       '不透明な石英の集まり。模様が風景に見えるものもある。',
       '古くは印章や矢じりに。磨くと鈍く光る。' ]},
-    { biome: '1-2', id: 'hessonite', name: 'Hessonite', color: 'C87020', candidates: [
+    { biome: '1-2', id: 'hessonite', name: 'Hessonite', color: 'C87020',
+      tr: { ja: '橙色のガーネット。', en: 'An orange garnet.' }, candidates: [
       '名前は古い言葉で「劣る」。他のガーネットより少し柔らかいから。',
       '中をのぞくと、蜂蜜を溶かしたような渦が見える。',
       '橙色のガーネット。シナモンの石とも呼ばれる。' ]},
-    { biome: '1-2', id: 'mandaringarnet', name: 'Mandarin Garnet', color: 'FF6600', candidates: [
+    { biome: '1-2', id: 'mandaringarnet', name: 'Mandarin Garnet', color: 'FF6600',
+      tr: { ja: '小粒でもよく光る。', en: 'Small, but it sparkles.' }, candidates: [
       '名前のとおり、みかんの色。マンガンが作る橙色。',
       '1990年代に見つかった、鮮やかなガーネット。',
       '内包物が少なく、小粒でもよく光る。' ]},
-    { biome: '1-2', id: 'aventurinequartz', name: 'Aventurine Quartz', color: '4CAF50', candidates: [
+    { biome: '1-2', id: 'aventurinequartz', name: 'Aventurine Quartz', color: '4CAF50',
+      tr: { ja: '緑は雲母の色。石英そのものは無色。', en: 'The green comes from mica. The quartz itself is clear.' }, candidates: [
       '中できらめくのは、雲母の薄い鱗。',
       '名前は「偶然」。似たきらめきのガラスが、偶然できたのが先だった。',
       '緑は雲母の色。石英そのものは無色。' ]},
-    { biome: '1-2', id: 'redspinel', name: 'Red Spinel', color: 'E0115F', candidates: [
+    { biome: '1-2', id: 'redspinel', name: 'Red Spinel', color: 'E0115F',
+      tr: { ja: '長いあいだルビーと間違われてきた。', en: 'Long mistaken for ruby.' }, candidates: [
       '長いあいだルビーと間違われてきた。ある王冠の有名な「ルビー」も、実はこの石。',
       '赤はクロム。結晶は八面体で、磨かなくても角が立っている。',
       '光が一方向にしか曲がらないので、色が隅々まで均一に見える。' ]},
-    { biome: '1-2', id: 'rubyspinel', name: 'Ruby Spinel', color: 'C8001A', candidates: [
+    { biome: '1-2', id: 'rubyspinel', name: 'Ruby Spinel', color: 'C8001A',
+      tr: { ja: 'ルビーにいちばん近い赤のスピネル。', en: 'The spinel whose red comes closest to ruby.' }, candidates: [
       'ルビーにいちばん近い赤のスピネル。ルビーより軽い。',
       '硬さは8。ルビーには一歩及ばないが、傷はまずつかない。',
       '昔の宝石商は、ルビーとこの石を区別していなかった。' ]},

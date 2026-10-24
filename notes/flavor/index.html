@@ -51,6 +51,11 @@
   .tool label .en{display:block;font-size:11.5px;color:var(--muted-strong);font-family:var(--font-display)}
   .tool input[type=radio]{margin:4px 0 0}
   .tool .custom textarea{width:100%;min-height:36px;resize:vertical;font-family:var(--font-jp);font-size:13px;line-height:1.5;padding:5px 8px;border:1px solid var(--line);border-radius:5px;margin-top:3px}
+  .tool .custom textarea[data-lang=en],.gem .en-box textarea{font-family:var(--font-display);font-size:12.5px;color:var(--muted-strong)}
+  .stale{font-size:11px;line-height:1.5;color:#b8452a;margin-top:2px}
+  .gem .en-box{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
+  .gem .en-box .k{font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--muted-strong)}
+  .gem .en-box textarea{width:100%;min-height:36px;resize:vertical;line-height:1.5;padding:5px 8px;border:1px solid var(--line);border-radius:5px}
 
   /* ---- 宝石 ---- */
   .progress{display:flex;gap:16px;align-items:center;font-family:var(--mono);font-size:12px;color:var(--muted-strong);margin:8px 0 14px}
@@ -85,15 +90,16 @@
   <header class="top">
     <div class="label">Idle Minertia / Design Notes / Flavor</div>
     <h1>図鑑のフレーバーテキスト</h1>
-    <p class="lede">図鑑（INDEX）で項目を開くと出る一言。道具は Lv ごとに 1 文（絵本のように 12 ページ）、宝石は実在の宝石の小ネタ。ここで候補から選び、文言を直して確定する。</p>
-    <div class="meta"><span>更新 2026-10-08</span><span>元: Resources/picker の画像・GemTableRepository.cs・Templates.csv</span><span><a href="../">ノート一覧へ</a></span></div>
+    <p class="lede">図鑑（INDEX）で項目を開くと出る一言。道具は Lv ごとに 1 文（絵本のように 12 ページ）、宝石は実在の宝石の小ネタ。道具は日本語が決まったので英訳を直す。宝石は候補から選び、決まったものから英訳を直す。</p>
+    <div class="meta"><span>更新 2026-10-24</span><span>元: Resources/picker の画像・GemTableRepository.cs・Templates.csv</span><span><a href="../">ノート一覧へ</a></span></div>
   </header>
 
   <div class="callout note">
     <ul>
-      <li><strong>道具</strong>: 画像を見て「素材・重さ」を書いた案。文言はそのまま押して書き換えられる（離れると保存）。Lv1 は実装済みで変えない</li>
-      <li><strong>宝石</strong>: 候補のどれかを選ぶ。合うものが無ければ「自分で書く」に書く。産地・土地の名前は書かない（ゲームの舞台とぶれるため）</li>
-      <li>決まった文言は「書き出し」で CSV にして、<code>Templates.csv</code>（<code>collectionindex.flavor.*</code>）へ入れる。翻訳はそのあと</li>
+      <li><strong>道具</strong>: 日本語は 10/23 に決まった文。英語は 10/24 の訳の案。どちらも欄を押して書き換えられる（離れると保存）。Lv1 は実装済みで変えない</li>
+      <li><strong>宝石</strong>: 候補のどれかを選ぶ。合うものが無ければ「自分で書く」に書く。決まると英語の欄が出る。産地・土地の名前は書かない（ゲームの舞台とぶれるため）</li>
+      <li>日本語を書き換えると、英語の案は古くなるので消える（赤い注意が出る）。英語も書き直す</li>
+      <li>決まった文言は「書き出し」で CSV にして、<code>Templates.csv</code>（<code>collectionindex.flavor.*</code>）へ入れる。英語以外の翻訳はそのあと</li>
     </ul>
   </div>
 
@@ -104,7 +110,7 @@
 
   <main>
     <section id="tools">
-      <h2>1. 道具 <span class="badge b-idea">下書き</span></h2>
+      <h2>1. 道具 <span class="badge b-fixed">日本語 決定</span> <span class="badge b-idea">英語 案</span></h2>
       <p class="muted">Lv13 以降は見た目と同じ 12 周期で本文も使い回す（<code>CollectionIndexViewModel.NormalItemFlavor</code>）。</p>
       <div id="toolsRoot"></div>
     </section>
@@ -117,17 +123,18 @@
   </main>
 </div>
 
-<script src="data.js?v=20261016-1"></script>
+<script src="data.js?v=20261024-1"></script>
 <script>
 /* =========================================================
    図鑑フレーバー ノート
 
    保存先は他のノートと同じ feedback.json（live / propose / localStorage の 3 通り）。
-     - 道具の選択:   choices['flavor-tool-pick:<kind>:<lv>'] = 候補の番号 ('0'..'2') か 'custom'
-     - 道具の自作文: comments['flavor-tool-custom:<kind>:<lv>:<ja|en>'] の最新 1 件
-       （2026-10-16 に案を白紙から作り直したので、旧キー flavor-tool:<kind>:<lv>:<lang> の書き換えは読まない）
-     - 宝石の選択:   choices['flavor-gem:<id>'] = 候補の番号 ('0'..) か 'custom'
-     - 宝石の自作文: comments['flavor-gem-custom:<id>'] の最新 1 件
+     - 道具の書き換え: comments['flavor-tool-custom:<kind>:<lv>:<ja|en>'] の最新 1 件。無ければ data.js の ja / en
+       （2026-10-24 に 3 案から選ぶ形をやめた。旧 choices['flavor-tool-pick:*'] は読まない）
+     - 宝石の選択:     choices['flavor-gem:<id>'] = 候補の番号 ('0'..) か 'custom'
+     - 宝石の自作文:   comments['flavor-gem-custom:<id>'] の最新 1 件
+     - 宝石の英語:     comments['flavor-gem-custom-en:<id>'] の最新 1 件。無ければ data.js の tr.en
+   英語の案（data.js の道具 en・宝石 tr.en）は、元にした日本語が今の文と同じときだけ使う。
    新しいデータ形式は足していない（scripts/notes-merge.mjs の規則どおり: comments は和集合、choices は後勝ち）。
    ========================================================= */
 (function(){
@@ -206,16 +213,20 @@
   const stamp=iso=>{const d=new Date(iso);if(isNaN(d))return iso;return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');};
 
   /* ---------- 道具 ---------- */
-  const toolPickKey=(kind,lv)=>'flavor-tool-pick:'+kind+':'+lv;
   const toolCustomKey=(kind,lv,lang)=>'flavor-tool-custom:'+kind+':'+lv+':'+lang;
-  function toolChoice(kind,level){const v=STORE.choices[toolPickKey(kind,level.lv)];return v===undefined||v===null?'':String(v);}
+  // 今の日本語。書き換えがあればその最新、無ければ data.js の決まった文
+  function toolJa(kind,level){if(level.fixed)return level.ja;const c=latestOf(toolCustomKey(kind,level.lv,'ja'));return c?c.text:(level.ja||'');}
+  // data.js の英語の案が、今の日本語の訳として使えるか
+  const toolEnFresh=(kind,level)=>!!level.en&&toolJa(kind,level)===level.ja;
   function toolText(kind,level,lang){
     if(level.fixed)return level[lang];
-    const v=toolChoice(kind,level);
-    if(v==='custom'){const c=latestOf(toolCustomKey(kind,level.lv,lang));return c?c.text:'';}
-    if(v==='')return '';
-    const c=level.candidates[+v];return c?c[lang]:'';
+    if(lang==='ja')return toolJa(kind,level);
+    const c=latestOf(toolCustomKey(kind,level.lv,'en'));
+    if(c)return c.text;
+    return toolEnFresh(kind,level)?level.en:'';
   }
+  // 英語の案が古くなった（日本語が変わり、英語はまだ書き直していない）
+  const toolEnStale=(kind,level)=>!level.fixed&&!!level.en&&!toolEnFresh(kind,level)&&!latestOf(toolCustomKey(kind,level.lv,'en'));
 
   function buildTools(){
     const root=document.getElementById('toolsRoot');
@@ -231,15 +242,13 @@
           html+='<div class="cell ja is-fixed">'+esc(level.ja)+'</div><div class="cell en is-fixed">'+esc(level.en)+'</div></div>';
           card.innerHTML=html;grid.appendChild(card);continue;
         }
-        const name='t-'+kind+'-'+level.lv;
-        level.candidates.forEach((c,k)=>{html+='<label data-v="'+k+'"><input type="radio" name="'+name+'" value="'+k+'"><span>'+esc(c.ja)+'<span class="en">'+esc(c.en)+'</span></span></label>';});
-        html+='<label data-v="custom"><input type="radio" name="'+name+'" value="custom"><span>自分で書く</span></label>'
-          +'<div class="custom" style="display:none"><textarea data-lang="ja" placeholder="日本語"></textarea><textarea data-lang="en" placeholder="English"></textarea></div></div>';
+        html+='<div class="custom"><textarea data-lang="ja" placeholder="日本語"></textarea><textarea data-lang="en" placeholder="English"></textarea>'
+          +'<div class="stale" style="display:none"></div></div></div>';
         card.innerHTML=html;
-        card.querySelectorAll('input[type=radio]').forEach(r=>r.addEventListener('change',()=>{setChoice(toolPickKey(kind,level.lv),r.value);renderAll();if(r.value==='custom')card.querySelector('textarea').focus();}));
         card.querySelectorAll('textarea').forEach(ta=>{
-          const key=toolCustomKey(kind,level.lv,ta.dataset.lang);
-          ta.addEventListener('blur',()=>{const next=ta.value.trim();const now=(latestOf(key)||{}).text||'';if(next!==now)addComment(key,next);renderAll();});
+          const lang=ta.dataset.lang, key=toolCustomKey(kind,level.lv,lang);
+          // 見えている文（data.js の文を含む）と違うときだけ書き換えとして残す
+          ta.addEventListener('blur',()=>{const next=ta.value.trim();if(next!==toolText(kind,level,lang))addComment(key,next);renderAll();});
           ta.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();ta.blur();}});
         });
         grid.appendChild(card);
@@ -252,10 +261,10 @@
       const kind=card.dataset.kind, lv=+card.dataset.lv;
       const level=D.tools[kind].levels.find(l=>l.lv===lv);
       if(level.fixed)return;
-      const v=toolChoice(kind,level);
-      card.querySelectorAll('label').forEach(l=>{const on=l.dataset.v===v;l.classList.toggle('on',on);l.querySelector('input').checked=on;});
-      card.querySelector('.custom').style.display=v==='custom'?'':'none';
-      card.querySelectorAll('textarea').forEach(ta=>{if(document.activeElement!==ta)ta.value=(latestOf(toolCustomKey(kind,lv,ta.dataset.lang))||{}).text||'';});
+      card.querySelectorAll('textarea').forEach(ta=>{if(document.activeElement!==ta)ta.value=toolText(kind,level,ta.dataset.lang);});
+      const st=card.querySelector('.stale'), stale=toolEnStale(kind,level);
+      st.style.display=stale?'':'none';
+      st.textContent=stale?'日本語が変わったので英語の案を外した（元の訳: '+level.en+'）':'';
       card.classList.toggle('is-decided',toolText(kind,level,'ja').trim().length>0);
     });
   }
@@ -265,6 +274,11 @@
   const customKey=id=>'flavor-gem-custom:'+id;
   function gemChoice(g){const v=STORE.choices[gemKey(g.id)];return v===undefined||v===null?'':String(v);}
   function gemChosenText(g){const v=gemChoice(g);if(v==='custom'){const c=latestOf(customKey(g.id));return c?c.text:'';}if(v==='')return '';return g.candidates[+v]||'';}
+  const gemEnKey=id=>'flavor-gem-custom-en:'+id;
+  // data.js の英語の案が、今選んでいる日本語の訳として使えるか
+  const gemEnFresh=g=>!!(g.tr&&g.tr.en)&&gemChosenText(g)===g.tr.ja;
+  function gemEn(g){const c=latestOf(gemEnKey(g.id));if(c)return c.text;return gemEnFresh(g)?g.tr.en:'';}
+  const gemEnStale=g=>!!(g.tr&&g.tr.en)&&gemChosenText(g).trim().length>0&&!gemEnFresh(g)&&!latestOf(gemEnKey(g.id));
 
   function buildGems(){
     const root=document.getElementById('gemsRoot');
@@ -277,12 +291,16 @@
         let html='<div class="head"><span class="sw" style="background:#'+g.color+'"></span><span class="name">'+esc(g.name)+'</span><span class="idx">#'+(i+1)+'</span></div>';
         g.candidates.forEach((t,k)=>{html+='<label data-v="'+k+'"><input type="radio" name="g-'+g.id+'" value="'+k+'"><span>'+esc(t)+(k===0?'<span class="reco">推奨</span>':'')+'</span></label>';});
         html+='<label data-v="custom"><input type="radio" name="g-'+g.id+'" value="custom"><span>自分で書く</span></label>'
-          +'<div class="custom" style="display:none"><textarea placeholder="この宝石の一言"></textarea></div>';
+          +'<div class="custom" style="display:none"><textarea placeholder="この宝石の一言"></textarea></div>'
+          +'<div class="en-box" style="display:none"><span class="k">ENGLISH</span><textarea placeholder="English"></textarea><div class="stale" style="display:none"></div></div>';
         card.innerHTML=html;
-        card.querySelectorAll('input[type=radio]').forEach(r=>r.addEventListener('change',()=>{setChoice(gemKey(g.id),r.value);renderAll();if(r.value==='custom')card.querySelector('textarea').focus();}));
-        const ta=card.querySelector('textarea');
+        card.querySelectorAll('input[type=radio]').forEach(r=>r.addEventListener('change',()=>{setChoice(gemKey(g.id),r.value);renderAll();if(r.value==='custom')card.querySelector('.custom textarea').focus();}));
+        const ta=card.querySelector('.custom textarea');
         ta.addEventListener('blur',()=>{const next=ta.value.trim();const now=(latestOf(customKey(g.id))||{}).text||'';if(next!==now)addComment(customKey(g.id),next);renderAll();});
-        ta.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();ta.blur();}});
+        const enTa=card.querySelector('.en-box textarea');
+        // 見えている英語（data.js の案を含む）と違うときだけ書き換えとして残す
+        enTa.addEventListener('blur',()=>{const next=enTa.value.trim();if(next!==gemEn(g))addComment(gemEnKey(g.id),next);renderAll();});
+        [ta,enTa].forEach(x=>x.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();x.blur();}}));
         grid.appendChild(card);
       });
       root.appendChild(grid);
@@ -295,8 +313,13 @@
       const v=gemChoice(g);
       card.querySelectorAll('label').forEach(l=>{const on=l.dataset.v===v;l.classList.toggle('on',on);l.querySelector('input').checked=on;});
       const box=card.querySelector('.custom');box.style.display=v==='custom'?'':'none';
-      const ta=card.querySelector('textarea');if(document.activeElement!==ta)ta.value=(latestOf(customKey(g.id))||{}).text||'';
+      const ta=card.querySelector('.custom textarea');if(document.activeElement!==ta)ta.value=(latestOf(customKey(g.id))||{}).text||'';
       const decided=gemChosenText(g).trim().length>0;card.classList.toggle('is-decided',decided);if(decided)done++;
+      card.querySelector('.en-box').style.display=decided?'':'none';
+      const enTa=card.querySelector('.en-box textarea');if(document.activeElement!==enTa)enTa.value=gemEn(g);
+      const st=card.querySelector('.en-box .stale'),stale=gemEnStale(g);
+      st.style.display=stale?'':'none';
+      st.textContent=stale?'日本語が変わったので英語の案を外した（元の訳: '+g.tr.en+'）':'';
     });
     document.getElementById('gemDone').textContent=done;
     document.getElementById('gemBar').style.width=(100*done/D.gems.length)+'%';
@@ -307,10 +330,10 @@
     const q=s=>'"'+String(s).replace(/"/g,'""')+'"';
     let out='key,ja,en\n';
     for(const kind of Object.keys(D.tools))for(const l of D.tools[kind].levels)out+=['collectionindex.flavor.'+kind+l.lv,toolText(kind,l,'ja'),toolText(kind,l,'en')].map(q).join(',')+'\n';
-    for(const g of D.gems){const t=gemChosenText(g);if(t)out+=[ 'collectionindex.flavor.gem.'+g.id,t,'' ].map(q).join(',')+'\n';}
+    for(const g of D.gems){const t=gemChosenText(g);if(t)out+=[ 'collectionindex.flavor.gem.'+g.id,t,gemEn(g) ].map(q).join(',')+'\n';}
     const undecided=D.gems.filter(g=>!gemChosenText(g).trim());
     const note=undecided.length?'\n（未決の宝石 '+undecided.length+' 件: '+undecided.map(g=>g.name).join(', ')+'）':'';
-    navigator.clipboard.writeText(out).then(()=>alert('道具の選んだ文言と、決まった宝石の文言を CSV でコピーしました。'+note),()=>prompt('この CSV をコピーしてください',out));
+    navigator.clipboard.writeText(out).then(()=>alert('道具の文言と、決まった宝石の文言（日本語・英語）を CSV でコピーしました。'+note),()=>prompt('この CSV をコピーしてください',out));
   }
 
   /* ---------- 状態バー ---------- */
