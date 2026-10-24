@@ -100,6 +100,16 @@ const SITES = [
     files: ["index.html", "feedback.json", "data.js"],
     dirs: ["images"],
   },
+  {
+    dir: "achicon",
+    from: "AchievementIconSite",
+    label: "Achievements",
+    title: "Steam 実績アイコン選び",
+    desc: "23 個の実績それぞれに、アイコンに使うゲーム内の絵を選ぶ。",
+    can: "ゲーム内の PNG 363 枚から何枚でも選べます。実績ごとにメモも残せます。",
+    files: ["index.html", "feedback.json", "icons.json"],
+    dirs: ["thumbs"],
+  },
 ];
 
 const NOINDEX = '<meta name="robots" content="noindex,nofollow">';

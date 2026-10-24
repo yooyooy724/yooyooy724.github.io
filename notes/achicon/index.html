@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>実績アイコン選び</title>
+<style>
+  :root {
+    --bg: #f4f1ea; --panel: #fffdf8; --ink: #1e1e1e; --sub: #6b665c; --line: #ddd6c8;
+    --accent: #e07b2c; --accent-soft: #fde6d3; --tile: #8c8c8c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "BIZ UDGothic", "Yu Gothic UI", "Meiryo", sans-serif; background: var(--bg); color: var(--ink); height: 100vh; display: flex; flex-direction: column; }
+  header { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--panel); flex-wrap: wrap; }
+  header h1 { font-size: 16px; margin: 0; }
+  .hint { font-size: 12px; color: var(--sub); }
+  #status { font-size: 12px; color: var(--sub); margin-left: auto; }
+  #send { display: none; font: inherit; font-size: 13px; padding: 4px 12px; border: 0; border-radius: 6px; background: var(--accent); color: #fff; cursor: pointer; }
+  .wrap { flex: 1; display: flex; min-height: 0; }
+  nav { width: 300px; overflow-y: auto; border-right: 1px solid var(--line); background: var(--panel); flex-shrink: 0; }
+  nav button { display: flex; gap: 10px; width: 100%; text-align: left; padding: 9px 12px; border: 0; border-bottom: 1px solid var(--line); background: none; cursor: pointer; font: inherit; color: inherit; }
+  nav button:hover { background: #f7f2e8; }
+  nav button.on { background: var(--accent-soft); box-shadow: inset 4px 0 var(--accent); }
+  nav .no { font-weight: 700; width: 22px; color: var(--sub); flex-shrink: 0; }
+  nav .t { font-weight: 700; font-size: 14px; }
+  nav .c { font-size: 12px; color: var(--sub); }
+  nav .n { margin-left: auto; align-self: center; font-size: 12px; min-width: 22px; text-align: center; border-radius: 10px; padding: 1px 6px; background: #eee8dc; color: var(--sub); }
+  nav .n.has { background: var(--accent); color: #fff; }
+  main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .head { padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--panel); }
+  .head .title { font-size: 20px; font-weight: 700; }
+  .head .cond { color: var(--sub); margin-top: 2px; }
+  .head .api { font-size: 11px; color: #a39e94; margin-top: 2px; }
+  .picked { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; min-height: 92px; align-items: flex-start; }
+  .picked .empty { color: #a39e94; font-size: 13px; padding-top: 30px; }
+  .pk { position: relative; width: 84px; cursor: pointer; text-align: center; }
+  .pk img { width: 84px; height: 84px; object-fit: contain; border-radius: 8px; border: 2px solid var(--accent); }
+  .pk .ord { position: absolute; top: -6px; left: -6px; background: var(--accent); color: #fff; border-radius: 10px; font-size: 11px; padding: 1px 6px; }
+  .pk .nm { font-size: 10px; color: var(--sub); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .pk .x { position: absolute; top: -6px; right: -6px; background: #444; color: #fff; border-radius: 10px; font-size: 11px; width: 18px; height: 18px; line-height: 18px; display: none; }
+  .pk:hover .x { display: block; }
+  textarea { width: 100%; margin-top: 8px; font: inherit; font-size: 13px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; resize: vertical; min-height: 38px; background: #fff; }
+  .bar { display: flex; gap: 10px; align-items: center; padding: 8px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; font-size: 13px; }
+  .bar input[type=search], .bar select { font: inherit; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; background: #fff; max-width: 100%; }
+  .bar input[type=search] { width: 220px; }
+  .bar .count { color: var(--sub); margin-left: auto; }
+  .grid { flex: 1; overflow-y: auto; padding: 12px 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 10px; align-content: start; }
+  .ic { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px; cursor: pointer; text-align: center; }
+  .ic:hover { border-color: #b9b1a1; }
+  .ic.sel { border: 2px solid var(--accent); padding: 5px; background: var(--accent-soft); }
+  .ic .img { height: 96px; display: flex; align-items: center; justify-content: center; border-radius: 6px; }
+  .ic img { max-width: 96px; max-height: 96px; }
+  .ic .nm { font-size: 10px; color: var(--sub); margin-top: 4px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .ic .sz { font-size: 9px; color: #a39e94; }
+  .ic .ord { position: absolute; top: 4px; left: 4px; background: var(--accent); color: #fff; border-radius: 10px; font-size: 11px; padding: 0 6px; }
+  .ic .used { position: absolute; top: 4px; right: 4px; background: #5f7b95; color: #fff; border-radius: 10px; font-size: 10px; padding: 0 5px; }
+  /* Backdrops so black and white glyphs both read. */
+  .bg-grey .img, .bg-grey .pk img { background: var(--tile); }
+  .bg-light .img, .bg-light .pk img { background: #fff; }
+  .bg-dark .img, .bg-dark .pk img { background: #2a2f36; }
+  .bg-check .img, .bg-check .pk img { background: repeating-conic-gradient(#d9d9d9 0 25%, #fff 0 50%) 0 0 / 16px 16px; }
+  kbd { font-size: 11px; border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; background: #fff; }
+  @media (max-width: 760px) {
+    body { height: auto; min-height: 100vh; }
+    .wrap { flex-direction: column; }
+    nav { width: 100%; max-height: 34vh; border-right: 0; border-bottom: 1px solid var(--line); }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); overflow: visible; }
+    .ic .img { height: 76px; }
+    .ic img { max-width: 76px; max-height: 76px; }
+  }
+</style>
+</head>
+<body class="bg-grey">
+<header>
+  <h1>実績アイコン選び</h1>
+  <span class="hint">実績を選び、下の絵をタップで追加・解除（何枚でも）。<kbd>↑</kbd><kbd>↓</kbd>で実績を移動</span>
+  <span id="status">読み込み中…</span>
+  <button id="send">送信</button>
+</header>
+<div class="wrap">
+  <nav id="list"></nav>
+  <main>
+    <div class="head">
+      <div class="title" id="title"></div>
+      <div class="cond" id="cond"></div>
+      <div class="api" id="api"></div>
+      <div class="picked" id="picked"></div>
+      <textarea id="memo" placeholder="メモ（使い方のアイデア、組み合わせ、色など）"></textarea>
+    </div>
+    <div class="bar">
+      <input type="search" id="q" placeholder="ファイル名で絞り込み（例: gem, anvil）">
+      <select id="folder"><option value="">すべてのフォルダ</option></select>
+      <label><input type="checkbox" id="onlyPicked"> この実績で選んだものだけ</label>
+      <label><input type="checkbox" id="onlyAny"> どこかで選んだものだけ</label>
+      背景
+      <select id="bgSel">
+        <option value="bg-grey">灰</option><option value="bg-light">白</option>
+        <option value="bg-dark">黒</option><option value="bg-check">市松</option>
+      </select>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </main>
+</div>
+<script>
+/*
+ Steam 実績のアイコンに使う絵を、実績ごとに選ぶページ。
+ 候補は IdleMinertia の Assets/1.Games/IdleGem にある PNG（thumbs/ と icons.json）。
+ 保存先は他のノートと同じ feedback.json の choices:
+   achicon:<API Name>       … 選んだ絵の id（Assets/1.Games/IdleGem からの相対パス）を改行で並べたもの
+   achicon-memo:<API Name>  … メモ
+ 空文字は「解除」（マージ時にキーごと消える）。
+ 動き方は live（server.js）/ 公開版の提案モード（Issue で送る）/ ブラウザだけ、の 3 通り。
+*/
+const SITE = 'achicon';
+const LS_KEY = 'minertia_achicon_v1';
+const PEND_KEY = 'minertia_achicon_pending_v1';
+const GH_ISSUE = 'https://github.com/yooyooy724/yooyooy724.github.io/issues/new';
+const API = (location.protocol === 'http:' || location.protocol === 'https:') ? '' : 'http://localhost:8143';
+
+const ACH = [
+  ['ACH_GEMS_5', 'キラッキラ', '宝石を 5 種類集める'],
+  ['ACH_WAVE_10', 'モンスターハンター', '炭鉱でウェーブ 10 に到達する'],
+  ['ACH_PRESTIGE_FIRST', 'ふりだしに戻る?', '初めてプレステージする'],
+  ['ACH_TUTORIAL_DONE', '晴れてマイナー', 'チュートリアルを終える'],
+  ['ACH_OFFLINE_8H', '「よくねれたぁぁ」', '8 時間以上のオフラインから戻り、報酬を受け取る'],
+  ['ACH_TEAR_PRESTIGE_FIRST', '身軽になろう', '初めてティアのプレステージをする'],
+  ['ACH_NETHER_ENTER', '誰かいませんか？', 'ネザーに入る'],
+  ['ACH_AREA2_ENTER', 'また違う世界へ', 'エリア 2 に入る'],
+  ['ACH_AUTOMATION_AREA2_ALL', 'IDLE, それはもう一つの始まり', 'エリア 2 で開放される自動化をすべて手に入れる'],
+  ['ACH_FORGE_5', '金床学研究科学士号', 'すべての工房レベルを 5 にする'],
+  ['ACH_GEODE_FIRST', '天然のガチャポン', 'ジオードを見つける'],
+  ['ACH_ITEM_LV13', 'エンチャンター', 'アイテムをレベル 13 にする'],
+  ['ACH_AREA3_ENTER', '試される大地', 'エリア 3 に入る'],
+  ['ACH_BAZAAR_FIRST', 'ラマ２匹', '露店で初めて交換する'],
+  ['ACH_SOIL_1E50', 'ちりつも', 'ソイルを累計で 1e50 集める'],
+  ['ACH_FORGE_15', '金床学研究科修士号', 'すべての工房レベルを 15 にする'],
+  ['ACH_WAVE_100_ALL', '怖いものなし', '3 つの炭鉱すべてでウェーブ 100 に到達する'],
+  ['ACH_AUTOMATION_AREA3_ALL', 'IDLE、そして私たちに残されるのは', 'エリア 3 で開放される自動化をすべて手に入れる'],
+  ['ACH_NETHER_SOLO_15', 'ソリチュード', 'コンパニオンを連れずにネザーの深度 15 に到達する'],
+  ['ACH_TRIAL_NORMAL_ALL', '並盛＜＜中盛', 'ノーマルの試練をすべてクリアする'],
+  ['ACH_FORGE_30', '金床学研究科博士号', 'すべての工房レベルを 30 にする'],
+  ['ACH_FISH_3', 'また おまえかー？！', '魚を 3 回釣る'],
+  ['ACH_TRIAL_HARD_ALL', 'あの頃はなかったわ', 'ハードの試練をすべてクリアする'],
+];
+
+/* ---------- 保存（他のノートと同じ形: live / propose / localStorage） ---------- */
+let SERVER = false, PROPOSE = false;
+const emptyFb = () => ({ comments: {}, reactions: {}, choices: {} });
+let STORE = emptyFb(), BASE = emptyFb(), PENDING = emptyFb();
+try { const v = localStorage.getItem(LS_KEY); if (v) STORE = Object.assign(emptyFb(), JSON.parse(v)); } catch (e) {}
+
+const pendCount = () => Object.keys(PENDING.choices).length;
+const savePending = () => { try { localStorage.setItem(PEND_KEY, JSON.stringify(PENDING)); } catch (e) {} };
+let postTimer = null;
+function save() {
+  renderStatus();
+  if (PROPOSE) { savePending(); return; }
+  try { localStorage.setItem(LS_KEY, JSON.stringify(STORE)); } catch (e) {}
+  if (SERVER) {
+    clearTimeout(postTimer);
+    postTimer = setTimeout(() => {
+      fetch(API + '/api/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(STORE) })
+        .catch(() => { SERVER = false; renderStatus(); });
+    }, 250);
+  }
+}
+function mergeFb(base, patch) {
+  const out = emptyFb();
+  out.comments = Object.assign({}, base.comments, patch.comments);
+  out.reactions = Object.assign({}, base.reactions, patch.reactions);
+  out.choices = Object.assign({}, base.choices, patch.choices);
+  for (const k of Object.keys(out.choices)) if (!out.choices[k]) delete out.choices[k];
+  return out;
+}
+async function connect() {
+  try {
+    const r = await fetch(API + '/api/feedback', { cache: 'no-store' });
+    if (!r.ok) throw 0;
+    STORE = mergeFb(STORE, await r.json());
+    SERVER = true; save(); return;
+  } catch (e) { SERVER = false; }
+  try {
+    const r = await fetch('feedback.json', { cache: 'no-store' });
+    if (!r.ok) throw 0;
+    const remote = await r.json();
+    if (!remote || typeof remote !== 'object') throw 0;
+    BASE = { comments: remote.comments || {}, reactions: remote.reactions || {}, choices: remote.choices || {} };
+    PROPOSE = true;
+    try { const v = localStorage.getItem(PEND_KEY); if (v) PENDING = Object.assign(emptyFb(), JSON.parse(v)); } catch (e) {}
+    reconcile();
+    STORE = mergeFb(BASE, PENDING);
+  } catch (e) {}
+}
+// Drop pending changes the published data already has.
+function reconcile() {
+  for (const k of Object.keys(PENDING.choices)) if ((BASE.choices[k] || '') === (PENDING.choices[k] || '')) delete PENDING.choices[k];
+  savePending();
+}
+function submit() {
+  const n = pendCount();
+  if (!n) { alert('未送信の変更はありません。'); return; }
+  const payload = Object.assign({ site: SITE, at: new Date().toISOString() }, PENDING);
+  const body = '### notes-inbox\n\nこの Issue は自動処理されます。内容を編集しないでください。\n\n```json\n' + JSON.stringify(payload) + '\n```\n';
+  const title = '[notes-inbox] ' + SITE + ' ' + n + '件';
+  const url = GH_ISSUE + '?title=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(body);
+  if (url.length > 7500) {
+    navigator.clipboard.writeText(body).then(() => {
+      alert('量が多いため本文をクリップボードにコピーしました。\n開いた画面のタイトルを「' + title + '」にして、本文に貼り付けてください。');
+      window.open(GH_ISSUE, '_blank');
+    }, () => prompt('この本文をコピーして、新規 Issue に貼り付けてください（タイトル: ' + title + '）', body));
+    return;
+  }
+  window.open(url, '_blank');
+  alert('GitHub の画面が開きます。内容を確認して「Submit new issue」を押してください。\n反映されるとこのページに載ります（1分ほど）。');
+}
+function setChoice(key, value) {
+  STORE.choices[key] = value;
+  if (!value) delete STORE.choices[key];
+  if (PROPOSE) {
+    // Back to what is already published: nothing left to send for this key.
+    if ((BASE.choices[key] || '') === (value || '')) delete PENDING.choices[key];
+    else PENDING.choices[key] = value;
+  }
+  save();
+}
+function renderStatus() {
+  const n = pendCount();
+  $('status').textContent = SERVER ? '保存中 (feedback.json)'
+    : PROPOSE ? (n ? `公開版 — 未送信 ${n} 件` : '公開版 — 変更は「送信」で反映')
+    : 'このブラウザにだけ保存';
+  $('send').style.display = PROPOSE ? 'inline-block' : 'none';
+  $('send').textContent = n ? `送信（${n}）` : '送信';
+}
+
+/* ---------- 選んだ絵 ---------- */
+const iconKey = api => 'achicon:' + api;
+const memoKey = api => 'achicon-memo:' + api;
+const picksOf = api => (STORE.choices[iconKey(api)] || '').split('\n').filter(Boolean);
+const memoOf = api => STORE.choices[memoKey(api)] || '';
+
+let icons = [];
+let byId = {};
+let cur = 0;
+const $ = id => document.getElementById(id);
+
+// How many achievements picked each icon (shown as a small badge).
+function usage() {
+  const u = {};
+  for (const [api] of ACH) for (const id of picksOf(api)) u[id] = (u[id] || 0) + 1;
+  return u;
+}
+
+function renderList() {
+  $('list').innerHTML = '';
+  ACH.forEach(([api, t, c], i) => {
+    const n = picksOf(api).length;
+    const b = document.createElement('button');
+    b.className = i === cur ? 'on' : '';
+    b.innerHTML = `<span class="no">${i + 1}</span><span><div class="t"></div><div class="c"></div></span><span class="n ${n ? 'has' : ''}">${n}</span>`;
+    b.querySelector('.t').textContent = t;
+    b.querySelector('.c').textContent = c;
+    b.onclick = () => { cur = i; renderAll(); };
+    $('list').appendChild(b);
+  });
+}
+
+function renderHead() {
+  const [api, t, c] = ACH[cur];
+  $('title').textContent = `${cur + 1}. ${t}`;
+  $('cond').textContent = c;
+  $('api').textContent = api;
+  if (document.activeElement !== $('memo')) $('memo').value = memoOf(api);
+  const box = $('picked');
+  box.innerHTML = '';
+  const picks = picksOf(api);
+  if (!picks.length) box.innerHTML = '<div class="empty">まだ選んでいません。下の一覧から絵を選んでください。</div>';
+  picks.forEach((id, k) => {
+    const ic = byId[id];
+    const d = document.createElement('div');
+    d.className = 'pk';
+    d.title = `${id}${ic ? `（${ic.size}）` : ''} クリックで外す`;
+    d.innerHTML = `<img src="${ic ? ic.thumb : ''}"><span class="ord">${k + 1}</span><span class="x">×</span><div class="nm"></div>`;
+    d.querySelector('.nm').textContent = id.split('/').pop();
+    d.onclick = () => toggle(id);
+    box.appendChild(d);
+  });
+}
+
+function renderGrid() {
+  const picked = picksOf(ACH[cur][0]);
+  const u = usage();
+  const q = $('q').value.trim().toLowerCase();
+  const f = $('folder').value;
+  const onlyPicked = $('onlyPicked').checked;
+  const onlyAny = $('onlyAny').checked;
+  const grid = $('grid');
+  grid.innerHTML = '';
+  let shown = 0;
+  for (const ic of icons) {
+    if (q && !ic.id.toLowerCase().includes(q)) continue;
+    if (f && ic.folder !== f) continue;
+    if (onlyPicked && !picked.includes(ic.id)) continue;
+    if (onlyAny && !u[ic.id]) continue;
+    shown++;
+    const k = picked.indexOf(ic.id);
+    const d = document.createElement('div');
+    d.className = 'ic' + (k >= 0 ? ' sel' : '');
+    d.title = `${ic.id}\n${ic.size}`;
+    d.innerHTML = `<div class="img"><img loading="lazy" src="${ic.thumb}"></div><div class="nm"></div><div class="sz">${ic.size.replace(',', '×')}</div>` +
+      (k >= 0 ? `<span class="ord">${k + 1}</span>` : '') +
+      (u[ic.id] ? `<span class="used" title="選んでいる実績の数">${u[ic.id]}</span>` : '');
+    d.querySelector('.nm').textContent = ic.id.split('/').pop();
+    d.onclick = () => toggle(ic.id);
+    grid.appendChild(d);
+  }
+  $('count').textContent = `${shown} / ${icons.length} 枚`;
+}
+
+function renderAll() { renderList(); renderHead(); renderGrid(); renderStatus(); }
+
+function toggle(id) {
+  const api = ACH[cur][0];
+  const picks = picksOf(api);
+  const k = picks.indexOf(id);
+  if (k >= 0) picks.splice(k, 1); else picks.push(id);
+  setChoice(iconKey(api), picks.join('\n'));
+  renderAll();
+}
+
+let memoTimer = null;
+$('memo').oninput = () => {
+  const api = ACH[cur][0];
+  clearTimeout(memoTimer);
+  memoTimer = setTimeout(() => setChoice(memoKey(api), $('memo').value), 400);
+};
+$('send').onclick = submit;
+['q', 'folder', 'onlyPicked', 'onlyAny'].forEach(id => $(id).oninput = renderGrid);
+$('bgSel').oninput = () => { document.body.className = $('bgSel').value; };
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+  if (e.key === 'ArrowDown') { cur = Math.min(ACH.length - 1, cur + 1); renderAll(); e.preventDefault(); }
+  if (e.key === 'ArrowUp') { cur = Math.max(0, cur - 1); renderAll(); e.preventDefault(); }
+});
+
+(async () => {
+  icons = await (await fetch('icons.json')).json();
+  icons.forEach(ic => byId[ic.id] = ic);
+  const folders = [...new Set(icons.map(i => i.folder))].sort();
+  for (const f of folders) {
+    const o = document.createElement('option');
+    o.value = f;
+    o.textContent = `${f}（${icons.filter(i => i.folder === f).length}）`;
+    $('folder').appendChild(o);
+  }
+  await connect();
+  renderAll();
+})();
+</script>
+</body>
+</html>
