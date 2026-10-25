@@ -1,5 +1,8 @@
 {
   "comments": {},
   "reactions": {},
-  "choices": {}
+  "choices": {
+    "achicon:ACH_GEMS_5": "Assets/1.Games/IdleGem/Cave/Block/Mat/gem_002.png\nAssets/1.Games/IdleGem/Cave/Block/Mat/gem_001.png\nAssets/1.Games/IdleGem/Cave/Block/Mat/gem_004.png\nAssets/1.Games/IdleGem/Cave/Block/Mat/gem_003.png\nAssets/1.Games/IdleGem/Cave/Block/Mat/gem_005.png",
+    "achicon:ACH_WAVE_10": "Assets/1.Games/IdleGem/Resources/Enemy/enemy_0_0.png\nAssets/1.Games/IdleGem/Resources/Enemy/enemy_0_1.png"
+  }
 }
