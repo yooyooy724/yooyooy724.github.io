@@ -3,6 +3,27 @@
   "reactions": {},
   "choices": {
     "achicon:ACH_GEMS_5": "Assets/1.Games/IdleGem/Cave/Block/Mat/gem_002.png\nAssets/1.Games/IdleGem/Cave/Block/Mat/gem_001.png\nAssets/1.Games/IdleGem/Cave/Block/Mat/gem_004.png\nAssets/1.Games/IdleGem/Cave/Block/Mat/gem_003.png\nAssets/1.Games/IdleGem/Cave/Block/Mat/gem_005.png",
-    "achicon:ACH_WAVE_10": "Assets/1.Games/IdleGem/Resources/Enemy/enemy_0_0.png\nAssets/1.Games/IdleGem/Resources/Enemy/enemy_0_1.png"
+    "achicon:ACH_WAVE_10": "Assets/1.Games/IdleGem/Resources/Enemy/enemy_0_0.png\nAssets/1.Games/IdleGem/Resources/Enemy/enemy_0_1.png",
+    "achicon:ACH_PRESTIGE_FIRST": "Assets/1.Games/IdleGem/UI_Global/Button/BottomButtonsSOs/icon/icon_prestige.png",
+    "achicon:ACH_TUTORIAL_DONE": "Assets/1.Games/IdleGem/Tutorial/Talk/UI/Icons/talk_kousuke_normal.png",
+    "achicon:ACH_OFFLINE_8H": "Assets/1.Games/IdleGem/UI_Global/Button/BottomButtonsSOs/icon/offlineBonus.png",
+    "achicon:ACH_TEAR_PRESTIGE_FIRST": "Assets/1.Games/IdleGem/UI_Global/Button/BottomButtonsSOs/icon/icon_prestige.png",
+    "achicon:ACH_NETHER_ENTER": "Assets/1.Games/IdleGem/UI_Global/Button/BottomButtonsSOs/nether_icon.png",
+    "achicon:ACH_AREA2_ENTER": "Assets/1.Games/IdleGem/UI_Global/Button/BottomButtonsSOs/map2.png",
+    "achicon:ACH_AUTOMATION_AREA2_ALL": "Assets/1.Games/IdleGem/UI_Global/Button/BottomButtonsSOs/icon/icon_map.png",
+    "achicon:ACH_FORGE_5": "Assets/1.Games/IdleGem/Resources/icon/anvil.png",
+    "achicon:ACH_GEODE_FIRST": "Assets/1.Games/IdleGem/Druse/Icon/Resources/DruseIcon/c_druse.png",
+    "achicon:ACH_ITEM_LV13": "Assets/1.Games/IdleGem/UI_Global/Button/BottomButtonsSOs/icon/icon_relic.png",
+    "achicon:ACH_AREA3_ENTER": "Assets/1.Games/IdleGem/UI_Global/Button/BottomButtonsSOs/icon/icon_map.png",
+    "achicon:ACH_BAZAAR_FIRST": "Assets/1.Games/IdleGem/Resources/bottle/bottle_s_crit.png\nAssets/1.Games/IdleGem/Resources/bottle/bottle_s_soilprestige.png",
+    "achicon:ACH_SOIL_1E50": "Assets/1.Games/IdleGem/UI_Global/Button/BottomButtonsSOs/icon/upgrade_icon/upgrade-enhancesoilgain.png",
+    "achicon:ACH_FORGE_15": "Assets/1.Games/IdleGem/Resources/icon/anvil.png",
+    "achicon:ACH_WAVE_100_ALL": "Assets/1.Games/IdleGem/Resources/Enemy/enemy_2_1.png",
+    "achicon:ACH_AUTOMATION_AREA3_ALL": "Assets/1.Games/IdleGem/UI_Global/Button/BottomButtonsSOs/icon/icon_automation.png",
+    "achicon:ACH_NETHER_SOLO_15": "Assets/1.Games/IdleGem/UI_Global/Button/BottomButtonsSOs/button_map_nether_opening.png",
+    "achicon:ACH_TRIAL_NORMAL_ALL": "Assets/1.Games/IdleGem/Resources/ChallengeShrineIcon.png",
+    "achicon:ACH_FORGE_30": "Assets/1.Games/IdleGem/Resources/icon/anvil.png",
+    "achicon:ACH_FISH_3": "Assets/1.Games/IdleGem/Cave/UI/icon/c_fishing_fish.png",
+    "achicon:ACH_TRIAL_HARD_ALL": "Assets/1.Games/IdleGem/Resources/ChallengeShrineIcon.png"
   }
 }
