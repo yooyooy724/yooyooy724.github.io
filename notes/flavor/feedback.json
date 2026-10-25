@@ -289,6 +289,11 @@
         "text": "結晶を持って結晶を制す",
         "ts": "2026-10-23T09:45:53.287Z",
         "author": "yooyooy724"
+      },
+      {
+        "text": "結晶を以て結晶を制す",
+        "ts": "2026-10-25T06:43:59.434Z",
+        "author": "claude"
       }
     ],
     "flavor-tool-custom:pickaxe:9:ja": [
@@ -386,6 +391,11 @@
         "text": "簡易的作れ、使い勝手もいい。サバイバルに最適。",
         "ts": "2026-10-25T04:50:05.294Z",
         "author": "yooyooy724"
+      },
+      {
+        "text": "簡易的に作れ、使い勝手もいい。サバイバルに最適。",
+        "ts": "2026-10-25T06:43:59.434Z",
+        "author": "claude"
       }
     ],
     "flavor-tool-custom:sledgehammer:4:ja": [
@@ -544,6 +554,13 @@
         "text": "放射線を浴びて紫石が発生した。",
         "ts": "2026-10-25T05:07:06.349Z",
         "author": "yooyooy724"
+      }
+    ],
+    "flavor-tool-custom:pickaxe:8:en": [
+      {
+        "text": "Fight crystal with crystal.",
+        "ts": "2026-10-25T06:43:59.434Z",
+        "author": "claude"
       }
     ]
   },
