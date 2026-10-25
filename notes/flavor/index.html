@@ -57,6 +57,8 @@
   .tool .ideas label{font-size:13px;padding:3px 6px}
   .tool label .mine-now{color:var(--muted-strong)}
   .tool label.hid{display:none}
+  .tool .ideas .tag{display:table;margin:2px 0 1px}
+  @media (max-width:480px){.tool{grid-template-columns:1fr}.tool img{width:56px;height:96px}}
   .tag{display:inline-block;font-family:var(--font-jp);font-size:10px;font-weight:700;line-height:1.6;padding:0 6px;border-radius:999px;margin-right:6px;vertical-align:1px;color:var(--ink);white-space:nowrap}
   .tool .idea-en{margin-top:6px}
   .tool .idea-en .k{font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--muted-strong)}
@@ -109,8 +111,8 @@
   <div class="callout note">
     <ul>
       <li><strong>道具</strong>: 「いまの文」は 10/23 に書いた文と 10/24 の英訳の案。欄を押して書き換えられる（離れると保存）。Lv1 は実装済みで変えない</li>
-      <li><strong>道具の別案</strong>（10/25）: 1 段に 9〜11 案。Donut County・マイクラ・Cookie Clicker を参考に、切り口ごとに書いた。上のボタンで切り口を絞れる。選ぶと、その案が書き出しに入る。英語は選んだ案の下の欄に書く（まだ空）</li>
-      <li><strong>段ネタ</strong>は Lv2〜12 を通して読むネタ。マトックは「マーク」、ピッケルは生き物のように育つ、ハンマーは注意書き</li>
+      <li><strong>道具の別案</strong>（10/25）: 参考作品 8 つの書き方をまねて、1 段 10 案（Donut County とマイクラ進捗は 2 案ずつ）。上のボタンで作品ごとに絞れる。選ぶと、その案が書き出しに入る。英語は選んだ案の下の欄に書く（まだ空）</li>
+      <li>作品ごとの書き方: <strong>Donut County</strong> 語り手が勘違いして語る／<strong>マイクラ進捗</strong> 『もじりの題』— そっけない説明／<strong>Cookie Clicker</strong> 段が上がるほどおかしくなる（縦に続けて読む）／<strong>フータ</strong> 学者が本物の豆知識を語る／<strong>ポケモン図鑑</strong> 「〜という。」の変な言い伝え／<strong>狩人の日誌</strong> 説明＋古参の偏った一言／<strong>Terraria</strong> 『』の一言ネタ／<strong>MOTHER2</strong> ひらがなの分かち書き</li>
       <li><strong>宝石</strong>: 候補のどれかを選ぶ。合うものが無ければ「自分で書く」に書く。決まると英語の欄が出る。産地・土地の名前は書かない（ゲームの舞台とぶれるため）</li>
       <li>日本語を書き換えると、英語の案は古くなるので消える（赤い注意が出る）。英語も書き直す</li>
       <li>決まった文言は「書き出し」で CSV にして、<code>Templates.csv</code>（<code>collectionindex.flavor.*</code>）へ入れる。英語以外の翻訳はそのあと</li>
@@ -140,7 +142,7 @@
 </div>
 
 <script src="data.js?v=20261024-1"></script>
-<script src="tool-ideas.js?v=20261025-1"></script>
+<script src="tool-ideas.js?v=20261025-2"></script>
 <script>
 /* =========================================================
    図鑑フレーバー ノート
@@ -240,10 +242,16 @@
   const toolEnFresh=(kind,level)=>!!level.en&&toolJa(kind,level)===level.ja;
   /* 別案（tool-ideas.js） */
   const IDEAS=window.FLAVOR_TOOL_IDEAS||{};
+  // 参考作品ごとの書き方（中身の説明は tool-ideas.js の冒頭）
   const IDEA_TAGS={
-    mine:{name:'あなたの文から',color:'#e5e2d9'}, naeka:{name:'なえか',color:'#cfe8ec'},
-    gag:{name:'段ネタ',color:'#f6d6c9'}, oto:{name:'音',color:'#e9e1f5'}, toboke:{name:'とぼけ',color:'#fbefc4'},
-    pun:{name:'言葉遊び',color:'#dcefc0'}, world:{name:'世界観',color:'#d6e4f7'}, short:{name:'ひとこと',color:'#eeeeee'}
+    donut:{name:'Donut County',color:'#f6d6c9',tip:'道具を知らない語り手が、自信満々に勘違いして語る'},
+    mc:{name:'マイクラ進捗',color:'#dcefc0',tip:'『もじりの題』— そっけない説明'},
+    cookie:{name:'Cookie Clicker',color:'#fbefc4',tip:'Lv2→12 でだんだんおかしくなる。縦に続けて読む'},
+    futa:{name:'フータ',color:'#e5e2d9',tip:'博物館の学者が本物の豆知識を語る。好き嫌いも混ざる'},
+    pokedex:{name:'ポケモン図鑑',color:'#f3d9e6',tip:'「〜という。」少し変な・こわい言い伝えを 1 つ'},
+    hunter:{name:'狩人の日誌',color:'#d6e4f7',tip:'短い説明のあとに、古参の採掘者の偏った一言'},
+    terraria:{name:'Terraria',color:'#e9e1f5',tip:'『』の一言ネタ。性能とは関係ない'},
+    mother:{name:'MOTHER2',color:'#cfe8ec',tip:'ひらがなの分かち書きで、ほっとする一言'}
   };
   const ideasOf=(kind,lv)=>(IDEAS[kind]||{})[lv]||[];
   const ideaKey=(kind,lv)=>'flavor-tool-idea:'+kind+':'+lv;
@@ -275,9 +283,9 @@
   function buildIdeaFilters(){
     const box=document.getElementById('ideaFilters');
     const keys=['all'].concat(Object.keys(IDEA_TAGS));
-    box.innerHTML='<span class="lbl">切り口:</span>'+keys.map(k=>{
+    box.innerHTML='<span class="lbl">参考作品:</span>'+keys.map(k=>{
       const t=IDEA_TAGS[k];
-      return '<button type="button" data-f="'+k+'"'+(t?' style="background:'+t.color+'"':'')+'>'+(t?esc(t.name):'すべて')+'</button>';
+      return '<button type="button" data-f="'+k+'"'+(t?' style="background:'+t.color+'" title="'+esc(t.tip)+'"':'')+'>'+(t?esc(t.name):'すべて')+'</button>';
     }).join('');
     box.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ideaFilter=b.dataset.f;renderTools();}));
   }
