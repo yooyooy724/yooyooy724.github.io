@@ -106,7 +106,7 @@
 <script>
 /*
  Steam 実績のアイコンに使う絵を、実績ごとに選ぶページ。
- 候補は IdleMinertia の Assets/1.Games/IdleGem にある PNG（thumbs/ と icons.json）。
+ 候補は IdleMinertia の全ワークツリーの Assets と DesignNotes にある PNG（thumbs/ と icons.json。build-icons.js で作り直す）。
  保存先は他のノートと同じ feedback.json の choices:
    achicon:<API Name>       … 選んだ絵の id（Assets/1.Games/IdleGem からの相対パス）を改行で並べたもの
    achicon-memo:<API Name>  … メモ
@@ -237,7 +237,9 @@ function renderStatus() {
 /* ---------- 選んだ絵 ---------- */
 const iconKey = api => 'achicon:' + api;
 const memoKey = api => 'achicon-memo:' + api;
-const picksOf = api => (STORE.choices[iconKey(api)] || '').split('\n').filter(Boolean);
+// Picks saved before 10-25 used paths relative to Assets/1.Games/IdleGem.
+const normId = id => (id.startsWith('Assets/') || id.startsWith('DesignNotes/')) ? id : 'Assets/1.Games/IdleGem/' + id;
+const picksOf = api => (STORE.choices[iconKey(api)] || '').split('\n').filter(Boolean).map(normId);
 const memoOf = api => STORE.choices[memoKey(api)] || '';
 
 let icons = [];
@@ -307,7 +309,7 @@ function renderGrid() {
     const k = picked.indexOf(ic.id);
     const d = document.createElement('div');
     d.className = 'ic' + (k >= 0 ? ' sel' : '');
-    d.title = `${ic.id}\n${ic.size}`;
+    d.title = `${ic.id}\n${ic.size}\n${(ic.from || []).join(', ')}`;
     d.innerHTML = `<div class="img"><img loading="lazy" src="${ic.thumb}"></div><div class="nm"></div><div class="sz">${ic.size.replace(',', '×')}</div>` +
       (k >= 0 ? `<span class="ord">${k + 1}</span>` : '') +
       (u[ic.id] ? `<span class="used" title="選んでいる実績の数">${u[ic.id]}</span>` : '');
